@@ -1,0 +1,33 @@
+﻿using Microsoft.Extensions.Logging;
+using Syncfusion.Maui.Core.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using ArticleGenerationSample;
+
+namespace ArticleGenerationSample
+{
+    public static class MauiProgram
+    {
+        public static MauiApp CreateMauiApp()
+        {
+            var builder = MauiApp.CreateBuilder();
+            builder
+                .UseMauiApp<App>()
+                .ConfigureSyncfusionCore()
+                .ConfigureFonts(fonts =>
+                {
+                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    fonts.AddFont("MauiSampleFontIcon.ttf", "MauiSampleFontIcon");
+                });
+
+#if DEBUG
+    		builder.Logging.AddDebug();
+#endif
+
+            // DI registration for Azure AI service (sketch)
+            builder.Services.AddSingleton<IAzureAIService, AzureAIService>();
+
+            return builder.Build();
+        }
+    }
+}
