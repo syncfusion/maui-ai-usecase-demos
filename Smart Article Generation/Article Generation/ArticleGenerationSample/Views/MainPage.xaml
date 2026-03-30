@@ -4,14 +4,13 @@
              xmlns:syncfusion="clr-namespace:Syncfusion.Maui.AIAssistView;assembly=Syncfusion.Maui.AIAssistView"
              xmlns:shimmer="clr-namespace:Syncfusion.Maui.Shimmer;assembly=Syncfusion.Maui.Core"
              xmlns:views="clr-namespace:ArticleGenerationSample"
-             xmlns:conv="clr-namespace:ArticleGenerationSample"
              x:Class="ArticleGenerationSample.MainPage">
     <ContentPage.BindingContext>
-        <conv:ArticleViewModel x:Name="viewModel" />
+        <views:ArticleViewModel x:Name="viewModel" />
     </ContentPage.BindingContext>
     <ContentPage.Resources>
         <ResourceDictionary>
-            <conv:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <views:InverseBoolConverter x:Key="InverseBoolConverter" />
             <DataTemplate x:Key="headerTemplate">
                 <StackLayout VerticalOptions="Start"
                              HorizontalOptions="Center"
@@ -52,8 +51,8 @@
                                 <Grid Padding="0"
                                       RowDefinitions="Auto,*">
                                     <Grid.Resources>
-                                        <conv:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter" />
-                                        <conv:BoolToGridLengthConverterInverse x:Key="BoolToGridLengthConverterInverse" />
+                                        <views:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter" />
+                                        <views:BoolToGridLengthConverterInverse x:Key="BoolToGridLengthConverterInverse" />
                                     </Grid.Resources>
                                     <!-- Article Generator Header Bar - Spans both panels -->
                                     <Border Grid.Row="0"
