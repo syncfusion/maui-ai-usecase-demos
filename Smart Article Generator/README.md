@@ -28,13 +28,6 @@ git clone https://github.com/SyncfusionExamples/article-generation-maui-aiassist
 cd ArticleGenerationSample
 ```
 
-**Add packages:**
-```bash
-dotnet add package Syncfusion.Maui.AIAssistView
-dotnet add package Syncfusion.Maui.MarkdownViewer
-dotnet add package Microsoft.SemanticKernel
-```
-
 **Configure Azure OpenAI credentials** in `Services/AzureBaseService.cs`:
 ```csharp
 private const string endpoint      = "YOUR_AZURE_OPENAI_ENDPOINT";
@@ -89,5 +82,3 @@ For questions, you can contact us through our [support forums](https://www.syncf
 **Path Too Long Exception**
 
 If you are facing a path too long exception when building this example project, close Visual Studio and rename the repository to a shorter name, then rebuild the project.
-
-For a step-by-step procedure, refer to the [link](https://support.syncfusion.com/kb/article/2255/how-to-resolve-path-too-long-error-in-syncfusion-samples).
