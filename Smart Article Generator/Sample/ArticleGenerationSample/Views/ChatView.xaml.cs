@@ -1,6 +1,6 @@
 using Microsoft.Maui.Controls;
 
-namespace ArticleGenerationSample;
+namespace SmartArticleGenerator;
 
 /// <summary>
 /// Displays the AI-generated HTML content, including a shimmer placeholder while loading

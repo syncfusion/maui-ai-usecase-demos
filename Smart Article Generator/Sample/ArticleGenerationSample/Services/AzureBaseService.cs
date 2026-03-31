@@ -2,7 +2,7 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using System.Net;
 
-namespace ArticleGenerationSample
+namespace SmartArticleGenerator
 {
     /// <summary>
     /// Abstract base class for Azure AI services

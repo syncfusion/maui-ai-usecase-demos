@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace ArticleGenerationSample
+namespace SmartArticleGenerator
 {
     public partial class App : Application
     {

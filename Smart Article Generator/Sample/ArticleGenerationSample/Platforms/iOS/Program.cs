@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace ArticleGenerationSample
+namespace SmartArticleGenerator
 {
     public class Program
     {

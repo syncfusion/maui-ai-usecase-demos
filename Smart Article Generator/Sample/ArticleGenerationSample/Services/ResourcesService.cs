@@ -1,4 +1,4 @@
-using ArticleGenerationSample;
+using SmartArticleGenerator;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

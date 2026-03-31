@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace ArticleGenerationSample
+namespace SmartArticleGenerator
 {
     [Register("AppDelegate")]
     public class AppDelegate : MauiUIApplicationDelegate

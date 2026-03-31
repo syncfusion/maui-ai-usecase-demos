@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:conv="clr-namespace:ArticleGenerationSample"
+             xmlns:conv="clr-namespace:SmartArticleGenerator"
              xmlns:shimmer="clr-namespace:Syncfusion.Maui.Shimmer;assembly=Syncfusion.Maui.Core"
              xmlns:md="clr-namespace:Syncfusion.Maui.MarkdownViewer;assembly=Syncfusion.Maui.MarkdownViewer"
-             x:Class="ArticleGenerationSample.ChatView">
+             x:Class="SmartArticleGenerator.ChatView">
     <ContentView.Resources>
         <conv:InverseBoolConverter x:Key="InverseBoolConverter" />
     </ContentView.Resources>

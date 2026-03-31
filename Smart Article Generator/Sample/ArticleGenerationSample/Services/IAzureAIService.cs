@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace ArticleGenerationSample
+namespace SmartArticleGenerator
 {
     /// <summary>
     /// Abstraction for Azure AI operations used by view models and other services.

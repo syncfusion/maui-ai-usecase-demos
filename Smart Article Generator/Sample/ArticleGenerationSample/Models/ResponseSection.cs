@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ArticleGenerationSample
+namespace SmartArticleGenerator
 {
     /// <summary>
     /// Represents a structured section of an AI response

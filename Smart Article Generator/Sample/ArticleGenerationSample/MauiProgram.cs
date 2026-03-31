@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Core.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using ArticleGenerationSample;
+using SmartArticleGenerator;
 
-namespace ArticleGenerationSample
+namespace SmartArticleGenerator
 {
     public static class MauiProgram
     {

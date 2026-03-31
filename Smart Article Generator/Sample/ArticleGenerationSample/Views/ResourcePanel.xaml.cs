@@ -1,4 +1,4 @@
-namespace ArticleGenerationSample;
+namespace SmartArticleGenerator;
 
 /// <summary>
 /// Displays and manages user-added research sources, including add, delete,

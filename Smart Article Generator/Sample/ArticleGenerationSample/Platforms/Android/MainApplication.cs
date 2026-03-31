@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace ArticleGenerationSample
+namespace SmartArticleGenerator
 {
     [Application]
     public class MainApplication : MauiApplication

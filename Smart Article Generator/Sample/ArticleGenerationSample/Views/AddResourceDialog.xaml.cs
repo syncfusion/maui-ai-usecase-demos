@@ -1,4 +1,4 @@
-namespace ArticleGenerationSample;
+namespace SmartArticleGenerator;
 
 /// <summary>
 /// Modal dialog to collect a resource URL, title, and description.

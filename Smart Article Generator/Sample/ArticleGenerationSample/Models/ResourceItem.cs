@@ -1,4 +1,4 @@
-namespace ArticleGenerationSample
+namespace SmartArticleGenerator
 {
     /// <summary>
     /// Represents a research resource/source.
