@@ -1,6 +1,6 @@
 using System;
 
-namespace RichTextEditorAssistViewSample
+namespace AIPoweredWritingAssistant
 {
     public static class ServiceHelper
     {

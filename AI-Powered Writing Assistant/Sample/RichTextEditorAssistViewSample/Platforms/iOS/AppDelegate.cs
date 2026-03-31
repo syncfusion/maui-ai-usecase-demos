@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace RichTextEditorAssistViewSample
+namespace AIPoweredWritingAssistant
 {
     [Register("AppDelegate")]
     public class AppDelegate : MauiUIApplicationDelegate

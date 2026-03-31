@@ -1,4 +1,4 @@
-namespace RichTextEditorAssistViewSample;
+namespace AIPoweredWritingAssistant;
 
 /// <summary>
 /// Class representing the assist view page, which serves as a dedicated interface for displaying and interacting with the assist view features in the application.

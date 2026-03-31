@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 
-namespace RichTextEditorAssistViewSample
+namespace AIPoweredWritingAssistant
 {
     /// <summary>
     /// Represents the view model for the Assist feature, providing properties, commands, and logic to manage assist items, suggestions, and user interactions within the editor interface.

@@ -2,7 +2,7 @@
 using Syncfusion.Maui.Core.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace RichTextEditorAssistViewSample
+namespace AIPoweredWritingAssistant
 {
     public static class MauiProgram
     {

@@ -1,4 +1,4 @@
-﻿namespace RichTextEditorAssistViewSample
+﻿namespace AIPoweredWritingAssistant
 {
     using Syncfusion.Maui.AIAssistView;
     using Microsoft.Extensions.DependencyInjection;

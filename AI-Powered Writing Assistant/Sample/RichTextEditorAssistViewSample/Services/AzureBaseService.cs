@@ -2,7 +2,7 @@
 using Azure.AI.OpenAI;
 using Microsoft.Extensions.AI;
 
-namespace RichTextEditorAssistViewSample
+namespace AIPoweredWritingAssistant
 {
     /// <summary>
     /// Class representing the base service for Azure AI interactions, providing common functionality for validating credentials and managing the chat client used to communicate with Azure's AI services.

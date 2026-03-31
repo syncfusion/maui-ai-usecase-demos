@@ -1,4 +1,4 @@
-﻿namespace RichTextEditorAssistViewSample
+﻿namespace AIPoweredWritingAssistant
 {
     public partial class AppShell : Shell
     {

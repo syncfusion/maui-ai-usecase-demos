@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 
-namespace RichTextEditorAssistViewSample
+namespace AIPoweredWritingAssistant
 {
     /// <summary>
     /// Class representing the view model for a combo box. It manages a collection of features that can be displayed in the combo box.
