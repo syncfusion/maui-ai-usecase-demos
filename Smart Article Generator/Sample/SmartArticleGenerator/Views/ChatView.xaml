@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:conv="clr-namespace:SmartArticleGenerator"
+             xmlns:shimmer="clr-namespace:Syncfusion.Maui.Shimmer;assembly=Syncfusion.Maui.Core"
+             xmlns:md="clr-namespace:Syncfusion.Maui.MarkdownViewer;assembly=Syncfusion.Maui.MarkdownViewer"
+             x:Class="SmartArticleGenerator.ChatView">
+    <ContentView.Resources>
+        <conv:InverseBoolConverter x:Key="InverseBoolConverter" />
+    </ContentView.Resources>
+    <Grid Padding="10">
+        <Grid>
+            <!-- Desktop (WinUI/MacCatalyst) -->
+            <ScrollView Padding="0,0,0,0"
+                        IsVisible="{OnPlatform Android=false, iOS=false, WinUI=true, MacCatalyst=true}">
+                <Border StrokeThickness="0"
+                        Background="#FFFFFF"
+                        Padding="{OnPlatform Android='12,14',WinUI='22,18'}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="14" />
+                    </Border.StrokeShape>
+                    <Grid>
+                        <md:SfMarkdownViewer Source="{Binding MarkdownContent}"
+                                             HeightRequest="600">
+                            <md:SfMarkdownViewer.Settings>
+                                <md:MarkdownStyleSettings>
+                                    <md:MarkdownStyleSettings.CssStyleRules>
+                                        h1, h2, h3, h4, h5, h6 { font-weight: 700; }
+                                        p, li { font-weight: 400; }
+                                        strong, b { font-weight: 700; }
+                                        body { font-weight: 400; }
+                                    </md:MarkdownStyleSettings.CssStyleRules>
+                                </md:MarkdownStyleSettings>
+                            </md:SfMarkdownViewer.Settings>
+                        </md:SfMarkdownViewer>
+                    </Grid>
+                </Border>
+            </ScrollView>
+
+            <Grid IsVisible="{OnPlatform Android=true, iOS=false, WinUI=false, MacCatalyst=false}">
+                <Border StrokeThickness="0"
+                        Background="#FFFFFF"
+                        Padding="12,14">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="14" />
+                    </Border.StrokeShape>
+                    <ScrollView VerticalScrollBarVisibility="Always"
+                                HeightRequest="560">
+                        <md:SfMarkdownViewer Source="{Binding MarkdownContent}"
+                                             VerticalOptions="Fill">
+                            <md:SfMarkdownViewer.Settings>
+                                <md:MarkdownStyleSettings>
+                                    <md:MarkdownStyleSettings.CssStyleRules>
+                                        h1, h2, h3, h4, h5, h6 { font-weight: 700; }
+                                        p, li { font-weight: 400; }
+                                        strong, b { font-weight: 700; }
+                                        body { font-weight: 400; }
+                                    </md:MarkdownStyleSettings.CssStyleRules>
+                                </md:MarkdownStyleSettings>
+                            </md:SfMarkdownViewer.Settings>
+                        </md:SfMarkdownViewer>
+                    </ScrollView>
+                </Border>
+            </Grid>
+
+            <!-- iOS: keep without inner ScrollView (parent page scrolls fine) -->
+            <Grid IsVisible="{OnPlatform Android=false, iOS=true, WinUI=false, MacCatalyst=false}">
+                <Border StrokeThickness="0"
+                        Background="#FFFFFF"
+                        Padding="12,14">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="14" />
+                    </Border.StrokeShape>
+                    <Grid>
+                        <md:SfMarkdownViewer Source="{Binding MarkdownContent}"
+                                             HeightRequest="600">
+                            <md:SfMarkdownViewer.Settings>
+                                <md:MarkdownStyleSettings>
+                                    <md:MarkdownStyleSettings.CssStyleRules>
+                                        h1, h2, h3, h4, h5, h6 { font-weight: 700; }
+                                        p, li { font-weight: 400; }
+                                        strong, b { font-weight: 700; }
+                                        body { font-weight: 400; }
+                                    </md:MarkdownStyleSettings.CssStyleRules>
+                                </md:MarkdownStyleSettings>
+                            </md:SfMarkdownViewer.Settings>
+                        </md:SfMarkdownViewer>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentView>

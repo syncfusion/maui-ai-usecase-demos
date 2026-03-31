@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.AIAssistView;assembly=Syncfusion.Maui.AIAssistView"
+             xmlns:shimmer="clr-namespace:Syncfusion.Maui.Shimmer;assembly=Syncfusion.Maui.Core"
+             xmlns:views="clr-namespace:SmartArticleGenerator"
+             x:Class="SmartArticleGenerator.MainPage">
+    <ContentPage.BindingContext>
+        <views:ArticleViewModel x:Name="viewModel" />
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <views:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <DataTemplate x:Key="headerTemplate">
+                <StackLayout VerticalOptions="Start"
+                             HorizontalOptions="Center"
+                             Padding="0,20,0,0">
+                    <Border HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            BackgroundColor="#6750A4">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Label Text="&#xe7e1;"
+                               FontSize="24"
+                               HorizontalTextAlignment="Center"
+                               VerticalTextAlignment="Center"
+                               FontFamily="MauiSampleFontIcon"
+                               TextColor="#FFFFFF"
+                               HeightRequest="45"
+                               WidthRequest="45"
+                               HorizontalOptions="Center" />
+                    </Border>
+                </StackLayout>
+            </DataTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <!-- Root grid to host platform-specific layouts -->
+    <Grid>
+        <!-- Desktop (WinUI + MacCatalyst): existing two-panel template -->
+        <Grid IsVisible="{OnPlatform Android=false, iOS=false, WinUI=true, MacCatalyst=true}">
+            <views:CustomAssistView ShowHeader="False"
+                                    Padding="16,18,16,18"
+                                    AssistItems="{Binding Messages}"
+                                    RequestCommand="{Binding AssistViewRequestCommand}">
+                <views:CustomAssistView.ControlTemplate>
+                    <ControlTemplate>
+                        <ContentView BindingContext="{TemplateBinding BindingContext}">
+                            <ContentView.Content>
+                                <Grid Padding="0"
+                                      RowDefinitions="Auto,*">
+                                    <Grid.Resources>
+                                        <views:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter" />
+                                        <views:BoolToGridLengthConverterInverse x:Key="BoolToGridLengthConverterInverse" />
+                                    </Grid.Resources>
+                                    <!-- Article Generator Header Bar - Spans both panels -->
+                                    <Border Grid.Row="0"
+                                            StrokeThickness="0"
+                                            Background="#6750A4"
+                                            Padding="16,14">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="12,12,0,0" />
+                                        </Border.StrokeShape>
+                                        <StackLayout Orientation="Horizontal"
+                                                     Spacing="10"
+                                                     VerticalOptions="Center">
+                                            <Label Text="&#xe7e1;"
+                                                   FontSize="22"
+                                                   FontFamily="MauiSampleFontIcon"
+                                                   TextColor="#FFFFFF"
+                                                   VerticalOptions="Center" />
+                                            <Label Text="Article Generator"
+                                                   FontSize="20"
+                                                   FontAttributes="None"
+                                                   FontFamily="Roboto-Regular"
+                                                   TextColor="#FFFFFF"
+                                                   VerticalOptions="Center" />
+                                        </StackLayout>
+                                    </Border>
+                                    <!-- Content Grid: 70% (left) / 30% (right) with 1px separator for desktop -->
+                                    <Grid Grid.Row="1"
+                                          Padding="0"
+                                          ColumnDefinitions="7*,1,3*">
+                                        <!-- Left Panel with Background (desktop only) -->
+                                        <Grid Grid.Column="0"
+                                              Padding="0"
+                                              BackgroundColor="#F7F2FB">
+                                            <!-- Keep content inset but make background start at header edge -->
+                                            <ScrollView Padding="16,0,16,0">
+                                                <StackLayout Spacing="14"
+                                                             Padding="0,12,0,24">
+                                                    <views:ResourcePanel Padding="0"
+                                                                         Margin="0,0,0,0"
+                                                                         BindingContext="{TemplateBinding BindingContext}"
+                                                                         VerticalOptions="Start" />
+                                                    <StackLayout Spacing="6">
+                                                        <Label Text="Article Draft"
+                                                               FontSize="18"
+                                                               FontAttributes="None"
+                                                               FontFamily="Roboto-Regular"
+                                                               TextColor="#333333"
+                                                               Margin="0,0,0,0"
+                                                               Padding="0,6,0,4" />
+                                                        <views:ChatView BindingContext="{TemplateBinding BindingContext}"
+                                                                        VerticalOptions="Start" />
+                                                    </StackLayout>
+                                                </StackLayout>
+                                            </ScrollView>
+                                        </Grid>
+                                        <!-- Border between panels -->
+                                        <BoxView Grid.Column="1"
+                                                 WidthRequest="1"
+                                                 BackgroundColor="#E0E0E0"
+                                                 VerticalOptions="Fill" />
+                                        <!-- Right Panel: AI AssistView Chat -->
+                                        <ContentView Content="{TemplateBinding AssistChatView}"
+                                                     Grid.Column="2"
+                                                     Margin="10,0,0,0" />
+                                    </Grid>
+                                </Grid>
+                            </ContentView.Content>
+                        </ContentView>
+                    </ControlTemplate>
+                </views:CustomAssistView.ControlTemplate>
+            </views:CustomAssistView>
+        </Grid>
+
+        <!-- Mobile (Android + iOS): single-column content with floating Assist button and overlay -->
+        <Grid IsVisible="{OnPlatform Android=true, iOS=true, WinUI=false, MacCatalyst=false}">
+            <!-- Main content -->
+            <ScrollView Padding="12,12,12,24"
+                        IsVisible="{Binding IsAssistVisible, Converter={StaticResource InverseBoolConverter}}">
+                <StackLayout Spacing="0"
+                             Padding="0,12,0,80">
+                    <!-- Article Generator Header with AI Icon -->
+                    <Border StrokeThickness="0"
+                            Background="#6750A4"
+                            Padding="16,12"
+                            Margin="-6,0,-6,0"
+                            HeightRequest="56">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <StackLayout Orientation="Horizontal"
+                                     Spacing="12"
+                                     VerticalOptions="Center">
+                            <Label Text="&#xe7e1;"
+                                   FontSize="22"
+                                   FontFamily="MauiSampleFontIcon"
+                                   TextColor="#FFFFFF"
+                                   VerticalOptions="Center" />
+                            <Label Text="Article Generator"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   FontFamily="Roboto-Regular"
+                                   TextColor="#FFFFFF"
+                                   VerticalOptions="Center" />
+                        </StackLayout>
+                    </Border>
+
+                    <!-- Article Sources Section with background -->
+                    <Border StrokeThickness="0"
+                            BackgroundColor="#F7F2FB"
+                            Padding="8"
+                            Margin="0">
+                        <views:ResourcePanel BindingContext="{Binding}" />
+                    </Border>
+
+                    <!-- Article Draft Section with background -->
+                    <Border StrokeThickness="0"
+                            BackgroundColor="#F7F2FB"
+                            Padding="8"
+                            Margin="0">
+                        <StackLayout Spacing="6">
+                            <Label Text="Article Draft"
+                                   FontSize="18"
+                                   FontAttributes="None"
+                                   FontFamily="Roboto-Regular"
+                                   TextColor="#333333"
+                                   Padding="0,6,0,4" />
+                            <views:ChatView />
+                        </StackLayout>
+                    </Border>
+                </StackLayout>
+            </ScrollView>
+
+            <!-- Floating AI AssistView button -->
+            <Grid VerticalOptions="End"
+                  HorizontalOptions="End"
+                  Margin="0,0,8,8"
+                  IsVisible="{Binding IsAssistVisible, Converter={StaticResource InverseBoolConverter}}">
+                <Border BackgroundColor="#6750A4"
+                        StrokeThickness="0"
+                        Padding="14">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="24" />
+                    </Border.StrokeShape>
+                    <StackLayout Orientation="Horizontal"
+                                 Spacing="8"
+                                 Padding="0"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="Center">
+                        <Label Text="&#xE75A;"
+                               FontFamily="MauiSampleFontIcon"
+                               FontSize="20"
+                               TextColor="White"
+                               VerticalOptions="Center"
+                               Margin="0" />
+                        <Label Text="AI Assist"
+                               FontFamily="Roboto-Regular"
+                               FontSize="14"
+                               TextColor="White"
+                               VerticalOptions="Center"
+                               Margin="0" />
+                    </StackLayout>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ToggleAssistCommand}" />
+                    </Border.GestureRecognizers>
+                </Border>
+            </Grid>
+
+            <!-- Fullscreen Overlay AssistView -->
+            <Grid IsVisible="{Binding IsAssistVisible}"
+                  BackgroundColor="#FFFFFF"
+                  Padding="0"
+                  RowDefinitions="Auto,*">
+                <!-- Header with close button -->
+                <Grid Grid.Row="0"
+                      BackgroundColor="#6750A4"
+                      Padding="16,12"
+                      ColumnDefinitions="*,Auto">
+                    <StackLayout Orientation="Horizontal"
+                                 Spacing="10"
+                                 VerticalOptions="Center">
+                        <Label Text="&#xe7e1;"
+                               FontSize="20"
+                               FontFamily="MauiSampleFontIcon"
+                               TextColor="#FFFFFF"
+                               VerticalOptions="Center" />
+                        <Label Text="AI AssistView"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               FontFamily="Roboto-Regular"
+                               TextColor="#FFFFFF"
+                               VerticalOptions="Center" />
+                    </StackLayout>
+                    <!-- Close button with E755 icon -->
+                    <Label Grid.Column="1"
+                           Text="&#xE755;"
+                           FontFamily="MauiSampleFontIcon"
+                           TextColor="White"
+                           FontSize="20"
+                           VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ToggleAssistCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
+                <!-- AssistView content -->
+                <ContentView Grid.Row="1"
+                             Padding="0"
+                             VerticalOptions="Fill"
+                             HorizontalOptions="Fill">
+                    <syncfusion:SfAIAssistView AssistItems="{Binding Messages}"
+                                               RequestCommand="{Binding AssistViewRequestCommand}"
+                                               ShowHeader="False"
+                                               VerticalOptions="Fill"
+                                               HorizontalOptions="Fill" />
+                </ContentView>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>

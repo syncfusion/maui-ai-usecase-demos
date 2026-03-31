@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SmartArticleGenerator.AddResourceDialog"
+             Title="Add New Resource"
+             BackgroundColor="White">
+    <ContentPage.Content>
+        <StackLayout Padding="20"
+                     Spacing="15">
+            <!-- Resource URL -->
+            <StackLayout Spacing="5">
+                <Label Text="Resource URL"
+                       FontSize="14"
+                       FontAttributes="Bold"
+                       TextColor="#333333" />
+                <Entry x:Name="UrlEntry"
+                       Placeholder="https://example.com"
+                       PlaceholderColor="#999999"
+                       FontSize="12"
+                       TextColor="#333333"
+                       BackgroundColor="#F5F5F5" />
+            </StackLayout>
+
+            <!-- Resource Title -->
+            <StackLayout Spacing="5">
+                <Label Text="Resource Title"
+                       FontSize="14"
+                       FontAttributes="Bold"
+                       TextColor="#333333" />
+                <Entry x:Name="TitleEntry"
+                       Placeholder="Enter resource title"
+                       PlaceholderColor="#999999"
+                       FontSize="12"
+                       TextColor="#333333"
+                       BackgroundColor="#F5F5F5" />
+            </StackLayout>
+
+            <!-- Resource Description -->
+            <StackLayout Spacing="5">
+                <Label Text="Resource Description"
+                       FontSize="14"
+                       FontAttributes="Bold"
+                       TextColor="#333333" />
+                <Editor x:Name="DescriptionEditor"
+                        Placeholder="Enter resource description"
+                        PlaceholderColor="#999999"
+                        FontSize="12"
+                        TextColor="#333333"
+                        BackgroundColor="#F5F5F5"
+                        HeightRequest="80" />
+            </StackLayout>
+
+            <!-- Action Buttons -->
+            <Grid ColumnDefinitions="*,*"
+                  ColumnSpacing="10"
+                  Margin="0,10,0,0">
+                <Button x:Name="CancelButton"
+                        Text="Cancel"
+                        Grid.Column="0"
+                        BackgroundColor="#E0E0E0"
+                        TextColor="#333333"
+                        FontAttributes="Bold"
+                        HeightRequest="45"
+                        Clicked="OnCancelClicked" />
+                <Button x:Name="AddButton"
+                        Text="Add Resource"
+                        Grid.Column="1"
+                        BackgroundColor="#6C63FF"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        HeightRequest="45"
+                        Clicked="OnAddClicked" />
+            </Grid>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
