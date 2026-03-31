@@ -1,6 +1,6 @@
 # Build a Source-Backed Article Workspace with .NET MAUI AI AssistView and Azure OpenAI 
 
-A cross-platform .NET MAUI application that uses **Azure OpenAI** and the **Syncfusion AIAssistView** to generate structured, Markdown-formatted articles on any topic — complete with auto-extracted resource links and a built-in Markdown viewer.
+A cross-platform .NET MAUI application that uses **Azure OpenAI** and the **Syncfusion AIAssistView** to generate structured, Markdown-formatted articles on any topic complete with auto-extracted resource links and a built-in Markdown viewer.
 
 ## Highlights
 
