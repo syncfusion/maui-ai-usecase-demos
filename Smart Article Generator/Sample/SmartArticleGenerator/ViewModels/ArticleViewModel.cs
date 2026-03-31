@@ -4,7 +4,6 @@ using System.Windows.Input;
 using System.Linq;
 using Syncfusion.Maui.AIAssistView;
 using SmartArticleGenerator;
-using ArticleGenerationSampl;
 
 namespace SmartArticleGenerator
 {

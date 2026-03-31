@@ -6,16 +6,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ArticleGenerationSampl
+namespace SmartArticleGenerator
 {
     /// <summary>
     /// Service for managing research resources.
     /// </summary>
     public class ResourcesService
     {
+        /// <summary>
+        /// Field to store the list of resources.
+        /// </summary>
         // Backing store for the resources list used across the app.
         private readonly ObservableCollection<ResourceItem> resources = new();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourcesService"/> class.
+        /// </summary>
         public ResourcesService()
         {
             InitializeDefaultResources();

@@ -24,8 +24,8 @@ A cross-platform .NET MAUI application that uses **Azure OpenAI** and the **Sync
 
 **Clone:**
 ```bash
-git clone https://github.com/SyncfusionExamples/article-generation-maui-aiassistview.git
-cd ArticleGenerationSample
+git clone https://github.com/syncfusion/maui-ai-usecase-demos
+cd SmartArticleGenerator
 ```
 
 **Configure Azure OpenAI credentials** in `Services/AzureBaseService.cs`:
