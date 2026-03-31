@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AIPoweredWritingAssistant.MainPage"
+             xmlns:local="clr-namespace:AIPoweredWritingAssistant"
+             xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:rte="clr-namespace:Syncfusion.Maui.RichTextEditor;assembly=Syncfusion.Maui.RichTextEditor"
+             xmlns:aiassistview="clr-namespace:Syncfusion.Maui.AIAssistView;assembly=Syncfusion.Maui.AIAssistView">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="headerTemplate">
+                <StackLayout HorizontalOptions="Center"
+                             Spacing="10"
+                             Padding="10">
+                    <Label Text="&#xe7e1;"
+                           FontFamily="MauiSampleFontIcon"
+                           FontSize="20"
+                           TextColor="{StaticResource SfRichTextEditorTextColor}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                    <Label Text="How can I help you?"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="{StaticResource SfRichTextEditorTextColor}"
+                           VerticalOptions="Center" />
+                </StackLayout>
+            </DataTemplate>
+
+            <Style TargetType="aiassistview:ResponseActionsView">
+                <Setter Property="ControlTemplate">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <HorizontalStackLayout Spacing="5">
+                                <Button x:Name="copyButton"
+                                        Text="&#xe7A0;"
+                                        FontSize="18"
+                                        Command="{Binding BindingContext.CopyCommand, Source={x:Reference Mainpage}}"
+                                        CommandParameter="{Binding}"
+                                        BackgroundColor="Transparent"
+                                        TextColor="{StaticResource SfRichTextEditorTextColor}"
+                                        FontFamily="MauiMaterialAssets" />
+                                <Button x:Name="retryButton"
+                                        Text="&#xe7A2;"
+                                        TextColor="{StaticResource SfRichTextEditorTextColor}"
+                                        Command="{Binding BindingContext.RetryCommand, Source={x:Reference Mainpage}}"
+                                        CommandParameter="{Binding}"
+                                        FontSize="18"
+                                        BackgroundColor="Transparent"
+                                        FontFamily="MauiMaterialAssets" />
+                                <Button x:Name="applyButton"
+                                        Text="Apply"
+                                        CornerRadius="20"
+                                        WidthRequest="90"
+                                        FontSize="14"
+                                        BackgroundColor="Transparent"
+                                        TextColor="{StaticResource SfButtonNormalBackground}"
+                                        Command="{Binding BindingContext.ApplyCommand, Source={x:Reference Mainpage}}"
+                                        CommandParameter="{Binding}"
+                                        Padding="15,0,15,5"
+                                        FontAttributes="Bold"
+                                        HorizontalOptions="End">
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroupList>
+                                            <VisualStateGroup x:Name="CommonStates">
+                                                <VisualState x:Name="Normal">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="BackgroundColor"
+                                                                Value="Transparent" />
+                                                        <Setter Property="Opacity"
+                                                                Value="1" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                                <VisualState x:Name="Pressed">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="BackgroundColor"
+                                                                Value="#14000000" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                                <VisualState x:Name="PointerOver">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="BackgroundColor"
+                                                                Value="#14000000" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                            </VisualStateGroup>
+                                        </VisualStateGroupList>
+                                    </VisualStateManager.VisualStateGroups>
+                                </Button>
+                            </HorizontalStackLayout>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid x:Name="layout"
+          Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="7.2*" />
+            <ColumnDefinition Width="2.8*" />
+        </Grid.ColumnDefinitions>
+
+        <rte:SfRichTextEditor Grid.Column="0"
+                              Grid.ColumnSpan="2"
+                              x:Name="richTextEditor"
+                              ShowToolbar="True"
+                              HtmlText="{Binding EditorHtml, Mode=TwoWay}" />
+        <Border x:Name="headerView"
+                Margin="-1,0,0,0"
+                Grid.Column="1"
+                IsVisible="False"
+                StrokeThickness="0.5"
+                Stroke="Gray">
+            <Grid x:Name="assistViewGrid"
+                  HorizontalOptions="End"
+                  RowDefinitions="Auto,*">
+
+                <Grid RowDefinitions="auto,auto">
+                    <Grid ColumnDefinitions="*,Auto,Auto"
+                          BackgroundColor="{StaticResource SfRichTextToolbarItemNormalBackground}"
+                          HeightRequest="50">
+                        <Label Text="AI Assistant"
+                               Grid.Column="0"
+                               FontSize="16"
+                               TextColor="{StaticResource SfRichTextEditorTextColor}"
+                               FontFamily="Roboto-Medium"
+                               Padding="16,0,0,0"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center" />
+                        <Button x:Name="close"
+                                Grid.Column="2"
+                                BorderWidth="0"
+                                CornerRadius="20"
+                                HeightRequest="{OnPlatform WinUI= 30, MacCatalyst=40, Android=30, iOS=40}"
+                                WidthRequest="{OnPlatform WinUI= 30, MacCatalyst=40, Android=30, iOS=40}"
+                                FontSize="15"
+                                Text="&#xe70b;"
+                                BackgroundColor="#F7F2FB"
+                                TextColor="{StaticResource SfRichTextEditorTextColor}"
+                                HorizontalOptions="End"
+                                Clicked="OnCloseButtonClicked"
+                                FontFamily="MauiMaterialAssets"
+                                ToolTipProperties.Text="Close"
+                                Margin="{OnPlatform WinUI='0,0,5,0', MacCatalyst='0,0,20,0'}">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor"
+                                                        Value="Transparent" />
+                                                <Setter Property="Opacity"
+                                                        Value="1" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor"
+                                                        Value="#14000000" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor"
+                                                        Value="#14000000" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+                        </Button>
+
+                        <editors:SfComboBox x:Name="comboBox"
+                                            Grid.Column="1"
+                                            WidthRequest="45"
+                                            BackgroundColor="Transparent"
+                                            ShowBorder="False"
+                                            Margin="{OnPlatform Default='0,0,0,0', MacCatalyst='0,0,22,0'}"
+                                            IsClearButtonVisible="False"
+                                            SelectionChanged="comboBox_SelectionChanged"
+                                            HeightRequest="40"
+                                            DropdownWidth="140"
+                                            DisplayMemberPath="FeatureName">
+                            <editors:SfComboBox.DropDownButtonSettings>
+                                <editors:DropDownButtonSettings Width="45"
+                                                                Height="45">
+                                    <editors:DropDownButtonSettings.View>
+                                        <Label Text="&#xe748;"
+                                               BackgroundColor="Transparent"
+                                               TextColor="{StaticResource SfRichTextEditorTextColor}"
+                                               FontFamily="MauiMaterialAssets"
+                                               FontSize="15"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalOptions="Center" />
+                                    </editors:DropDownButtonSettings.View>
+                                </editors:DropDownButtonSettings>
+                            </editors:SfComboBox.DropDownButtonSettings>
+                        </editors:SfComboBox>
+
+                    </Grid>
+                    <Grid Grid.Row="1"
+                          HeightRequest="0.5"
+                          Background="Gray">
+                    </Grid>
+                </Grid>
+
+                <aiassistview:SfAIAssistView x:Name="AssistView"
+                                             Grid.Row="1"
+                                             ShowHeader="True"
+                                             IsVisible="False"
+                                             HeaderTemplate="{StaticResource headerTemplate}"
+                                             AssistItems="{Binding AssistItems}"
+                                             Suggestions="{Binding Suggestions}"
+                                             SuggestionItemSelectedCommand="{Binding SuggestionItemSelectedCommand}"
+                                             VerticalOptions="Fill"
+                                             HorizontalOptions="Fill">
+                </aiassistview:SfAIAssistView>
+            </Grid>
+        </Border>
+
+        <Button x:Name="AiButton"
+                Grid.Column="1"
+                Text="&#xe7e1;"
+                Background="{StaticResource SfButtonNormalBackground}"
+                TextColor="{StaticResource SfButtonNormalTextColor}"
+                FontFamily="MauiSampleFontIcon"
+                FontSize="14"
+                Padding="2"
+                MinimumHeightRequest="40"
+                MinimumWidthRequest="40"
+                ToolTipProperties.Text="Click to open AI assistant"
+                IsVisible="True"
+                FontAttributes="Bold"
+                VerticalOptions="{OnPlatform Android=End, iOS=End, Default=Start}"
+                HorizontalOptions="End"
+                Margin="{OnPlatform iOS='0,0,20,80', Android='0,0,20,80', Default='0,6,10,0'}"
+                Clicked="OnAIButtonClicked" />
+    </Grid>
+</ContentPage>
