@@ -44,19 +44,25 @@ This sample application showcases an AI-powered writing assistant with the follo
     * Deployment/model name
 Note: Syncfusion components may require a license key. 
 
-## Setup Instructions
+## Quick Install
 
-1. Clone the Repository
-Clone the repository using repository link
+**Clone:**
+```bash
+git clone https://github.com/syncfusion/maui-ai-usecase-demos
+cd AIPoweredWritingAssistant
+```
 
-2. Install NuGet Packages
-Ensure all needed Syncfusion packages are installed.
+**Configure Azure OpenAI credentials** in `Services/AzureBaseService.cs`:
+```csharp
+private const string endpoint      = "YOUR_AZURE_OPENAI_ENDPOINT";
+private const string deploymentName = "YOUR_DEPLOYMENT_NAME";
+private const string key           = "YOUR_API_KEY";
+```
 
-3. Configure Azure OpenAI
-Create or update the Azure OpenAI service configuration:
-
-   1. Locate the AzureAIService class (e.g., in Services/AzureAIService.cs)
-   2. Replace the placeholders with your actual credentials.
+**Register Syncfusion license** in `MauiProgram.cs`:
+```csharp
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("YOUR_LICENSE_KEY");
+```
 
 ##  How It Works
 
@@ -97,11 +103,9 @@ OnSuggestionTapCommand
 
 * If you are facing a path too long exception when building this example project, close Visual Studio and rename the repository to a shorter name, then rebuild the project.
 
-* For a step-by-step procedure, refer to the [link](https://support.syncfusion.com/kb/article/2255/how-to-resolve-path-too-long-error-in-syncfusion-samples).
-
 ## Screenshot
 
-![AI Powered RichTextEditor in .NET MAUI](AIPoweredRichTextEditor.gif)
+![AI Powered Writing Assistant in .NET MAUI](AIPoweredWritingAssistant.gif)
 
 ## Documentation
 
