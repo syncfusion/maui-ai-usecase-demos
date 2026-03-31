@@ -34,10 +34,6 @@ This sample application showcases an AI-powered writing assistant with the follo
 
 * .NET SDK compatible with .NET MAUI (net10.0 or later)
 * Visual Studio 2022 with .NET MAUI workload installed.
-* Syncfusion NuGet packages:
-    * Syncfusion.Maui.RichTextEditor
-    * Syncfusion.Maui.AIAssistView
-    * Syncfusion.Maui.Core
 * Azure OpenAI account with:
     * API endpoint
     * API key
