@@ -1,0 +1,235 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AIPoweredChartSample.MainPage"
+             xmlns:charts="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+             xmlns:aiassistview="clr-namespace:Syncfusion.Maui.AIAssistView;assembly=Syncfusion.Maui.AIAssistView"
+             Shell.NavBarIsVisible="False"
+             x:Name="Mainpage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="headerTemplate">
+                <StackLayout HorizontalOptions="Center"
+                             Spacing="10"
+                             Padding="10">
+                    <Label Text="&#xe7e1;"
+                           FontFamily="MauiSampleFontIcon"
+                           FontSize="20"
+                           TextColor="Black"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                    <Label Text="How can I help you?"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="Black"
+                           VerticalOptions="Center" />
+                </StackLayout>
+            </DataTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid x:Name="layout"
+          Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="7.2*" />
+            <ColumnDefinition Width="2.8*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Left: Charts and summary -->
+        <ScrollView Grid.Column="0"
+                    x:Name="chartView"
+                    Grid.ColumnSpan="2">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Laptop Manufacturing Company"
+                       FontAttributes="Bold"
+                       FontSize="{OnPlatform Android=17, iOS=17, Default=24}"
+                       HorizontalOptions="{OnPlatform Android=Center, iOS=Center, Default=Start}"
+                       Margin="{OnPlatform WinUI='10,10,0,10', MacCatalyst='10,10,0,10', Default='0,10,0,10'}" />
+                <Border StrokeThickness="{OnPlatform WinUI=2, MacCatalyst=2, Default=0}"
+                        Margin="{OnPlatform WinUI=10, MacCatalyst=10, Default=0}"
+                        Background="#FFFFFF"
+                        Padding="{OnPlatform Android='0,0,7,0', iOS='0,0,7,0', Default=12}">
+                    <Border.StrokeShape>
+                        <BoxView CornerRadius="8" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout>
+                        <Label Text="Production Units (2016 - 2026)"
+                               FontSize="{OnPlatform Android=14, iOS=14, Default=20}"
+                               HorizontalOptions="Center"
+                               FontAttributes="Bold" />
+                        <charts:SfCartesianChart HeightRequest="{OnPlatform Android=300, iOS=320, Default=270}"
+                                                 Margin="0,10,0,0">
+                            <charts:SfCartesianChart.XAxes>
+                                <charts:CategoryAxis>
+                                    <charts:CategoryAxis.Title>
+                                        <charts:ChartAxisTitle Text="Year"
+                                                               FontAttributes="Bold" />
+                                    </charts:CategoryAxis.Title>
+                                </charts:CategoryAxis>
+                            </charts:SfCartesianChart.XAxes>
+                            <charts:SfCartesianChart.YAxes>
+                                <charts:NumericalAxis>
+                                    <charts:NumericalAxis.Title>
+                                        <charts:ChartAxisTitle Text="Units"
+                                                               Margin="{OnPlatform Android=0, iOS=0, Default=5}"
+                                                               FontAttributes="Bold" />
+                                    </charts:NumericalAxis.Title>
+                                </charts:NumericalAxis>
+                            </charts:SfCartesianChart.YAxes>
+
+                            <charts:ColumnSeries ItemsSource="{Binding ProductionPoints}"
+                                                 Fill="#4456ab"
+                                                 XBindingPath="Year"
+                                                 YBindingPath="Units" />
+                        </charts:SfCartesianChart>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border StrokeThickness="{OnPlatform WinUI=2, MacCatalyst=2, Default=0}"
+                        Margin="{OnPlatform WinUI=10, MacCatalyst=10, Default=0}"
+                        Background="#FFFFFF"
+                        Padding="{OnPlatform Android='0,0,7,0', iOS='0,0,7,0', Default=12}">
+                    <Border.StrokeShape>
+                        <BoxView CornerRadius="8" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout>
+                        <Label Text="Units Sold (2016 - 2026)"
+                               HorizontalOptions="Center"
+                               FontSize="{OnPlatform Android=14, iOS=14, Default=20}"
+                               FontAttributes="Bold" />
+
+                        <charts:SfCartesianChart HeightRequest="{OnPlatform Android=300, iOS=320, Default=260}"
+                                                 Margin="0,10,0,0">
+                            <charts:SfCartesianChart.XAxes>
+                                <charts:CategoryAxis>
+                                    <charts:CategoryAxis.Title>
+                                        <charts:ChartAxisTitle Text="Year"
+                                                               FontAttributes="Bold" />
+                                    </charts:CategoryAxis.Title>
+                                </charts:CategoryAxis>
+                            </charts:SfCartesianChart.XAxes>
+                            <charts:SfCartesianChart.YAxes>
+                                <charts:NumericalAxis>
+                                    <charts:NumericalAxis.Title>
+                                        <charts:ChartAxisTitle Text="Units"
+                                                               Margin="{OnPlatform Android=0, iOS=0, Default=5}"
+                                                               FontAttributes="Bold" />
+                                    </charts:NumericalAxis.Title>
+                                </charts:NumericalAxis>
+                            </charts:SfCartesianChart.YAxes>
+
+                            <charts:SplineAreaSeries ItemsSource="{Binding SalesPoints}"
+                                                     ShowMarkers="True"
+                                                     Fill="#65c26b"
+                                                     XBindingPath="Year"
+                                                     YBindingPath="Units"
+                                                     Opacity="0.6" />
+                        </charts:SfCartesianChart>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Border x:Name="headerView"
+                Grid.Column="1"
+                IsVisible="False"
+                StrokeThickness="0.5"
+                Stroke="Gray">
+            <Grid x:Name="assistViewGrid"
+                  RowDefinitions="Auto,*">
+
+                <Grid RowDefinitions="auto,auto">
+                    <Grid ColumnDefinitions="*,Auto,Auto"
+                          BackgroundColor="#4e5a91"
+                          HeightRequest="50">
+                        <Label Text="AI Assistant"
+                               Grid.Column="0"
+                               FontSize="16"
+                               TextColor="White"
+                               FontFamily="Roboto-Medium"
+                               Padding="10,0,0,0"
+                               VerticalOptions="Center" />
+                        <Button x:Name="close"
+                                Grid.Column="2"
+                                BorderWidth="0"
+                                CornerRadius="20"
+                                HeightRequest="{OnPlatform WinUI= 30, MacCatalyst=40, Android=30, iOS=40}"
+                                WidthRequest="{OnPlatform WinUI= 30, MacCatalyst=40, Android=30, iOS=40}"
+                                FontSize="15"
+                                Text="&#xe70b;"
+                                BackgroundColor="#F7F2FB"
+                                TextColor="White"
+                                HorizontalOptions="End"
+                                Clicked="OnCloseButtonClicked"
+                                FontFamily="MauiMaterialAssets"
+                                ToolTipProperties.Text="Close"
+                                Margin="{OnPlatform WinUI='0,0,5,0', MacCatalyst='0,0,20,0'}">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor"
+                                                        Value="Transparent" />
+                                                <Setter Property="Opacity"
+                                                        Value="1" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor"
+                                                        Value="#14000000" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor"
+                                                        Value="#14000000" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+                        </Button>
+                    </Grid>
+                    <BoxView Grid.Row="1"
+                             HeightRequest="1"
+                             Background="Gray">
+                    </BoxView>
+                </Grid>
+
+                <aiassistview:SfAIAssistView x:Name="AssistView"
+                                             EnableConversationHistory="False"
+                                             Grid.Row="1"
+                                             ShowHeader="True"
+                                             IsVisible="False"
+                                             HeaderTemplate="{StaticResource headerTemplate}"
+                                             AssistItems="{Binding AssistItems}"
+                                             Suggestions="{Binding Suggestions}"
+                                             RequestCommand="{Binding AssistViewRequestCommand }"
+                                             VerticalOptions="Fill"
+                                             HorizontalOptions="Fill">
+                </aiassistview:SfAIAssistView>
+            </Grid>
+        </Border>
+
+        <Button x:Name="AiButton"
+                Grid.Column="1"
+                Text="&#xe7e1;"
+                Background="#5957ab"
+                TextColor="White"
+                FontFamily="MauiSampleFontIcon"
+                FontSize="14"
+                Padding="2"
+                MinimumHeightRequest="40"
+                MinimumWidthRequest="40"
+                ToolTipProperties.Text="Click to open AI assistant"
+                IsVisible="True"
+                FontAttributes="Bold"
+                VerticalOptions="{OnPlatform Android=End, iOS=End, Default=Start}"
+                HorizontalOptions="End"
+                Margin="{OnPlatform iOS='0,0,10,30', Android='0,0,10,30', Default='0,6,10,0'}"
+                Clicked="OnAIButtonClicked" />
+    </Grid>
+</ContentPage>

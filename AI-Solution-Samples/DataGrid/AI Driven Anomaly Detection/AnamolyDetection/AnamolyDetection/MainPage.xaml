@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
+             xmlns:button="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:local="clr-namespace:AnamolyDetection"
+             x:Class="AnamolyDetection.MainPage">
+
+    <ContentPage.BindingContext>
+        <local:MachineDataRepository />
+    </ContentPage.BindingContext>
+
+    <ContentPage.Behaviors>
+        <local:AnamolyDetectionBehaviour />
+    </ContentPage.Behaviors>
+
+    <ContentPage.Resources>
+        <local:AnamolyDetectionConverter x:Key="converter" />
+        <Style TargetType="syncfusion:DataGridHeaderCell">
+            <Setter Property="FontFamily"
+                 Value="Roboto-Medium" />
+        </Style>
+        <Style TargetType="syncfusion:DataGridCell">
+            <Setter Property="FontFamily"
+                 Value="Roboto-Regular" />
+            <Setter Property="Background"
+                    Value="{Binding Source={RelativeSource Mode=Self}, Converter={StaticResource converter}}" />
+        </Style>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Label Text="AI Anomaly Detection"
+                       VerticalTextAlignment="Center"
+                       Padding="16,0,16,0"
+                       FontSize="15"
+                       Grid.Column="0"
+                       FontAttributes="Bold" />
+
+                <button:SfButton x:Name="button"
+                                 Text="Detect Anomalies"
+                                 Grid.Column="2"
+                                 Margin="16,0,16,0"
+                                 HeightRequest="40"
+                                 CornerRadius="5" />
+            </Grid>
+
+            <syncfusion:SfDataGrid x:Name="dataGrid" Grid.Row="1" ItemsSource="{Binding MachineDataCollection}"
+                                AutoGenerateColumnsMode="None">
+            <syncfusion:SfDataGrid.Columns>
+                <syncfusion:DataGridTextColumn HeaderText="Machine ID"
+                                        Width="120"
+                                        MappingName="MachineID" />
+                <syncfusion:DataGridTextColumn HeaderText="Temperature"
+                                        Width="120"
+                                        MappingName="Temperature" />
+                <syncfusion:DataGridTextColumn HeaderText="Pressure"
+                                        Width="120"
+                                        MappingName="Pressure" />
+                <syncfusion:DataGridTextColumn HeaderText="Voltage"
+                                        Width="120"
+                                        MappingName="Voltage" />
+                <syncfusion:DataGridTextColumn HeaderText="Motor Speed"
+                                        Width="120"
+                                        MappingName="MotorSpeed" />
+                <syncfusion:DataGridTextColumn HeaderText="Production Rate"
+                                        Width="140"
+                                        MappingName="ProductionRate" />
+
+            </syncfusion:SfDataGrid.Columns>
+        </syncfusion:SfDataGrid>
+
+            <ActivityIndicator IsRunning="False"
+                               x:Name="Indicator"
+                               Grid.Row="1"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center"
+                               Color="Black" />
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

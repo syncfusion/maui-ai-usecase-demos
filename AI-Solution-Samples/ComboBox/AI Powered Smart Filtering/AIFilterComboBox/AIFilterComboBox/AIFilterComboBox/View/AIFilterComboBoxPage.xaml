@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AIFilterComboBox.AIFilterComboBox.AIFilterComboBoxPage"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:local="clr-namespace:AIFilterComboBox.AIFilterComboBox"
+             Title="AIFilterComboBoxPage">
+
+    <ContentPage.BindingContext>
+        <local:ComboBoxViewModel x:Name="viewModel"/>
+    </ContentPage.BindingContext>
+    
+    <ContentPage.Content>
+        <VerticalStackLayout Spacing="30"
+                             Margin="0,50,0,0"
+                             WidthRequest="250"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Start">
+
+            <Label Text="AI ComboBox Control"
+                   FontFamily="Roboto-Medium"  
+                   FontSize="16"
+                   TextColor="{AppThemeBinding Light='#1C1B1F' , Dark='#E6E1E5'}"
+                   HorizontalOptions="Center"/>
+
+            <syncfusion:SfTextInputLayout Hint="Search food name or type"
+                                          Margin="0,10,0,0"
+                                          ContainerType="Outlined"
+                                          WidthRequest="248"
+                                          ContainerBackground="Transparent">
+                <editors:SfComboBox x:Name="combobox" 
+                                    DropDownPlacement="Bottom"                                    
+                                    MaxDropDownHeight="200"
+                                    IsEditable="True"
+                                    DropdownOpening="combobox_DropdownOpened"
+                                    DropDownClosing="combobox_DropDownClosed"
+                                    TextSearchMode="StartsWith"
+                                    IsFilteringEnabled="True"
+                                    DisplayMemberPath="Name"
+                                    TextMemberPath="Name"
+                                    ItemsSource="{Binding Foods}">
+                </editors:SfComboBox>
+            </syncfusion:SfTextInputLayout>
+            
+            <Grid IsVisible="{Binding IsLoading}"
+                  BackgroundColor="White">
+                <HorizontalStackLayout HorizontalOptions="Center"
+                                     VerticalOptions="Center"
+                                     Spacing="10">
+                    <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                       Color="Black"
+                                       HeightRequest="20"
+                                       WidthRequest="20" />
+                    <Label Text="Searching..."
+                           TextColor="Black"
+                           FontSize="14"
+                           HorizontalOptions="Center" />
+                </HorizontalStackLayout>
+            </Grid>
+
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</ContentPage>

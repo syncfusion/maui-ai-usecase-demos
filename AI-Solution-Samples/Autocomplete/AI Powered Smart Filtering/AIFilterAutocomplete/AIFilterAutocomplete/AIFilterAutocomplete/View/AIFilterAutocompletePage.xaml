@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AIFilterAutocomplete.AIFilterAutocomplete.View.AIFilterAutocompletePage"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:input="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:localViewModel="clr-namespace:AIFilterAutocomplete.AIFilterAutocomplete.ViewModel"
+             Title="AIFilterAutocompletePage">
+    <ContentPage.BindingContext>
+        <localViewModel:AutocompleteViewModel x:Name="viewModel"/>
+    </ContentPage.BindingContext>
+    
+    <VerticalStackLayout Spacing="30"
+                         Margin="0,50,0,0"
+                     WidthRequest="250"
+                     HorizontalOptions="Center"
+                     VerticalOptions="Start">
+
+        <Label Text="AI Autocomplete Control"
+             FontFamily="Roboto-Medium"  
+             FontSize="16"
+             TextColor="{AppThemeBinding Light='#1C1B1F' , Dark='#E6E1E5'}"
+             HorizontalOptions="Center"/>
+
+        <syncfusion:SfTextInputLayout Hint="Search food name or type"
+                                   ContainerType="Outlined"
+                                   WidthRequest="248"
+                                   ContainerBackground="Transparent">
+            <input:SfAutocomplete x:Name="autoComplete"
+                                  DropDownPlacement="Bottom"
+                                  MaxDropDownHeight="200"
+                                  TextSearchMode="StartsWith"
+                                  DropdownOpening="combobox_DropdownOpened"
+                                  DropDownClosing="combobox_DropDownClosed"
+                                  DisplayMemberPath="Name"
+                                  ItemsSource="{Binding Foods}">
+            </input:SfAutocomplete>
+        </syncfusion:SfTextInputLayout>
+
+        <Grid IsVisible="{Binding IsLoading}"
+              BackgroundColor="White">
+            <HorizontalStackLayout HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   Spacing="10">
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                   Color="Black"
+                                   HeightRequest="20"
+                                   WidthRequest="20" />
+                <Label Text="Searching..."
+                       TextColor="Black"
+                       FontSize="14"
+                       HorizontalOptions="Center" />
+            </HorizontalStackLayout>
+        </Grid>
+
+    </VerticalStackLayout>
+</ContentPage>

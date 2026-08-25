@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AIPoweredChartSample.MobileAssistViewPage"
+             xmlns:aiassistview="clr-namespace:Syncfusion.Maui.AIAssistView;assembly=Syncfusion.Maui.AIAssistView"
+             Title="MobileAssistViewPage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="headerTemplate">
+                <StackLayout HorizontalOptions="Center"
+                             Padding="10">
+                    <Label Text="&#xe7e1;"
+                           FontFamily="MauiSampleFontIcon"
+                           FontSize="20"
+                           TextColor="Black"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                    <Label Text="How can I help you?"
+                           FontAttributes="Bold"
+                           TextColor="Black"
+                           FontSize="16"
+                           VerticalOptions="Center" />
+                </StackLayout>
+            </DataTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <aiassistview:SfAIAssistView x:Name="AssistView"
+                                 Grid.Row="1"
+                                 EnableConversationHistory="False"
+                                 ShowHeader="True"
+                                 IsVisible="False"
+                                 HeaderTemplate="{StaticResource headerTemplate}"
+                                 AssistItems="{Binding AssistItems}"
+                                 Suggestions="{Binding Suggestions}"
+                                 RequestCommand="{Binding AssistViewRequestCommand }"
+                                 VerticalOptions="Fill"
+                                 HorizontalOptions="Fill">
+        <aiassistview:SfAIAssistView.Shadow>
+            <Shadow Brush="Black"
+                    Offset="0,0"
+                    Radius="1"
+                    Opacity="0.5" />
+        </aiassistview:SfAIAssistView.Shadow>
+    </aiassistview:SfAIAssistView>
+
+</ContentPage>
