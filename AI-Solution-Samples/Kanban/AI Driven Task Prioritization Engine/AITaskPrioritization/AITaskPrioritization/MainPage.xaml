@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:kanban="clr-namespace:Syncfusion.Maui.Kanban;assembly=Syncfusion.Maui.Kanban"
+             xmlns:button="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:local="clr-namespace:AITaskPrioritization"
+             x:Class="AITaskPrioritization.MainPage">
+
+    <!-- Behavior -->
+    <ContentPage.Behaviors>
+        <local:KanbanAIReorderBehavior />
+    </ContentPage.Behaviors>
+
+    <!-- ViewModel -->
+    <ContentPage.BindingContext>
+        <local:ViewModel/>
+    </ContentPage.BindingContext>
+
+    <!-- Resources -->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="CardTemplate">
+
+                <Border Padding="12" Margin="8" BackgroundColor="White" Opacity="{Binding GlowOpacity}"
+                    Stroke="{Binding UrgencyStrokeColor}" StrokeThickness="{Binding StrokeThickness}">
+
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="14"/>
+                    </Border.StrokeShape>
+
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="6">
+
+                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+
+                            <HorizontalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+
+                                <!-- DUE DATE -->
+                                <Label Text="&#xe758;" FontFamily="MauiSampleFontIcon" 
+                                   TextColor="#777" FontSize="13"/>
+
+                                <Label Text="{Binding DueDate, StringFormat='{0:dd MMM}'}"
+                                   FontSize="11" TextColor="#777"/>
+                            </HorizontalStackLayout>
+
+                        </Grid>
+
+                        <!-- TITLE -->
+                        <Label Grid.Row="0" Grid.Column="0" Text="{Binding Title}"
+                           FontSize="14" FontAttributes="Bold" TextColor="#222"/>
+
+                        <!-- DESCRIPTION -->
+                        <Label Grid.Row="1" Text="{Binding Description}" FontSize="12"
+                           TextColor="#666" MaxLines="2" LineBreakMode="TailTruncation"/>
+
+                        <!-- CLEAN BOTTOM ROW -->
+                        <Grid Grid.Row="2" Margin="0,8,0,0" ColumnDefinitions="Auto,*,Auto"
+                          VerticalOptions="Center">
+
+                            <!-- Avatar -->
+                            <Image Source="{Binding Image}" HeightRequest="26" WidthRequest="26"
+                                Aspect="AspectFill">
+                                <Image.Clip>
+                                    <EllipseGeometry Center="13,13" RadiusX="13" RadiusY="13"/>
+                                </Image.Clip>
+                            </Image>
+
+                            <!-- NAME -->
+                            <Label Grid.Column="1" Text="{Binding Name}" FontSize="11"
+                               TextColor="#444" VerticalOptions="Center" Margin="6,0,0,0"/>
+
+                            <Label Grid.Column="2" Text="&#xe75a;" FontFamily="MauiSampleFontIcon"
+                               TextColor="#555" FontSize="13" VerticalOptions="Center"/>
+
+                        </Grid>
+
+                    </Grid>
+                </Border>
+            </DataTemplate>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- HEADER -->
+        <Grid Grid.Row="0" Padding="10" ColumnDefinitions="*,Auto">
+
+            <Label Text="AI-Driven Task Prioritization Engine" FontSize="18" FontAttributes="Bold"
+               VerticalOptions="Center" HorizontalOptions="Center"/>
+
+            <button:SfButton x:Name="aiSortButton" Grid.Column="1" Text="&#xe7e1;" TextColor="White"
+                         Background="#6C4EFF" FontFamily="MauiSampleFontIcon" CornerRadius="12"
+                         WidthRequest="44" HeightRequest="44" FontSize="24"/>
+
+        </Grid>
+
+        <!-- KANBAN -->
+        <kanban:SfKanban x:Name="kanbanBoard" Grid.Row="1" ItemsSource="{Binding Cards}"
+                     ColumnMappingPath="Category" SortingMappingPath="Index"
+                     AutoGenerateColumns="False" CardTemplate="{StaticResource CardTemplate}">
+
+            <!-- Placeholder Style -->
+            <kanban:SfKanban.Resources>
+                <kanban:KanbanPlaceholderStyle x:Key="PlaceholderStyle" Background="#FAC7AD"
+                                           SelectionIndicatorBackground="#FAC7AD"
+                                           SelectionIndicatorStroke="#914C00">
+
+                    <kanban:KanbanPlaceholderStyle.SelectionIndicatorTextStyle>
+                        <kanban:KanbanTextStyle TextColor="#914C00" />
+                    </kanban:KanbanPlaceholderStyle.SelectionIndicatorTextStyle>
+
+                </kanban:KanbanPlaceholderStyle>
+            </kanban:SfKanban.Resources>
+
+            <!-- Columns -->
+            <kanban:KanbanColumn Title="To Do" Categories="Open" Background="#DAE0E3"
+                             PlaceholderStyle="{StaticResource PlaceholderStyle}" />
+
+            <kanban:KanbanColumn Title="In Progress" Categories="In Progress" Background="#D6EAF5"
+                             PlaceholderStyle="{StaticResource PlaceholderStyle}" />
+
+            <kanban:KanbanColumn Title="Review" Categories="Code Review" Background="#FFF8DC"
+                             PlaceholderStyle="{StaticResource PlaceholderStyle}" />
+
+            <kanban:KanbanColumn Title="Done" Categories="Done" Background="#DCEDDC" AllowDrag="False"
+                             PlaceholderStyle="{StaticResource PlaceholderStyle}" />
+
+        </kanban:SfKanban>
+
+        <!-- Info label -->
+
+        <Border x:Name="infoContainer" Grid.RowSpan="2" HorizontalOptions="Center" VerticalOptions="Center"
+                Stroke="Black" StrokeThickness="1.5" BackgroundColor="GhostWhite" Padding="12"
+                StrokeShape="RoundRectangle 10" IsVisible="False">
+
+            <Label x:Name="infoLabel" TextColor="Black" FontSize="20" FontAttributes="Bold"
+                   HorizontalOptions="Center" VerticalOptions="Center" />
+        </Border>
+
+    </Grid>
+
+</ContentPage>
