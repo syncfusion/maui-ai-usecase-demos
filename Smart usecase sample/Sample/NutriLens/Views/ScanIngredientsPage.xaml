@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:vm="clr-namespace:NutriLens.ViewModels"
+    x:Class="NutriLens.Views.ScanIngredientsPage"
+    x:DataType="vm:ScanIngredientsViewModel"
+    BackgroundColor="#FFFFFF"
+    NavigationPage.HasNavigationBar="False">
+
+    <Grid
+        RowDefinitions="56,*,80,90"
+        BackgroundColor="#FFFFFF">
+
+        <!-- Header -->
+        <Grid
+            Grid.Row="0"
+            Padding="12,0"
+            ColumnDefinitions="56,*,56"
+            BackgroundColor="White">
+
+            <buttons:SfButton
+                Grid.Column="0"
+                WidthRequest="40"
+                HeightRequest="40"
+                Text="{Binding BackIcon}"
+                FontFamily="MaterialIconsRegular"
+                FontSize="24"
+                TextColor="#374151"
+                Background="Transparent"
+                Stroke="Transparent"
+                Padding="0"
+                Command="{Binding BackCommand}" />
+
+            <Label
+                Grid.Column="1"
+                Text="Scan"
+                FontSize="18"
+                FontAttributes="Bold"
+                TextColor="#1F2937"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center" />
+
+            <buttons:SfButton
+                            Grid.Column="2"
+                            WidthRequest="36"
+                            HeightRequest="36"
+                            Text="{Binding PersonIcon}"
+                            FontFamily="MaterialIconsRegular"
+                            FontSize="20"
+                            TextColor="White"
+                            Background="#047857"
+                            Stroke="Transparent"
+                            CornerRadius="18"
+                            Padding="0"/>
+
+        </Grid>
+
+        <!-- Camera preview and scanner overlay -->
+        <Grid
+            x:Name="CameraPreviewArea"
+            Grid.Row="1"
+            BackgroundColor="#202525"
+            RowDefinitions="*,130,*"
+            ColumnDefinitions="*,270,*">
+
+            <!-- Selected image or camera surface -->
+            <Image
+                Grid.RowSpan="3"
+                Grid.ColumnSpan="3"
+                Source="{Binding CapturedImage}"
+                Aspect="AspectFill"
+                IsVisible="{Binding HasCapturedImage}"
+                Opacity="0.92" />
+            
+            <!-- Placeholder camera surface -->
+            <Grid
+                Grid.RowSpan="3"
+                Grid.ColumnSpan="3"
+                BackgroundColor="#202525"
+                IsVisible="{Binding HasCapturedImage, Converter={StaticResource InverseBoolConverter}}">
+
+                <VerticalStackLayout
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    Spacing="8">
+
+                    <Label
+                        Text="Camera preview"
+                        FontSize="16"
+                        TextColor="#CBD5E1"
+                        HorizontalOptions="Center" />
+
+                    <Label
+                        Text="Point the camera at an ingredient label"
+                        FontSize="12"
+                        TextColor="#94A3B8"
+                        HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- Dim overlay: top -->
+            <BoxView
+                Grid.Row="0"
+                Grid.ColumnSpan="3"
+                BackgroundColor="#66000000" />
+
+            <!-- Dim overlay: left -->
+            <BoxView
+                Grid.Row="1"
+                Grid.Column="0"
+                BackgroundColor="#66000000" />
+
+            <!-- Dim overlay: right -->
+            <BoxView
+                Grid.Row="1"
+                Grid.Column="2"
+                BackgroundColor="#66000000" />
+
+            <!-- Dim overlay: bottom -->
+            <BoxView
+                Grid.Row="2"
+                Grid.ColumnSpan="3"
+                BackgroundColor="#66000000" />
+
+            <!-- Analysis pill -->
+            <Border
+                Grid.Row="0"
+                Grid.ColumnSpan="3"
+                Margin="0,12,0,0"
+                Padding="12,0"
+                HeightRequest="36"
+                BackgroundColor="White"
+                Stroke="Transparent"
+                StrokeShape="RoundRectangle 18"
+                HorizontalOptions="Center"
+                VerticalOptions="Start">
+
+                <Border.Shadow>
+                    <Shadow
+                        Brush="#55000000"
+                        Offset="0,2"
+                        Radius="8"
+                        Opacity="0.35" />
+                </Border.Shadow>
+
+                <HorizontalStackLayout
+    Spacing="7"
+    VerticalOptions="Center">
+
+                    <Label
+        Text="{Binding AnalysisIcon}"
+        FontFamily="MaterialIconsRegular"
+        FontSize="17"
+        TextColor="#047857"
+        VerticalTextAlignment="Center"
+        IsVisible="{Binding IsAnalyzing, Converter={StaticResource InverseBoolConverter}}" />
+
+                    <core:SfBusyIndicator 
+                       SizeFactor="0.3" HeightRequest="30" WidthRequest="30"
+        IsRunning="{Binding IsAnalyzing}"
+        IsVisible="{Binding IsAnalyzing}" IndicatorColor ="#047857"
+        AnimationType="CircularMaterial"
+          />
+
+                    <Label
+        Text="Analyzing Ingredients"
+        FontSize="12"
+        FontAttributes="Bold"
+        TextColor="#374151"
+        VerticalTextAlignment="Center" />
+                </HorizontalStackLayout>
+            </Border>
+ 
+
+            <!-- Scanner brackets -->
+            <Grid
+                x:Name="ScannerFrame"
+                Grid.Row="1"
+                Grid.Column="1"
+                WidthRequest="370"
+                HeightRequest="230"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+
+                <!-- Top left -->
+                <Grid
+                    HorizontalOptions="Start"
+                    VerticalOptions="Start"
+                    WidthRequest="30"
+                    HeightRequest="30">
+
+                    <BoxView
+                        WidthRequest="30"
+                        HeightRequest="3"
+                        BackgroundColor="#00A86B"
+                        HorizontalOptions="Start"
+                        VerticalOptions="Start" />
+
+                    <BoxView
+                        WidthRequest="3"
+                        HeightRequest="30"
+                        BackgroundColor="#00A86B"
+                        HorizontalOptions="Start"
+                        VerticalOptions="Start" />
+                </Grid>
+
+                <!-- Top right -->
+                <Grid
+                    HorizontalOptions="End"
+                    VerticalOptions="Start"
+                    WidthRequest="30"
+                    HeightRequest="30">
+
+                    <BoxView
+                        WidthRequest="30"
+                        HeightRequest="3"
+                        BackgroundColor="#00A86B"
+                        HorizontalOptions="End"
+                        VerticalOptions="Start" />
+
+                    <BoxView
+                        WidthRequest="3"
+                        HeightRequest="30"
+                        BackgroundColor="#00A86B"
+                        HorizontalOptions="End"
+                        VerticalOptions="Start" />
+                </Grid>
+
+                <!-- Bottom left -->
+                <Grid
+                    HorizontalOptions="Start"
+                    VerticalOptions="End"
+                    WidthRequest="30"
+                    HeightRequest="30">
+
+                    <BoxView
+                        WidthRequest="30"
+                        HeightRequest="3"
+                        BackgroundColor="#00A86B"
+                        HorizontalOptions="Start"
+                        VerticalOptions="End" />
+
+                    <BoxView
+                        WidthRequest="3"
+                        HeightRequest="30"
+                        BackgroundColor="#00A86B"
+                        HorizontalOptions="Start"
+                        VerticalOptions="End" />
+                </Grid>
+
+                <!-- Bottom right -->
+                <Grid
+                    HorizontalOptions="End"
+                    VerticalOptions="End"
+                    WidthRequest="30"
+                    HeightRequest="30">
+
+                    <BoxView
+                        WidthRequest="30"
+                        HeightRequest="3"
+                        BackgroundColor="#00A86B"
+                        HorizontalOptions="End"
+                        VerticalOptions="End" />
+
+                    <BoxView
+                        WidthRequest="3"
+                        HeightRequest="30"
+                        BackgroundColor="#00A86B"
+                        HorizontalOptions="End"
+                        VerticalOptions="End" />
+                </Grid>
+
+                <!-- Animated scan line -->
+                <BoxView x:Name="ScanLine"
+                        HeightRequest="2"
+                        BackgroundColor="#00A86B"
+                        Opacity="0.7"
+                        HorizontalOptions="Fill"
+                        VerticalOptions="Center"
+                        IsVisible="{Binding IsAnalyzing, Converter={StaticResource InverseBoolConverter}}" />
+            </Grid>
+        </Grid>
+
+        <!-- Instruction card -->
+        <Border
+            Grid.Row="2"
+            Padding="20"
+            BackgroundColor="#F3F4F6"
+            Stroke="Transparent"
+            StrokeShape="RoundRectangle 24,24,0,0">
+
+            <Label
+                Text="{Binding ScannerMessage}"
+                FontSize="14"
+                TextColor="#6B7280"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                LineBreakMode="WordWrap" />
+        </Border>
+
+        <!-- Bottom controls -->
+        <Grid
+            Grid.Row="3"
+            Padding="20,8"
+            BackgroundColor="#F3F4F6"
+            ColumnDefinitions="*,*,*">
+
+            <!-- Gallery -->
+            <buttons:SfButton
+                Grid.Column="0"
+                WidthRequest="48"
+                HeightRequest="48"
+                Text="{Binding GalleryIcon}"
+                FontFamily="MaterialIconsRegular"
+                FontSize="25"
+                TextColor="#4B5563"
+                Background="#E5E7EB"
+                Stroke="Transparent"
+                CornerRadius="24"
+                Padding="0"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                Command="{Binding PickImageCommand}" />
+
+            <!-- Main scan action -->
+            <Grid
+                Grid.Column="1"
+                WidthRequest="72"
+                HeightRequest="72"
+                TranslationY="-26"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+
+                <Border
+                    WidthRequest="72"
+                    HeightRequest="72"
+                    BackgroundColor="White"
+                    Stroke="#047857"
+                    StrokeThickness="3"
+                    StrokeShape="RoundRectangle 36">
+
+                    <Border.Shadow>
+                        <Shadow
+                            Brush="#66000000"
+                            Offset="0,5"
+                            Radius="12"
+                            Opacity="0.65" />
+                    </Border.Shadow>
+
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Command="{Binding AnalyzeIngredientsCommand}" />
+                    </Border.GestureRecognizers>
+
+                    <Border
+                        Margin="5"
+                        BackgroundColor="#047857"
+                        Stroke="Transparent"
+                        StrokeShape="RoundRectangle 28">
+
+                        <Grid
+                            RowDefinitions="*,Auto"
+                            Padding="0,7,0,6">
+
+                            <Label
+                                Text="{Binding ScanIcon}"
+                                FontFamily="MaterialIconsRegular"
+                                FontSize="28"
+                                TextColor="White"
+                                HorizontalTextAlignment="Center"
+                                VerticalTextAlignment="Center" />
+
+                            <Label
+                                Grid.Row="1"
+                                Text="SCAN"
+                                FontSize="10"
+                                FontAttributes="Bold"
+                                TextColor="White"
+                                HorizontalTextAlignment="Center" />
+                        </Grid>
+                    </Border>
+                </Border>
+            </Grid>
+
+            <!-- Flash -->
+            <buttons:SfButton
+                Grid.Column="2"
+                WidthRequest="48"
+                HeightRequest="48"
+                Text="{Binding FlashIcon}"
+                FontFamily="MaterialIconsRegular"
+                FontSize="25"
+                TextColor="#4B5563"
+                Background="#E5E7EB"
+                Stroke="Transparent"
+                CornerRadius="24"
+                Padding="0"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                Command="{Binding ToggleFlashCommand}" />
+        </Grid>
+    </Grid>
+</ContentPage>

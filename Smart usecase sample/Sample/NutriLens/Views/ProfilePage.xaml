@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:models="clr-namespace:NutriLens.Models"
+    xmlns:vm="clr-namespace:NutriLens.ViewModels"
+    x:Class="NutriLens.Views.ProfilePage"
+    x:DataType="vm:ProfileViewModel"
+    BackgroundColor="#F4F6FA"
+    NavigationPage.HasNavigationBar="False">
+
+    <Grid
+        RowDefinitions="Auto,*,84"
+        BackgroundColor="#F4F6FA">
+
+        <!-- Header -->
+        <Grid
+            Grid.Row="0"
+            Margin="20,20,20,0"
+            HeightRequest="36"
+            ColumnDefinitions="*,Auto"
+            ColumnSpacing="8">
+
+            <HorizontalStackLayout
+                Spacing="8"
+                VerticalOptions="Center">
+
+                <Label
+                    Text="{Binding BiotechIcon}"
+                    Style="{StaticResource ProfileIconStyle}"
+                    FontSize="24"
+                    TextColor="#047857"
+                    WidthRequest="24" />
+
+                <Label
+                    Text="NutriLens AI"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    TextColor="#1F2937"
+                    VerticalTextAlignment="Center" />
+            </HorizontalStackLayout>
+
+            <buttons:SfButton
+                Grid.Column="1"
+                WidthRequest="36"
+                HeightRequest="36"
+                Text="{Binding PersonIcon}"
+                FontFamily="MaterialIconsRegular"
+                FontSize="20"
+                TextColor="White"
+                Background="#047857"
+                Stroke="Transparent"
+                CornerRadius="18"
+                Padding="0" />
+        </Grid>
+
+        <!-- Content -->
+        <ScrollView
+            Grid.Row="1"
+            VerticalScrollBarVisibility="Never">
+
+            <VerticalStackLayout
+                Padding="20,24,20,110"
+                Spacing="20">
+
+                <!-- Profile avatar -->
+                <Grid
+                    HeightRequest="128"
+                    HorizontalOptions="Center">
+
+                    <core:SfAvatarView
+                        WidthRequest="100"
+                        HeightRequest="100"
+                        CornerRadius="50"
+                        ContentType="Custom"
+                        ImageSource="profileavatar.png"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Start">
+
+                        <core:SfAvatarView.Shadow>
+                            <Shadow
+                                Brush="#35000000"
+                                Offset="0,3"
+                                Radius="8"
+                                Opacity="0.4" />
+                        </core:SfAvatarView.Shadow>
+                    </core:SfAvatarView>
+
+                    <buttons:SfButton
+                        WidthRequest="28"
+                        HeightRequest="28"
+                        Text="{Binding EditIcon}"
+                        FontFamily="MaterialIconsRegular"
+                        FontSize="15"
+                        TextColor="#047857"
+                        Background="#DCEAFF"
+                        Stroke="White"
+                        StrokeThickness="2"
+                        CornerRadius="14"
+                        Padding="0"
+                        HorizontalOptions="End"
+                        VerticalOptions="End"
+                        Margin="0,0,4,8"
+                        Command="{Binding EditProfileCommand}" />
+                </Grid>
+                <!-- Scan insights from saved AI history -->
+                <Border
+                    Style="{StaticResource ProfileCardStyle}">
+
+                    <VerticalStackLayout Spacing="12">
+
+                        <HorizontalStackLayout Spacing="8">
+                            <Label
+                                Text="{Binding ScannerIcon}"
+                                Style="{StaticResource ProfileIconStyle}"
+                                FontSize="22"
+                                TextColor="#047857" />
+
+                            <Label
+                                Text="Your Scan Insights"
+                                Style="{StaticResource ProfileCardTitleStyle}" />
+                        </HorizontalStackLayout>
+
+                        <Grid
+                            ColumnDefinitions="*,*,*"
+                            ColumnSpacing="8">
+
+                            <VerticalStackLayout Spacing="2">
+                                <Label
+                                    Text="{Binding TotalScansText}"
+                                    FontSize="20"
+                                    FontAttributes="Bold"
+                                    TextColor="#0F172A" />
+
+                                <Label
+                                    Text="Total Scans"
+                                    FontSize="11"
+                                    TextColor="#64748B" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout
+                                Grid.Column="1"
+                                Spacing="2">
+
+                                <Label
+                                    Text="{Binding AverageScoreText}"
+                                    FontSize="20"
+                                    FontAttributes="Bold"
+                                    TextColor="#047857" />
+
+                                <Label
+                                    Text="Avg Health Score"
+                                    FontSize="11"
+                                    TextColor="#64748B" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout
+                                Grid.Column="2"
+                                Spacing="2">
+
+                                <Label
+                                    Text="{Binding HealthyChoicesText}"
+                                    FontSize="20"
+                                    FontAttributes="Bold"
+                                    TextColor="#10B981" />
+
+                                <Label
+                                    Text="Healthy Choices"
+                                    FontSize="11"
+                                    TextColor="#64748B" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Label
+                            Style="{StaticResource ProfileDescriptionStyle}">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span
+                                        Text="Best score: "
+                                        TextColor="#64748B" />
+                                    <Span
+                                        Text="{Binding BestScoreText}"
+                                        FontAttributes="Bold"
+                                        TextColor="#0F172A" />
+                                    <Span
+                                        Text="   Most common risk: "
+                                        TextColor="#64748B" />
+                                    <Span
+                                        Text="{Binding MostCommonRiskText}"
+                                        FontAttributes="Bold"
+                                        TextColor="#DC2626" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+
+                        <Label
+                            Text="{Binding ScanInsightText}"
+                            Style="{StaticResource ProfileDescriptionStyle}" />
+                    </VerticalStackLayout>
+                </Border>
+                <!-- Dietary goals -->
+                <Border
+                    Style="{StaticResource ProfileCardStyle}">
+
+                    <VerticalStackLayout Spacing="12">
+
+                        <HorizontalStackLayout Spacing="8">
+                            <Label
+                                Text="{Binding FlagIcon}"
+                                Style="{StaticResource ProfileIconStyle}"
+                                FontSize="22"
+                                TextColor="#047857" />
+
+                            <Label
+                                Text="Dietary Goals"
+                                Style="{StaticResource ProfileCardTitleStyle}" />
+                        </HorizontalStackLayout>
+
+                        <Label
+                            Text="Select your primary nutritional focus."
+                            Style="{StaticResource ProfileDescriptionStyle}" />
+
+                        <FlexLayout
+                            BindableLayout.ItemsSource="{Binding DietaryGoals}"
+                            Direction="Row"
+                            Wrap="Wrap"
+                            JustifyContent="Start"
+                            AlignItems="Start">
+
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:ProfileGoal">
+
+                                    <Border
+                                        Margin="0,4,8,4"
+                                        Padding="14,8"
+                                        BackgroundColor="{Binding IsSelected, Converter={StaticResource ProfileSelectedBackgroundConverter}}"
+                                        Stroke="Transparent"
+                                        StrokeShape="RoundRectangle 18">
+
+                                        <Label
+                                            Text="{Binding Title}"
+                                            FontSize="13"
+                                            FontAttributes="Bold"
+                                            TextColor="{Binding IsSelected, Converter={StaticResource ProfileSelectedTextConverter}}" />
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Allergies -->
+                <Border
+                    Style="{StaticResource ProfileCardStyle}">
+
+                    <VerticalStackLayout Spacing="12">
+
+                        <HorizontalStackLayout Spacing="8">
+                            <Label
+                                Text="{Binding RestaurantMenuIcon}"
+                                Style="{StaticResource ProfileIconStyle}"
+                                FontSize="22"
+                                TextColor="#C98A00" />
+
+                            <Label
+                                Text="Allergies &amp; Preferences"
+                                Style="{StaticResource ProfileCardTitleStyle}" />
+                        </HorizontalStackLayout>
+
+                        <Label
+                            Text="Avoid risky ingredients in your scans."
+                            Style="{StaticResource ProfileDescriptionStyle}" />
+
+                        <FlexLayout
+                            BindableLayout.ItemsSource="{Binding Preferences}"
+                            Direction="Row"
+                            Wrap="Wrap"
+                            JustifyContent="Start"
+                            AlignItems="Start">
+
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:ProfileGoal">
+
+                                    <Border
+                                        Margin="0,4,8,4"
+                                        Padding="14,8"
+                                        BackgroundColor="{Binding IsSelected, Converter={StaticResource PreferenceBackgroundConverter}}"
+                                        Stroke="Transparent"
+                                        StrokeShape="RoundRectangle 18">
+
+                                        <Label
+                                            Text="{Binding Title}"
+                                            FontSize="13"
+                                            FontAttributes="Bold"
+                                            TextColor="{Binding IsSelected, Converter={StaticResource PreferenceTextConverter}}" />
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Health considerations -->
+                <Border
+                    Style="{StaticResource ProfileCardStyle}">
+
+                    <VerticalStackLayout Spacing="12">
+
+                        <HorizontalStackLayout Spacing="8">
+                            <Label
+                                Text="{Binding HealthIcon}"
+                                Style="{StaticResource ProfileIconStyle}"
+                                FontSize="22"
+                                TextColor="#DC2626" />
+
+                            <Label
+                                Text="Health Considerations"
+                                Style="{StaticResource ProfileCardTitleStyle}" />
+                        </HorizontalStackLayout>
+
+                        <Label
+                            Text="Tailor insights for specific health profiles."
+                            Style="{StaticResource ProfileDescriptionStyle}" />
+
+                        <!-- Diabetes -->
+                        <Border
+                            HeightRequest="60"
+                            Padding="14,0"
+                            BackgroundColor="#DCEAFF"
+                            Stroke="Transparent"
+                            StrokeShape="RoundRectangle 12">
+
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Label
+                                    Text="{Binding MedicalServicesIcon}"
+                                    Style="{StaticResource ProfileIconStyle}"
+                                    FontSize="22"
+                                    TextColor="#047857" />
+
+                                <Label
+                                    Grid.Column="1"
+                                    Text="Diabetes considerations"
+                                    Margin="12,0,8,0"
+                                    FontSize="14"
+                                    TextColor="#1E3A8A"
+                                    VerticalTextAlignment="Center" />
+
+                                <buttons:SfSwitch
+                                    Grid.Column="2"
+                                    IsOn="{Binding DiabetesEnabled}" 
+                                    VerticalOptions="Center" >
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup  x:Name="CommonStates">
+                                            <VisualState x:Name="On">
+                                                <VisualState.Setters>
+                                                    <Setter Property="SwitchSettings">
+                                                        <Setter.Value>
+                                                            <buttons:SwitchSettings
+ThumbBackground="White"
+ ThumbStroke="#047857"
+ TrackBackground="#047857"
+ TrackStroke="Transparent"/>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="Off">
+                                                <VisualState.Setters>
+                                                    <Setter Property="SwitchSettings">
+                                                        <Setter.Value>
+                                                            <buttons:SwitchSettings
+                                                                        ThumbBackground="Gray"
+                                                                        ThumbStroke="Gray"
+                                                                        TrackBackground="#e6e0e9"
+                                                                        TrackStroke="Gray"/>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                </buttons:SfSwitch>
+                            </Grid>
+                        </Border>
+
+                        <!-- Hypertension -->
+                        <Border
+                            HeightRequest="60"
+                            Padding="14,0"
+                            BackgroundColor="#DCEAFF"
+                            Stroke="Transparent"
+                            StrokeShape="RoundRectangle 12">
+
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Label
+                                    Text="{Binding MedicationIcon}"
+                                    Style="{StaticResource ProfileIconStyle}"
+                                    FontSize="22"
+                                    TextColor="#047857" />
+
+                                <Label
+                                    Grid.Column="1"
+                                    Text="Hypertension considerations"
+                                    Margin="12,0,8,0"
+                                    FontSize="14"
+                                    TextColor="#1E3A8A"
+                                    VerticalTextAlignment="Center" />
+
+                                <buttons:SfSwitch
+                                    Grid.Column="2"
+                                    IsOn="{Binding HypertensionEnabled}"
+                                    VerticalOptions="Center" >
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup  x:Name="CommonStates">
+                                            <VisualState x:Name="On">
+                                                <VisualState.Setters>
+                                                    <Setter Property="SwitchSettings">
+                                                        <Setter.Value>
+                                                            <buttons:SwitchSettings  ThumbBackground="White"
+                                                                                     ThumbStroke="#047857"
+                                                                                     TrackBackground="#047857"
+                                                                                     TrackStroke="Transparent"/>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="Off">
+                                                <VisualState.Setters>
+                                                    <Setter Property="SwitchSettings">
+                                                        <Setter.Value>
+                                                            <buttons:SwitchSettings ThumbBackground="Gray"
+                                                                                    ThumbStroke="Gray"
+                                                                                    TrackBackground="#e6e0e9"
+                                                                                    TrackStroke="Gray"/>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </VisualState.Setters>
+                                            </VisualState> 
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                </buttons:SfSwitch>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Privacy -->
+                <Border
+                    Padding="12"
+                    BackgroundColor="#DCEAFF"
+                    Stroke="Transparent"
+                    StrokeShape="RoundRectangle 12">
+
+                    <Grid
+                        ColumnDefinitions="Auto,*"
+                        ColumnSpacing="10">
+
+                        <Label
+                            Text="{Binding LockIcon}"
+                            Style="{StaticResource ProfileIconStyle}"
+                            FontSize="21"
+                            TextColor="#047857" />
+
+                        <Label
+                            Grid.Column="1"
+                            Text="Health details are private, editable, and used only to personalize your analysis locally on your device."
+                            FontSize="13"
+                            TextColor="#334155"
+                            LineBreakMode="WordWrap" />
+                    </Grid>
+                </Border>
+
+                <!-- Settings -->
+                <Border
+                    Margin="0,4,0,0"
+                    Style="{StaticResource ProfileCardStyle}"
+                    Padding="0">
+
+                    <VerticalStackLayout
+                        BindableLayout.ItemsSource="{Binding Settings}"
+                        Spacing="0">
+
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:ProfileSetting">
+
+                                <Grid
+                                    HeightRequest="58"
+                                    Padding="20,0"
+                                    ColumnDefinitions="Auto,*,Auto">
+
+                                    <Label
+                                        Text="{Binding Icon}"
+                                        Style="{StaticResource ProfileIconStyle}"
+                                        FontSize="21"
+                                        TextColor="#475569" />
+
+                                    <Label
+                                        Grid.Column="1"
+                                        Text="{Binding Title}"
+                                        Margin="14,0,8,0"
+                                        FontSize="14"
+                                        TextColor="#0F172A"
+                                        VerticalTextAlignment="Center" />
+
+                                    <Label
+                                        Grid.Column="2"
+                                        Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ChevronIcon}"
+                                        Style="{StaticResource ProfileIconStyle}"
+                                        FontSize="20"
+                                        TextColor="#94A3B8" />
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </Border>
+
+                <buttons:SfButton
+                    Text="SIGN OUT"
+                    Background="Transparent"
+                    Stroke="Transparent"
+                    FontSize="14"
+                    FontAttributes="Bold"
+                    TextColor="#EF4444"
+                    Command="{Binding SignOutCommand}" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Fixed bottom navigation -->
+        <Grid
+            Grid.Row="2"
+            HeightRequest="84"
+            ZIndex="20"
+            ColumnDefinitions="*,*,*,*,*"
+            BackgroundColor="White">
+
+            <Grid.Shadow>
+                <Shadow
+                    Brush="#40000000"
+                    Offset="0,-4"
+                    Radius="10"
+                    Opacity="0.35" />
+            </Grid.Shadow>
+
+            <!-- Home -->
+            <VerticalStackLayout
+                Grid.Column="0"
+                Spacing="2"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+
+                <buttons:SfButton
+                    Text="{Binding HomeIcon}"
+                    Style="{StaticResource ProfileNavigationButtonStyle}"
+                    TextColor="#6B7280"
+                    Command="{Binding OpenHomeCommand}" />
+
+                <Label
+                    Text="Home"
+                    FontSize="10"
+                    TextColor="#6B7280" />
+            </VerticalStackLayout>
+
+            <!-- History -->
+            <VerticalStackLayout
+                Grid.Column="1"
+                Spacing="2"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+
+                <buttons:SfButton
+                    Text="{Binding HistoryIcon}"
+                    Style="{StaticResource ProfileNavigationButtonStyle}"
+                    TextColor="#6B7280"
+                    Command="{Binding OpenHistoryCommand}" />
+
+                <Label
+                    Text="History"
+                    FontSize="10"
+                    TextColor="#6B7280" />
+            </VerticalStackLayout>
+
+            <!-- Empty center slot -->
+            <BoxView
+                Grid.Column="2"
+                Color="White" />
+
+            <!-- Trends -->
+            <VerticalStackLayout
+                Grid.Column="3"
+                Spacing="2"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+
+                <buttons:SfButton
+                    Text="{Binding TrendsIcon}"
+                    Style="{StaticResource ProfileNavigationButtonStyle}"
+                    TextColor="#6B7280"
+                    Command="{Binding OpenTrendsCommand}" />
+
+                <Label
+                    Text="Trends"
+                    FontSize="10"
+                    TextColor="#6B7280" />
+            </VerticalStackLayout>
+
+            <!-- Profile -->
+            <VerticalStackLayout
+                Grid.Column="4"
+                Spacing="2"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+
+                <buttons:SfButton
+                    Text="{Binding PersonIcon}"
+                    Style="{StaticResource ProfileNavigationButtonStyle}"
+                    TextColor="#047857" />
+
+                <Label
+                    Text="Profile"
+                    FontSize="10"
+                    FontAttributes="Bold"
+                    TextColor="#047857" />
+            </VerticalStackLayout>
+
+            <!-- Floating scan button -->
+            <Border
+                Grid.Column="2"
+                WidthRequest="72"
+                HeightRequest="72"
+                Margin="0,-36,0,0"
+                BackgroundColor="#047857"
+                Stroke="Transparent"
+                StrokeShape="RoundRectangle 36"
+                HorizontalOptions="Center"
+                VerticalOptions="Start"
+                ZIndex="30">
+
+                <Border.Shadow>
+                    <Shadow
+                        Brush="#66000000"
+                        Offset="0,6"
+                        Radius="12"
+                        Opacity="0.7" />
+                </Border.Shadow>
+
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{Binding OpenScanCommand}" />
+                </Border.GestureRecognizers>
+
+                <Grid
+                    RowDefinitions="*,Auto"
+                    Padding="0,9,0,8">
+
+                    <Label
+                        Text="{Binding ScannerIcon}"
+                        Style="{StaticResource ProfileIconStyle}"
+                        FontSize="28"
+                        TextColor="White" />
+
+                    <Label
+                        Grid.Row="1"
+                        Text="SCAN"
+                        FontSize="10"
+                        FontAttributes="Bold"
+                        TextColor="White"
+                        HorizontalTextAlignment="Center" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

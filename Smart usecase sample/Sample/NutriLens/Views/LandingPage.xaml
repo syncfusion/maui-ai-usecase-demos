@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:vm="clr-namespace:NutriLens.ViewModels"
+             x:Class="NutriLens.Views.LandingPage"
+             x:DataType="vm:LandingViewModel"
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid ColumnDefinitions="*,*">
+
+        <!-- LEFT hero -->
+        <Grid Grid.Column="0" Background="#EEF4F1">
+            <Border WidthRequest="320" HeightRequest="380" StrokeShape="RoundRectangle 24" Stroke="Transparent"
+                    Background="White" Padding="20" HorizontalOptions="Center" VerticalOptions="Center">
+                <Grid>
+                    <Ellipse WidthRequest="220" HeightRequest="220" Fill="#D6EBDF"
+                             HorizontalOptions="Center" VerticalOptions="Center"/>
+                    <Border WidthRequest="120" HeightRequest="200" StrokeShape="RoundRectangle 18"
+                            Stroke="#E5E7EB" StrokeThickness="2" Background="White"
+                            HorizontalOptions="Center" VerticalOptions="Center">
+                        <Grid RowDefinitions="*,Auto,*" Padding="10">
+                            <Border Grid.Row="1" WidthRequest="56" HeightRequest="56" StrokeShape="RoundRectangle 28"
+                                    Stroke="{StaticResource BrandPrimary}" StrokeThickness="3" Background="White"
+                                    HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="85+" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource BrandPrimary}"
+                                       HorizontalOptions="Center" VerticalOptions="Center"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <Label Text="🥑" FontSize="22" HorizontalOptions="Start" VerticalOptions="Start" Margin="18,18,0,0"/>
+                    <Label Text="🫐" FontSize="20" HorizontalOptions="Start" VerticalOptions="Center" Margin="14,0,0,0"/>
+                    <Label Text="🥦" FontSize="22" HorizontalOptions="End" VerticalOptions="Start" Margin="0,18,18,0"/>
+                    <Label Text="🥕" FontSize="22" HorizontalOptions="End" VerticalOptions="Center" Margin="0,0,14,0"/>
+                    <Label Text="🌿" FontSize="20" HorizontalOptions="Start" VerticalOptions="End" Margin="20,0,0,18"/>
+                    <Label Text="🥜" FontSize="20" HorizontalOptions="End" VerticalOptions="End" Margin="0,0,20,18"/>
+                    <Label Text="🥣" FontSize="22" HorizontalOptions="Center" VerticalOptions="End" Margin="0,0,0,14"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- RIGHT content -->
+        <Grid Grid.Column="1" Padding="40,32" RowDefinitions="Auto,*,Auto">
+            <HorizontalStackLayout Grid.Row="0" Spacing="10">
+                <Border WidthRequest="32" HeightRequest="32" StrokeShape="RoundRectangle 10" Stroke="Transparent"
+                        Background="{StaticResource BrandPrimary}">
+                    <Label Text="🌿" FontSize="16" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+                </Border>
+                <Label Text="NutriLens AI" FontSize="18" FontAttributes="Bold"
+                       TextColor="{StaticResource TextPrimary}" VerticalOptions="Center"/>
+            </HorizontalStackLayout>
+
+            <VerticalStackLayout Grid.Row="1" Spacing="20" VerticalOptions="Center">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Eat Smarter With AI" FontSize="30" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                    <Label Text="Understand ingredients and make healthier choices instantly."
+                           FontSize="14" TextColor="{StaticResource TextSecondary}" LineBreakMode="WordWrap"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="12">
+                    <Border StrokeShape="RoundRectangle 28" Stroke="#E5E7EB" StrokeThickness="1" Background="White" Padding="18,14">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GoogleCommand}"/>
+                        </Border.GestureRecognizers>
+                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                            <Border WidthRequest="18" HeightRequest="18" StrokeShape="RoundRectangle 9"
+                                    Stroke="#4285F4" StrokeThickness="2" Background="White"/>
+                            <Label Text="Continue with Google" FontSize="14" FontAttributes="Bold"
+                                   TextColor="{StaticResource TextPrimary}" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </Border>
+                    <buttons:SfButton Text="Create Profile" Style="{StaticResource PrimaryButton}"
+                                      Command="{Binding CreateCommand}"/>
+                    <buttons:SfButton Text="Explore Sample Data"
+                                      Background="Transparent" TextColor="{StaticResource BrandPrimary}"
+                                      Stroke="Transparent" StrokeThickness="0" CornerRadius="28"
+                                      HeightRequest="44" FontAttributes="Bold"
+                                      Command="{Binding ExploreCommand}"/>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+            <Label Grid.Row="2" Text="By continuing, you agree to our Terms"
+                   FontSize="11" TextColor="{StaticResource TextMuted}" HorizontalTextAlignment="Center"/>
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+    xmlns:models="clr-namespace:NutriLens.Models"
+    xmlns:vm="clr-namespace:NutriLens.ViewModels"
+    x:Class="NutriLens.Views.NutriLensDashboardPage"
+    x:DataType="vm:NutriLensDashboardViewModel"
+    BackgroundColor="#F5F7FB"
+    NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="Auto,*,80">
+
+        <!-- Header -->
+        <Grid
+            Grid.Row="0"
+            Padding="20,18,20,10"
+            ColumnDefinitions="Auto,*,Auto"
+            ColumnSpacing="12">
+
+            <!-- Brand identity -->
+            <HorizontalStackLayout
+                Grid.Column="0"
+                Spacing="8"
+                VerticalOptions="Center">
+
+                <Label
+                    Text="{Binding BiotechIcon}"
+                    FontFamily="MaterialIconsRegular"
+                    FontSize="32"
+                    TextColor="#047857"
+                    WidthRequest="32"
+                    HeightRequest="32"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center" />
+
+                <Label
+                    Text="NutriLens AI"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    TextColor="#0F172A"
+                    VerticalOptions="Center" />
+            </HorizontalStackLayout>
+
+            <!-- Profile -->
+            <buttons:SfButton
+                Grid.Column="2"
+                WidthRequest="36"
+                HeightRequest="36"
+                Text="{Binding PersonIcon}"
+                FontFamily="MaterialIconsRegular"
+                FontSize="20"
+                TextColor="White"
+                Background="#047857"
+                Stroke="Transparent"
+                CornerRadius="18"
+                Padding="0"
+                Command="{Binding OpenProfileCommand}" />
+        </Grid>
+
+        <!-- Dashboard content -->
+        <ScrollView
+            Grid.Row="1"
+            Padding="0">
+
+            <VerticalStackLayout
+                Padding="20,10,20,48"
+                Spacing="18">
+
+                <!-- Greeting and sugar status -->
+                <Grid
+                    ColumnDefinitions="*,120"
+                    ColumnSpacing="14">
+
+                    <VerticalStackLayout
+                        Grid.Column="0"
+                        Spacing="4"
+                        VerticalOptions="Center">
+
+                        <Label
+                            Text="{Binding UserName, StringFormat='Good Morning, {0}'}"
+                            FontSize="30"
+                            FontAttributes="Bold"
+                            TextColor="#0F172A"
+                            LineBreakMode="NoWrap" />
+
+                        <Label
+                            Text="Ready to make informed choices today?"
+                            FontSize="14"
+                            TextColor="#64748B"
+                            LineBreakMode="WordWrap" />
+                    </VerticalStackLayout>
+
+                    <Border
+                        Grid.Column="1"
+                        WidthRequest="120"
+                        HeightRequest="60"
+                        Padding="12,8"
+                        Background="#EAF2FF"
+                        Stroke="Transparent"
+                        StrokeShape="RoundRectangle 18">
+
+                        <Grid
+                            RowDefinitions="Auto,Auto,5"
+                            RowSpacing="2">
+
+                            <HorizontalStackLayout Spacing="5">
+                                <Label
+                                    Text="{Binding WaterDropIcon}"
+                                    FontFamily="MaterialIconsRegular"
+                                    FontSize="14"
+                                    TextColor="#047857"
+                                    VerticalTextAlignment="Center" />
+
+                                <Label
+                                    Text="Reduce"
+                                    FontSize="11"
+                                    FontAttributes="Bold"
+                                    TextColor="#334155"
+                                    VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+
+                            <Label
+                                Grid.Row="1"
+                                Text="Sugar"
+                                FontSize="12"
+                                TextColor="#64748B" />
+
+                            <ProgressBar
+                                Grid.Row="2"
+                                Progress="{Binding SugarReductionPercentage}"
+                                ProgressColor="#047857"
+                                BackgroundColor="#C9D8EE" />
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Scan hero -->
+                <Border
+                    HeightRequest="180"
+                    Padding="20"
+                    Background="#047857"
+                    Stroke="Transparent"
+                    StrokeShape="RoundRectangle 16">
+
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ScanCommand}" />
+                    </Border.GestureRecognizers>
+
+                    <VerticalStackLayout
+                        Spacing="10"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                        <Border
+                            WidthRequest="58"
+                            HeightRequest="58"
+                            Background="#35FFFFFF"
+                            Stroke="Transparent"
+                            StrokeShape="RoundRectangle 29">
+
+                             
+                            <buttons:SfButton  Text="{Binding ScannerIcon}"
+                                                FontFamily="MaterialIconsRegular"
+                                                FontSize="30"
+                                                TextColor="White" Background="#419278"
+                                                HorizontalTextAlignment="Center"
+                                                VerticalTextAlignment="Center"
+                                                Command="{Binding ScanCommand}" />
+                        </Border>
+
+                        <Label
+                            Text="Scan an Item"
+                            FontSize="24"
+                            FontAttributes="Bold"
+                            TextColor="White"
+                            HorizontalOptions="Center" />
+
+                        <Label
+                            Text="Analyze ingredients instantly"
+                            FontSize="14"
+                            TextColor="White"
+                            Opacity="0.8"
+                            HorizontalOptions="Center" />
+
+                        
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Daily insight -->
+                <Border
+                    Padding="16"
+                    Background="#E9EFFA"
+                    Stroke="Transparent"
+                    StrokeShape="RoundRectangle 16">
+
+                    <Grid
+                        RowDefinitions="Auto,Auto"
+                        RowSpacing="10"
+                        ColumnDefinitions="Auto,*"
+                        ColumnSpacing="10">
+
+                        <Border
+                            WidthRequest="32"
+                            HeightRequest="32"
+                            Background="#D9F2E8"
+                            Stroke="Transparent"
+                            StrokeShape="RoundRectangle 16">
+
+                            <Label
+                                Text="{Binding TipsIcon}"
+                                FontFamily="MaterialIconsRegular"
+                                FontSize="17"
+                                TextColor="#047857"
+                                HorizontalTextAlignment="Center"
+                                VerticalTextAlignment="Center" />
+                        </Border>
+                        <StackLayout Grid.Column="1">
+                            <Label  Text="DAILY AI INSIGHT"
+                                    FontSize="11"
+                                    FontAttributes="Bold"
+                                    TextColor="#334155"
+                                    VerticalOptions="Center" />
+
+                            <Label Text="{Binding DailyInsight}"
+                                    FontSize="15"
+                                    TextColor="#0F172A"
+                                    LineBreakMode="WordWrap" />
+                        </StackLayout>
+                        
+                    </Grid>
+                </Border>
+
+                <!-- Recent scans header -->
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    Margin="0,4,0,0">
+
+                    <Label
+                        Text="Recent Scans"
+                        FontSize="22"
+                        FontAttributes="Bold"
+                        TextColor="#0F172A"
+                        VerticalOptions="Center" />
+
+                    <buttons:SfButton
+                        Grid.Column="1"
+                        Text="VIEW ALL"
+                        FontSize="11"
+                        FontAttributes="Bold"
+                        TextColor="#047857"
+                        Background="Transparent"
+                        Stroke="Transparent"
+                        Padding="0"
+                        Command="{Binding ViewAllCommand}" />
+                </Grid>
+
+                <!-- Recent scans -->
+                <listView:SfListView
+                    ItemsSource="{Binding RecentScans}"
+                    ItemSize="82"
+                    SelectionMode="None"
+                    ItemSpacing="0,8,0,0">
+
+                    <listView:SfListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:RecentScanItem">
+
+                            <Border
+                                Padding="12"
+                                Background="White"
+                                Stroke="Transparent"
+                                StrokeShape="RoundRectangle 12">
+
+                                <Border.Shadow>
+                                    <Shadow
+                                        Brush="#26000000"
+                                        Offset="0,2"
+                                        Radius="8"
+                                        Opacity="0.35" />
+                                </Border.Shadow>
+
+                                <Grid
+                                    ColumnDefinitions="48,*,Auto"
+                                    ColumnSpacing="12">
+
+                                    <Border
+                                        WidthRequest="48"
+                                        HeightRequest="48"
+                                        Background="#EEF3F1"
+                                        Stroke="Transparent"
+                                        StrokeShape="RoundRectangle 8">
+
+                                        <Image
+                                            Source="{Binding ImagePath}"
+                                            Aspect="AspectFill" />
+                                    </Border>
+
+                                    <VerticalStackLayout
+                                        Grid.Column="1"
+                                        Spacing="3"
+                                        VerticalOptions="Center">
+
+                                        <Label
+                                            Text="{Binding ProductName}"
+                                            FontSize="14"
+                                            FontAttributes="Bold"
+                                            TextColor="#0F172A"
+                                            LineBreakMode="TailTruncation" />
+
+                                        <Label
+                                            Text="{Binding ScanTime}"
+                                            FontSize="11"
+                                            TextColor="#64748B" />
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout
+                                        Grid.Column="2"
+                                        Spacing="3"
+                                        HorizontalOptions="End"
+                                        VerticalOptions="Center">
+
+                                        <Border
+                                            WidthRequest="38"
+                                            HeightRequest="38"
+                                            Background="{Binding RatingColor}"
+                                            Stroke="Transparent"
+                                            StrokeShape="RoundRectangle 19">
+
+                                            <Label
+                                                Text="{Binding Score}"
+                                                FontSize="13"
+                                                FontAttributes="Bold"
+                                                TextColor="White"
+                                                HorizontalTextAlignment="Center"
+                                                VerticalTextAlignment="Center" />
+                                        </Border>
+
+                                        <Label
+                                            Text="{Binding Rating}"
+                                            FontSize="10"
+                                            FontAttributes="Bold"
+                                            TextColor="{Binding RatingColor}"
+                                            HorizontalOptions="Center" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </listView:SfListView.ItemTemplate>
+                </listView:SfListView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Fixed bottom navigation -->
+        <Grid
+            Grid.Row="2"
+            HeightRequest="80"
+            ZIndex="10"
+            RowDefinitions="80">
+
+            <!-- Navigation background -->
+            <Border
+                Grid.Row="0"
+                Background="White"
+                Stroke="Transparent"
+                StrokeShape="RoundRectangle 20,20,0,0"
+                VerticalOptions="Fill">
+
+                <Border.Shadow>
+                    <Shadow
+                        Brush="#35000000"
+                        Offset="0,-4"
+                        Radius="12"
+                        Opacity="0.4" />
+                </Border.Shadow>
+
+                <Grid
+                    Padding="8,12,8,5"
+                    ColumnDefinitions="*,*,*,*,*">
+
+                    <!-- Home -->
+                    <VerticalStackLayout
+                        Grid.Column="0"
+                        Spacing="3"
+                        HorizontalOptions="Center">
+
+                        <buttons:SfButton
+                            Text="{Binding HomeIcon}"
+                            FontFamily="MaterialIconsRegular"
+                            FontSize="22"
+                            TextColor="#047857"
+                            Background="Transparent"
+                            Stroke="Transparent"
+                            Padding="0"
+                            WidthRequest="42"
+                            HeightRequest="34" />
+
+                        <Label
+                            Text="Home"
+                            FontSize="10"
+                            TextColor="#047857"
+                            HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+
+                    <!-- History -->
+                    <VerticalStackLayout
+                        Grid.Column="1"
+                        Spacing="3"
+                        HorizontalOptions="Center">
+
+                        <buttons:SfButton
+                            Text="{Binding HistoryIcon}"
+                            FontFamily="MaterialIconsRegular"
+                            FontSize="22"
+                            TextColor="#6B7280"
+                            Background="Transparent"
+                            Stroke="Transparent"
+                            Padding="0"
+                            WidthRequest="42"
+                            HeightRequest="34"
+                            Command="{Binding OpenHistoryCommand}" />
+
+                        <Label
+                            Text="History"
+                            FontSize="10"
+                            TextColor="#6B7280"
+                            HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+
+                    <!-- Empty center space reserved for FAB -->
+                    <BoxView
+                        Grid.Column="2"
+                        Color="White" />
+
+                    <!-- Trends -->
+                    <VerticalStackLayout
+                        Grid.Column="3"
+                        Spacing="3"
+                        HorizontalOptions="Center">
+
+                        <buttons:SfButton
+                            Text="{Binding TrendsIcon}"
+                            FontFamily="MaterialIconsRegular"
+                            FontSize="22"
+                            TextColor="#6B7280"
+                            Background="Transparent"
+                            Stroke="Transparent"
+                            Padding="0"
+                            WidthRequest="42"
+                            HeightRequest="34"
+                            Command="{Binding OpenTrendsCommand}" />
+
+                        <Label
+                            Text="Trends"
+                            FontSize="10"
+                            TextColor="#6B7280"
+                            HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+
+                    <!-- Profile -->
+                    <VerticalStackLayout
+                        Grid.Column="4"
+                        Spacing="3"
+                        HorizontalOptions="Center">
+
+                        <buttons:SfButton
+                            Text="{Binding PersonIcon}"
+                            FontFamily="MaterialIconsRegular"
+                            FontSize="22"
+                            TextColor="#6B7280"
+                            Background="Transparent"
+                            Stroke="Transparent"
+                            Padding="0"
+                            WidthRequest="42"
+                            HeightRequest="34"
+                            Command="{Binding OpenProfileCommand}" />
+
+                        <Label
+                            Text="Profile"
+                            FontSize="10"
+                            TextColor="#6B7280"
+                            HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- Elevated center Scan FAB -->
+            <Grid
+                Grid.Row="0"  
+                HorizontalOptions="Center"
+                VerticalOptions="Start"
+                TranslationY="-36"
+                ZIndex="20">
+
+                <Border
+                    WidthRequest="72"
+                    HeightRequest="72"
+                    Background="#047857"
+                    Stroke="Transparent"
+                    StrokeShape="RoundRectangle 36">
+
+                    <Border.Shadow>
+                        <Shadow
+                            Brush="#55000000"
+                            Offset="0,6"
+                            Radius="12"
+                            Opacity="0.75" />
+                    </Border.Shadow>
+
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ScanCommand}" />
+                    </Border.GestureRecognizers>
+
+                    <Grid
+                        RowDefinitions="*,Auto"
+                        Padding="0,9,0,8">
+
+                        <Label
+                            Text="{Binding ScannerIcon}"
+                            FontFamily="MaterialIconsRegular"
+                            FontSize="28"
+                            TextColor="White"
+                            HorizontalTextAlignment="Center"
+                            VerticalTextAlignment="Center" />
+
+                        <Label
+                            Grid.Row="1"
+                            Text="SCAN"
+                            FontSize="12"
+                            FontAttributes="Bold"
+                            TextColor="White"
+                            HorizontalTextAlignment="Center" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>
