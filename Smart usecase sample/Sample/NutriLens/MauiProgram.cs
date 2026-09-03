@@ -39,9 +39,7 @@ namespace NutriLens
             builder.Services.AddTransient<ProfilePage>();
             builder.Services.AddTransient<ScanIngredientsPage>();
             builder.Services.AddTransient<AnalyzeIngredientsResultPage>();
-            builder.Services.AddSingleton<IImagePickerService, ImagePickerService>();
-            builder.Services.AddSingleton<IIngredientOcrService, AzureVisionOcrService>();
-            builder.Services.AddSingleton<IScanHistoryStore, JsonScanHistoryStore>();
+            builder.Services.AddSingleton<IImagePickerService, ImagePickerService>(); 
             builder.Services.AddSingleton<ICombinedScanHistory, CombinedScanHistory>();
 #if DEBUG
             builder.Logging.AddDebug();

@@ -14,12 +14,7 @@ public interface IAzureOpenAIAnalysisService
         FileResult image,
         CancellationToken cancellationToken = default);
 }
-public interface IAzureVisionOcrService
-{
-    Task<string> ExtractTextAsync(
-        FileResult image,
-        CancellationToken cancellationToken = default);
-}
+
 public interface IAzureOpenAIIngredientService
 {
     Task<IngredientAnalysisResult> AnalyzeAsync(

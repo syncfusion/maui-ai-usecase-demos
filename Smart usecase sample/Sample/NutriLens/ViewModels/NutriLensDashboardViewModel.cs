@@ -38,9 +38,11 @@ public partial class NutriLensDashboardViewModel : ObservableObject
 
     public NutriLensDashboardViewModel()
         : this(
-            new DailyInsightGenerator(
-                new AzureOpenAIChatService(),
-                new PreferencesDailyInsightCacheStore()),
+            Resolve<IDailyInsightGenerator>()
+                ?? new DailyInsightGenerator(
+                    new AzureOpenAIChatService(),
+                    new PreferencesDailyInsightCacheStore(),
+                    Resolve<IScanHistoryStore>() ?? new JsonScanHistoryStore()),
             Resolve<IScanHistoryStore>() ?? new JsonScanHistoryStore())
     {
     }
@@ -54,7 +56,7 @@ public partial class NutriLensDashboardViewModel : ObservableObject
 
         this.scanStore = scanStore
             ?? throw new ArgumentNullException(nameof(scanStore));
-
+        UpdateGreeting();
         // Generate once per day using an AI service + local cache.
         LoadDailyInsightAsync();
 
@@ -95,7 +97,22 @@ public partial class NutriLensDashboardViewModel : ObservableObject
         // Newly saved scans were inserted above, so they appear on top.
         AddShowcaseScans();
     }
+    [ObservableProperty]
+    private string greeting = string.Empty;
 
+    private void UpdateGreeting()
+    {
+        var hour = DateTime.Now.Hour;
+        var greetingText = hour switch
+        {
+            >= 5 and < 12 => "Good Morning, Alex",
+            >= 12 and < 17 => "Good Afternoon, Alex",
+            >= 17 and < 21 => "Good Evening, Alex",
+            _ => "Good Night, Alex"
+        };
+
+        Greeting = $"{greetingText}";
+    }
     private static RecentScanItem ToRecentScanItem(SavedScan scan)
     {
         var score = scan.Result.Score;

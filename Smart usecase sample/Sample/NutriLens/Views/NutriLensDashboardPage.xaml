@@ -52,8 +52,7 @@
                 HeightRequest="36"
                 Text="{Binding PersonIcon}"
                 FontFamily="MaterialIconsRegular"
-                FontSize="20"
-                TextColor="White"
+                FontSize="20" 
                 Background="#047857"
                 Stroke="Transparent"
                 CornerRadius="18"
@@ -80,12 +79,11 @@
                         Spacing="4"
                         VerticalOptions="Center">
 
-                        <Label
-                            Text="{Binding UserName, StringFormat='Good Morning, {0}'}"
-                            FontSize="30"
-                            FontAttributes="Bold"
-                            TextColor="#0F172A"
-                            LineBreakMode="NoWrap" />
+                        <Label Text="{Binding Greeting}"
+                                FontSize="30"
+                                FontAttributes="Bold"
+                                TextColor="#0F172A"
+                                LineBreakMode="NoWrap" />
 
                         <Label
                             Text="Ready to make informed choices today?"
@@ -93,49 +91,7 @@
                             TextColor="#64748B"
                             LineBreakMode="WordWrap" />
                     </VerticalStackLayout>
-
-                    <Border
-                        Grid.Column="1"
-                        WidthRequest="120"
-                        HeightRequest="60"
-                        Padding="12,8"
-                        Background="#EAF2FF"
-                        Stroke="Transparent"
-                        StrokeShape="RoundRectangle 18">
-
-                        <Grid
-                            RowDefinitions="Auto,Auto,5"
-                            RowSpacing="2">
-
-                            <HorizontalStackLayout Spacing="5">
-                                <Label
-                                    Text="{Binding WaterDropIcon}"
-                                    FontFamily="MaterialIconsRegular"
-                                    FontSize="14"
-                                    TextColor="#047857"
-                                    VerticalTextAlignment="Center" />
-
-                                <Label
-                                    Text="Reduce"
-                                    FontSize="11"
-                                    FontAttributes="Bold"
-                                    TextColor="#334155"
-                                    VerticalOptions="Center" />
-                            </HorizontalStackLayout>
-
-                            <Label
-                                Grid.Row="1"
-                                Text="Sugar"
-                                FontSize="12"
-                                TextColor="#64748B" />
-
-                            <ProgressBar
-                                Grid.Row="2"
-                                Progress="{Binding SugarReductionPercentage}"
-                                ProgressColor="#047857"
-                                BackgroundColor="#C9D8EE" />
-                        </Grid>
-                    </Border>
+ 
                 </Grid>
 
                 <!-- Scan hero -->
@@ -183,7 +139,7 @@
                             Text="Analyze ingredients instantly"
                             FontSize="14"
                             TextColor="White"
-                            Opacity="0.8"
+                            Opacity="0.9"
                             HorizontalOptions="Center" />
 
                         
@@ -204,7 +160,7 @@
                         ColumnSpacing="10">
 
                         <Border
-                            WidthRequest="32"
+                            WidthRequest="32" VerticalOptions="Start"
                             HeightRequest="32"
                             Background="#D9F2E8"
                             Stroke="Transparent"
@@ -245,17 +201,24 @@
                         FontAttributes="Bold"
                         TextColor="#0F172A"
                         VerticalOptions="Center" />
-
-                    <buttons:SfButton
-                        Grid.Column="1"
-                        Text="VIEW ALL"
-                        FontSize="11"
-                        FontAttributes="Bold"
-                        TextColor="#047857"
-                        Background="Transparent"
-                        Stroke="Transparent"
-                        Padding="0"
-                        Command="{Binding ViewAllCommand}" />
+                    <HorizontalStackLayout Grid.Column="1"  VerticalOptions="Center">
+                        <HorizontalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ViewAllCommand}" />
+                        </HorizontalStackLayout.GestureRecognizers>
+                        <buttons:SfButton 
+                                    Text="VIEW ALL" 
+                                    FontAttributes="Bold" FontSize="12"
+                                    TextColor="#047857"
+                                    Background="Transparent"
+                                    Stroke="Transparent"
+                                    Padding="0"
+                                    Command="{Binding ViewAllCommand}" />
+                        <Label
+                            Text="&#xE5e1;" Margin="-15,0,0,0"
+                            FontFamily="MaterialIconsRegular" FontAttributes="Bold"
+                            TextColor="#047857" FontSize="9"
+                            VerticalOptions="Center" /> 
+                    </HorizontalStackLayout>
                 </Grid>
 
                 <!-- Recent scans -->
@@ -317,8 +280,7 @@
                                     </VerticalStackLayout>
 
                                     <VerticalStackLayout
-                                        Grid.Column="2"
-                                        Spacing="3"
+                                        Grid.Column="2" 
                                         HorizontalOptions="End"
                                         VerticalOptions="Center">
 
@@ -329,13 +291,24 @@
                                             Stroke="Transparent"
                                             StrokeShape="RoundRectangle 19">
 
-                                            <Label
-                                                Text="{Binding Score}"
-                                                FontSize="13"
-                                                FontAttributes="Bold"
-                                                TextColor="White"
-                                                HorizontalTextAlignment="Center"
-                                                VerticalTextAlignment="Center" />
+                                            <Label  FontSize="13"
+                                                    FontAttributes="Bold"
+                                                    TextColor="{Binding RatingColor}"
+                                                    HorizontalTextAlignment="Center"
+                                                    VerticalTextAlignment="Center"  >
+
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span
+                                                             Text="{Binding Score}"  />
+                                                        <Span Text=" " />
+                                                        <Span
+                                                            Text="&#xE86C;"
+                                                            FontFamily="MaterialIconsRegular" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+
+                                            </Label>
                                         </Border>
 
                                         <Label

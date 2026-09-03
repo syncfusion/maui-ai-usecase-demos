@@ -8,7 +8,7 @@ public static class MaterialIcons
     public const string Home = "\uE88A";
     public const string History = "\uE889";
     public const string ShowChart = "\uE6E1";
-    public const string Person = "\uE7FD";
+    public const string Person = "\ue7fd";
     public const string ChevronRight = "\uE5CC";
     public const string TipsAndUpdates = "\ue0f0";
     public const string WaterDrop = "\uE798";

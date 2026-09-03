@@ -143,33 +143,6 @@
                             FontSize="16"
                             TextColor="#374151"
                             VerticalTextAlignment="Center" />
-
-                    <Border
-                        Grid.Column="1"
-                        Padding="10,6"
-                        BackgroundColor="#DFF5EE"
-                        Stroke="Transparent"
-                        StrokeShape="RoundRectangle 10">
-
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer
-                                Tapped="OnSelectClicked" />
-                        </Border.GestureRecognizers>
-
-                        <HorizontalStackLayout Spacing="5">
-                            <Label
-                                Text="{Binding DoneAllIcon}"
-                                Style="{StaticResource HistoryIconStyle}"
-                                FontSize="16"
-                                TextColor="#047857" />
-
-                            <Label
-                                Text="Select"
-                                FontSize="13"
-                                FontAttributes="Bold"
-                                TextColor="#047857" />
-                        </HorizontalStackLayout>
-                    </Border>
                 </Grid>
 
                 <!-- History list -->

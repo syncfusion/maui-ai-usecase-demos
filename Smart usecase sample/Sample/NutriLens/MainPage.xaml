@@ -7,56 +7,6 @@
              x:Class="NutriLens.MainPage"
              BackgroundColor="{StaticResource Surface}"
              NavigationPage.HasNavigationBar="False">
- 
-
-        <VerticalStackLayout Padding="20" Spacing="15">
-
-            <Button
-            Text="Select Image"
-            Clicked="OnSelectImageClicked" />
-
-            <Image
-            x:Name="PreviewImage"
-            HeightRequest="250"
-            Aspect="AspectFit" />
-
-            <Button
-            Text="Extract Content"
-            Clicked="OnExtractContentClicked" />
-
-            <ScrollView>
-                <Editor
-                x:Name="ResultEditor"
-                AutoSize="TextChanges"
-                HeightRequest="400" />
-            </ScrollView>
-
-        </VerticalStackLayout>
-     
-        <!--<VerticalStackLayout
-        Padding="20"
-        Spacing="15">
-
-            <Button
-            Text="Select Image"
-            Clicked="SelectImage_Clicked"/>
-
-            <Image
-            x:Name="SelectedImage"
-            HeightRequest="250"
-            Aspect="AspectFit"/>
-
-            <Button
-            Text="Extract Text"
-            Clicked="ExtractText_Clicked"/>
-
-            <Editor
-            x:Name="ResultEditor"
-            HeightRequest="350"
-            AutoSize="TextChanges"/>
-
-        </VerticalStackLayout>-->
-
   
 
 </ContentPage>

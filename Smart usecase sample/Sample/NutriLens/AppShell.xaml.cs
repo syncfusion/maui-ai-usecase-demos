@@ -7,7 +7,6 @@ namespace NutriLens
         {
             InitializeComponent();
 
-            Routing.RegisterRoute("landing", typeof(LandingPage));
             Routing.RegisterRoute("history", typeof(HistoryPage));
             Routing.RegisterRoute("scan", typeof(ScanIngredientsPage));
             Routing.RegisterRoute("breakdown", typeof(DetailBreakdownPage));

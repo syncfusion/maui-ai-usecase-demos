@@ -28,13 +28,6 @@ public sealed class AzureOpenAIChatService : IAzureOpenAIChatService
         if (string.IsNullOrWhiteSpace(prompt))
             throw new ArgumentException("Prompt cannot be empty.", nameof(prompt));
 
-        if (string.IsNullOrWhiteSpace(ApiKey))
-        {
-            Debug.WriteLine(
-                "[AzureOpenAI] Missing AZURE_OPENAI_API_KEY. Daily insight generation will fall back.");
-            return string.Empty;
-        }
-
         try
         {
             var payload = new
@@ -46,8 +39,9 @@ public sealed class AzureOpenAIChatService : IAzureOpenAIChatService
                     {
                         role = "system",
                         content =
-                            "You are an expert nutrition coach. " +
-                            "Create a concise, helpful daily nutrition insight in plain English. " +
+                            "You are NutriLens, an expert nutrition coach for users focused on " +
+                            "diabetes-friendly eating. Create a concise, helpful daily nutrition " +
+                            "insight in plain English based on the data provided. " +
                             "Keep it under two sentences, encouraging, practical, and personalized. " +
                             "No markdown, no bullet list, no preamble."
                     },
@@ -57,8 +51,14 @@ public sealed class AzureOpenAIChatService : IAzureOpenAIChatService
                         content = prompt
                     }
                 },
-                max_completion_tokens = 180,
-                temperature = 0.7
+
+                // FIX (Bug 1): gpt-5-mini is a REASONING model. The old value
+                // of 180 tokens was entirely consumed by internal reasoning,
+                // producing EMPTY content on every call. Match the parameter
+                // pattern of AzureOpenAIIngredientService, which works:
+                // a generous token budget + minimal reasoning effort.
+                max_completion_tokens = 800,
+                reasoning_effort = "minimal"
             };
 
             using var request =
@@ -88,7 +88,7 @@ public sealed class AzureOpenAIChatService : IAzureOpenAIChatService
             if (!response.IsSuccessStatusCode)
             {
                 Debug.WriteLine(
-                    $"[AzureOpenAI] HTTP {(int)response.StatusCode}: {responseText}");
+                    $"[DailyInsight AI] HTTP {(int)response.StatusCode}: {responseText}");
 
                 return string.Empty;
             }
@@ -99,33 +99,35 @@ public sealed class AzureOpenAIChatService : IAzureOpenAIChatService
                 choices.ValueKind == JsonValueKind.Array &&
                 choices.GetArrayLength() > 0)
             {
-                var content = choices[0]
-                    .GetProperty("message")
-                    .GetProperty("content")
-                    .GetString();
+                var choice = choices[0];
 
-                if (!string.IsNullOrWhiteSpace(content))
+                // If the model ran out of tokens while reasoning, content is
+                // empty — log the finish reason so this is never silent again.
+                if (choice.TryGetProperty("finish_reason", out var finishReason))
                 {
-                    return content.Trim();
+                    Debug.WriteLine($"[DailyInsight AI] finish_reason: {finishReason.GetString()}");
+                }
+
+                if (choice.TryGetProperty("message", out var message) &&
+                    message.TryGetProperty("content", out var content) &&
+                    content.ValueKind == JsonValueKind.String)
+                {
+                    var text = content.GetString();
+
+                    if (!string.IsNullOrWhiteSpace(text))
+                    {
+                        return text.Trim();
+                    }
                 }
             }
 
+            Debug.WriteLine("[DailyInsight AI] Response contained no usable content.");
             return string.Empty;
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[AzureOpenAI] Exception: {ex}");
+            Debug.WriteLine($"[DailyInsight AI] Exception: {ex}");
             return string.Empty;
         }
-    }
-
-    private static string GetSetting(string key, string fallback)
-    {
-        var value = Environment.GetEnvironmentVariable(key);
-
-        if (string.IsNullOrWhiteSpace(value))
-            return fallback;
-
-        return value.Trim();
     }
 }
