@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:rte="clr-namespace:Syncfusion.Maui.RichTextEditor;assembly=Syncfusion.Maui.RichTextEditor" 
+             xmlns:viewModels="clr-namespace:SmartRTEFormatter.ViewModels" 
+             x:DataType="viewModels:MainPageViewModel" 
+             x:Class="SmartRTEFormatter.MainPage">
+
+    <ScrollView Orientation="Vertical">
+        <Grid RowDefinitions="Auto,Auto,*" Padding="24" RowSpacing="10">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="AI Powered RichTextEditor" FontSize="22" FontAttributes="Bold" HorizontalOptions="Start" />
+            </VerticalStackLayout>
+
+
+            <HorizontalStackLayout Grid.Row="1" Spacing="8" HorizontalOptions="End">
+                <Button x:Name="FormatButton"
+                Text="Format text"
+                Command="{Binding FormatCommand}"
+                IsVisible="{Binding IsFormatButtonVisible}"
+                IsEnabled="{Binding IsFormatButtonVisible}"
+                SemanticProperties.Hint="Formats the entered text with Azure OpenAI." />
+                <ActivityIndicator x:Name="ButtonLoadingIndicator"
+                       IsVisible="{Binding IsFormatting}"
+                       IsRunning="{Binding IsFormatting}"
+                       InputTransparent="True"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+            </HorizontalStackLayout>
+
+            <VerticalStackLayout Grid.Row="2" Spacing="8">
+
+                <rte:SfRichTextEditor x:Name="RichTextEditor"
+                                  ShowToolbar="True"
+                                  HeightRequest="400"
+                                  Text="{Binding InputText, Mode=TwoWay}"
+                                  HtmlText="{Binding FormattedHtml}"
+                                  Placeholder="Paste or enter unformatted text here. Click 'Format text' to transform it into structured content." />
+            </VerticalStackLayout>
+
+        </Grid>
+    </ScrollView>
+</ContentPage>
