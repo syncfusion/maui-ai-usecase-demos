@@ -25,7 +25,15 @@ public partial class HistoryPage : ContentPage
             await ViewModel.LoadAsync();
         }
     }
+    private void OnSearchFocused(object? sender, FocusEventArgs e)
+    {
+        SearchInputLayout.ShowHint = false;
+    }
 
+    private void OnSearchUnfocused(object? sender, FocusEventArgs e)
+    {
+        SearchInputLayout.ShowHint = string.IsNullOrWhiteSpace(SearchEntry.Text);
+    }
     private async void OnHomeClicked(
         object? sender,
         EventArgs e)

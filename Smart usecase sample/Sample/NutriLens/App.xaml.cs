@@ -10,7 +10,7 @@
 
         protected override Window CreateWindow(IActivationState? activationState)
         { 
-            return new Window(new NavigationPage(new SplashPage())); 
+            return new Window(new NavigationPage(new MainPage())); 
         }
     }
 }

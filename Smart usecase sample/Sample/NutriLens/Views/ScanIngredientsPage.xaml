@@ -146,31 +146,27 @@
                         Opacity="0.35" />
                 </Border.Shadow>
 
-                <HorizontalStackLayout
-    Spacing="7"
-    VerticalOptions="Center">
+                <HorizontalStackLayout Spacing="7"
+                                    VerticalOptions="Center">
 
-                    <Label
-        Text="{Binding AnalysisIcon}"
-        FontFamily="MaterialIconsRegular"
-        FontSize="17"
-        TextColor="#047857"
-        VerticalTextAlignment="Center"
-        IsVisible="{Binding IsAnalyzing, Converter={StaticResource InverseBoolConverter}}" />
+                    <Label Text="{Binding AnalysisIcon}"
+                            FontFamily="MaterialIconsRegular"
+                            FontSize="17"
+                            TextColor="#047857"
+                            VerticalTextAlignment="Center"
+                            IsVisible="{Binding IsAnalyzing, Converter={StaticResource InverseBoolConverter}}" />
 
-                    <core:SfBusyIndicator 
-                       SizeFactor="0.3" HeightRequest="30" WidthRequest="30"
-        IsRunning="{Binding IsAnalyzing}"
-        IsVisible="{Binding IsAnalyzing}" IndicatorColor ="#047857"
-        AnimationType="CircularMaterial"
-          />
+                    <core:SfBusyIndicator SizeFactor="0.3" HeightRequest="30" WidthRequest="30"
+                        IsRunning="{Binding IsAnalyzing}"
+                        IsVisible="{Binding IsAnalyzing}" IndicatorColor ="#047857"
+                        AnimationType="CircularMaterial"
+                          />
 
-                    <Label
-        Text="Analyzing Ingredients"
-        FontSize="12"
-        FontAttributes="Bold"
-        TextColor="#374151"
-        VerticalTextAlignment="Center" />
+                    <Label Text="Analyzing Ingredients"
+                            FontSize="12"
+                            FontAttributes="Bold"
+                            TextColor="#374151"
+                            VerticalTextAlignment="Center" />
                 </HorizontalStackLayout>
             </Border>
  
@@ -294,7 +290,7 @@
 
             <Label
                 Text="{Binding ScannerMessage}"
-                FontSize="14"
+                FontSize="14" Margin="40,0,40,0"
                 TextColor="#6B7280"
                 HorizontalTextAlignment="Center"
                 VerticalTextAlignment="Center"
@@ -304,7 +300,7 @@
         <!-- Bottom controls -->
         <Grid
             Grid.Row="3"
-            Padding="20,8"
+            Padding="20,8,20,20"
             BackgroundColor="#F3F4F6"
             ColumnDefinitions="*,*,*">
 
@@ -328,15 +324,14 @@
             <!-- Main scan action -->
             <Grid
                 Grid.Column="1"
-                WidthRequest="72"
-                HeightRequest="72"
-                TranslationY="-26"
+                WidthRequest="75"
+                HeightRequest="75" 
                 HorizontalOptions="Center"
                 VerticalOptions="Center">
 
                 <Border
-                    WidthRequest="72"
-                    HeightRequest="72"
+                    WidthRequest="75"
+                    HeightRequest="75"
                     BackgroundColor="White"
                     Stroke="#047857"
                     StrokeThickness="3"

@@ -67,12 +67,11 @@
                 Spacing="14">
  
                 <!-- Search -->
-                <Grid>
-                    <core:SfTextInputLayout
-          ContainerType="Outlined" HeightRequest="68"
-        Hint="Search here..." 
-        HorizontalOptions="Fill"
-        VerticalOptions="Center">
+                <Border  StrokeShape="RoundRectangle 16" Stroke="Transparent">
+                    <core:SfTextInputLayout ContainerType="Outlined" HeightRequest="68"
+                                    Hint="Search here..." Stroke="White" x:Name="SearchInputLayout"
+                                    HorizontalOptions="Fill" Background="White"  
+                                    VerticalOptions="Center">
                         <core:SfTextInputLayout.LeadingView>
                             <Label
 
@@ -87,7 +86,7 @@
                         <Entry
     Text="{Binding SearchText, Mode=TwoWay}"
     HeightRequest="48"
-    Margin="0" 
+    Margin="0"  x:Name="SearchEntry"
     FontSize="13"
     TextColor="#0F172A"
     Placeholder="Search here..."
@@ -95,9 +94,10 @@
     VerticalTextAlignment="Center"
     HorizontalTextAlignment="Start"
     ClearButtonVisibility="WhileEditing"
-    BackgroundColor="Transparent" />
+    BackgroundColor="Transparent" Focused="OnSearchFocused"
+        Unfocused="OnSearchUnfocused" />
                     </core:SfTextInputLayout>
-                </Grid>
+                </Border>
 
                 <!-- Filter chips -->
                 <ScrollView
@@ -197,7 +197,10 @@
 
                                         <HorizontalStackLayout
                                             Spacing="8">
-
+                                            <Label Text="{Binding StatusIcon}"
+                                                Style="{StaticResource HistoryIconStyle}"
+                                                FontSize="16"
+                                                TextColor="{Binding ScoreColor}" />
                                             <Label
                                                 Text="{Binding Score}"
                                                 FontSize="15"
@@ -211,11 +214,7 @@
                                                 TextColor="#6B7280"
                                                 VerticalTextAlignment="Center" />
 
-                                            <Label
-                                                Text="{Binding StatusIcon}"
-                                                Style="{StaticResource HistoryIconStyle}"
-                                                FontSize="16"
-                                                TextColor="{Binding ScoreColor}" />
+                                            
                                         </HorizontalStackLayout>
                                     </VerticalStackLayout>
 

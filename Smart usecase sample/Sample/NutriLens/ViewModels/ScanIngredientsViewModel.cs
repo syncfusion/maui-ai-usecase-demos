@@ -48,7 +48,7 @@ public partial class ScanIngredientsViewModel : ObservableObject
     public ICommand AnalyzeIngredientsCommand { get; }
     public ICommand PickImageCommand { get; }
     public ICommand ToggleFlashCommand { get; }
-
+    public string ScannerMessage { get; set; }
     public ScanIngredientsViewModel(
         IImagePickerService imagePickerService,
         IIngredientImageExtractionService imageExtractionService,
@@ -57,7 +57,7 @@ public partial class ScanIngredientsViewModel : ObservableObject
         this.imagePickerService = imagePickerService;
         this.imageExtractionService = imageExtractionService;
         this.aiService = aiService;
-
+        ScannerMessage = "Align the ingredient list within the frame to begin analysis.";
         BackCommand = new AsyncRelayCommand(BackAsync);
         AnalyzeIngredientsCommand = new AsyncRelayCommand(AnalyzeIngredientsAsync);
         PickImageCommand = new AsyncRelayCommand(PickImageAsync);

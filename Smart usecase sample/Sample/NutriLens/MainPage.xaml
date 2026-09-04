@@ -7,6 +7,16 @@
              x:Class="NutriLens.MainPage"
              BackgroundColor="{StaticResource Surface}"
              NavigationPage.HasNavigationBar="False">
-  
 
+    <Grid BackgroundColor="White">
+
+        <Image
+    Source="nutrisplashscreen.png"
+    WidthRequest="250"
+    HeightRequest="250"
+    HorizontalOptions="Center"
+    VerticalOptions="Center"
+    Aspect="AspectFit" />
+
+    </Grid>
 </ContentPage>
