@@ -70,7 +70,7 @@
                 <Border  StrokeShape="RoundRectangle 16" Stroke="Transparent">
                     <core:SfTextInputLayout ContainerType="Outlined" HeightRequest="68"
                                     Hint="Search here..." Stroke="White" x:Name="SearchInputLayout"
-                                    HorizontalOptions="Fill" Background="White"  
+                                    HorizontalOptions="Fill" Background="White" 
                                     VerticalOptions="Center">
                         <core:SfTextInputLayout.LeadingView>
                             <Label
@@ -99,39 +99,30 @@
                     </core:SfTextInputLayout>
                 </Border>
 
-                <!-- Filter chips -->
                 <ScrollView
-                    HeightRequest="36"
-                    Orientation="Horizontal"
-                    HorizontalScrollBarVisibility="Never">
+    HeightRequest="48"
+    Orientation="Horizontal"
+    HorizontalScrollBarVisibility="Never"
+    VerticalScrollBarVisibility="Never">
 
-                    <HorizontalStackLayout
-                        Spacing="10">
-
-                        <!-- SfChipGroup is used for the unselected filter options -->
-                        <!--<core:SfChipGroup
-                            ItemsSource="{Binding UnselectedFilters}"
-                            DisplayMemberPath="."
-                            ChipPadding="14,8,14,8"
-                            ChipBackground="#EDF2F7"
-                            ChipTextColor="#6B7280"
-                            HorizontalOptions="Start"
-                            VerticalOptions="Center" />-->
-
-                        <!-- Selected chip is kept separate so its color is exact -->
-                        <Border
-                            Style="{StaticResource HistoryFilterChipStyle}"
-                            BackgroundColor="#047857"
-                            VerticalOptions="Center">
-
-                            <Label
-                                Text="All Scans"
-                                FontSize="12"
-                                FontAttributes="Bold"
-                                TextColor="White"
-                                VerticalTextAlignment="Center" />
-                        </Border>
-                    </HorizontalStackLayout>
+                    <core:SfChipGroup
+        ItemsSource="{Binding UnselectedFilters}"
+         
+        ChipType="Choice"
+        ChoiceMode="Single"
+        SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"
+        ItemHeight="36"
+        ChipPadding="10,0,10,0"
+        ChipCornerRadius="18"
+        ChipBackground="White" 
+        SelectedChipBackground="#047857"
+        SelectedChipTextColor="White"
+        ChipTextSize="13"
+        ChipFontAttributes="None"
+        ChipStroke="Transparent"
+        ChipStrokeThickness="0"
+        HorizontalOptions="Start"
+        VerticalOptions="Center" />
                 </ScrollView>
 
                 <!-- Summary -->
@@ -149,7 +140,7 @@
                 <listView:SfListView
                     ItemsSource="{Binding HistoryItems}"
                     ItemSize="100" 
-                    SelectionMode="None">
+                    SelectionMode="None" ItemTapped="OnHistoryItemTapped">
 
                     <listView:SfListView.ItemTemplate>
                         <DataTemplate x:DataType="models:HistoryItem">

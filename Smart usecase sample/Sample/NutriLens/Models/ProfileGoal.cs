@@ -1,9 +1,13 @@
-﻿namespace NutriLens.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-public sealed class ProfileGoal
+namespace NutriLens.Models;
+
+public partial class ProfileGoal : ObservableObject
 {
     public string Title { get; init; } = string.Empty;
-    public bool IsSelected { get; init; }
+
+    [ObservableProperty]
+    private bool isSelected;
 }
 
 public sealed class ProfileSetting

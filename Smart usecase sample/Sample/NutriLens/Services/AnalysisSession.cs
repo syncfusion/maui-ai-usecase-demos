@@ -2,6 +2,7 @@
 
 namespace NutriLens.Services;
 
+
 public sealed class AnalysisSession
 {
     public FileResult? SelectedImage { get; private set; }

@@ -17,8 +17,15 @@ public interface IAzureOpenAIAnalysisService
 
 public interface IAzureOpenAIIngredientService
 {
+    /// <summary>Existing default (no personalization) — unchanged behavior.</summary>
     Task<IngredientAnalysisResult> AnalyzeAsync(
         string extractedText,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>Personalized analysis path used by Review page.</summary>
+    Task<IngredientAnalysisResult> AnalyzeAsync(
+        string extractedText,
+        UserDietaryPreference? preferences,
         CancellationToken cancellationToken = default);
 }
 public interface IIngredientOcrService

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using NutriLens.Helpers;
 using NutriLens.Models;
 using NutriLens.Services;
@@ -11,30 +12,18 @@ namespace NutriLens.ViewModels;
 public partial class NutriLensDashboardViewModel : ObservableObject
 {
     private readonly IDailyInsightGenerator dailyInsightGenerator;
-    private readonly IScanHistoryStore scanStore;
+    private readonly ICombinedScanHistory combinedHistory;
+    private readonly ISampleAnalysisDataService sampleAnalysisService;
+    private IReadOnlyList<SavedScan> allScans = [];
+
+    public ObservableCollection<RecentScanItem> RecentScans { get; } = [];
 
     [ObservableProperty]
-    private string userName = "Alex";
+    private string greeting = string.Empty;
 
-    [ObservableProperty]
-    private double sugarReductionPercentage = 0.70;
-
-    // Keep this exact property name so the existing XAML binding works unchanged.
     [ObservableProperty]
     private string dailyInsight =
-        "Loading today’s nutrition insight...";
-
-    public ObservableCollection<RecentScanItem> RecentScans { get; } = new();
-
-    public string BiotechIcon => MaterialIcons.Biotech;
-    public string ScannerIcon => MaterialIcons.DocumentScanner;
-    public string HomeIcon => MaterialIcons.Home;
-    public string HistoryIcon => MaterialIcons.History;
-    public string TrendsIcon => MaterialIcons.ShowChart;
-    public string PersonIcon => MaterialIcons.Person;
-    public string TipsIcon => MaterialIcons.TipsAndUpdates;
-    public string WaterDropIcon => MaterialIcons.WaterDrop;
-    public string ChevronIcon => MaterialIcons.ChevronRight;
+        "Analyzing your recent scans…";
 
     public NutriLensDashboardViewModel()
         : this(
@@ -43,185 +32,196 @@ public partial class NutriLensDashboardViewModel : ObservableObject
                     new AzureOpenAIChatService(),
                     new PreferencesDailyInsightCacheStore(),
                     Resolve<IScanHistoryStore>() ?? new JsonScanHistoryStore()),
-            Resolve<IScanHistoryStore>() ?? new JsonScanHistoryStore())
+            Resolve<ICombinedScanHistory>()
+                ?? new CombinedScanHistory(
+                    Resolve<IScanHistoryStore>() ?? new JsonScanHistoryStore()),
+            Resolve<ISampleAnalysisDataService>()
+                ?? new SampleIngredientAnalysisService())
     {
     }
 
     public NutriLensDashboardViewModel(
         IDailyInsightGenerator dailyInsightGenerator,
-        IScanHistoryStore scanStore)
+        ICombinedScanHistory combinedHistory,
+        ISampleAnalysisDataService sampleAnalysisService)
     {
         this.dailyInsightGenerator = dailyInsightGenerator
             ?? throw new ArgumentNullException(nameof(dailyInsightGenerator));
+        this.combinedHistory = combinedHistory
+            ?? throw new ArgumentNullException(nameof(combinedHistory));
+        this.sampleAnalysisService = sampleAnalysisService
+            ?? throw new ArgumentNullException(nameof(sampleAnalysisService));
 
-        this.scanStore = scanStore
-            ?? throw new ArgumentNullException(nameof(scanStore));
         UpdateGreeting();
-        // Generate once per day using an AI service + local cache.
-        LoadDailyInsightAsync();
-
-        // Load saved scans from the store. Never fire-and-forget a naked
-        // task from the constructor — exceptions get lost. LoadRecentScansAsync
-        // handles its own errors internally.
+        _ = LoadDailyInsightAsync();
         _ = LoadRecentScansAsync();
     }
 
-    private async Task LoadRecentScansAsync()
-    {
-        try
-        {
-            // FIX: null-guard the store and null-guard deserialized rows —
-            // a corrupt/partial scan_history.json could produce entries with
-            // a null Result, which previously threw NullReferenceException.
-            if (scanStore is not null)
-            {
-                var scans = (await scanStore.GetAllAsync())
-                    .Where(s => s is not null && s.Result is not null)
-                    .OrderByDescending(s => s.SavedAtUtc)
-                    .Take(3);
+    // ----- Icons -----
+    public string BiotechIcon => MaterialIcons.Biotech;
+    public string PersonIcon => MaterialIcons.Person;
+    public string ScannerIcon => MaterialIcons.DocumentScanner;
+    public string TipsIcon => MaterialIcons.TipsAndUpdates;
+    public string HomeIcon => MaterialIcons.Home;
+    public string HistoryIcon => MaterialIcons.History;
+    public string TrendsIcon => MaterialIcons.ShowChart;
 
-                foreach (var scan in scans)
-                {
-                    RecentScans.Add(ToRecentScanItem(scan));
-                }
+    // ----- Navigation commands -----
+    [RelayCommand]
+    private Task Scan() => AppNavigator.GoScanAsync();
+
+    [RelayCommand]
+    private Task OpenHistory() => AppNavigator.GoHistoryAsync();
+
+    [RelayCommand]
+    private Task OpenProfile() => AppNavigator.GoProfileAsync();
+
+    [RelayCommand]
+    private Task OpenTrends() => AppNavigator.GoTrendAsync();
+
+    [RelayCommand]
+    private Task ViewAll() => AppNavigator.GoHistoryAsync();
+
+    /// <summary>
+    /// Unified tap handler for any RecentScanItem on the Dashboard.
+    /// Sample products (Oats/Yogurt/Chips) resolve through
+    /// <see cref="ISampleAnalysisDataService"/> — the AI service is NEVER
+    /// invoked for them. Non-sample items fall back to the stored
+    /// IngredientAnalysisResult on the matching saved scan.
+    /// </summary>
+    [RelayCommand]
+    private async Task RecentScanTapped(RecentScanItem? item)
+    {
+        if (item is null || string.IsNullOrWhiteSpace(item.ProductName))
+            return; // Prevents null-reference on malformed taps.
+
+        // Step 1: predefined sample product? → static data path (no API).
+        if (sampleAnalysisService.IsSampleProduct(item.ProductName))
+        {
+            var sampleResult = sampleAnalysisService.TryGet(item.ProductName);
+            if (sampleResult is not null)
+            {
+                await AppNavigator.GoAnalyzeIngredientsAsync(sampleResult);
+                return;
             }
         }
-        catch (Exception ex)
-        {
-            // Fire-and-forget from the ctor — must never surface as an
-            // unobserved task exception.
-            Debug.WriteLine($"[Dashboard] Failed to load recent scans: {ex}");
-        }
 
-        // The three showcase items must always be present.
-        // Newly saved scans were inserted above, so they appear on top.
-        AddShowcaseScans();
-    }
-    [ObservableProperty]
-    private string greeting = string.Empty;
-
-    private void UpdateGreeting()
-    {
-        var hour = DateTime.Now.Hour;
-        var greetingText = hour switch
-        {
-            >= 5 and < 12 => "Good Morning, Alex",
-            >= 12 and < 17 => "Good Afternoon, Alex",
-            >= 17 and < 21 => "Good Evening, Alex",
-            _ => "Good Night, Alex"
-        };
-
-        Greeting = $"{greetingText}";
-    }
-    private static RecentScanItem ToRecentScanItem(SavedScan scan)
-    {
-        var score = scan.Result.Score;
-
-        return new RecentScanItem
-        {
-            ProductName = string.IsNullOrWhiteSpace(scan.Result.ProductName)
-                ? "Unknown product"
-                : scan.Result.ProductName,
-            ScanTime = scan.SavedAtUtc.ToLocalTime().ToString("MMM d, h:mm tt"),
-            Score = score,
-            Rating = string.IsNullOrWhiteSpace(scan.Result.Category)
-                ? "Unknown"
-                : scan.Result.Category,
-            // Fall back to a bundled image when the captured file is missing.
-            ImagePath = !string.IsNullOrWhiteSpace(scan.ImagePath) &&
-                        File.Exists(scan.ImagePath)
-                ? scan.ImagePath
-                : "oats_label.webp",
-            RatingColor = score >= 70 ? "#047857"
-                        : score >= 40 ? "#D99024"
-                        : "#D64545"
-        };
-    }
-
-    private void AddShowcaseScans()
-    {
-        RecentScans.Add(new RecentScanItem
-        {
-            ProductName = "Greek Yogurt",
-            ScanTime = "Today, 8:30 AM",
-            Score = 88,
-            Rating = "Excellent",
-            ImagePath = "yogurt.webp",
-            RatingColor = "#047857"
-        });
-
-        RecentScans.Add(new RecentScanItem
-        {
-            ProductName = "Oat & Honey Granola Bar",
-            ScanTime = "Yesterday, 3:15 PM",
-            Score = 72,
-            Rating = "Good",
-            ImagePath = "oats_label.webp",
-            RatingColor = "#D99024"
-        });
-
-        RecentScans.Add(new RecentScanItem
-        {
-            ProductName = "Classic Potato Chips",
-            ScanTime = "Mon, 12:45 PM",
-            Score = 35,
-            Rating = "Poor",
-            ImagePath = "potato.webp",
-            RatingColor = "#D64545"
-        });
-    }
-
-    private async void LoadDailyInsightAsync()
-    {
+        // Step 2: non-sample product — reuse the saved analysis result.
         try
         {
-            var generatedInsight =
-                await dailyInsightGenerator.GetTodayInsightAsync();
+            allScans = [.. (await combinedHistory.GetCombinedAsync())];
 
-            if (!string.IsNullOrWhiteSpace(generatedInsight))
+            var match = allScans.FirstOrDefault(s =>
+                string.Equals(s.Result?.ProductName, item.ProductName,
+                    StringComparison.OrdinalIgnoreCase));
+
+            if (match?.Result is not null)
             {
-                DailyInsight = generatedInsight;
+                await AppNavigator.GoAnalyzeIngredientsAsync(match.Result);
                 return;
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[DailyInsight] Error: {ex}");
+            Debug.WriteLine($"[Dashboard] RecentScanTapped lookup failed: {ex}");
         }
 
-        // Fallback keeps the UI useful even if AI is unavailable.
-        DailyInsight =
-            "A balanced plate with more fiber and lean protein can help support steady energy and better blood sugar control today.";
+        await AppNavigator.ShowAlertAsync(
+            "Analysis Unavailable",
+            $"No analysis data is available for '{item.ProductName}'.",
+            "OK");
     }
 
-    [RelayCommand]
-    private Task ScanAsync()
+    // ----- Data loading -----
+    private async Task LoadRecentScansAsync()
     {
-        return AppNavigator.GoScanAsync();
+        try
+        {
+            allScans = [.. (await combinedHistory.GetCombinedAsync())];
+
+            var items = allScans
+                .Take(3)
+                .Select(ToRecentScanItem)
+                .ToList();
+
+            RecentScans.Clear();
+            foreach (var scanItem in items)
+            {
+                RecentScans.Add(scanItem);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[Dashboard] LoadRecentScansAsync failed: {ex}");
+        }
     }
 
-    [RelayCommand]
-    private Task OpenHistoryAsync()
+    private async Task LoadDailyInsightAsync()
     {
-        return AppNavigator.GoHistoryAsync();
+        try
+        {
+            DailyInsight = await dailyInsightGenerator.GetTodayInsightAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[Dashboard] Daily insight failed: {ex}");
+            DailyInsight =
+                "Focus on high-fiber whole foods today and pair carbohydrates " +
+                "with protein for steadier blood sugar.";
+        }
     }
 
-    [RelayCommand]
-    private Task ViewAllAsync()
+    private void UpdateGreeting()
     {
-        return AppNavigator.GoHistoryAsync();
+        var hour = DateTime.Now.Hour;
+
+        Greeting = hour switch
+        {
+            < 12 => "Good Morning!",
+            < 17 => "Good Afternoon!",
+            _ => "Good Evening!"
+        };
     }
 
-    [RelayCommand]
-    private Task OpenProfileAsync()
+    private static RecentScanItem ToRecentScanItem(SavedScan scan)
     {
-        return AppNavigator.GoProfileAsync();
+        var score = Math.Clamp(scan.Result.Score, 0, 100);
+
+        var (rating, ratingColor) = score switch
+        {
+            >= 70 => ("Excellent", "#047857"),
+            >= 40 => ("Moderate", "#D99024"),
+            _ => ("Poor", "#DC2626")
+        };
+
+        return new RecentScanItem
+        {
+            ProductName = scan.Result.ProductName,
+            ImagePath = string.IsNullOrWhiteSpace(scan.ImagePath)
+                ? "yogurt.webp"
+                : scan.ImagePath,
+            Score = score,
+            Rating = rating,
+            RatingColor = ratingColor,
+            ScanTime = FormatScanDate(scan.SavedAtUtc)
+        };
     }
 
-    [RelayCommand]
-    private Task OpenTrendsAsync()
+    private static string FormatScanDate(DateTime savedAtUtc)
     {
-        return AppNavigator.GoTrendAsync();
+        var local = savedAtUtc.ToLocalTime();
+        var age = DateTime.Now - local;
+
+        if (age.TotalMinutes < 60)
+            return $"{Math.Max(1, (int)age.TotalMinutes)} min ago";
+        if (age.TotalHours < 24)
+            return $"{(int)age.TotalHours} hrs ago";
+        if (age.TotalDays < 2)
+            return "Yesterday";
+        if (age.TotalDays < 7)
+            return local.ToString("ddd");
+
+        return local.ToString("MMM d");
     }
 
     private static T? Resolve<T>()

@@ -224,9 +224,9 @@
                 <!-- Recent scans -->
                 <listView:SfListView
                     ItemsSource="{Binding RecentScans}"
-                    ItemSize="82"
+                    ItemSize="82" Background="#F5F7FB"
                     SelectionMode="None"
-                    ItemSpacing="0,8,0,0">
+                    ItemSpacing="0,8,0,0" ItemTapped="OnRecentScanTapped">
 
                     <listView:SfListView.ItemTemplate>
                         <DataTemplate x:DataType="models:RecentScanItem">

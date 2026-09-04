@@ -75,8 +75,7 @@
                         WidthRequest="100"
                         HeightRequest="100"
                         CornerRadius="50"
-                        ContentType="Custom"
-                        ImageSource="profileavatar.png"
+                        ContentType="Custom" 
                         HorizontalOptions="Center"
                         VerticalOptions="Start">
 
@@ -106,105 +105,13 @@
                         Margin="0,0,4,8"
                         Command="{Binding EditProfileCommand}" />
                 </Grid>
-                <!-- Scan insights from saved AI history -->
-                <Border
-                    Style="{StaticResource ProfileCardStyle}">
-
-                    <VerticalStackLayout Spacing="12">
-
-                        <HorizontalStackLayout Spacing="8">
-                            <Label
-                                Text="{Binding ScannerIcon}"
-                                Style="{StaticResource ProfileIconStyle}"
-                                FontSize="22"
-                                TextColor="#047857" />
-
-                            <Label
-                                Text="Your Scan Insights"
-                                Style="{StaticResource ProfileCardTitleStyle}" />
-                        </HorizontalStackLayout>
-
-                        <Grid
-                            ColumnDefinitions="*,*,*"
-                            ColumnSpacing="8">
-
-                            <VerticalStackLayout Spacing="2">
-                                <Label
-                                    Text="{Binding TotalScansText}"
-                                    FontSize="20"
-                                    FontAttributes="Bold"
-                                    TextColor="#0F172A" />
-
-                                <Label
-                                    Text="Total Scans"
-                                    FontSize="11"
-                                    TextColor="#64748B" />
-                            </VerticalStackLayout>
-
-                            <VerticalStackLayout
-                                Grid.Column="1"
-                                Spacing="2">
-
-                                <Label
-                                    Text="{Binding AverageScoreText}"
-                                    FontSize="20"
-                                    FontAttributes="Bold"
-                                    TextColor="#047857" />
-
-                                <Label
-                                    Text="Avg Health Score"
-                                    FontSize="11"
-                                    TextColor="#64748B" />
-                            </VerticalStackLayout>
-
-                            <VerticalStackLayout
-                                Grid.Column="2"
-                                Spacing="2">
-
-                                <Label
-                                    Text="{Binding HealthyChoicesText}"
-                                    FontSize="20"
-                                    FontAttributes="Bold"
-                                    TextColor="#10B981" />
-
-                                <Label
-                                    Text="Healthy Choices"
-                                    FontSize="11"
-                                    TextColor="#64748B" />
-                            </VerticalStackLayout>
-                        </Grid>
-
-                        <Label
-                            Style="{StaticResource ProfileDescriptionStyle}">
-                            <Label.FormattedText>
-                                <FormattedString>
-                                    <Span
-                                        Text="Best score: "
-                                        TextColor="#64748B" />
-                                    <Span
-                                        Text="{Binding BestScoreText}"
-                                        FontAttributes="Bold"
-                                        TextColor="#0F172A" />
-                                    <Span
-                                        Text="   Most common risk: "
-                                        TextColor="#64748B" />
-                                    <Span
-                                        Text="{Binding MostCommonRiskText}"
-                                        FontAttributes="Bold"
-                                        TextColor="#DC2626" />
-                                </FormattedString>
-                            </Label.FormattedText>
-                        </Label>
-
-                        <Label
-                            Text="{Binding ScanInsightText}"
-                            Style="{StaticResource ProfileDescriptionStyle}" />
-                    </VerticalStackLayout>
-                </Border>
+                
                 <!-- Dietary goals -->
                 <Border
                     Style="{StaticResource ProfileCardStyle}">
-
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ToggleGoalCommand}" CommandParameter="{Binding}" />
+                    </Border.GestureRecognizers>
                     <VerticalStackLayout Spacing="12">
 
                         <HorizontalStackLayout Spacing="8">
@@ -255,7 +162,9 @@
                 <!-- Allergies -->
                 <Border
                     Style="{StaticResource ProfileCardStyle}">
-
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ToggleGoalCommand}" CommandParameter="{Binding}" />
+                    </Border.GestureRecognizers>
                     <VerticalStackLayout Spacing="12">
 
                         <HorizontalStackLayout Spacing="8">
@@ -305,8 +214,7 @@
 
                 <!-- Health considerations -->
                 <Border
-                    Style="{StaticResource ProfileCardStyle}">
-
+                    Style="{StaticResource ProfileCardStyle}"> 
                     <VerticalStackLayout Spacing="12">
 
                         <HorizontalStackLayout Spacing="8">
@@ -325,44 +233,44 @@
                             Text="Tailor insights for specific health profiles."
                             Style="{StaticResource ProfileDescriptionStyle}" />
 
-                        <!-- Diabetes -->
+                        <!-- Cholesterol -->
                         <Border
-                            HeightRequest="60"
-                            Padding="14,0"
-                            BackgroundColor="#DCEAFF"
-                            Stroke="Transparent"
-                            StrokeShape="RoundRectangle 12">
+    HeightRequest="60"
+    Padding="14,0"
+    BackgroundColor="#DCEAFF"
+    Stroke="Transparent"
+    StrokeShape="RoundRectangle 12">
 
                             <Grid ColumnDefinitions="Auto,*,Auto">
                                 <Label
-                                    Text="{Binding MedicalServicesIcon}"
-                                    Style="{StaticResource ProfileIconStyle}"
-                                    FontSize="22"
-                                    TextColor="#047857" />
+            Text="{Binding HealthIcon}"
+            Style="{StaticResource ProfileIconStyle}"
+            FontSize="22"
+            TextColor="#047857" />
 
                                 <Label
-                                    Grid.Column="1"
-                                    Text="Diabetes considerations"
-                                    Margin="12,0,8,0"
-                                    FontSize="14"
-                                    TextColor="#1E3A8A"
-                                    VerticalTextAlignment="Center" />
+            Grid.Column="1"
+            Text="Cholesterol considerations"
+            Margin="12,0,8,0"
+            FontSize="14"
+            TextColor="#1E3A8A"
+            VerticalTextAlignment="Center" />
 
                                 <buttons:SfSwitch
-                                    Grid.Column="2"
-                                    IsOn="{Binding DiabetesEnabled}" 
-                                    VerticalOptions="Center" >
+            Grid.Column="2"
+            IsOn="{Binding CholesterolEnabled}"
+            VerticalOptions="Center">
                                     <VisualStateManager.VisualStateGroups>
-                                        <VisualStateGroup  x:Name="CommonStates">
+                                        <VisualStateGroup x:Name="CommonStates">
                                             <VisualState x:Name="On">
                                                 <VisualState.Setters>
                                                     <Setter Property="SwitchSettings">
                                                         <Setter.Value>
                                                             <buttons:SwitchSettings
-ThumbBackground="White"
- ThumbStroke="#047857"
- TrackBackground="#047857"
- TrackStroke="Transparent"/>
+                                        ThumbBackground="White"
+                                        ThumbStroke="#047857"
+                                        TrackBackground="#047857"
+                                        TrackStroke="Transparent" />
                                                         </Setter.Value>
                                                     </Setter>
                                                 </VisualState.Setters>
@@ -372,10 +280,10 @@ ThumbBackground="White"
                                                     <Setter Property="SwitchSettings">
                                                         <Setter.Value>
                                                             <buttons:SwitchSettings
-                                                                        ThumbBackground="Gray"
-                                                                        ThumbStroke="Gray"
-                                                                        TrackBackground="#e6e0e9"
-                                                                        TrackStroke="Gray"/>
+                                        ThumbBackground="Gray"
+                                        ThumbStroke="Gray"
+                                        TrackBackground="#e6e0e9"
+                                        TrackStroke="Gray" />
                                                         </Setter.Value>
                                                     </Setter>
                                                 </VisualState.Setters>
@@ -386,43 +294,44 @@ ThumbBackground="White"
                             </Grid>
                         </Border>
 
-                        <!-- Hypertension -->
+                        <!-- Kidney Health -->
                         <Border
-                            HeightRequest="60"
-                            Padding="14,0"
-                            BackgroundColor="#DCEAFF"
-                            Stroke="Transparent"
-                            StrokeShape="RoundRectangle 12">
+    HeightRequest="60"
+    Padding="14,0"
+    BackgroundColor="#DCEAFF"
+    Stroke="Transparent"
+    StrokeShape="RoundRectangle 12">
 
                             <Grid ColumnDefinitions="Auto,*,Auto">
                                 <Label
-                                    Text="{Binding MedicationIcon}"
-                                    Style="{StaticResource ProfileIconStyle}"
-                                    FontSize="22"
-                                    TextColor="#047857" />
+            Text="{Binding MedicationIcon}"
+            Style="{StaticResource ProfileIconStyle}"
+            FontSize="22"
+            TextColor="#047857" />
 
                                 <Label
-                                    Grid.Column="1"
-                                    Text="Hypertension considerations"
-                                    Margin="12,0,8,0"
-                                    FontSize="14"
-                                    TextColor="#1E3A8A"
-                                    VerticalTextAlignment="Center" />
+            Grid.Column="1"
+            Text="Kidney health considerations"
+            Margin="12,0,8,0"
+            FontSize="14"
+            TextColor="#1E3A8A"
+            VerticalTextAlignment="Center" />
 
                                 <buttons:SfSwitch
-                                    Grid.Column="2"
-                                    IsOn="{Binding HypertensionEnabled}"
-                                    VerticalOptions="Center" >
+            Grid.Column="2"
+            IsOn="{Binding KidneyHealthEnabled}"
+            VerticalOptions="Center">
                                     <VisualStateManager.VisualStateGroups>
-                                        <VisualStateGroup  x:Name="CommonStates">
+                                        <VisualStateGroup x:Name="CommonStates">
                                             <VisualState x:Name="On">
                                                 <VisualState.Setters>
                                                     <Setter Property="SwitchSettings">
                                                         <Setter.Value>
-                                                            <buttons:SwitchSettings  ThumbBackground="White"
-                                                                                     ThumbStroke="#047857"
-                                                                                     TrackBackground="#047857"
-                                                                                     TrackStroke="Transparent"/>
+                                                            <buttons:SwitchSettings
+                                        ThumbBackground="White"
+                                        ThumbStroke="#047857"
+                                        TrackBackground="#047857"
+                                        TrackStroke="Transparent" />
                                                         </Setter.Value>
                                                     </Setter>
                                                 </VisualState.Setters>
@@ -431,14 +340,15 @@ ThumbBackground="White"
                                                 <VisualState.Setters>
                                                     <Setter Property="SwitchSettings">
                                                         <Setter.Value>
-                                                            <buttons:SwitchSettings ThumbBackground="Gray"
-                                                                                    ThumbStroke="Gray"
-                                                                                    TrackBackground="#e6e0e9"
-                                                                                    TrackStroke="Gray"/>
+                                                            <buttons:SwitchSettings
+                                        ThumbBackground="Gray"
+                                        ThumbStroke="Gray"
+                                        TrackBackground="#e6e0e9"
+                                        TrackStroke="Gray" />
                                                         </Setter.Value>
                                                     </Setter>
                                                 </VisualState.Setters>
-                                            </VisualState> 
+                                            </VisualState>
                                         </VisualStateGroup>
                                     </VisualStateManager.VisualStateGroups>
                                 </buttons:SfSwitch>

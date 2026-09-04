@@ -169,115 +169,7 @@
                             VerticalTextAlignment="Center" />
                 </HorizontalStackLayout>
             </Border>
- 
-
-            <!-- Scanner brackets -->
-            <Grid
-                x:Name="ScannerFrame"
-                Grid.Row="1"
-                Grid.Column="1"
-                WidthRequest="370"
-                HeightRequest="230"
-                HorizontalOptions="Center"
-                VerticalOptions="Center">
-
-                <!-- Top left -->
-                <Grid
-                    HorizontalOptions="Start"
-                    VerticalOptions="Start"
-                    WidthRequest="30"
-                    HeightRequest="30">
-
-                    <BoxView
-                        WidthRequest="30"
-                        HeightRequest="3"
-                        BackgroundColor="#00A86B"
-                        HorizontalOptions="Start"
-                        VerticalOptions="Start" />
-
-                    <BoxView
-                        WidthRequest="3"
-                        HeightRequest="30"
-                        BackgroundColor="#00A86B"
-                        HorizontalOptions="Start"
-                        VerticalOptions="Start" />
-                </Grid>
-
-                <!-- Top right -->
-                <Grid
-                    HorizontalOptions="End"
-                    VerticalOptions="Start"
-                    WidthRequest="30"
-                    HeightRequest="30">
-
-                    <BoxView
-                        WidthRequest="30"
-                        HeightRequest="3"
-                        BackgroundColor="#00A86B"
-                        HorizontalOptions="End"
-                        VerticalOptions="Start" />
-
-                    <BoxView
-                        WidthRequest="3"
-                        HeightRequest="30"
-                        BackgroundColor="#00A86B"
-                        HorizontalOptions="End"
-                        VerticalOptions="Start" />
-                </Grid>
-
-                <!-- Bottom left -->
-                <Grid
-                    HorizontalOptions="Start"
-                    VerticalOptions="End"
-                    WidthRequest="30"
-                    HeightRequest="30">
-
-                    <BoxView
-                        WidthRequest="30"
-                        HeightRequest="3"
-                        BackgroundColor="#00A86B"
-                        HorizontalOptions="Start"
-                        VerticalOptions="End" />
-
-                    <BoxView
-                        WidthRequest="3"
-                        HeightRequest="30"
-                        BackgroundColor="#00A86B"
-                        HorizontalOptions="Start"
-                        VerticalOptions="End" />
-                </Grid>
-
-                <!-- Bottom right -->
-                <Grid
-                    HorizontalOptions="End"
-                    VerticalOptions="End"
-                    WidthRequest="30"
-                    HeightRequest="30">
-
-                    <BoxView
-                        WidthRequest="30"
-                        HeightRequest="3"
-                        BackgroundColor="#00A86B"
-                        HorizontalOptions="End"
-                        VerticalOptions="End" />
-
-                    <BoxView
-                        WidthRequest="3"
-                        HeightRequest="30"
-                        BackgroundColor="#00A86B"
-                        HorizontalOptions="End"
-                        VerticalOptions="End" />
-                </Grid>
-
-                <!-- Animated scan line -->
-                <BoxView x:Name="ScanLine"
-                        HeightRequest="2"
-                        BackgroundColor="#00A86B"
-                        Opacity="0.7"
-                        HorizontalOptions="Fill"
-                        VerticalOptions="Center"
-                        IsVisible="{Binding IsAnalyzing, Converter={StaticResource InverseBoolConverter}}" />
-            </Grid>
+  
         </Grid>
 
         <!-- Instruction card -->
@@ -347,7 +239,7 @@
 
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer
-                            Command="{Binding AnalyzeIngredientsCommand}" />
+                            Command="{Binding ScanCommand}" />
                     </Border.GestureRecognizers>
 
                     <Border

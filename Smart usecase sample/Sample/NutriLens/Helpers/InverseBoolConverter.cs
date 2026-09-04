@@ -93,6 +93,18 @@ public static class SelectedImageHolder
 public static class AnalysisNavigationData
 {
     public static IngredientAnalysisResult? CurrentResult { get; set; }
+
+    /// <summary>
+    /// Short-lived handoff bucket used when Scan → Review navigation
+    /// needs to carry the extracted OCR text and the source image.
+    /// Read once and cleared by the Review page — never reused.
+    /// </summary>
+    public static PendingReviewData? PendingReview { get; set; }
+}
+public sealed class PendingReviewData
+{
+    public required string ExtractedText { get; init; }
+    public required FileResult Image { get; init; }
 }
 public sealed class InverseBoolConverter : IValueConverter
 {

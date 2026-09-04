@@ -1,4 +1,5 @@
 using NutriLens.Helpers;
+using NutriLens.Models;
 using NutriLens.ViewModels;
 
 namespace NutriLens.Views;
@@ -25,6 +26,7 @@ public partial class HistoryPage : ContentPage
             await ViewModel.LoadAsync();
         }
     }
+
     private void OnSearchFocused(object? sender, FocusEventArgs e)
     {
         SearchInputLayout.ShowHint = false;
@@ -32,45 +34,37 @@ public partial class HistoryPage : ContentPage
 
     private void OnSearchUnfocused(object? sender, FocusEventArgs e)
     {
-        SearchInputLayout.ShowHint = string.IsNullOrWhiteSpace(SearchEntry.Text);
-    }
-    private async void OnHomeClicked(
-        object? sender,
-        EventArgs e)
-    {
-        await Navigation.PushAsync(
-            new NutriLensDashboardPage());
+        SearchInputLayout.ShowHint =
+            string.IsNullOrWhiteSpace(SearchEntry.Text);
     }
 
-    private async void OnScanClicked(
+    private async void OnHistoryItemTapped(
         object? sender,
-        EventArgs e)
+        Syncfusion.Maui.ListView.ItemTappedEventArgs e)
     {
-        await Navigation.PushAsync(
-            new ScanIngredientsPage());
+        if (e.DataItem is HistoryItem item && ViewModel is not null)
+        {
+            await ViewModel.RecentScanTappedCommand.ExecuteAsync(item);
+        }
     }
 
-    private async void OnProfileClicked(
-        object? sender,
-        EventArgs e)
+    private async void OnHomeClicked(object? sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new NutriLensDashboardPage());
+    }
+
+    private async void OnScanClicked(object? sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new ScanIngredientsPage());
+    }
+
+    private async void OnProfileClicked(object? sender, EventArgs e)
     {
         await AppNavigator.GoProfileAsync();
     }
 
-    private async void OnTrendsClicked(
-        object? sender,
-        EventArgs e)
+    private async void OnTrendsClicked(object? sender, EventArgs e)
     {
         await AppNavigator.GoTrendAsync();
-    }
-
-    private async void OnSelectClicked(
-        object? sender,
-        TappedEventArgs e)
-    {
-        await DisplayAlert(
-            "Select",
-            "Selection mode is not available yet.",
-            "OK");
     }
 }

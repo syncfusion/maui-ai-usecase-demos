@@ -361,18 +361,6 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
-                <!-- Detailed breakdown -->
-                <buttons:SfButton
-                    Text="Show Detailed Breakdown"
-                    HeightRequest="52"
-                    Background="#047857"
-                    Stroke="Transparent"
-                    CornerRadius="12"
-                    FontSize="15"
-                    FontAttributes="Bold"
-                    TextColor="White"
-                    Clicked="OnDetailedBreakdownClicked" />
-
                 <!-- Alternatives -->
                 <Border
                     Padding="16"
@@ -435,13 +423,11 @@
         <Grid
             Grid.Row="2"
             Padding="16,10"
-            HeightRequest="76"
-            ColumnDefinitions="*,*"
+            HeightRequest="76" 
             ColumnSpacing="12"
             BackgroundColor="#F3F5FA">
 
-            <Border
-                Grid.Column="0"
+            <Border 
                 HeightRequest="48"
                 BackgroundColor="#EAF0FB"
                 Stroke="Transparent"
@@ -474,39 +460,7 @@
                 </Grid>
             </Border>
 
-            <Border
-                Grid.Column="1"
-                HeightRequest="48"
-                BackgroundColor="#DCEAFF"
-                Stroke="Transparent"
-                StrokeShape="RoundRectangle 12">
-
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnCompareClicked" />
-                </Border.GestureRecognizers>
-
-                <Grid
-                    ColumnDefinitions="Auto,*"
-                    ColumnSpacing="8"
-                    Padding="12,0"
-                    HorizontalOptions="Center">
-
-                    <Label
-                        Text="&#xE915;"
-                        FontFamily="MaterialIconsRegular"
-                        FontSize="20"
-                        TextColor="#475569"
-                        VerticalTextAlignment="Center" />
-
-                    <Label
-                        Grid.Column="1"
-                        Text="Compare"
-                        FontSize="14"
-                        FontAttributes="Bold"
-                        TextColor="#475569"
-                        VerticalTextAlignment="Center" />
-                </Grid>
-            </Border>
+              
         </Grid>
     </Grid>
 </ContentPage>

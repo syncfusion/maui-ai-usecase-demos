@@ -289,7 +289,7 @@ namespace NutriLens.Models
         public string BadgeColor { get; set; } = "#0E7C57";
         public string BadgeBg { get; set; } = "#EAF3EE";
     }
-    public class IngredientItem
+    public partial class IngredientItem
     {
         public string Number { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;

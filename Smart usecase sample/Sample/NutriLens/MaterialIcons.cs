@@ -55,6 +55,11 @@ public static class MaterialIcons
     public const string Medication = "\uF05C";
     public const string Lock = "\uE897"; 
     public const string NotificationsNone = "\uE7F5";
-    public const string HelpOutline = "\uE8FD";  
+    public const string HelpOutline = "\uE8FD";
+    public const string EditNote = "\uE745";
+    public const string AddCircleOutline = "\uE148";
+    public const string Close = "\uE5CD";
+    public const string PhotoCamera = "\uE412";
+    public const string ArrowForward = "\uE5C8";
 
 }

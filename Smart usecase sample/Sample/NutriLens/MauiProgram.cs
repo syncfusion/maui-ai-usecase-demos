@@ -41,6 +41,12 @@ namespace NutriLens
             builder.Services.AddTransient<AnalyzeIngredientsResultPage>();
             builder.Services.AddSingleton<IImagePickerService, ImagePickerService>(); 
             builder.Services.AddSingleton<ICombinedScanHistory, CombinedScanHistory>();
+
+            builder.Services.AddSingleton<IScanHistoryStore, JsonScanHistoryStore>();
+            builder.Services.AddSingleton<ICombinedScanHistory, CombinedScanHistory>();
+            builder.Services.AddSingleton<IUserPreferenceStore, UserPreferenceStore>();
+            // NEW: sample/demo product analysis lookup
+            builder.Services.AddSingleton<ISampleAnalysisDataService, SampleIngredientAnalysisService>();
 #if DEBUG
             builder.Logging.AddDebug();
 #endif

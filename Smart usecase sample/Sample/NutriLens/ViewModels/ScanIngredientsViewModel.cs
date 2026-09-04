@@ -11,26 +11,20 @@ public partial class ScanIngredientsViewModel : ObservableObject
 {
     private readonly IImagePickerService imagePickerService;
     private readonly IIngredientImageExtractionService imageExtractionService;
-    private readonly IAzureOpenAIIngredientService aiService;
     private bool isBusy;
 
     [ObservableProperty]
-    private bool isAnalyzing;
+    private bool isExtracting;
 
     [ObservableProperty]
-    private double analysisProgress;
+    private double extractionProgress;
 
     [ObservableProperty]
-    private string analysisStatusMessage = "Position ingredients label inside frame";
+    private string statusMessage =
+        "Position the ingredients label inside the frame";
 
     [ObservableProperty]
     private ImageSource? capturedImage;
-
-    [ObservableProperty]
-    private string extractedText = string.Empty;
-
-    [ObservableProperty]
-    private IngredientAnalysisResult? aiAnalysisResult;
 
     [ObservableProperty]
     private bool isFlashEnabled;
@@ -41,70 +35,74 @@ public partial class ScanIngredientsViewModel : ObservableObject
     public string PersonIcon => MaterialIcons.Person;
     public string GalleryIcon => MaterialIcons.PhotoLibrary;
     public string ScanIcon => MaterialIcons.CenterFocusStrong;
-    public string FlashIcon => IsFlashEnabled ? MaterialIcons.FlashOn : MaterialIcons.FlashOff;
+    public string FlashIcon =>
+        IsFlashEnabled ? MaterialIcons.FlashOn : MaterialIcons.FlashOff;
     public string AnalysisIcon => MaterialIcons.AutoAwesome;
 
     public ICommand BackCommand { get; }
-    public ICommand AnalyzeIngredientsCommand { get; }
+    public ICommand ScanCommand { get; }
     public ICommand PickImageCommand { get; }
     public ICommand ToggleFlashCommand { get; }
-    public string ScannerMessage { get; set; }
-    public ScanIngredientsViewModel(
-        IImagePickerService imagePickerService,
-        IIngredientImageExtractionService imageExtractionService,
-        IAzureOpenAIIngredientService aiService)
-    {
-        this.imagePickerService = imagePickerService;
-        this.imageExtractionService = imageExtractionService;
-        this.aiService = aiService;
-        ScannerMessage = "Align the ingredient list within the frame to begin analysis.";
-        BackCommand = new AsyncRelayCommand(BackAsync);
-        AnalyzeIngredientsCommand = new AsyncRelayCommand(AnalyzeIngredientsAsync);
-        PickImageCommand = new AsyncRelayCommand(PickImageAsync);
-        ToggleFlashCommand = new AsyncRelayCommand(ToggleFlashAsync);
-    }
+
+    public string ScannerMessage { get; set; } =
+        "Align the ingredient list within the frame to begin extraction.";
 
     public ScanIngredientsViewModel()
         : this(
             Resolve<IImagePickerService>() ?? new ImagePickerService(),
-            Resolve<IIngredientImageExtractionService>() ?? new IngredientImageExtractionService(),
-            Resolve<IAzureOpenAIIngredientService>() ?? new AzureOpenAIIngredientService())
+            Resolve<IIngredientImageExtractionService>()
+                ?? new IngredientImageExtractionService())
     {
+    }
+
+    public ScanIngredientsViewModel(
+        IImagePickerService imagePickerService,
+        IIngredientImageExtractionService imageExtractionService)
+    {
+        this.imagePickerService = imagePickerService
+            ?? throw new ArgumentNullException(nameof(imagePickerService));
+        this.imageExtractionService = imageExtractionService
+            ?? throw new ArgumentNullException(nameof(imageExtractionService));
+
+        BackCommand = new AsyncRelayCommand(BackAsync);
+        ScanCommand = new AsyncRelayCommand(ScanAsync);
+        PickImageCommand = new AsyncRelayCommand(PickImageAsync);
+        ToggleFlashCommand = new AsyncRelayCommand(ToggleFlashAsync);
     }
 
     partial void OnCapturedImageChanged(ImageSource? value)
     {
         OnPropertyChanged(nameof(HasCapturedImage));
-
-        if (value is not null && !IsAnalyzing)
-        {
-            AnalysisStatusMessage = "Image ready for analysis";
-        }
+        if (value is not null && !IsExtracting)
+            StatusMessage = "Image ready — tap Scan to extract ingredients";
     }
 
     partial void OnIsFlashEnabledChanged(bool value)
-    {
-        OnPropertyChanged(nameof(FlashIcon));
-    }
+        => OnPropertyChanged(nameof(FlashIcon));
 
-    private async Task AnalyzeIngredientsAsync()
+    /// <summary>
+    /// STEP 2 of the new flow: OCR / content extraction ONLY.
+    /// No AI analysis, no score, no recommendation here.
+    /// On success → navigate to ReviewIngredientsPage.
+    /// </summary>
+    private async Task ScanAsync()
     {
         if (isBusy)
             return;
 
+        FileResult? image = SelectedImageHolder.Current;
+
         try
         {
             isBusy = true;
-            IsAnalyzing = true;
+            IsExtracting = true;
 
-            var image = SelectedImageHolder.Current; 
             if (image is null)
             {
                 image = await imagePickerService.CapturePhotoAsync();
-
                 if (image is null)
                 {
-                    AnalysisStatusMessage = "No image was selected. Please choose a product image.";
+                    StatusMessage = "No image was selected. Please choose a product image.";
                     return;
                 }
 
@@ -112,55 +110,52 @@ public partial class ScanIngredientsViewModel : ObservableObject
                 CapturedImage = ImageSource.FromFile(image.FullPath);
             }
 
-            AnalysisProgress = 0.10;
-            AnalysisStatusMessage = "Preparing image...";
+            ExtractionProgress = 0.15;
+            StatusMessage = "Preparing image…";
             await Task.Delay(200);
 
-            AnalysisProgress = 0.25;
-            AnalysisStatusMessage = "Extracting product details from image...";
-            ExtractedText = await imageExtractionService.ExtractContentAsync(image);
+            ExtractionProgress = 0.50;
+            StatusMessage = "Extracting ingredients from image (OCR)…";
+            var extractedText =
+                await imageExtractionService.ExtractContentAsync(image);
 
-            if (string.IsNullOrWhiteSpace(ExtractedText))
+            if (string.IsNullOrWhiteSpace(extractedText))
             {
-                throw new InvalidOperationException("No readable content was detected in the selected image.");
+                throw new InvalidOperationException(
+                    "No readable ingredient content was detected on the label. " +
+                    "Retake with better lighting and focus.");
             }
 
-            AnalysisProgress = 0.60;
-            AnalysisStatusMessage = "Analyzing ingredient and nutrition quality...";
-            AiAnalysisResult = await aiService.AnalyzeAsync(ExtractedText);
+            ExtractionProgress = 1.0;
+            StatusMessage = "Extraction complete";
 
-            if (AiAnalysisResult is null)
-            {
-                throw new InvalidOperationException("The AI analysis returned no result.");
-            }
+            await Task.Delay(250);
 
-            AnalysisProgress = 1.0;
-            AnalysisStatusMessage = "Analysis complete";
-
-            AnalysisNavigationData.CurrentResult = AiAnalysisResult;
-
-            await Task.Delay(300);
-            await AppNavigator.GoAnalyzeIngredientsAsync();
+            // Hand off to Review page and clear the scan-side image slot.
+            SelectedImageHolder.Current = null;
+            await AppNavigator.GoReviewIngredientsAsync(extractedText, image);
         }
         catch (InvalidOperationException ex)
         {
-            AnalysisStatusMessage = ex.Message;
-            System.Diagnostics.Debug.WriteLine($"[ScanIngredients] InvalidOperationException: {ex}");
+            StatusMessage = ex.Message;
+            System.Diagnostics.Debug.WriteLine(
+                $"[ScanIngredients] InvalidOperationException: {ex}");
         }
         catch (HttpRequestException ex)
         {
-            AnalysisStatusMessage = "Network issue while analyzing the product. Please try again.";
-            System.Diagnostics.Debug.WriteLine($"[ScanIngredients] HttpRequestException: {ex}");
+            StatusMessage = "Network issue during OCR. Please try again.";
+            System.Diagnostics.Debug.WriteLine(
+                $"[ScanIngredients] HttpRequestException: {ex}");
         }
         catch (Exception ex)
         {
-            AnalysisStatusMessage = "Analysis service temporarily unavailable. Please try again.";
+            StatusMessage = "Extraction failed. Please try again.";
             System.Diagnostics.Debug.WriteLine($"[ScanIngredients] Exception: {ex}");
         }
         finally
         {
             isBusy = false;
-            IsAnalyzing = false;
+            IsExtracting = false;
         }
     }
 
@@ -174,20 +169,19 @@ public partial class ScanIngredientsViewModel : ObservableObject
             isBusy = true;
 
             var image = await imagePickerService.PickPhotoAsync();
-
             if (image is null || !File.Exists(image.FullPath))
             {
-                AnalysisStatusMessage = "No valid image was selected.";
+                StatusMessage = "No valid image was selected.";
                 return;
             }
 
             SelectedImageHolder.Current = image;
             CapturedImage = ImageSource.FromFile(image.FullPath);
-            AnalysisStatusMessage = "Image ready for analysis";
+            StatusMessage = "Image ready — tap Scan to extract ingredients";
         }
         catch
         {
-            AnalysisStatusMessage = "Unable to identify ingredient list.";
+            StatusMessage = "Unable to load the selected image.";
         }
         finally
         {
@@ -201,18 +195,8 @@ public partial class ScanIngredientsViewModel : ObservableObject
         return Task.CompletedTask;
     }
 
-    private async Task BackAsync()
-    {
-        await AppNavigator.PopAsync();
-    }
+    private async Task BackAsync() => await AppNavigator.PopAsync();
 
-    private static T? Resolve<T>()
-        where T : class
-    {
-        return Application.Current?
-            .Handler?
-            .MauiContext?
-            .Services
-            .GetService<T>();
-    }
+    private static T? Resolve<T>() where T : class =>
+        Application.Current?.Handler?.MauiContext?.Services.GetService<T>();
 }
