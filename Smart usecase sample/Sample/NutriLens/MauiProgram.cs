@@ -47,6 +47,8 @@ namespace NutriLens
             builder.Services.AddSingleton<IUserPreferenceStore, UserPreferenceStore>();
             // NEW: sample/demo product analysis lookup
             builder.Services.AddSingleton<ISampleAnalysisDataService, SampleIngredientAnalysisService>();
+            builder.Services.AddTransient<ReviewIngredientsViewModel>();
+            builder.Services.AddTransient<ReviewIngredientsPage>();
 #if DEBUG
             builder.Logging.AddDebug();
 #endif

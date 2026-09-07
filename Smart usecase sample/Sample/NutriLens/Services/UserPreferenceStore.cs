@@ -6,44 +6,62 @@ namespace NutriLens.Services;
 public interface IUserPreferenceStore
 {
     UserDietaryPreference Load();
-    void Save(UserDietaryPreference preference);
+    void Save(UserDietaryPreference preferences);
+    void Clear();
 }
 
-/// <summary>
-/// Backed by <see cref="Preferences"/> with a single JSON payload,
-/// so adding/removing preference types later needs no schema migration.
-/// </summary>
 public sealed class UserPreferenceStore : IUserPreferenceStore
 {
-    private const string Key = "nutrilens.user.preference.v1";
-
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
+    private const string StorageKey = "nutrilens_user_preferences_v1";
 
     public UserDietaryPreference Load()
     {
-        var json = Preferences.Get(Key, string.Empty);
-        if (string.IsNullOrWhiteSpace(json))
-            return new UserDietaryPreference();
-
         try
         {
-            return JsonSerializer.Deserialize<UserDietaryPreference>(json, JsonOptions)
-                ?? new UserDietaryPreference();
+            var json = Preferences.Get(StorageKey, string.Empty);
+            if (string.IsNullOrWhiteSpace(json))
+                return new UserDietaryPreference();
+
+            return JsonSerializer.Deserialize<UserDietaryPreference>(
+                       json,
+                       new JsonSerializerOptions
+                       {
+                           PropertyNameCaseInsensitive = true
+                       })
+                   ?? new UserDietaryPreference();
         }
         catch
         {
-            // Corrupt payload — reset to empty rather than crash.
             return new UserDietaryPreference();
         }
     }
 
-    public void Save(UserDietaryPreference preference)
+    public void Save(UserDietaryPreference preferences)
     {
-        ArgumentNullException.ThrowIfNull(preference);
-        var json = JsonSerializer.Serialize(preference, JsonOptions);
-        Preferences.Set(Key, json);
+        try
+        {
+            var json = JsonSerializer.Serialize(preferences, new JsonSerializerOptions
+            {
+                WriteIndented = false
+            });
+
+            Preferences.Set(StorageKey, json);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[UserPreferenceStore] Save failed: {ex}");
+        }
+    }
+
+    public void Clear()
+    {
+        try
+        {
+            Preferences.Remove(StorageKey);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[UserPreferenceStore] Clear failed: {ex}");
+        }
     }
 }

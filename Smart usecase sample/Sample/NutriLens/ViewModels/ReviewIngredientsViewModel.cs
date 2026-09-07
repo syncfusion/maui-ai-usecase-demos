@@ -14,16 +14,13 @@ public partial class ReviewIngredientsViewModel : ObservableObject
     private readonly IAzureOpenAIIngredientService analysisService;
     private readonly IUserPreferenceStore preferenceStore;
 
-    private FileResult? sourceImage;
-    private string extractedText = string.Empty;
-
-    public ObservableCollection<IngredientReviewItem> Ingredients { get; } = [];
+    public ObservableCollection<IngredientItem> Ingredients { get; } = new();
 
     [ObservableProperty]
-    private bool isAnalyzing;
+    private bool isLoading;
 
     [ObservableProperty]
-    private string analyzingStatus = string.Empty;
+    private bool isAddIngredientPopupVisible;
 
     [ObservableProperty]
     private string newIngredientName = string.Empty;
@@ -32,14 +29,14 @@ public partial class ReviewIngredientsViewModel : ObservableObject
     private string newIngredientDescription = string.Empty;
 
     [ObservableProperty]
-    private bool isAddIngredientPopupVisible;
+    private string analyzingStatus = string.Empty;
 
-    public string IngredientSummary => $"{Ingredients.Count} Ingredients Found";
+    public int IngredientCount => Ingredients.Count;
 
-    // Icons
+    public string IngredientSummary => $"{IngredientCount} Ingredients Found";
+
     public string BackIcon => MaterialIcons.ArrowBack;
     public string PersonIcon => MaterialIcons.Person;
-    public string EditIcon => MaterialIcons.EditNote;
     public string AddIcon => MaterialIcons.AddCircleOutline;
     public string CloseIcon => MaterialIcons.Close;
     public string CameraIcon => MaterialIcons.PhotoCamera;
@@ -56,49 +53,45 @@ public partial class ReviewIngredientsViewModel : ObservableObject
         IAzureOpenAIIngredientService analysisService,
         IUserPreferenceStore preferenceStore)
     {
-        this.analysisService = analysisService
-            ?? throw new ArgumentNullException(nameof(analysisService));
-        this.preferenceStore = preferenceStore
-            ?? throw new ArgumentNullException(nameof(preferenceStore));
+        this.analysisService = analysisService ?? throw new ArgumentNullException(nameof(analysisService));
+        this.preferenceStore = preferenceStore ?? throw new ArgumentNullException(nameof(preferenceStore));
 
-        Ingredients.CollectionChanged += (_, _)
-            => OnPropertyChanged(nameof(IngredientSummary));
+        Ingredients.CollectionChanged += (_, _) => RefreshNumbers();
     }
 
-    /// <summary>
-    /// Called by the page's OnAppearing. Reads the one-shot handoff
-    /// populated by AppNavigator.GoReviewIngredientsAsync and parses
-    /// it into ingredient rows. No-op if the slot was already consumed.
-    /// </summary>
     public void HydrateFromPendingReview()
     {
         var pending = AnalysisNavigationData.PendingReview;
         if (pending is null)
-            return; // Returning to the page after navigation — keep state.
+            return;
 
-        extractedText = pending.ExtractedText;
-        sourceImage = pending.Image;
-        AnalysisNavigationData.PendingReview = null; // consume
+        AnalysisNavigationData.PendingReview = null;
 
         Ingredients.Clear();
-        foreach (var item in ParseIngredients(extractedText))
+
+        foreach (var item in ParseIngredients(pending.ExtractedText))
             Ingredients.Add(item);
+
+        if (Ingredients.Count == 0 && !string.IsNullOrWhiteSpace(pending.ExtractedText))
+        {
+            Ingredients.Add(new IngredientItem
+            {
+                IngredientName = pending.ExtractedText.Trim(),
+                IngredientDescription = string.Empty
+            });
+        }
+
+        RefreshNumbers();
     }
 
-    // ----------------------------------------------------------------
-    // Ingredient parsing — splits OCR text into name + optional desc.
-    // Sample line shapes handled:
-    //   "Sugar"                       → name only
-    //   "INS 322 (Soy Lecithin)"      → name "INS 322", desc "Soy Lecithin"
-    //   "Palm Oil — frying medium"    → name "Palm Oil", desc "frying medium"
-    // ----------------------------------------------------------------
-    private static IEnumerable<IngredientReviewItem> ParseIngredients(string text)
+    private static IEnumerable<IngredientItem> ParseIngredients(string text)
     {
         if (string.IsNullOrWhiteSpace(text))
             yield break;
 
-        // Split on newlines, semicolons, or numbered prefixes like "2." / "2)"
-        var lines = text
+        var cleanedText = NormalizeExtractedText(text);
+
+        var lines = cleanedText
             .Split(['\r', '\n', ';'], StringSplitOptions.RemoveEmptyEntries)
             .Select(l => l.Trim())
             .Where(l => l.Length > 0)
@@ -108,33 +101,94 @@ public partial class ReviewIngredientsViewModel : ObservableObject
 
         foreach (var raw in lines)
         {
-            // Strip a leading number/bullet, e.g. "1. Sugar" / "2) Sugar" / "- Sugar"
-            var cleaned = Regex.Replace(raw, @"^\s*(?:\d+[.\)]|-|\*)\s*", "");
+            var cleaned = Regex.Replace(raw, @"^\s*(?:\d+[.\)]|-|\*|•)\s*", "").Trim();
 
-            var (name, desc) = SplitNameAndDescription(cleaned);
+            if (string.IsNullOrWhiteSpace(cleaned))
+                continue;
+
+            var (name, description) = SplitIngredient(cleaned);
 
             if (string.IsNullOrWhiteSpace(name))
                 continue;
 
-            yield return new IngredientReviewItem
+            yield return new IngredientItem
             {
-                IndexNumber = index.ToString("00"),
-                Name = name.Trim(),
-                Description = desc?.Trim() ?? string.Empty
+                DisplayNumber = index.ToString("00"),
+                IngredientName = name.Trim(),
+                IngredientDescription = description?.Trim() ?? string.Empty
             };
+
             index++;
         }
     }
 
-    private static (string Name, string? Description) SplitNameAndDescription(
-        string line)
+    private static string NormalizeExtractedText(string text)
     {
-        // "INS 322 (Soy Lecithin)"
+        var lines = text
+            .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+            .Select(l => l.Trim())
+            .Where(l => l.Length > 0)
+            .ToArray();
+
+        var ingredientSection = new List<string>();
+        var capture = false;
+
+        foreach (var line in lines)
+        {
+            var lower = line.ToLowerInvariant();
+
+            if (lower.Contains("ingredient"))
+                capture = true;
+
+            if (capture)
+            {
+                var stopWords = new[]
+                {
+                    "nutrition facts",
+                    "serving size",
+                    "calories",
+                    "protein",
+                    "fat",
+                    "carbohydrate",
+                    "carbohydrates",
+                    "sugar",
+                    "sodium",
+                    "allergen",
+                    "warning",
+                    "health claim",
+                    "directions",
+                    "storage"
+                };
+
+                if (stopWords.Any(lower.Contains) && !lower.Contains("ingredient"))
+                    break;
+
+                ingredientSection.Add(line);
+            }
+        }
+
+        if (ingredientSection.Count == 0)
+            return text;
+
+        if (ingredientSection.Count == 1 && ingredientSection[0].ToLowerInvariant().Contains("ingredients"))
+        {
+            var first = ingredientSection[0];
+            var colonIndex = first.IndexOf(':');
+            if (colonIndex >= 0 && colonIndex < first.Length - 1)
+                return first[(colonIndex + 1)..].Trim();
+
+            return string.Empty;
+        }
+
+        return string.Join(Environment.NewLine, ingredientSection);
+    }
+
+    private static (string Name, string? Description) SplitIngredient(string line)
+    {
         var parenMatch = Regex.Match(line, @"^(.*?)\s*\((.+)\)\s*$");
         if (parenMatch.Success)
             return (parenMatch.Groups[1].Value, parenMatch.Groups[2].Value);
 
-        // "Palm Oil — frying medium" / "Palm Oil: frying medium"
         var sepMatch = Regex.Match(line, @"^(.*?)\s*(?:—|–|-|:)\s*(.+)$");
         if (sepMatch.Success && sepMatch.Groups[1].Value.Trim().Length > 0)
             return (sepMatch.Groups[1].Value, sepMatch.Groups[2].Value);
@@ -142,150 +196,131 @@ public partial class ReviewIngredientsViewModel : ObservableObject
         return (line, null);
     }
 
-    // ----------------------------------------------------------------
-    // Commands
-    // ----------------------------------------------------------------
-    [RelayCommand]
-    private async Task BackAsync() => await AppNavigator.PopAsync();
-
-    [RelayCommand]
-    private Task EditAllAsync()
+    private void RefreshNumbers()
     {
-        // Editing is done inline via two-way Entry bindings —
-        // no extra action required, but we keep the button for affordance.
-        return Task.CompletedTask;
+        for (var i = 0; i < Ingredients.Count; i++)
+            Ingredients[i].DisplayNumber = (i + 1).ToString("00");
+
+        OnPropertyChanged(nameof(IngredientCount));
+        OnPropertyChanged(nameof(IngredientSummary));
     }
 
     [RelayCommand]
-    private Task ShowAddIngredientPopupAsync()
+    private async Task BackAsync()
+    {
+        Ingredients.Clear();
+        await AppNavigator.PopAsync();
+    }
+
+    [RelayCommand]
+    private async Task DeleteIngredientAsync(IngredientItem? item)
+    {
+        if (item is null)
+            return;
+
+        Ingredients.Remove(item);
+        RefreshNumbers();
+         
+    }
+
+    [RelayCommand]
+    private async Task AddIngredientAsync()
+    {
+        var name = (NewIngredientName ?? string.Empty).Trim();
+        var desc = (NewIngredientDescription ?? string.Empty).Trim();
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            await AppNavigator.ShowAlertAsync("Validation", "Ingredient name cannot be empty.", "OK");
+            return;
+        }
+
+        if (Ingredients.Any(x =>
+                string.Equals(x.IngredientName?.Trim(), name, StringComparison.OrdinalIgnoreCase)))
+        {
+            await AppNavigator.ShowAlertAsync("Duplicate", "This ingredient already exists.", "OK");
+            return;
+        }
+
+        Ingredients.Add(new IngredientItem
+        {
+            IngredientName = name,
+            IngredientDescription = desc
+        });
+
+        RefreshNumbers();
+
+        NewIngredientName = string.Empty;
+        NewIngredientDescription = string.Empty;
+        IsAddIngredientPopupVisible = false;
+    }
+
+    [RelayCommand]
+    private void ShowAddIngredientPopup()
     {
         NewIngredientName = string.Empty;
         NewIngredientDescription = string.Empty;
         IsAddIngredientPopupVisible = true;
-        return Task.CompletedTask;
     }
 
     [RelayCommand]
-    private Task CancelAddIngredientAsync()
+    private void CancelAddIngredient()
     {
         IsAddIngredientPopupVisible = false;
-        return Task.CompletedTask;
-    }
-
-    [RelayCommand]
-    private Task ConfirmAddIngredientAsync()
-    {
-        var name = (NewIngredientName ?? string.Empty).Trim();
-        if (string.IsNullOrWhiteSpace(name))
-            return Task.CompletedTask;
-
-        Ingredients.Add(new IngredientReviewItem
-        {
-            IndexNumber = (Ingredients.Count + 1).ToString("00"),
-            Name = name,
-            Description = (NewIngredientDescription ?? string.Empty).Trim()
-        });
-
-        IsAddIngredientPopupVisible = false;
-        return Task.CompletedTask;
-    }
-
-    [RelayCommand]
-    private Task RemoveIngredientAsync(IngredientReviewItem? item)
-    {
-        if (item is not null)
-        {
-            Ingredients.Remove(item);
-            RenumberIngredients();
-        }
-        return Task.CompletedTask;
     }
 
     [RelayCommand]
     private async Task RetakeAsync()
-    {
-        // Reset state so a fresh capture doesn't see stale rows.
+    {  
         Ingredients.Clear();
-        extractedText = string.Empty;
-        sourceImage = null;
         await AppNavigator.GoScanAsync();
     }
 
     [RelayCommand]
+    private async Task OpenProfileAsync() => await AppNavigator.GoProfileAsync();
+
+    [RelayCommand]
     private async Task AnalyzeNowAsync()
     {
+        if (IsLoading)
+            return;
+
         if (Ingredients.Count == 0)
         {
-            await AppNavigator.ShowAlertAsync(
-                "No Ingredients",
-                "Please add at least one ingredient before analyzing.",
-                "OK");
+            await AppNavigator.ShowAlertAsync("Validation", "At least one ingredient is required.", "OK");
             return;
         }
-
-        if (IsAnalyzing)
-            return;
-
-        var combined = string.Join('\n', Ingredients
-            .Select(i => string.IsNullOrWhiteSpace(i.Description)
-                ? i.Name
-                : $"{i.Name} ({i.Description})"));
 
         try
         {
-            IsAnalyzing = true;
-            AnalyzingStatus = "Reading your profile…";
+            IsLoading = true;
+            AnalyzingStatus = "Analyzing ingredients...";
 
-            UserDietaryPreference? prefs = preferenceStore.Load();
-            prefs = prefs.IsEmpty ? null : prefs;
+            var prefs = preferenceStore.Load();
+            if (prefs.IsEmpty)
+                prefs = null;
 
-            AnalyzingStatus = "Analyzing ingredients with AI…";
+            var combined = string.Join('\n', Ingredients.Select(i =>
+                string.IsNullOrWhiteSpace(i.IngredientDescription)
+                    ? i.IngredientName
+                    : $"{i.IngredientName} ({i.IngredientDescription})"));
+
             var result = await analysisService.AnalyzeAsync(combined, prefs);
 
             if (result is null)
-                throw new InvalidOperationException(
-                    "The AI analysis returned no result.");
+                throw new InvalidOperationException("The AI analysis returned no result.");
 
             await AppNavigator.GoAnalyzeIngredientsAsync(result);
         }
-        catch (InvalidOperationException ex)
-        {
-            AnalyzingStatus = string.Empty;
-            System.Diagnostics.Debug.WriteLine(
-                $"[Review] InvalidOperationException: {ex}");
-            await AppNavigator.ShowAlertAsync(
-                "Analysis Error", ex.Message, "OK");
-        }
-        catch (HttpRequestException ex)
-        {
-            AnalyzingStatus = string.Empty;
-            System.Diagnostics.Debug.WriteLine(
-                $"[Review] HttpRequestException: {ex}");
-            await AppNavigator.ShowAlertAsync(
-                "Network Issue",
-                "Could not reach the AI service. Check your connection and try again.",
-                "OK");
-        }
         catch (Exception ex)
         {
-            AnalyzingStatus = string.Empty;
-            System.Diagnostics.Debug.WriteLine($"[Review] Exception: {ex}");
-            await AppNavigator.ShowAlertAsync(
-                "Analysis Unavailable",
-                "Something went wrong while analyzing the product. Please try again.",
-                "OK");
+            await AppNavigator.ShowAlertAsync("Analysis Error", ex.Message, "OK");
         }
         finally
         {
-            IsAnalyzing = false;
+            IsLoading = false;
             AnalyzingStatus = string.Empty;
         }
-    }
-
-    private void RenumberIngredients()
-    {
-        for (var i = 0; i < Ingredients.Count; i++)
-            Ingredients[i].IndexNumber = (i + 1).ToString("00");
     }
 
     private static T? Resolve<T>() where T : class =>

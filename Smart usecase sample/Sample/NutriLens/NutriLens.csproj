@@ -79,6 +79,7 @@
 		<PackageReference Include="Syncfusion.Maui.Expander" Version="34.2.6" />
 		<PackageReference Include="Syncfusion.Maui.Gauges" Version="34.2.6" />
 		<PackageReference Include="Syncfusion.Maui.ListView" Version="34.2.6" />
+		<PackageReference Include="Syncfusion.Maui.ProgressBar" Version="34.2.6" />
 		<PackageReference Include="Syncfusion.Maui.TabView" Version="34.2.6" />
 	</ItemGroup>
 

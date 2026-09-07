@@ -2,7 +2,27 @@
 using System.Globalization;
 
 namespace NutriLens.Helpers;
+public sealed class BoolToPeriodBackgroundConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        return value is bool selected && selected ? "#047857" : "Transparent";
+    }
 
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotSupportedException();
+}
+
+public sealed class BoolToPeriodTextColorConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        return value is bool selected && selected ? "White" : "Black";
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotSupportedException();
+}
 public sealed class ProfileSelectedBackgroundConverter : IValueConverter
 {
     public object Convert(

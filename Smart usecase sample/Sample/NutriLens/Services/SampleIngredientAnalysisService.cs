@@ -229,7 +229,7 @@ public sealed class SampleIngredientAnalysisService
         Profile = "Diabetes",
         ProductName = "Chips",
         ExtractedText = "Potatoes, vegetable oil, salt.",
-        Score = 40,
+        Score = 50,
         ScoreExplanation =
             "Refined starch fried in oil with elevated sodium — high glycemic, " +
             "calorie dense, and minimal fiber or protein.",

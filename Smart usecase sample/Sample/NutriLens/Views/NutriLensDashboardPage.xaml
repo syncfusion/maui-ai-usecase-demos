@@ -9,7 +9,7 @@
     xmlns:vm="clr-namespace:NutriLens.ViewModels"
     x:Class="NutriLens.Views.NutriLensDashboardPage"
     x:DataType="vm:NutriLensDashboardViewModel"
-    BackgroundColor="#F5F7FB"
+    BackgroundColor="#eff4ff"
     NavigationPage.HasNavigationBar="False">
 
     <Grid RowDefinitions="Auto,*,80">
@@ -71,12 +71,9 @@
 
                 <!-- Greeting and sugar status -->
                 <Grid
-                    ColumnDefinitions="*,120"
-                    ColumnSpacing="14">
+                    >
 
-                    <VerticalStackLayout
-                        Grid.Column="0"
-                        Spacing="4"
+                    <VerticalStackLayout  
                         VerticalOptions="Center">
 
                         <Label Text="{Binding Greeting}"
@@ -313,7 +310,7 @@
 
                                         <Label
                                             Text="{Binding Rating}"
-                                            FontSize="10"
+                                            FontSize="10"  TranslationY="-10"
                                             FontAttributes="Bold"
                                             TextColor="{Binding RatingColor}"
                                             HorizontalOptions="Center" />
@@ -336,7 +333,7 @@
             <!-- Navigation background -->
             <Border
                 Grid.Row="0"
-                Background="White"
+                Background="#eff4ff"
                 Stroke="Transparent"
                 StrokeShape="RoundRectangle 20,20,0,0"
                 VerticalOptions="Fill">
@@ -405,7 +402,7 @@
                     <!-- Empty center space reserved for FAB -->
                     <BoxView
                         Grid.Column="2"
-                        Color="White" />
+                        Color="#eff4ff" />
 
                     <!-- Trends -->
                     <VerticalStackLayout

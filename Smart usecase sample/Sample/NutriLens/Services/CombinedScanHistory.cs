@@ -25,9 +25,9 @@ public static class SeedHistory
         return
         [
             // Oldest first — chronological baseline order.
-            Scan(service, "Yogurt", "yogurt.webp", now.AddDays(-6)),
-            Scan(service, "Chips", "potato.webp", now.AddDays(-1)),
-            Scan(service, "Oats", "oats_label.webp", now.AddHours(-2))
+            Scan(service, "Yogurt", "yogurt.webp", now.AddDays(-36)),
+            Scan(service, "Chips", "potato.webp", now.AddDays(-5)),
+            Scan(service, "Oats", "oats_label.webp", now.AddHours(-1))
         ];
     }
 

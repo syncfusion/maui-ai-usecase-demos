@@ -12,8 +12,20 @@
                 <ResourceDictionary Source="Resources/Styles/NutriLensStyles.xaml" />
                 
             </ResourceDictionary.MergedDictionaries>
+            <helpers:BoolToColorConverter 
+    x:Key="BoolToWhiteGrayConverter"
+    TrueColor="White"
+    FalseColor="#374151" />
+
+            <!-- Boolean to White/Orange Converter for Allergies -->
+            <helpers:BoolToColorConverter 
+    x:Key="BoolToWhiteOrangeConverter"
+    TrueColor="White"
+    FalseColor="#B8600C" />
             <helpers:InverseBoolConverter
                 x:Key="InverseBoolConverter" />
+            <helpers:BoolToPeriodBackgroundConverter x:Key="PeriodButtonBackgroundConverter" />
+            <helpers:BoolToPeriodTextColorConverter x:Key="PeriodButtonTextColorConverter" />
             <Style
         x:Key="ProfileIconStyle"
         TargetType="Label">

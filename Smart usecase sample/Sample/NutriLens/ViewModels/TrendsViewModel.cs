@@ -9,12 +9,9 @@ namespace NutriLens.ViewModels;
 
 public partial class TrendsViewModel : ObservableObject
 {
-    // Unified source: sample seed records + saved AI-generated records.
     private readonly ICombinedScanHistory history;
     private IReadOnlyList<SavedScan> combined = [];
-
-    [ObservableProperty]
-    private string selectedPeriod = "7D";
+     
 
     public ObservableCollection<string> Periods { get; } =
     [
@@ -85,6 +82,33 @@ public partial class TrendsViewModel : ObservableObject
     public string TrendingUpIcon => MaterialIcons.TrendingUp;
     public string ArrowDownIcon => MaterialIcons.ArrowDownward;
     public string AutoGraphIcon => MaterialIcons.AutoGraph;
+    [ObservableProperty]
+private string selectedPeriod = "7D";
+
+private void UpdatePeriodSelection(string period)
+{
+    SelectedPeriod = period;
+    OnPropertyChanged(nameof(Is7DSelected));
+    OnPropertyChanged(nameof(Is30DSelected));
+    OnPropertyChanged(nameof(Is90DSelected));
+}
+
+public bool Is7DSelected => SelectedPeriod == "7D";
+public bool Is30DSelected => SelectedPeriod == "30D";
+public bool Is90DSelected => SelectedPeriod == "90D";
+
+[RelayCommand]
+private void SelectPeriod(string period)
+{
+    if (string.IsNullOrWhiteSpace(period))
+        return;
+
+    if (SelectedPeriod == period)
+        return;
+
+    UpdatePeriodSelection(period);
+    Recompute();
+}
 
     public TrendsViewModel(ICombinedScanHistory history)
     {
@@ -97,19 +121,11 @@ public partial class TrendsViewModel : ObservableObject
     {
     }
 
-    /// <summary>Reloads combined history (seeds + saved) and recomputes all metrics.</summary>
     public async Task LoadAsync()
     {
         combined = await history.GetCombinedAsync();
         Recompute();
-    }
-
-    [RelayCommand]
-    private void SelectPeriod(string period)
-    {
-        SelectedPeriod = period;
-        Recompute();
-    }
+    } 
 
     [RelayCommand]
     private async Task OpenHomeAsync() => await AppNavigator.GoDashboardAsync();
@@ -128,23 +144,20 @@ public partial class TrendsViewModel : ObservableObject
 
     private void Recompute()
     {
-        ComputeScoreTrend();
-        ComputeSummaryMetrics();
-        ComputeFrequentAdditives();
-        ComputeNutritionCards();
-        ComputeInsight();
+        var window = GetPeriodWindow();
+
+        ComputeScoreTrend(window);
+        ComputeSummaryMetrics(window);
+        ComputeFrequentAdditives(window);
+        ComputeNutritionCards(window);
+        ComputeInsight(window);
     }
 
-    // Chart: every record (seed + saved) becomes its own point,
-    // chronological order → 92 → 74 → 38 → 68 → 85 …
-    private void ComputeScoreTrend()
+    private IReadOnlyList<SavedScan> GetPeriodWindow()
     {
-        var chronological = combined
-            .OrderBy(s => s.SavedAtUtc)
-            .ToList();
+        if (combined.Count == 0)
+            return [];
 
-        // Period filter; fall back to full history when the window holds
-        // fewer than 2 points so the chart always shows the baseline trend.
         var days = SelectedPeriod switch
         {
             "30D" => 30,
@@ -154,20 +167,28 @@ public partial class TrendsViewModel : ObservableObject
 
         var cutoff = DateTime.UtcNow.AddDays(-days);
 
-        var window = chronological
+        var window = combined
             .Where(s => s.SavedAtUtc >= cutoff)
+            .OrderBy(s => s.SavedAtUtc)
             .ToList();
 
-        if (window.Count < 2)
-            window = chronological;
+        return window.Count > 0 ? window : combined.OrderBy(s => s.SavedAtUtc).ToList();
+    }
 
-        // Keep the chart readable — show the most recent 12 points.
-        var plotted = window.Count > 12 ? window.TakeLast(12).ToList() : window;
-
+    private void ComputeScoreTrend(IReadOnlyList<SavedScan> window)
+    {
         HealthScoreTrend.Clear();
 
+        if (window.Count == 0)
+        {
+            YMinimum = 0;
+            YMaximum = 100;
+            return;
+        }
+
+        var plotted = window.Count > 12 ? window.TakeLast(12).ToList() : window.ToList();
+
         var dateUseCount = new Dictionary<DateTime, int>();
-        var seenOrder = 0;
 
         foreach (var scan in plotted)
         {
@@ -176,8 +197,6 @@ public partial class TrendsViewModel : ObservableObject
             dateUseCount.TryGetValue(localDate, out var uses);
             dateUseCount[localDate] = uses + 1;
 
-            // Multiple scans on the same day keep distinct labels
-            // so no point is visually collapsed.
             var label = uses == 0
                 ? localDate.ToString("M/d")
                 : $"{localDate:M/d}·{uses + 1}";
@@ -187,32 +206,21 @@ public partial class TrendsViewModel : ObservableObject
                 Day = label,
                 Score = scan.Result.Score
             });
-
-            seenOrder++;
         }
 
-        // Adaptive Y axis — never clips real scores (was Min=50/Max=90).
-        if (plotted.Count == 0)
-        {
-            YMinimum = 0;
-            YMaximum = 100;
-        }
-        else
-        {
-            var min = plotted.Min(s => s.Result.Score);
-            var max = plotted.Max(s => s.Result.Score);
+        var min = plotted.Min(s => s.Result.Score);
+        var max = plotted.Max(s => s.Result.Score);
 
-            YMinimum = Math.Max(0, Math.Floor((min - 10) / 10.0) * 10);
-            YMaximum = Math.Min(100, Math.Ceiling((max + 10) / 10.0) * 10);
+        YMinimum = Math.Max(0, Math.Floor((min - 10) / 10.0) * 10);
+        YMaximum = Math.Min(100, Math.Ceiling((max + 10) / 10.0) * 10);
 
-            if (YMaximum - YMinimum < 20)
-                YMaximum = Math.Min(100, YMinimum + 20);
-        }
+        if (YMaximum - YMinimum < 20)
+            YMaximum = Math.Min(100, YMinimum + 20);
     }
 
-    private void ComputeSummaryMetrics()
+    private void ComputeSummaryMetrics(IReadOnlyList<SavedScan> window)
     {
-        if (combined.Count == 0)
+        if (window.Count == 0)
         {
             AverageScoreText = "0";
             AverageScoreDelta = "—";
@@ -223,21 +231,20 @@ public partial class TrendsViewModel : ObservableObject
             return;
         }
 
-        var scores = combined.Select(s => (double)s.Result.Score).ToList();
+        var scores = window.Select(s => (double)s.Result.Score).ToList();
 
         AverageScoreText = ((int)Math.Round(scores.Average())).ToString();
-        TotalScansText = combined.Count.ToString();
+        TotalScansText = window.Count.ToString();
         BestScoreText = ((int)scores.Max()).ToString();
         LowestScoreText = ((int)scores.Min()).ToString();
-        MostRecentScoreText = combined
+        MostRecentScoreText = window
             .OrderByDescending(s => s.SavedAtUtc)
             .First()
             .Result
             .Score
             .ToString();
 
-        // Improvement trend: newer half vs older half of the combined history.
-        var ordered = combined.OrderBy(s => s.SavedAtUtc).ToList();
+        var ordered = window.OrderBy(s => s.SavedAtUtc).ToList();
         var half = ordered.Count / 2;
 
         if (ordered.Count >= 4 && half > 0)
@@ -259,16 +266,16 @@ public partial class TrendsViewModel : ObservableObject
         }
     }
 
-    private void ComputeFrequentAdditives()
+    private void ComputeFrequentAdditives(IReadOnlyList<SavedScan> window)
     {
         FrequentAdditives.Clear();
 
-        if (combined.Count == 0)
+        if (window.Count == 0)
             return;
 
         var counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var scan in combined)
+        foreach (var scan in window)
         {
             var names = scan.Result.Additives
                 .Concat(scan.Result.Preservatives)
@@ -282,10 +289,9 @@ public partial class TrendsViewModel : ObservableObject
             }
         }
 
-        // Fallback: top High-risk ingredients when labels declare no additives.
         if (counts.Count == 0)
         {
-            foreach (var scan in combined)
+            foreach (var scan in window)
             {
                 var flagged = scan.Result.IngredientBreakdown
                     .Where(i =>
@@ -301,7 +307,7 @@ public partial class TrendsViewModel : ObservableObject
             }
         }
 
-        var total = Math.Max(1, combined.Count);
+        var total = Math.Max(1, window.Count);
 
         foreach (var entry in counts
             .OrderByDescending(k => k.Value)
@@ -320,9 +326,9 @@ public partial class TrendsViewModel : ObservableObject
         }
     }
 
-    private void ComputeNutritionCards()
+    private void ComputeNutritionCards(IReadOnlyList<SavedScan> window)
     {
-        var withProtein = combined
+        var withProtein = window
             .Where(s => s.Result.Nutrition.ProteinGrams is > 0)
             .ToList();
 
@@ -332,9 +338,9 @@ public partial class TrendsViewModel : ObservableObject
 
             ProteinAverageText = $"Avg. {avg:0.#}g/serving";
             ProteinProgress = Math.Clamp(avg / 15.0, 0, 1);
-            ProteinNote = withProtein.Count == combined.Count
-                ? "Based on protein values across your scan history."
-                : $"Based on {withProtein.Count} of {combined.Count} scans that listed protein.";
+            ProteinNote = withProtein.Count == window.Count
+                ? "Based on protein values across the selected period."
+                : $"Based on {withProtein.Count} of {window.Count} scans in the selected period.";
         }
         else
         {
@@ -343,13 +349,10 @@ public partial class TrendsViewModel : ObservableObject
             ProteinNote = "Scan products with nutrition labels to track protein intake.";
         }
 
-        var sugarScans = combined
-            .Where(s => (s.Result.Nutrition.SugarsGrams ?? s.Result.Nutrition.AddedSugarsGrams) is > 0)
-            .OrderBy(s => s.SavedAtUtc)
-            .ToList();
-
-        var sugarValues = sugarScans
-            .Select(s => (s.Result.Nutrition.SugarsGrams ?? s.Result.Nutrition.AddedSugarsGrams)!.Value)
+        var sugarValues = window
+            .Select(s => s.Result.Nutrition.SugarsGrams ?? s.Result.Nutrition.AddedSugarsGrams)
+            .Where(g => g is > 0)
+            .Select(g => g!.Value)
             .ToList();
 
         if (sugarValues.Count > 0)
@@ -358,8 +361,6 @@ public partial class TrendsViewModel : ObservableObject
 
             SugarProgress = Math.Clamp(avg / 25.0, 0, 1);
 
-            // Improvement measured across time — a sugar DECREASE renders
-            // as the green "−x%" badge, matching the original card.
             if (sugarValues.Count >= 2)
             {
                 var half = sugarValues.Count / 2;
@@ -375,7 +376,6 @@ public partial class TrendsViewModel : ObservableObject
                 if (older > 0)
                 {
                     var change = (newer - older) / older * 100;
-
                     SugarDeltaText = change <= 0
                         ? $"-{(int)Math.Round(Math.Abs(change))}%"
                         : $"+{(int)Math.Round(change)}%";
@@ -390,7 +390,7 @@ public partial class TrendsViewModel : ObservableObject
                 SugarDeltaText = "—";
             }
 
-            SugarNote = $"Averaging {avg:0.#}g of sugars per serving across your scan history.";
+            SugarNote = $"Averaging {avg:0.#}g of sugars per serving across the selected period.";
         }
         else
         {
@@ -400,9 +400,9 @@ public partial class TrendsViewModel : ObservableObject
         }
     }
 
-    private void ComputeInsight()
+    private void ComputeInsight(IReadOnlyList<SavedScan> window)
     {
-        if (combined.Count == 0)
+        if (window.Count == 0)
         {
             InsightTitle = "Need more data";
             InsightText =
@@ -410,55 +410,52 @@ public partial class TrendsViewModel : ObservableObject
             return;
         }
 
-        var ordered = combined.OrderBy(s => s.SavedAtUtc).ToList();
+        var ordered = window.OrderBy(s => s.SavedAtUtc).ToList();
 
         if (ordered.Count < 4)
         {
             InsightTitle = "Need more data";
             var remaining = 4 - ordered.Count;
             InsightText =
-                $"Scan {remaining} more product{(remaining == 1 ? "" : "s")} this week to unlock detailed monthly forecasting and deeper ingredient insights.";
+                $"Scan {remaining} more product{(remaining == 1 ? "" : "s")} in this period to unlock detailed trend insights.";
             return;
         }
 
-        var half = ordered.Count / 2;
-        var older = ordered.Take(half).Average(s => s.Result.Score);
-        var newer = ordered.TakeLast(half).Average(s => s.Result.Score);
-        var delta = (int)Math.Round(newer - older);
+        var firstHalf = ordered.Take(ordered.Count / 2).Average(s => s.Result.Score);
+        var secondHalf = ordered.TakeLast(ordered.Count / 2).Average(s => s.Result.Score);
+        var delta = secondHalf - firstHalf;
 
-        if (delta > 0)
+        if (delta >= 5)
         {
-            InsightTitle = "Improving trend";
+            InsightTitle = "Trend improving";
             InsightText =
-                $"Across your last {ordered.Count} scans, your food choices improved by {delta} points on average. Keep it up!";
+                $"Your health score improved by {delta:0.#} points across the selected period. Keep prioritizing lower-risk products.";
         }
-        else if (delta < 0)
+        else if (delta <= -5)
         {
-            InsightTitle = "Watch your choices";
+            InsightTitle = "Trend declining";
             InsightText =
-                $"Your recent scans average {Math.Abs(delta)} points lower than earlier ones. Consider the alternatives suggested in each analysis.";
+                $"Your health score dropped by {Math.Abs(delta):0.#} points across the selected period. Check high-sugar and high-risk ingredients.";
         }
         else
         {
-            InsightTitle = "Steady pattern";
+            InsightTitle = "Stable trend";
             InsightText =
-                $"Your average health score has held steady at {(int)Math.Round(newer)}/100 across your {ordered.Count} scans.";
+                "Your health score is staying fairly steady across the selected period. Focus on consistent label choices.";
         }
     }
-
-    private static string FormatDelta(double percent)
-    {
-        var rounded = (int)Math.Round(Math.Abs(percent));
-        return percent >= 0 ? $"+{rounded}%" : $"-{rounded}%";
-    }
-
     private static T? Resolve<T>()
-        where T : class
+       where T : class
     {
         return Application.Current?
             .Handler?
             .MauiContext?
             .Services
             .GetService<T>();
+    }
+    private static string FormatDelta(double value)
+    {
+        var rounded = (int)Math.Round(value);
+        return rounded >= 0 ? $"+{rounded}%" : $"{rounded}%";
     }
 }

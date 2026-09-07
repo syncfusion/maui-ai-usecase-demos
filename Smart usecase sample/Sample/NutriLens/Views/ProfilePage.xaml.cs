@@ -7,7 +7,6 @@ public partial class ProfilePage : ContentPage
     public ProfilePage()
     {
         InitializeComponent();
-
         BindingContext = new ProfileViewModel();
     }
 
@@ -16,8 +15,6 @@ public partial class ProfilePage : ContentPage
         base.OnAppearing();
 
         if (BindingContext is ProfileViewModel vm)
-        {
             await vm.LoadScanInsightsAsync();
-        }
     }
 }

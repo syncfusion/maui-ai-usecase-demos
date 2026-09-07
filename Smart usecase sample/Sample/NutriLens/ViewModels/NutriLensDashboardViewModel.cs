@@ -14,8 +14,8 @@ public partial class NutriLensDashboardViewModel : ObservableObject
     private readonly IDailyInsightGenerator dailyInsightGenerator;
     private readonly ICombinedScanHistory combinedHistory;
     private readonly ISampleAnalysisDataService sampleAnalysisService;
-    private IReadOnlyList<SavedScan> allScans = [];
-
+    private IReadOnlyList<SavedScan> allScans = []; 
+     
     public ObservableCollection<RecentScanItem> RecentScans { get; } = [];
 
     [ObservableProperty]
@@ -177,9 +177,9 @@ public partial class NutriLensDashboardViewModel : ObservableObject
 
         Greeting = hour switch
         {
-            < 12 => "Good Morning!",
-            < 17 => "Good Afternoon!",
-            _ => "Good Evening!"
+            < 12 => "Good Morning, Alex",
+            < 17 => "Good Afternoon, Alex",
+            _ => "Good Evening, Alex"
         };
     }
 
@@ -210,18 +210,19 @@ public partial class NutriLensDashboardViewModel : ObservableObject
     private static string FormatScanDate(DateTime savedAtUtc)
     {
         var local = savedAtUtc.ToLocalTime();
-        var age = DateTime.Now - local;
 
-        if (age.TotalMinutes < 60)
-            return $"{Math.Max(1, (int)age.TotalMinutes)} min ago";
-        if (age.TotalHours < 24)
-            return $"{(int)age.TotalHours} hrs ago";
-        if (age.TotalDays < 2)
-            return "Yesterday";
+        if (local.Date == DateTime.Now.Date)
+            return $"Today, {local:hh:mm tt}";
+
+        if (local.Date == DateTime.Now.Date.AddDays(-1))
+            return $"Yesterday, {local:hh:mm tt}";
+
+        var age = DateTime.Now.Date - local.Date;
+
         if (age.TotalDays < 7)
-            return local.ToString("ddd");
+            return $"{local:ddd}, {local:hh:mm tt}";
 
-        return local.ToString("MMM d");
+        return local.ToString("MMM d, hh:mm tt");
     }
 
     private static T? Resolve<T>()

@@ -5,7 +5,7 @@ namespace NutriLens.Models;
 public partial class IngredientItem : ObservableObject
 {
     [ObservableProperty]
-    private string indexNumber = string.Empty;
+    private string displayNumber = string.Empty;
 
     [ObservableProperty]
     private string ingredientName = string.Empty;

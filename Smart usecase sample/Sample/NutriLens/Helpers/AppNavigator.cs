@@ -4,6 +4,22 @@ using System.Globalization;
 
 namespace NutriLens.Helpers
 {
+    public sealed class BoolToColorConverter : IValueConverter
+    {
+        public Color TrueColor { get; set; } = Colors.Green;
+        public Color FalseColor { get; set; } = Colors.Red;
+
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            if (value is bool b)
+                return b ? TrueColor : FalseColor;
+
+            return FalseColor;
+        }
+
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+            => throw new NotImplementedException();
+    }
     public class StringToBoolConverter : IValueConverter
     {
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -81,6 +97,15 @@ namespace NutriLens.Helpers
 
             AnalysisNavigationData.CurrentResult = result;
             return Nav.PushAsync(new AnalyzeIngredientsResultPage(result));
+        }
+        public static Task<bool> ShowConfirmAsync(string message, string accept, string cancel)
+        {
+            var page = Application.Current?.Windows.FirstOrDefault()?.Page;
+
+            if (page is null)
+                return Task.FromResult(false);
+
+            return page.DisplayAlertAsync("Confirm", message, accept, cancel);
         }
         /// <summary>
         /// Pushes the Review page, carrying the extracted OCR text + source

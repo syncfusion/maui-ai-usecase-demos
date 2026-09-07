@@ -8,6 +8,7 @@
     xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
     xmlns:models="clr-namespace:NutriLens.Models"
     xmlns:vm="clr-namespace:NutriLens.ViewModels"
+    xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
     x:Class="NutriLens.Views.TrendsPage"
     x:DataType="vm:TrendsViewModel"
     BackgroundColor="#F3F5FA"
@@ -72,56 +73,51 @@
                     FontAttributes="Bold"
                     TextColor="#0F172A" />
 
-                <!-- Period selector -->
-                <Border
-                    WidthRequest="220"
-                    HeightRequest="38"
-                    Margin="0,16,0,0"
-                    Padding="4"
-                    BackgroundColor="#DCE9FF"
-                    Stroke="Transparent"
-                    StrokeShape="RoundRectangle 20"
-                    HorizontalOptions="Center">
+                <Grid
+    WidthRequest="220"
+    HeightRequest="38"
+    Margin="0,16,0,0"
+    HorizontalOptions="Center"
+    ColumnDefinitions="*,*,*">
 
-                    <Grid ColumnDefinitions="*,*,*">
+                    <buttons:SfButton
+        Text="7D"
+        FontSize="12"
+        FontAttributes="Bold"
+        Background="{Binding Is7DSelected, Converter={StaticResource BoolToPeriodBackgroundConverter}}"
+        TextColor="{Binding Is7DSelected, Converter={StaticResource BoolToPeriodTextColorConverter}}"
+        Stroke="Transparent"
+        CornerRadius="16"
+        Padding="0"
+        Command="{Binding SelectPeriodCommand}"
+        CommandParameter="7D" />
 
-                        <buttons:SfButton
-                            Text="7D"
-                            FontSize="12"
-                            FontAttributes="Bold"
-                            Background="#047857"
-                            TextColor="White"
-                            Stroke="Transparent"
-                            CornerRadius="16"
-                            Padding="0"
-                            Command="{Binding SelectPeriodCommand}"
-                            CommandParameter="7D" />
+                    <buttons:SfButton
+        Grid.Column="1"
+        Text="30D"
+        FontSize="12"
+        FontAttributes="Bold"
+        Background="{Binding Is30DSelected, Converter={StaticResource BoolToPeriodBackgroundConverter}}"
+        TextColor="{Binding Is30DSelected, Converter={StaticResource BoolToPeriodTextColorConverter}}"
+        Stroke="Transparent"
+        CornerRadius="16"
+        Padding="0"
+        Command="{Binding SelectPeriodCommand}"
+        CommandParameter="30D" />
 
-                        <buttons:SfButton
-                            Grid.Column="1"
-                            Text="30D"
-                            FontSize="12"
-                            TextColor="#334155"
-                            Background="Transparent"
-                            Stroke="Transparent"
-                            CornerRadius="16"
-                            Padding="0"
-                            Command="{Binding SelectPeriodCommand}"
-                            CommandParameter="30D" />
-
-                        <buttons:SfButton
-                            Grid.Column="2"
-                            Text="90D"
-                            FontSize="12"
-                            TextColor="#334155"
-                            Background="Transparent"
-                            Stroke="Transparent"
-                            CornerRadius="16"
-                            Padding="0"
-                            Command="{Binding SelectPeriodCommand}"
-                            CommandParameter="90D" />
-                    </Grid>
-                </Border>
+                    <buttons:SfButton
+        Grid.Column="2"
+        Text="90D"
+        FontSize="12"
+        FontAttributes="Bold"
+        Background="{Binding Is90DSelected, Converter={StaticResource BoolToWhiteGrayConverter}}"
+        TextColor="{Binding Is90DSelected, Converter={StaticResource BoolToPeriodTextColorConverter}}"
+        Stroke="Transparent"
+        CornerRadius="16"
+        Padding="0"
+        Command="{Binding SelectPeriodCommand}"
+        CommandParameter="90D" />
+                </Grid>
 
                 <!-- Average score card -->
                 <Border
@@ -239,19 +235,12 @@
                                 FontSize="16"
                                 FontAttributes="Bold"
                                 TextColor="#0F172A" />
-
-                            <Label
-                                Grid.Column="1"
-                                Text="{Binding ProteinAverageText}"
-                                FontSize="13"
-                                TextColor="#64748B" />
+ 
                         </Grid>
-
-                        <ProgressBar
-                            Progress="{Binding ProteinProgress}"
-                            HeightRequest="6"
-                            ProgressColor="#047857"
-                            BackgroundColor="#DCE9FF" />
+                        <progressBar:SfLinearProgressBar Progress="{Binding ProteinProgress}"
+                                                        HeightRequest="6" Maximum="1"
+                                                        ProgressFill="#047857"
+                                                        BackgroundColor="#DCE9FF"/> 
 
                         <Label
                             Text="{Binding ProteinNote}"
@@ -273,35 +262,12 @@
                                 FontSize="16"
                                 FontAttributes="Bold"
                                 TextColor="#0F172A" />
-
-                            <Border
-                                Grid.Column="1"
-                                Padding="8,4"
-                                BackgroundColor="#DFF7EC"
-                                Stroke="Transparent"
-                                StrokeShape="RoundRectangle 10">
-
-                                <HorizontalStackLayout Spacing="4">
-                                    <Label
-                                        Text="{Binding ArrowDownIcon}"
-                                        Style="{StaticResource TrendIconStyle}"
-                                        FontSize="15"
-                                        TextColor="#047857" />
-
-                                    <Label
-                                        Text="{Binding SugarDeltaText}"
-                                        FontSize="12"
-                                        FontAttributes="Bold"
-                                        TextColor="#047857" />
-                                </HorizontalStackLayout>
-                            </Border>
+ 
                         </Grid>
-
-                        <ProgressBar
-                            Progress="{Binding SugarProgress}"
-                            HeightRequest="6"
-                            ProgressColor="#F4A261"
-                            BackgroundColor="#DCE9FF" />
+                        <progressBar:SfLinearProgressBar Progress="{Binding SugarProgress}"
+                                                        HeightRequest="6" Maximum="1"
+                                                        ProgressFill="#F4A261"
+                                                        BackgroundColor="#DCE9FF"/> 
 
                         <Label
                             Text="{Binding SugarNote}"
@@ -358,52 +324,7 @@
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>
                 </Border>
-
-                <!-- Insight -->
-                <Border
-                    Margin="0,28,0,0"
-                    Padding="18"
-                    BackgroundColor="#F9E2BC"
-                    Stroke="Transparent"
-                    StrokeShape="RoundRectangle 14">
-
-                    <Grid
-                        ColumnDefinitions="Auto,*"
-                        ColumnSpacing="12">
-
-                        <Border
-                            WidthRequest="40"
-                            HeightRequest="40"
-                            BackgroundColor="#F4C16D"
-                            Stroke="Transparent"
-                            StrokeShape="RoundRectangle 20"
-                            VerticalOptions="Start">
-
-                            <Label
-                                Text="{Binding AutoGraphIcon}"
-                                Style="{StaticResource TrendIconStyle}"
-                                FontSize="22"
-                                TextColor="#A16207" />
-                        </Border>
-
-                        <VerticalStackLayout
-                            Grid.Column="1"
-                            Spacing="6">
-
-                            <Label
-                                Text="{Binding InsightTitle}"
-                                FontSize="18"
-                                FontAttributes="Bold"
-                                TextColor="#7C4A03" />
-
-                            <Label
-                                Text="{Binding InsightText}"
-                                FontSize="13"
-                                TextColor="#7C4A03"
-                                LineBreakMode="WordWrap" />
-                        </VerticalStackLayout>
-                    </Grid>
-                </Border>
+ 
             </VerticalStackLayout>
         </ScrollView>
 

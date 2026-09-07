@@ -1,4 +1,6 @@
-﻿namespace NutriLens
+﻿using NutriLens.Views;
+
+namespace NutriLens
 {
     public partial class App : Application
     {

@@ -32,7 +32,15 @@ public partial class ProfileViewModel : ObservableObject
     private string scanInsightText =
         "Scan your first product to unlock personalized insights.";
 
-    // Icons
+    [ObservableProperty]
+    private ImageSource? avatarSource;
+
+    [ObservableProperty]
+    private bool hasAvatar;
+
+    [ObservableProperty]
+    private string avatarInitials = "A";
+
     public string BiotechIcon => MaterialIcons.Biotech;
     public string PersonIcon => MaterialIcons.Person;
     public string EditIcon => MaterialIcons.Edit;
@@ -40,7 +48,6 @@ public partial class ProfileViewModel : ObservableObject
     public string RestaurantMenuIcon => MaterialIcons.RestaurantMenu;
     public string HealthIcon => MaterialIcons.HealthAndSafety;
     public string MedicalServicesIcon => MaterialIcons.MedicalServices;
-    public string MedicationIcon => MaterialIcons.Medication;
     public string LockIcon => MaterialIcons.Lock;
     public string ChevronIcon => MaterialIcons.ChevronRight;
     public string HomeIcon => MaterialIcons.Home;
@@ -55,32 +62,29 @@ public partial class ProfileViewModel : ObservableObject
     private bool hypertensionEnabled;
 
     [ObservableProperty]
-    private bool cholesterolEnabled;
-
-    [ObservableProperty]
-    private bool kidneyHealthEnabled;
+    private string avatarPath = string.Empty;
 
     public ObservableCollection<ProfileGoal> DietaryGoals { get; } =
     [
         new() { Title = "Reduce Sugar", IsSelected = true },
-        new() { Title = "High Protein",  IsSelected = false },
-        new() { Title = "Low Carb",      IsSelected = false },
-        new() { Title = "Heart Health",  IsSelected = true }
+        new() { Title = "High Protein", IsSelected = false },
+        new() { Title = "Low Carb", IsSelected = false },
+        new() { Title = "Heart Health", IsSelected = true }
     ];
 
     public ObservableCollection<ProfileGoal> Preferences { get; } =
     [
-        new() { Title = "Nut-Free",    IsSelected = true },
+        new() { Title = "Nut-Free", IsSelected = true },
         new() { Title = "Gluten-Free", IsSelected = false },
-        new() { Title = "Vegan",       IsSelected = false },
-        new() { Title = "Dairy-Free",  IsSelected = false }
+        new() { Title = "Vegan", IsSelected = false },
+        new() { Title = "Dairy-Free", IsSelected = false }
     ];
 
     public ObservableCollection<ProfileSetting> Settings { get; } =
     [
-        new() { Icon = MaterialIcons.PersonOutline,     Title = "Account Settings" },
+        new() { Icon = MaterialIcons.PersonOutline, Title = "Account Settings" },
         new() { Icon = MaterialIcons.NotificationsNone, Title = "Notifications" },
-        new() { Icon = MaterialIcons.HelpOutline,       Title = "Help & Support" }
+        new() { Icon = MaterialIcons.HelpOutline, Title = "Help & Support" }
     ];
 
     public ProfileViewModel()
@@ -94,34 +98,29 @@ public partial class ProfileViewModel : ObservableObject
         IScanHistoryStore scanStore,
         IUserPreferenceStore preferenceStore)
     {
-        this.scanStore = scanStore
-            ?? throw new ArgumentNullException(nameof(scanStore));
-        this.preferenceStore = preferenceStore
-            ?? throw new ArgumentNullException(nameof(preferenceStore));
+        this.scanStore = scanStore ?? throw new ArgumentNullException(nameof(scanStore));
+        this.preferenceStore = preferenceStore ?? throw new ArgumentNullException(nameof(preferenceStore));
 
-        // Hydrate toggles from store (goals/preferences hydrate below).
         var saved = preferenceStore.Load();
-        DiabetesEnabled = saved.HealthConsiderations
-            .Contains("Diabetes", StringComparer.OrdinalIgnoreCase);
-        HypertensionEnabled = saved.HealthConsiderations
-            .Contains("Hypertension", StringComparer.OrdinalIgnoreCase);
-        CholesterolEnabled = saved.HealthConsiderations
-            .Contains("Cholesterol", StringComparer.OrdinalIgnoreCase);
-        KidneyHealthEnabled = saved.HealthConsiderations
-            .Contains("Kidney Health", StringComparer.OrdinalIgnoreCase);
+
+        DiabetesEnabled = saved.HealthConsiderations.Contains("Diabetes", StringComparer.OrdinalIgnoreCase);
+        HypertensionEnabled = saved.HealthConsiderations.Contains("Hypertension", StringComparer.OrdinalIgnoreCase);
 
         ApplyStoredSelections(DietaryGoals, saved.DietaryGoals);
         ApplyStoredSelections(Preferences, saved.AllergiesAndPreferences);
 
-        // Track collection mutations → persist.
+        LoadAvatarFromStore(saved.AvatarPath);
+
         DietaryGoals.CollectionChanged += (_, _) => PersistPreferences();
         Preferences.CollectionChanged += (_, _) => PersistPreferences();
+
         foreach (var g in DietaryGoals)
             g.PropertyChanged += (_, _) => PersistPreferences();
+
         foreach (var p in Preferences)
             p.PropertyChanged += (_, _) => PersistPreferences();
 
-        PersistPreferences(); // ensure store matches in-memory initial state
+        PersistPreferences();
     }
 
     private static void ApplyStoredSelections(
@@ -132,17 +131,32 @@ public partial class ProfileViewModel : ObservableObject
             return;
 
         foreach (var item in targets)
+        {
             item.IsSelected = selected.Any(s =>
                 string.Equals(s, item.Title, StringComparison.OrdinalIgnoreCase));
+        }
     }
 
-    // Persist whenever any toggle flips.
+    private void LoadAvatarFromStore(string? avatarPathFromStore)
+    {
+        AvatarPath = avatarPathFromStore ?? string.Empty;
+
+        if (!string.IsNullOrWhiteSpace(AvatarPath) && File.Exists(AvatarPath))
+        {
+            AvatarSource = ImageSource.FromFile(AvatarPath);
+            HasAvatar = true;
+            return;
+        }
+
+        AvatarSource = null;
+        HasAvatar = false;
+        AvatarInitials = "A";
+    }
+
     partial void OnDiabetesEnabledChanged(bool value) => PersistPreferences();
     partial void OnHypertensionEnabledChanged(bool value) => PersistPreferences();
-    partial void OnCholesterolEnabledChanged(bool value) => PersistPreferences();
-    partial void OnKidneyHealthEnabledChanged(bool value) => PersistPreferences();
+    partial void OnAvatarPathChanged(string value) => PersistPreferences();
 
-    /// <summary>Builds the snapshot and writes it to the store.</summary>
     private void PersistPreferences()
     {
         var snapshot = new UserDietaryPreference
@@ -155,21 +169,23 @@ public partial class ProfileViewModel : ObservableObject
                 .Where(p => p.IsSelected)
                 .Select(p => p.Title)
                 .ToList(),
-            HealthConsiderations = BuildHealthConsiderations()
-                .ToList()
+            HealthConsiderations = BuildHealthConsiderations().ToList(),
+            AvatarPath = AvatarPath,
+            SavedAtUtc = DateTime.UtcNow
         };
+
         preferenceStore.Save(snapshot);
     }
 
     private IEnumerable<string> BuildHealthConsiderations()
     {
-        if (DiabetesEnabled) yield return "Diabetes";
-        if (HypertensionEnabled) yield return "Hypertension";
-        if (CholesterolEnabled) yield return "Cholesterol";
-        if (KidneyHealthEnabled) yield return "Kidney Health";
+        if (DiabetesEnabled)
+            yield return "Diabetes";
+
+        if (HypertensionEnabled)
+            yield return "Hypertension";
     }
 
-    /// <summary>Computes profile statistics from saved AI scan history.</summary>
     public async Task LoadScanInsightsAsync()
     {
         var scans = await scanStore.GetAllAsync();
@@ -180,8 +196,7 @@ public partial class ProfileViewModel : ObservableObject
             BestScoreText = "0";
             HealthyChoicesText = "0%";
             MostCommonRiskText = "None identified";
-            ScanInsightText =
-                "Scan your first product to unlock personalized insights.";
+            ScanInsightText = "Scan your first product to unlock personalized insights.";
             return;
         }
 
@@ -197,8 +212,7 @@ public partial class ProfileViewModel : ObservableObject
         var mostCommonRisk = scans
             .SelectMany(s => s.Result.IngredientBreakdown)
             .Where(i => !string.IsNullOrWhiteSpace(i.Name)
-                && string.Equals(i.RiskLevel, "High",
-                    StringComparison.OrdinalIgnoreCase))
+                && string.Equals(i.RiskLevel, "High", StringComparison.OrdinalIgnoreCase))
             .GroupBy(i => i.Name.Trim(), StringComparer.OrdinalIgnoreCase)
             .OrderByDescending(g => g.Count())
             .FirstOrDefault();
@@ -213,42 +227,79 @@ public partial class ProfileViewModel : ObservableObject
             var newer = ordered.TakeLast(half).Average(s => s.Result.Score);
 
             if (newer > older)
+            {
                 ScanInsightText =
-                    $"Over the last {ordered.Count} scans, your food choices improved by " +
-                    $"{(int)Math.Round(newer - older)} points. Keep favoring higher-scoring products.";
+                    $"Over the last {ordered.Count} scans, your food choices improved by {(int)Math.Round(newer - older)} points. Keep favoring higher-scoring products.";
+            }
             else if (newer < older)
+            {
                 ScanInsightText =
-                    $"Your recent scans average {(int)Math.Round(older - newer)} points lower than earlier ones. " +
-                    $"Watch out for {MostCommonRiskText.ToLowerInvariant()} in upcoming labels.";
+                    $"Your recent scans average {(int)Math.Round(older - newer)} points lower than earlier ones. Watch out for {MostCommonRiskText.ToLowerInvariant()} in upcoming labels.";
+            }
             else
+            {
                 ScanInsightText =
                     $"Your average health score has held steady at {(int)Math.Round(newer)}/100 across {ordered.Count} scans.";
+            }
         }
         else
         {
             ScanInsightText =
-                $"Based on {ordered.Count} saved scan{(ordered.Count == 1 ? "" : "s")}, " +
-                $"your average product score is {(int)Math.Round(avg)}/100. " +
-                "Scan more products for deeper insights.";
+                $"Based on {ordered.Count} saved scan{(ordered.Count == 1 ? "" : "s")}, your average product score is {(int)Math.Round(avg)}/100. Scan more products for deeper insights.";
         }
     }
+
     [RelayCommand]
     private Task ToggleGoalAsync(ProfileGoal goal)
     {
-        if (goal is null) return Task.CompletedTask;
-        goal.IsSelected = !goal.IsSelected; // raises PropertyChanged → PersistPreferences
+        if (goal is null)
+            return Task.CompletedTask;
+
+        goal.IsSelected = !goal.IsSelected;
         return Task.CompletedTask;
     }
+
+    [RelayCommand]
+    private async Task EditProfileAsync()
+    {
+        try
+        {
+            var photo = await MediaPicker.Default.PickPhotoAsync();
+
+            if (photo is null)
+                return;
+
+            var tempFile = Path.Combine(FileSystem.CacheDirectory, $"profile_{Guid.NewGuid():N}{Path.GetExtension(photo.FileName)}");
+
+            await using var sourceStream = await photo.OpenReadAsync();
+            await using var destinationStream = File.OpenWrite(tempFile);
+            await sourceStream.CopyToAsync(destinationStream);
+
+            AvatarPath = tempFile;
+            AvatarSource = ImageSource.FromFile(tempFile);
+            HasAvatar = true;
+        }
+        catch (Exception ex)
+        {
+            await AppNavigator.ShowAlertAsync(
+                "Profile Photo",
+                $"Unable to update profile photo: {ex.Message}",
+                "OK");
+        }
+    }
+
     [RelayCommand]
     private async Task OpenHomeAsync() => await AppNavigator.GoDashboardAsync();
+
     [RelayCommand]
     private async Task OpenHistoryAsync() => await AppNavigator.GoHistoryAsync();
+
     [RelayCommand]
     private async Task OpenScanAsync() => await AppNavigator.GoScanAsync();
+
     [RelayCommand]
     private async Task OpenTrendsAsync() => await AppNavigator.GoTrendAsync();
-    [RelayCommand]
-    private Task EditProfileAsync() => Task.CompletedTask;
+
     [RelayCommand]
     private Task SignOutAsync() => Task.CompletedTask;
 

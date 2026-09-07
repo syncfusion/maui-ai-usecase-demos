@@ -13,6 +13,7 @@ public partial class ReviewIngredientsPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
+
         if (BindingContext is ReviewIngredientsViewModel vm)
             vm.HydrateFromPendingReview();
     }

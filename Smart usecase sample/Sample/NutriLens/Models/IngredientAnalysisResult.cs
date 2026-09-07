@@ -5,7 +5,7 @@ namespace NutriLens.Models;
 public sealed class IngredientAnalysisResult
 {
     [JsonPropertyName("profile")]
-    public string Profile { get; set; } = "Diabetes";
+    public string Profile { get; set; } = "Standard";
 
     [JsonPropertyName("productName")]
     public string ProductName { get; set; } = "Unknown product";
@@ -91,15 +91,12 @@ public sealed class IngredientAnalysisResult
             ? string.Join(Environment.NewLine, NegativeAttributes)
             : "No material concerns were identified from the available information.";
 
-    // ----- DetailBreakdownPage display helpers (all derived from the AI response) -----
-
     [JsonIgnore]
     public string ConfidenceDisplay =>
         string.IsNullOrWhiteSpace(Confidence)
             ? "Unknown Confidence"
             : $"{CategoryCase(Confidence)} Confidence";
 
-    /// <summary>Full ingredient list; falls back to the raw extracted label text.</summary>
     [JsonIgnore]
     public string FullIngredientsDisplay =>
         string.IsNullOrWhiteSpace(FullIngredients)
@@ -108,9 +105,6 @@ public sealed class IngredientAnalysisResult
                 : ExtractedText.Trim())
             : FullIngredients.Trim();
 
-    /// <summary>Combined additive + preservative list for the expander section.
-    /// Falls back to notable items from the ingredient breakdown when the
-    /// label declares no additives — still 100% AI data, never static.</summary>
     [JsonIgnore]
     public List<AdditiveInfo> BreakdownAdditives
     {
@@ -133,7 +127,6 @@ public sealed class IngredientAnalysisResult
         }
     }
 
-    // Score factor cards
     [JsonIgnore]
     public string BenefitTitle =>
         TitleFrom(PositiveAttributes.FirstOrDefault(), "Benefits Identified");
@@ -160,9 +153,7 @@ public sealed class IngredientAnalysisResult
                     : "The analysis did not identify specific concerns for this product.";
 
             if (Allergens.Count > 0)
-            {
                 concern += $"{Environment.NewLine}Allergens: {string.Join(", ", Allergens)}.";
-            }
 
             return concern;
         }
@@ -202,7 +193,6 @@ public sealed class IngredientAnalysisResult
     }
 }
 
-/// <summary>One additive/preservative entry returned by the AI analysis.</summary>
 public sealed class AdditiveInfo
 {
     [JsonPropertyName("name")]
@@ -255,15 +245,5 @@ public sealed class IngredientBreakdown
             "moderate" => "#FDE7C7",
             "low" => "#E7F7F1",
             _ => "#E5E7EB"
-        };
-
-    [JsonIgnore]
-    public string BadgeTextColor =>
-        RiskLevel.ToLowerInvariant() switch
-        {
-            "high" => "#DC2626",
-            "moderate" => "#B45309",
-            "low" => "#0F766E",
-            _ => "#475569"
         };
 }
