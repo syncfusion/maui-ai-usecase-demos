@@ -171,9 +171,9 @@ public partial class HistoryViewModel : ObservableObject
 
         var (scoreColor, statusIcon) = score switch
         {
-            >= 70 => ("#047857", MaterialIcons.Verified),
-            >= 40 => ("#D99024", MaterialIcons.Warning),
-            _ => ("DC2626", MaterialIcons.Warning)
+            >= 80 => ("#10b981", MaterialIcons.Verified),  // Excellent
+            >= 50 => ("#fea619", MaterialIcons.Verified),  // Good
+            _ => ("#ff7a73", MaterialIcons.Warning),   // Moderate 
         };
 
         return new HistoryItem
@@ -181,8 +181,11 @@ public partial class HistoryViewModel : ObservableObject
             Image = string.IsNullOrWhiteSpace(scan.ImagePath)
                 ? "yogurt.webp"
                 : scan.ImagePath,
+
             ProductName = scan.Result.ProductName,
-            Score = $"{score}/100",
+             
+            Score = $"{score}",
+
             ScanDate = FormatScanDate(scan.SavedAtUtc),
             ScoreColor = scoreColor,
             StatusIcon = statusIcon
@@ -192,18 +195,18 @@ public partial class HistoryViewModel : ObservableObject
     private static string FormatScanDate(DateTime savedAtUtc)
     {
         var local = savedAtUtc.ToLocalTime();
-        var age = DateTime.Now - local;
+        if (local.Date == DateTime.Now.Date)
+            return $"Today, {local:hh:mm tt}";
 
-        if (age.TotalMinutes < 60)
-            return $"{Math.Max(1, (int)age.TotalMinutes)} min ago";
-        if (age.TotalHours < 24)
-            return $"{(int)age.TotalHours} hrs ago";
-        if (age.TotalDays < 2)
-            return "Yesterday";
+        if (local.Date == DateTime.Now.Date.AddDays(-1))
+            return $"Yesterday, {local:hh:mm tt}";
+
+        var age = DateTime.Now.Date - local.Date;
+
         if (age.TotalDays < 7)
-            return local.ToString("ddd");
+            return $"{local:ddd}, {local:hh:mm tt}";
 
-        return local.ToString("MMM d");
+        return local.ToString("MMM d, hh:mm tt");
     }
 
     private static T? Resolve<T>()

@@ -6,6 +6,6 @@ public sealed class HistoryItem
     public string ProductName { get; init; } = string.Empty;
     public string Score { get; init; } = string.Empty;
     public string ScanDate { get; init; } = string.Empty;
-    public string ScoreColor { get; init; } = "#047857";
+    public string ScoreColor { get; init; } = string.Empty;
     public string StatusIcon { get; init; } = string.Empty;
 }

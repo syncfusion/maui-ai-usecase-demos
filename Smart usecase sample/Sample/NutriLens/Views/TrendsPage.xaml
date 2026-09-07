@@ -73,51 +73,118 @@
                     FontAttributes="Bold"
                     TextColor="#0F172A" />
 
-                <Grid
-    WidthRequest="220"
-    HeightRequest="38"
+                <!-- Timeframe selector -->
+                <Border
     Margin="0,16,0,0"
-    HorizontalOptions="Center"
-    ColumnDefinitions="*,*,*">
+    Padding="4" WidthRequest="220"
+    HeightRequest="52"
+    HorizontalOptions="Fill"
+    BackgroundColor="#DCE9FF"
+    Stroke="Transparent"
+    StrokeShape="RoundRectangle 26">
 
-                    <buttons:SfButton
-        Text="7D"
-        FontSize="12"
-        FontAttributes="Bold"
-        Background="{Binding Is7DSelected, Converter={StaticResource BoolToPeriodBackgroundConverter}}"
-        TextColor="{Binding Is7DSelected, Converter={StaticResource BoolToPeriodTextColorConverter}}"
-        Stroke="Transparent"
-        CornerRadius="16"
-        Padding="0"
-        Command="{Binding SelectPeriodCommand}"
-        CommandParameter="7D" />
+                    <Grid
+        ColumnDefinitions="*,*,*"
+        ColumnSpacing="4">
 
-                    <buttons:SfButton
-        Grid.Column="1"
-        Text="30D"
-        FontSize="12"
-        FontAttributes="Bold"
-        Background="{Binding Is30DSelected, Converter={StaticResource BoolToPeriodBackgroundConverter}}"
-        TextColor="{Binding Is30DSelected, Converter={StaticResource BoolToPeriodTextColorConverter}}"
-        Stroke="Transparent"
-        CornerRadius="16"
-        Padding="0"
-        Command="{Binding SelectPeriodCommand}"
-        CommandParameter="30D" />
+                        <!-- 7 Days -->
+                        <Border
+            Grid.Column="0"
+            Padding="0"
+            BackgroundColor="{Binding Is7DSelected, Converter={StaticResource BoolToPeriodBackgroundConverter}}"
+            Stroke="Transparent"
+            StrokeShape="RoundRectangle 22">
 
-                    <buttons:SfButton
-        Grid.Column="2"
-        Text="90D"
-        FontSize="12"
-        FontAttributes="Bold"
-        Background="{Binding Is90DSelected, Converter={StaticResource BoolToWhiteGrayConverter}}"
-        TextColor="{Binding Is90DSelected, Converter={StaticResource BoolToPeriodTextColorConverter}}"
-        Stroke="Transparent"
-        CornerRadius="16"
-        Padding="0"
-        Command="{Binding SelectPeriodCommand}"
-        CommandParameter="90D" />
-                </Grid>
+                            <Border.Shadow>
+                                <Shadow
+                    Brush="#40000000"
+                    Offset="0,2"
+                    Radius="5"
+                    Opacity="0.35" />
+                            </Border.Shadow>
+
+                            <buttons:SfButton
+                Text="7D"
+                MinimumHeightRequest="44"
+                FontSize="14"
+                FontAttributes="Bold"
+                Background="Transparent"
+                TextColor="{Binding Is7DSelected, Converter={StaticResource BoolToPeriodTextColorConverter}}"
+                Stroke="Transparent"
+                CornerRadius="22"
+                Padding="0"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                Command="{Binding SelectPeriodCommand}"
+                CommandParameter="7D"
+                SemanticProperties.Description="Select last 7 days" />
+                        </Border>
+
+                        <!-- 30 Days -->
+                        <Border
+            Grid.Column="1"
+            Padding="0"
+            BackgroundColor="{Binding Is30DSelected, Converter={StaticResource BoolToPeriodBackgroundConverter}}"
+            Stroke="Transparent"
+            StrokeShape="RoundRectangle 22">
+
+                            <Border.Shadow>
+                                <Shadow
+                    Brush="#40000000"
+                    Offset="0,2"
+                    Radius="5"
+                    Opacity="0.35" />
+                            </Border.Shadow>
+
+                            <buttons:SfButton
+                Text="30D"
+                MinimumHeightRequest="44"
+                FontSize="14" 
+                Background="Transparent"
+                TextColor="{Binding Is30DSelected, Converter={StaticResource BoolToPeriodTextColorConverter}}"
+                Stroke="Transparent"
+                CornerRadius="22"
+                Padding="0"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                Command="{Binding SelectPeriodCommand}"
+                CommandParameter="30D"
+                SemanticProperties.Description="Select last 30 days" />
+                        </Border>
+
+                        <!-- 90 Days -->
+                        <Border
+            Grid.Column="2"
+            Padding="0"
+            BackgroundColor="{Binding Is90DSelected, Converter={StaticResource BoolToPeriodBackgroundConverter}}"
+            Stroke="Transparent"
+            StrokeShape="RoundRectangle 22">
+
+                            <Border.Shadow>
+                                <Shadow
+                    Brush="#40000000"
+                    Offset="0,2"
+                    Radius="5"
+                    Opacity="0.35" />
+                            </Border.Shadow>
+
+                            <buttons:SfButton
+                Text="90D"
+                MinimumHeightRequest="44"
+                FontSize="14" 
+                Background="Transparent"
+                TextColor="{Binding Is90DSelected, Converter={StaticResource BoolToPeriodTextColorConverter}}"
+                Stroke="Transparent"
+                CornerRadius="22"
+                Padding="0"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                Command="{Binding SelectPeriodCommand}"
+                CommandParameter="90D"
+                SemanticProperties.Description="Select last 90 days" />
+                        </Border>
+                    </Grid>
+                </Border>
 
                 <!-- Average score card -->
                 <Border
@@ -330,7 +397,7 @@
 
         <!-- Fixed navigation -->
         <Grid
-            Grid.Row="2"
+            Grid.Row="2" IsVisible="{OnIdiom Phone=true, Default=false}"
             HeightRequest="84"
             ZIndex="20"
             ColumnDefinitions="*,*,*,*,*"

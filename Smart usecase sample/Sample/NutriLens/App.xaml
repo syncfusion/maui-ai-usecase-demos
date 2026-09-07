@@ -2,6 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:NutriLens"
+             xmlns:h="clr-namespace:NutriLens.Helpers"
              xmlns:helpers="clr-namespace:NutriLens.Helpers" xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              x:Class="NutriLens.App">
     <Application.Resources>
@@ -12,6 +13,13 @@
                 <ResourceDictionary Source="Resources/Styles/NutriLensStyles.xaml" />
                 
             </ResourceDictionary.MergedDictionaries>
+            <helpers:HistoryScoreConverter
+    x:Key="HistoryScoreConverterCircular" />
+
+            <helpers:HistoryScoreBrushConverter
+    x:Key="HistoryScoreBrushConverter" />
+            <h:HistoryScoreConverter
+    x:Key="HistoryScoreConverter" />
             <helpers:BoolToColorConverter 
     x:Key="BoolToWhiteGrayConverter"
     TrueColor="White"
@@ -24,8 +32,11 @@
     FalseColor="#B8600C" />
             <helpers:InverseBoolConverter
                 x:Key="InverseBoolConverter" />
-            <helpers:BoolToPeriodBackgroundConverter x:Key="PeriodButtonBackgroundConverter" />
-            <helpers:BoolToPeriodTextColorConverter x:Key="PeriodButtonTextColorConverter" />
+            <helpers:BoolToPeriodBackgroundConverter
+    x:Key="BoolToPeriodBackgroundConverter" />
+
+            <helpers:BoolToPeriodTextColorConverter
+    x:Key="BoolToPeriodTextColorConverter" />
             <Style
         x:Key="ProfileIconStyle"
         TargetType="Label">

@@ -1,86 +1,141 @@
 <?xml version="1.0" encoding="utf-8" ?>
+
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
     xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+    xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
     xmlns:models="clr-namespace:NutriLens.Models"
     xmlns:helpers="clr-namespace:NutriLens.Helpers"
+    xmlns:vm="clr-namespace:NutriLens.ViewModels"
     x:Class="NutriLens.Views.HistoryPage"
-    BackgroundColor="#F3F5FA"
+    x:DataType="vm:HistoryViewModel"
+    BackgroundColor="#F4F7FB"
     NavigationPage.HasNavigationBar="False">
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <Style x:Key="HistoryIconStyle" TargetType="Label">
+
+            <!-- Converts values such as 92/100 to 92 -->
+            <helpers:HistoryScoreConverter
+                x:Key="HistoryScoreConverter" />
+
+            <!-- Material icon style -->
+            <Style
+                x:Key="HistoryIconStyle"
+                TargetType="Label">
+
                 <Setter Property="FontFamily" Value="MaterialIconsRegular" />
-                <Setter Property="VerticalTextAlignment" Value="Center" />
                 <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
             </Style>
 
-            <Style x:Key="HistoryNavButtonStyle" TargetType="buttons:SfButton">
+            <!-- Bottom navigation button style -->
+            <Style
+                x:Key="HistoryNavButtonStyle"
+                TargetType="buttons:SfButton">
+
+                <Setter Property="WidthRequest" Value="44" />
+                <Setter Property="HeightRequest" Value="40" />
                 <Setter Property="FontFamily" Value="MaterialIconsRegular" />
                 <Setter Property="FontSize" Value="22" />
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="Stroke" Value="Transparent" />
                 <Setter Property="Padding" Value="0" />
-                <Setter Property="WidthRequest" Value="42" />
-                <Setter Property="HeightRequest" Value="34" />
+                <Setter Property="CornerRadius" Value="20" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
             </Style>
+
+            <!-- History card style -->
+            <Style
+                x:Key="HistoryCardStyle"
+                TargetType="Border">
+
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="Stroke" Value="Transparent" />
+                <Setter Property="Padding" Value="14" />
+
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="18" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto,*,80" BackgroundColor="#F3F5FA">
+    <Grid
+        RowDefinitions="Auto,*,84"
+        BackgroundColor="#F4F7FB">
 
-        <!-- Top header -->
+        <!-- Header -->
         <Grid
             Grid.Row="0"
-            Padding="20,18,20,8"
+            Padding="20,18,20,10"
             ColumnDefinitions="*,Auto"
-            ColumnSpacing="8">
+            ColumnSpacing="12">
 
-            <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                <Label
-                    Text="{Binding BiotechIcon}"
-                    Style="{StaticResource HistoryIconStyle}"
-                    FontSize="24"
-                    TextColor="#0B7A5A"
-                    WidthRequest="24"
-                    HeightRequest="24" />
+            <HorizontalStackLayout
+                Spacing="9"
+                VerticalOptions="Center">
+
+                <Border
+                    WidthRequest="34"
+                    HeightRequest="34"
+                    BackgroundColor="#DDF5EA"
+                    Stroke="Transparent"
+                    StrokeShape="RoundRectangle 17">
+
+                    <Label
+                        Text="{Binding BiotechIcon}"
+                        Style="{StaticResource HistoryIconStyle}"
+                        FontSize="21"
+                        TextColor="#047857" />
+                </Border>
 
                 <Label
                     Text="NutriLens AI"
                     FontSize="18"
                     FontAttributes="Bold"
-                    TextColor="#14324A"
+                    TextColor="#102A43"
                     VerticalTextAlignment="Center" />
             </HorizontalStackLayout>
 
             <buttons:SfButton
                 Grid.Column="1"
-                WidthRequest="36"
-                HeightRequest="36"
+                WidthRequest="42"
+                HeightRequest="42"
                 Text="{Binding PersonIcon}"
                 FontFamily="MaterialIconsRegular"
-                FontSize="20"
+                FontSize="21"
                 TextColor="White"
                 Background="#047857"
                 Stroke="Transparent"
-                CornerRadius="18"
+                CornerRadius="21"
                 Padding="0"
-                Command="{Binding OpenProfileCommand}" />
+                Command="{Binding OpenProfileCommand}"
+                SemanticProperties.Description="Open profile" />
         </Grid>
 
-        <!-- Main content -->
-        <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
-            <VerticalStackLayout Padding="20,8,20,24" Spacing="16">
+        <!-- Page content -->
+        <ScrollView
+            Grid.Row="1"
+            VerticalScrollBarVisibility="Never">
 
-                <!-- Title -->
-                <VerticalStackLayout Spacing="4">
+            <VerticalStackLayout
+                Padding="20,12,20,110"
+                Spacing="18">
+
+                <!-- Page title -->
+                <VerticalStackLayout Spacing="5">
+
                     <Label
                         Text="Scan History"
-                        FontSize="28"
+                        FontSize="30"
                         FontAttributes="Bold"
                         TextColor="#0F172A" />
 
@@ -91,32 +146,38 @@
                 </VerticalStackLayout>
 
                 <!-- Search -->
-                <Border Stroke="Transparent" StrokeShape="RoundRectangle 16">
+                <Border
+                    Padding="0"
+                    BackgroundColor="White"
+                    Stroke="Transparent"
+                    StrokeShape="RoundRectangle 16">
+
                     <core:SfTextInputLayout
-                        ContainerType="Outlined" x:Name="SearchInputLayout"
-                        HeightRequest="64"
+                        x:Name="SearchInputLayout"
+                        HeightRequest="60"
                         Hint="Search by product name..."
-                        Stroke="White"
-                        HorizontalOptions="Fill"
-                        Background="White"
-                        VerticalOptions="Center">
+                        ContainerType="Outlined"
+                        Stroke="Transparent"
+                        Background="White" ReserveSpaceForAssistiveLabels="False"
+                        HorizontalOptions="Fill">
 
                         <core:SfTextInputLayout.LeadingView>
                             <Label
                                 Text="{Binding SearchIcon}"
                                 Style="{StaticResource HistoryIconStyle}"
-                                FontSize="20"
-                                TextColor="#6B7280"
-                                Margin="0,4,0,0" />
-                        </core:SfTextInputLayout.LeadingView>
+                                FontSize="21"
+                                TextColor="#64748B"
+                                Margin="0,3,0,0" />
+                        </core:SfTextInputLayout.LeadingView> 
 
                         <Entry
+                            x:Name="SearchEntry"
                             Text="{Binding SearchText, Mode=TwoWay}"
                             HeightRequest="46"
-                            FontSize="14" x:Name="SearchEntry"
+                            FontSize="14"
                             TextColor="#0F172A"
                             Placeholder="Search by product name..."
-                            PlaceholderColor="#6B7280"
+                            PlaceholderColor="#94A3B8"
                             ClearButtonVisibility="WhileEditing"
                             BackgroundColor="Transparent"
                             Focused="OnSearchFocused"
@@ -124,9 +185,9 @@
                     </core:SfTextInputLayout>
                 </Border>
 
-                <!-- Filter chips -->
+                <!-- Time filters -->
                 <ScrollView
-                    HeightRequest="48"
+                    HeightRequest="44"
                     Orientation="Horizontal"
                     HorizontalScrollBarVisibility="Never"
                     VerticalScrollBarVisibility="Never">
@@ -136,12 +197,13 @@
                         ChipType="Choice"
                         ChoiceMode="Single"
                         SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"
-                        ItemHeight="36"
-                        ChipPadding="14,0"
-                        ChipCornerRadius="18"
-                        ChipBackground="#EAF0FF"
+                        ItemHeight="38"
+                        ChipPadding="16,0"
+                        ChipCornerRadius="19"
+                        ChipBackground="#E6EEF8"
                         SelectedChipBackground="#047857"
                         SelectedChipTextColor="White"
+                        ChipTextColor="#334155"
                         ChipTextSize="13"
                         ChipFontAttributes="None"
                         ChipStroke="Transparent"
@@ -150,100 +212,137 @@
                         VerticalOptions="Center" />
                 </ScrollView>
 
-                <!-- Summary -->
-                <Label
-                    Text="{Binding SummaryText}"
-                    FontSize="16"
-                    TextColor="#374151"
-                    VerticalTextAlignment="Center" />
+                <!-- Result summary -->
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="8">
+
+                    <Label
+                        Text="Recent scans"
+                        FontSize="20"
+                        FontAttributes="Bold"
+                        TextColor="#0F172A" />
+
+                    <Label
+                        Grid.Column="1"
+                        Text="{Binding SummaryText}"
+                        FontSize="13"
+                        TextColor="#64748B"
+                        VerticalTextAlignment="Center" />
+                </Grid>
 
                 <!-- History list -->
                 <listView:SfListView
                     ItemsSource="{Binding HistoryItems}"
                     ItemSize="100"
                     SelectionMode="None"
-                    ItemSpacing="0,10,0,0"
+                    ItemSpacing="0,12,0,0"
+                    Background="Transparent"
                     ItemTapped="OnHistoryItemTapped">
 
                     <listView:SfListView.ItemTemplate>
                         <DataTemplate x:DataType="models:HistoryItem">
+
                             <Border
-                                Padding="14"
-                                Background="White"
-                                Stroke="Transparent"
-                                StrokeShape="RoundRectangle 16">
+                                Style="{StaticResource HistoryCardStyle}">
 
                                 <Border.Shadow>
                                     <Shadow
-                                        Brush="#26000000"
-                                        Offset="0,2"
-                                        Radius="8"
+                                        Brush="#24000000"
+                                        Offset="0,3"
+                                        Radius="10"
                                         Opacity="0.35" />
                                 </Border.Shadow>
 
-                                <Grid ColumnDefinitions="56,*,Auto" ColumnSpacing="12">
+                                <Grid
+                                    ColumnDefinitions="64,*,116"
+                                    ColumnSpacing="13"
+                                    MinimumHeightRequest="76">
 
-                                    <!-- Thumbnail -->
+                                    <!-- Product thumbnail -->
                                     <Border
-                                        WidthRequest="56"
-                                        HeightRequest="56"
-                                        BackgroundColor="#EEF2F1"
+                                        WidthRequest="64"
+                                        HeightRequest="64"
+                                        BackgroundColor="#EFF4F2"
                                         Stroke="Transparent"
-                                        StrokeShape="RoundRectangle 10"
+                                        StrokeShape="RoundRectangle 14"
                                         VerticalOptions="Center">
 
                                         <Image
                                             Source="{Binding Image}"
-                                            Aspect="AspectFill" />
+                                            Aspect="AspectFill"
+                                            HorizontalOptions="Fill"
+                                            VerticalOptions="Fill" />
                                     </Border>
 
-                                    <!-- Details -->
-                                    <VerticalStackLayout Grid.Column="1"
-                                                         Spacing="4"
-                                                         VerticalOptions="Center">
+                                    <!-- Product information -->
+                                    <VerticalStackLayout
+                                        Grid.Column="1"
+                                        Spacing="6"
+                                        VerticalOptions="Center">
 
                                         <Label
                                             Text="{Binding ProductName}"
                                             FontSize="15"
                                             FontAttributes="Bold"
                                             TextColor="#0F172A"
+                                            MaxLines="1"
                                             LineBreakMode="TailTruncation" />
 
-                                        <Label
-                                            Text="{Binding ScanDate}"
-                                            FontSize="12"
-                                            TextColor="#6B7280" />
-                                    </VerticalStackLayout>
-
-                                    <!-- Score badge + arrow -->
-                                    <HorizontalStackLayout
-                                        Grid.Column="2"
-                                        Spacing="10"
-                                        VerticalOptions="Center">
-
-                                        <Border
-                                            WidthRequest="42"
-                                            HeightRequest="42"
-                                            BackgroundColor="{Binding ScoreColor}"
-                                            Stroke="Transparent"
-                                            StrokeShape="RoundRectangle 21">
+                                        <HorizontalStackLayout
+                                            Spacing="5">
 
                                             <Label
-                                                Text="{Binding Score}"
+                                                Text="{Binding ScanDate}"
                                                 FontSize="12"
-                                                FontAttributes="Bold"
-                                                TextColor="White"
-                                                HorizontalTextAlignment="Center"
-                                                VerticalTextAlignment="Center" />
-                                        </Border>
+                                                TextColor="#64748B"
+                                                VerticalTextAlignment="Center"
+                                                LineBreakMode="TailTruncation" />
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+
+                                    <!-- Score and chevron -->
+                                    <Grid
+    Grid.Column="2"
+    ColumnDefinitions="68,Auto"
+    ColumnSpacing="8"
+    VerticalOptions="Center">
+
+                                        <Grid
+        Grid.Column="0"
+        WidthRequest="68"
+        HeightRequest="68">
+
+                                            <progressBar:SfCircularProgressBar
+            WidthRequest="68"
+            HeightRequest="68"
+            Progress="{Binding Score, Converter={StaticResource HistoryScoreConverterCircular}}"
+            Maximum="100"
+            ProgressFill="{Binding ScoreColor, Converter={StaticResource HistoryScoreBrushConverter}}"
+            TrackFill="#E5EAF0" 
+            HorizontalOptions="Center"
+            VerticalOptions="Center" />
+
+                                            <Label
+            Text="{Binding Score}"
+            FontSize="13"
+            FontAttributes="Bold"
+            TextColor="#0F172A"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            HorizontalTextAlignment="Center"
+            VerticalTextAlignment="Center" />
+                                        </Grid>
 
                                         <Label
-                                            Text="&#xE5CC;"
-                                            Style="{StaticResource HistoryIconStyle}"
-                                            FontSize="22"
-                                            TextColor="#94A3B8"
-                                            VerticalOptions="Center" />
-                                    </HorizontalStackLayout>
+        Grid.Column="1"
+        Text="&#xE5CC;"
+        Style="{StaticResource HistoryIconStyle}"
+        FontSize="22"
+        TextColor="#94A3B8"
+        VerticalOptions="Center"
+        SemanticProperties.Description="Open scan analysis" />
+                                    </Grid>
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -253,62 +352,75 @@
         </ScrollView>
 
         <!-- Bottom navigation -->
-        <Grid Grid.Row="2"
-              ZIndex="10"
-              ColumnDefinitions="*,*,*,*,*"
-              BackgroundColor="White">
+        <Grid
+            Grid.Row="2"
+            HeightRequest="84"
+            ZIndex="10" IsVisible="{OnIdiom Phone=true, Default=false}"
+            ColumnDefinitions="*,*,*,*,*"
+            BackgroundColor="White">
 
             <Grid.Shadow>
                 <Shadow
                     Brush="#40000000"
                     Offset="0,-4"
-                    Radius="10"
+                    Radius="12"
                     Opacity="0.35" />
             </Grid.Shadow>
 
             <!-- Home -->
-            <VerticalStackLayout Grid.Column="0"
-                                 Spacing="2"
-                                 HorizontalOptions="Center"
-                                 VerticalOptions="Center">
+            <VerticalStackLayout
+                Grid.Column="0"
+                Spacing="1"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+
                 <buttons:SfButton
                     Text="{Binding HomeIcon}"
                     Style="{StaticResource HistoryNavButtonStyle}"
                     TextColor="#6B7280"
-                    Clicked="OnHomeClicked" />
-                <Label Text="Home"
-                       FontSize="10"
-                       TextColor="#6B7280"
-                       HorizontalOptions="Center" />
+                    Clicked="OnHomeClicked"
+                    SemanticProperties.Description="Open home" />
+
+                <Label
+                    Text="Home"
+                    FontSize="10"
+                    TextColor="#6B7280"
+                    HorizontalOptions="Center" />
             </VerticalStackLayout>
 
             <!-- History -->
-            <VerticalStackLayout Grid.Column="1"
-                                 Spacing="2"
-                                 HorizontalOptions="Center"
-                                 VerticalOptions="Center">
+            <VerticalStackLayout
+                Grid.Column="1"
+                Spacing="1"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+
                 <buttons:SfButton
                     Text="{Binding HistoryIcon}"
                     Style="{StaticResource HistoryNavButtonStyle}"
-                    TextColor="#047857" />
-                <Label Text="History"
-                       FontSize="10"
-                       FontAttributes="Bold"
-                       TextColor="#047857"
-                       HorizontalOptions="Center" />
+                    TextColor="#047857"
+                    SemanticProperties.Description="Current page: history" />
+
+                <Label
+                    Text="History"
+                    FontSize="10"
+                    FontAttributes="Bold"
+                    TextColor="#047857"
+                    HorizontalOptions="Center" />
             </VerticalStackLayout>
 
-            <!-- Scan FAB -->
-            <Grid Grid.Column="2"
-                  HorizontalOptions="Center"
-                  VerticalOptions="Start"
-                  TranslationY="-36"
-                  ZIndex="20">
+            <!-- Floating scan button -->
+            <Grid
+                Grid.Column="2"
+                HorizontalOptions="Center"
+                VerticalOptions="Start"
+                TranslationY="-34"
+                ZIndex="20">
 
                 <Border
                     WidthRequest="72"
                     HeightRequest="72"
-                    Background="#047857"
+                    BackgroundColor="#047857"
                     Stroke="Transparent"
                     StrokeShape="RoundRectangle 36">
 
@@ -321,11 +433,13 @@
                     </Border.Shadow>
 
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnScanClicked" />
+                        <TapGestureRecognizer
+                            Tapped="OnScanClicked" />
                     </Border.GestureRecognizers>
 
-                    <Grid RowDefinitions="*,Auto"
-                          Padding="0,9,0,8">
+                    <Grid
+                        RowDefinitions="*,Auto"
+                        Padding="0,9,0,8">
 
                         <Label
                             Text="{Binding ScannerIcon}"
@@ -346,35 +460,45 @@
             </Grid>
 
             <!-- Trends -->
-            <VerticalStackLayout Grid.Column="3"
-                                 Spacing="2"
-                                 HorizontalOptions="Center"
-                                 VerticalOptions="Center">
+            <VerticalStackLayout
+                Grid.Column="3"
+                Spacing="1"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+
                 <buttons:SfButton
                     Text="{Binding TrendsIcon}"
                     Style="{StaticResource HistoryNavButtonStyle}"
                     TextColor="#6B7280"
-                    Clicked="OnTrendsClicked" />
-                <Label Text="Trends"
-                       FontSize="10"
-                       TextColor="#6B7280"
-                       HorizontalOptions="Center" />
+                    Clicked="OnTrendsClicked"
+                    SemanticProperties.Description="Open trends" />
+
+                <Label
+                    Text="Trends"
+                    FontSize="10"
+                    TextColor="#6B7280"
+                    HorizontalOptions="Center" />
             </VerticalStackLayout>
 
             <!-- Profile -->
-            <VerticalStackLayout Grid.Column="4"
-                                 Spacing="2"
-                                 HorizontalOptions="Center"
-                                 VerticalOptions="Center">
+            <VerticalStackLayout
+                Grid.Column="4"
+                Spacing="1"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+
                 <buttons:SfButton
                     Text="{Binding ProfileIcon}"
                     Style="{StaticResource HistoryNavButtonStyle}"
                     TextColor="#6B7280"
-                    Clicked="OnProfileClicked" />
-                <Label Text="Profile"
-                       FontSize="10"
-                       TextColor="#6B7280"
-                       HorizontalOptions="Center" />
+                    Clicked="OnProfileClicked"
+                    SemanticProperties.Description="Open profile" />
+
+                <Label
+                    Text="Profile"
+                    FontSize="10"
+                    TextColor="#6B7280"
+                    HorizontalOptions="Center" />
             </VerticalStackLayout>
         </Grid>
     </Grid>

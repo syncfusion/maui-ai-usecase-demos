@@ -48,7 +48,7 @@
                 FontSize="20"
                 FontAttributes="Bold"
                 TextColor="#334155"
-                HorizontalTextAlignment="Center"
+                HorizontalTextAlignment="Start"
                 VerticalTextAlignment="Center" />
 
             <buttons:SfButton
@@ -77,28 +77,7 @@
                         FontAttributes="Bold"
                         TextColor="#1F2937"
                         VerticalTextAlignment="Center" />
-
-                    <HorizontalStackLayout Grid.Column="1" VerticalOptions="Center">
-                        <buttons:SfButton
-                            Text="Edit All"
-                            FontAttributes="Bold"
-                            FontSize="15"
-                            TextColor="#047857"
-                            Background="Transparent"
-                            Stroke="Transparent"
-                            Padding="0"
-                            IsVisible="False" />
-
-                        <buttons:SfButton
-                            Text="&#xE3C9;"
-                            FontFamily="MaterialIconsRegular"
-                            FontSize="18"
-                            TextColor="#047857"
-                            Background="Transparent"
-                            Stroke="Transparent"
-                            Padding="0"
-                            Command="{Binding ShowAddIngredientPopupCommand}" />
-                    </HorizontalStackLayout>
+ 
                 </Grid>
 
                 <listView:SfListView

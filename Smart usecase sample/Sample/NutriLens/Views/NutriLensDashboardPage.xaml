@@ -325,7 +325,7 @@
 
         <!-- Fixed bottom navigation -->
         <Grid
-            Grid.Row="2"
+            Grid.Row="2" IsVisible="{OnIdiom Phone=true, Default=false}"
             HeightRequest="80"
             ZIndex="10"
             RowDefinitions="80">

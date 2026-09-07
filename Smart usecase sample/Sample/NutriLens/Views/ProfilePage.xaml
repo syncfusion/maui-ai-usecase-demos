@@ -428,7 +428,7 @@
         </ScrollView>
 
         <!-- Bottom navigation -->
-        <Grid Grid.Row="2" HeightRequest="84" ZIndex="20" ColumnDefinitions="*,*,*,*,*" BackgroundColor="White">
+        <Grid Grid.Row="2" IsVisible="{OnIdiom Phone=true, Default=false}" HeightRequest="84" ZIndex="20" ColumnDefinitions="*,*,*,*,*" BackgroundColor="White">
             <Grid.Shadow>
                 <Shadow Brush="#40000000" Offset="0,-4" Radius="10" Opacity="0.35" />
             </Grid.Shadow>
