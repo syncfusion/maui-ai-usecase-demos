@@ -11,20 +11,20 @@
     xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
     x:Class="NutriLens.Views.TrendsPage"
     x:DataType="vm:TrendsViewModel"
+    xmlns:desktop="clr-namespace:NutriLens.Views"
     BackgroundColor="#F3F5FA"
     NavigationPage.HasNavigationBar="False">
 
     <Grid
-        RowDefinitions="Auto,*,84"
+        RowDefinitions="{OnIdiom Phone='Auto,*,80',Default='Auto,*'}"
         BackgroundColor="#F3F5FA">
 
         <!-- Header -->
         <Grid
             Grid.Row="0"
-            Margin="20,16,20,0"
-            HeightRequest="36"
-            ColumnDefinitions="*,Auto"
-            ColumnSpacing="8">
+            Margin="20,18,20,0" 
+            ColumnDefinitions="Auto,*,Auto"
+            ColumnSpacing="12">
 
             <HorizontalStackLayout
                 Spacing="8"
@@ -44,15 +44,18 @@
                     TextColor="#1F2937"
                     VerticalTextAlignment="Center" />
             </HorizontalStackLayout>
-
+            <!-- Desktop navigation -->
+            <desktop:DesktopHeaderNavigation Grid.Column="1"  HorizontalOptions="End" 
+                                VerticalOptions="Center"
+                                CurrentPage="Trends" />
             <buttons:SfButton
-                Grid.Column="1"
+                Grid.Column="2"
                 WidthRequest="36"
                 HeightRequest="36"
                 Text="{Binding PersonIcon}"
                 Style="{StaticResource TrendNavButtonStyle}"
                 FontSize="20"
-                TextColor="White"
+                TextColor="White" Clicked="OnProfileClicked"
                 Background="#047857"
                 CornerRadius="18" />
         </Grid>

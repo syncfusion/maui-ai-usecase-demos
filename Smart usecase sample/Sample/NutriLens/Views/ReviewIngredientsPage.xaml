@@ -8,6 +8,7 @@
     xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
     xmlns:models="clr-namespace:NutriLens.Models"
     xmlns:vm="clr-namespace:NutriLens.ViewModels"
+    SizeChanged="OnPageSizeChanged"
     xmlns:helpers="clr-namespace:NutriLens.Helpers"
     x:Class="NutriLens.Views.ReviewIngredientsPage"
     x:DataType="vm:ReviewIngredientsViewModel"
@@ -21,7 +22,9 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="56,*,84">
+    <Grid  x:Name="PageLayout"
+    RowDefinitions="56,*,84"
+    ColumnDefinitions="*">
 
         <!-- Header -->
         <Grid Grid.Row="0"
@@ -67,124 +70,191 @@
         </Grid>
 
         <!-- Content -->
-        <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
-            <VerticalStackLayout Padding="16,20,16,24" Spacing="12">
+        <!-- Content -->
+        <Grid
+    x:Name="ReviewContentGrid"
+    Grid.Row="1"
+    RowDefinitions="Auto"
+    ColumnDefinitions="*"
+    ColumnSpacing="24"
+    Padding="0">
 
-                <Grid ColumnDefinitions="*,Auto">
+            <!-- Desktop scanned image panel -->
+            <Border
+        x:Name="ScannedImagePanel"
+        Grid.Row="0"
+        Grid.Column="0"
+        IsVisible="False"
+        Margin="24,20,0,24"
+        Padding="16"
+        BackgroundColor="White"
+        Stroke="Transparent"
+        StrokeShape="RoundRectangle 16"
+        VerticalOptions="Start">
+
+                <VerticalStackLayout Spacing="12">
                     <Label
-                        Text="{Binding IngredientSummary}"
-                        FontSize="15"
-                        FontAttributes="Bold"
-                        TextColor="#1F2937"
-                        VerticalTextAlignment="Center" />
- 
-                </Grid>
+                Text="Scanned Image"
+                FontSize="18"
+                FontAttributes="Bold"
+                TextColor="#1F2937" />
 
-                <listView:SfListView
-                    ItemsSource="{Binding Ingredients}"
-                    SelectionMode="None"
-                    ItemSize="90"
-                    AutoFitMode="Height"
-                    VerticalOptions="Start">
+                    <Border
+                HeightRequest="420"
+                BackgroundColor="#F4F6FB"
+                Stroke="Transparent"
+                StrokeShape="RoundRectangle 12">
 
-                    <listView:SfListView.ItemTemplate>
-                        <DataTemplate x:DataType="models:IngredientItem">
-                            <Border
-                                Margin="0,0,0,12"
-                                Padding="14,10"
-                                BackgroundColor="White"
-                                Stroke="Transparent"
-                                StrokeShape="RoundRectangle 14">
+                        <Image
+                    Source="{Binding ScannedImage}"
+                    Aspect="AspectFit"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill" />
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
 
-                                <Border.Shadow>
-                                    <Shadow Brush="#22000000" Offset="0,2" Radius="8" Opacity="0.35" />
-                                </Border.Shadow>
+            <!-- Existing ingredient content -->
+            <ScrollView
+        x:Name="IngredientContentScrollView"
+        Grid.Row="0"
+        Grid.Column="0"
+        VerticalScrollBarVisibility="Never">
 
-                                <Grid ColumnDefinitions="34,*,32" ColumnSpacing="12">
+                <VerticalStackLayout
+            Padding="16,20,16,24"
+            Spacing="12">
 
-                                    <Border
-                                        WidthRequest="34"
-                                        HeightRequest="34"
-                                        BackgroundColor="#DCEAFF"
-                                        Stroke="Transparent"
-                                        StrokeShape="RoundRectangle 17"
-                                        VerticalOptions="Center">
-                                        <Label
-                                            Text="{Binding DisplayNumber}"
-                                            FontSize="13"
-                                            FontAttributes="Bold"
-                                            TextColor="#475569"
-                                            HorizontalTextAlignment="Center"
-                                            VerticalTextAlignment="Center" />
-                                    </Border>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label
+                    Text="{Binding IngredientSummary}"
+                    FontSize="15"
+                    FontAttributes="Bold"
+                    TextColor="#1F2937"
+                    VerticalTextAlignment="Center" />
+                    </Grid>
 
-                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                        <Label
-                                            Text="{Binding IngredientName}"
-                                            FontSize="17"
-                                            FontAttributes="Bold"
-                                            TextColor="#111827"
-                                            LineBreakMode="WordWrap" />
+                    <listView:SfListView
+                ItemsSource="{Binding Ingredients}"
+                SelectionMode="None"
+                ItemSize="90"
+                AutoFitMode="Height"
+                VerticalOptions="Start">
 
-                                        <Label
-                                            Text="{Binding IngredientDescription}"
-                                            FontSize="13"
-                                            TextColor="#64748B"
-                                            LineBreakMode="WordWrap"
-                                            IsVisible="{Binding IngredientDescription, Converter={StaticResource StringToBoolConverter}}" />
-                                    </VerticalStackLayout>
+                        <listView:SfListView.ItemTemplate>
+                            <DataTemplate x:DataType="models:IngredientItem">
+                                <Border
+                            Margin="0,0,0,12"
+                            Padding="14,10"
+                            BackgroundColor="White"
+                            Stroke="Transparent"
+                            StrokeShape="RoundRectangle 14">
 
-                                    <buttons:SfButton
-                                        Grid.Column="2"
-                                        WidthRequest="28"
-                                        HeightRequest="28"
-                                        Text="&#xE5CD;"
-                                        FontFamily="MaterialIconsRegular"
+                                    <Border.Shadow>
+                                        <Shadow
+                                    Brush="#22000000"
+                                    Offset="0,2"
+                                    Radius="8"
+                                    Opacity="0.35" />
+                                    </Border.Shadow>
+
+                                    <Grid
+                                ColumnDefinitions="34,*,32"
+                                ColumnSpacing="12">
+
+                                        <Border
+                                    WidthRequest="34"
+                                    HeightRequest="34"
+                                    BackgroundColor="#DCEAFF"
+                                    Stroke="Transparent"
+                                    StrokeShape="RoundRectangle 17"
+                                    VerticalOptions="Center">
+
+                                            <Label
+                                        Text="{Binding DisplayNumber}"
+                                        FontSize="13"
+                                        FontAttributes="Bold"
+                                        TextColor="#475569"
+                                        HorizontalTextAlignment="Center"
+                                        VerticalTextAlignment="Center" />
+                                        </Border>
+
+                                        <VerticalStackLayout
+                                    Grid.Column="1"
+                                    Spacing="2"
+                                    VerticalOptions="Center">
+
+                                            <Label
+                                        Text="{Binding IngredientName}"
                                         FontSize="17"
-                                        TextColor="#6B7280"
-                                        Background="#F4F4F5"
-                                        Stroke="Transparent"
-                                        CornerRadius="14"
-                                        Padding="0"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteIngredientCommand}"
-                                        CommandParameter="{Binding}"
-                                        VerticalOptions="Center" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </listView:SfListView.ItemTemplate>
-                </listView:SfListView>
+                                        FontAttributes="Bold"
+                                        TextColor="#111827"
+                                        LineBreakMode="WordWrap" />
 
-                <Border
-                    Margin="0,0,0,12"
-                    HeightRequest="72"
-                    BackgroundColor="#EAF0FF"
-                    Stroke="Transparent"
-                    StrokeShape="RoundRectangle 14">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ShowAddIngredientPopupCommand}" />
-                    </Border.GestureRecognizers>
+                                            <Label
+                                        Text="{Binding IngredientDescription}"
+                                        FontSize="13"
+                                        TextColor="#64748B"
+                                        LineBreakMode="WordWrap"
+                                        IsVisible="{Binding IngredientDescription, Converter={StaticResource StringToBoolConverter}}" />
+                                        </VerticalStackLayout>
 
-                    <HorizontalStackLayout
-                        Spacing="8"
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center">
-                        <Label
-                            Text="&#xE147;"
-                            FontFamily="MaterialIconsRegular"
-                            FontSize="22"
-                            TextColor="#047857"
-                            VerticalTextAlignment="Center" />
-                        <Label
-                            Text="Add Missing Ingredient"
-                            FontSize="17"
-                            FontAttributes="Bold"
-                            TextColor="#047857"
-                            VerticalTextAlignment="Center" />
-                    </HorizontalStackLayout>
-                </Border>
-            </VerticalStackLayout>
-        </ScrollView>
+                                        <buttons:SfButton
+                                    Grid.Column="2"
+                                    WidthRequest="28"
+                                    HeightRequest="28"
+                                    Text="&#xE5CD;"
+                                    FontFamily="MaterialIconsRegular"
+                                    FontSize="17"
+                                    TextColor="#6B7280"
+                                    Background="#F4F4F5"
+                                    Stroke="Transparent"
+                                    CornerRadius="14"
+                                    Padding="0"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteIngredientCommand}"
+                                    CommandParameter="{Binding}"
+                                    VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </listView:SfListView.ItemTemplate>
+                    </listView:SfListView>
+
+                    <Border
+                Margin="0,0,0,12"
+                HeightRequest="72"
+                BackgroundColor="#EAF0FF"
+                Stroke="Transparent"
+                StrokeShape="RoundRectangle 14">
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer
+                        Command="{Binding ShowAddIngredientPopupCommand}" />
+                        </Border.GestureRecognizers>
+
+                        <HorizontalStackLayout
+                    Spacing="8"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+
+                            <Label
+                        Text="&#xE147;"
+                        FontFamily="MaterialIconsRegular"
+                        FontSize="22"
+                        TextColor="#047857"
+                        VerticalTextAlignment="Center" />
+
+                            <Label
+                        Text="Add Missing Ingredient"
+                        FontSize="17"
+                        FontAttributes="Bold"
+                        TextColor="#047857"
+                        VerticalTextAlignment="Center" />
+                        </HorizontalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </ScrollView>
+        </Grid>
 
         <!-- Bottom actions --> 
         <Grid Grid.Row="2"

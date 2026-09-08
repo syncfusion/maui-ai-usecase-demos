@@ -34,7 +34,7 @@ public partial class ReviewIngredientsViewModel : ObservableObject
     public int IngredientCount => Ingredients.Count;
 
     public string IngredientSummary => $"{IngredientCount} Ingredients Found";
-
+    public ImageSource? ScannedImage { get; private set; }
     public string BackIcon => MaterialIcons.ArrowBack;
     public string PersonIcon => MaterialIcons.Person;
     public string AddIcon => MaterialIcons.AddCircleOutline;
@@ -64,7 +64,8 @@ public partial class ReviewIngredientsViewModel : ObservableObject
         var pending = AnalysisNavigationData.PendingReview;
         if (pending is null)
             return;
-
+        ScannedImage = CreateImageSource(pending.Image);
+        OnPropertyChanged(nameof(ScannedImage));
         AnalysisNavigationData.PendingReview = null;
 
         Ingredients.Clear();
@@ -83,7 +84,23 @@ public partial class ReviewIngredientsViewModel : ObservableObject
 
         RefreshNumbers();
     }
+    private static ImageSource? CreateImageSource(FileResult image)
+    {
+        if (image is null)
+            return null;
 
+        if (!string.IsNullOrWhiteSpace(image.FullPath) &&
+            File.Exists(image.FullPath))
+        {
+            return ImageSource.FromFile(image.FullPath);
+        }
+
+        return ImageSource.FromStream(async cancellationToken =>
+        {
+            var stream = await image.OpenReadAsync();
+            return stream;
+        });
+    }
     private static IEnumerable<IngredientItem> ParseIngredients(string text)
     {
         if (string.IsNullOrWhiteSpace(text))

@@ -11,6 +11,7 @@
     xmlns:helpers="clr-namespace:NutriLens.Helpers"
     xmlns:vm="clr-namespace:NutriLens.ViewModels"
     x:Class="NutriLens.Views.HistoryPage"
+    xmlns:desktop="clr-namespace:NutriLens.Views"
     x:DataType="vm:HistoryViewModel"
     BackgroundColor="#F4F7FB"
     NavigationPage.HasNavigationBar="False">
@@ -69,14 +70,14 @@
     </ContentPage.Resources>
 
     <Grid
-        RowDefinitions="Auto,*,84"
+        RowDefinitions="{OnIdiom Phone='Auto,*,80',Default='Auto,*'}"
         BackgroundColor="#F4F7FB">
 
         <!-- Header -->
         <Grid
             Grid.Row="0"
             Padding="20,18,20,10"
-            ColumnDefinitions="*,Auto"
+            ColumnDefinitions="Auto,*,Auto"
             ColumnSpacing="12">
 
             <HorizontalStackLayout
@@ -105,8 +106,13 @@
                     VerticalTextAlignment="Center" />
             </HorizontalStackLayout>
 
+            <!-- Desktop navigation -->
+            <desktop:DesktopHeaderNavigation Grid.Column="1"  HorizontalOptions="End" 
+                                VerticalOptions="Center"
+                                CurrentPage="History" />
+            
             <buttons:SfButton
-                Grid.Column="1"
+                Grid.Column="2"
                 WidthRequest="42"
                 HeightRequest="42"
                 Text="{Binding PersonIcon}"
@@ -117,16 +123,13 @@
                 Stroke="Transparent"
                 CornerRadius="21"
                 Padding="0"
-                Command="{Binding OpenProfileCommand}"
+                Clicked="OnProfileClicked"
                 SemanticProperties.Description="Open profile" />
         </Grid>
+        
+        <!-- Page content --> 
 
-        <!-- Page content -->
-        <ScrollView
-            Grid.Row="1"
-            VerticalScrollBarVisibility="Never">
-
-            <VerticalStackLayout
+        <VerticalStackLayout Grid.Row="1"
                 Padding="20,12,20,110"
                 Spacing="18">
 
@@ -234,7 +237,7 @@
                 <!-- History list -->
                 <listView:SfListView
                     ItemsSource="{Binding HistoryItems}"
-                    ItemSize="100"
+                    ItemSize="100"   HeightRequest="400"
                     SelectionMode="None"
                     ItemSpacing="0,12,0,0"
                     Background="Transparent"
@@ -256,8 +259,7 @@
 
                                 <Grid
                                     ColumnDefinitions="64,*,116"
-                                    ColumnSpacing="13"
-                                    MinimumHeightRequest="76">
+                                    ColumnSpacing="13" >
 
                                     <!-- Product thumbnail -->
                                     <Border
@@ -348,8 +350,7 @@
                         </DataTemplate>
                     </listView:SfListView.ItemTemplate>
                 </listView:SfListView>
-            </VerticalStackLayout>
-        </ScrollView>
+            </VerticalStackLayout> 
 
         <!-- Bottom navigation -->
         <Grid

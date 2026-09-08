@@ -10,16 +10,16 @@
     x:Class="NutriLens.Views.ProfilePage"
     x:DataType="vm:ProfileViewModel"
     BackgroundColor="#F4F6FA"
+    xmlns:desktop="clr-namespace:NutriLens.Views"
     NavigationPage.HasNavigationBar="False">
 
-    <Grid RowDefinitions="Auto,*,84" BackgroundColor="#F4F6FA">
+    <Grid RowDefinitions="{OnIdiom Phone='Auto,*,80',Default='Auto,*'}" BackgroundColor="#F4F6FA">
 
         <!-- Header -->
         <Grid
             Grid.Row="0"
-            Margin="20,20,20,0"
-            HeightRequest="36"
-            ColumnDefinitions="*,Auto"
+            Margin="20,20,20,0" 
+            ColumnDefinitions="Auto,*,Auto"
             ColumnSpacing="8">
 
             <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
@@ -36,9 +36,12 @@
                     TextColor="#1F2937"
                     VerticalTextAlignment="Center" />
             </HorizontalStackLayout>
-
+            <!-- Desktop navigation -->
+            <desktop:DesktopHeaderNavigation Grid.Column="1"  HorizontalOptions="End" 
+                                VerticalOptions="Center"
+                                CurrentPage="Profile" />
             <buttons:SfButton
-                Grid.Column="1"
+                Grid.Column="2"
                 WidthRequest="36"
                 HeightRequest="36"
                 Text="{Binding PersonIcon}"

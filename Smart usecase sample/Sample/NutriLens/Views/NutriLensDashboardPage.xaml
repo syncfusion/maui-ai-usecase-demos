@@ -8,11 +8,12 @@
     xmlns:models="clr-namespace:NutriLens.Models"
     xmlns:vm="clr-namespace:NutriLens.ViewModels"
     x:Class="NutriLens.Views.NutriLensDashboardPage"
+    xmlns:desktop="clr-namespace:NutriLens.Views"
     x:DataType="vm:NutriLensDashboardViewModel"
     BackgroundColor="#eff4ff"
     NavigationPage.HasNavigationBar="False">
 
-    <Grid RowDefinitions="Auto,*,80">
+    <Grid RowDefinitions="{OnIdiom Phone='Auto,*,80',Default='Auto,*'}">
 
         <!-- Header -->
         <Grid
@@ -44,7 +45,12 @@
                     TextColor="#0F172A"
                     VerticalOptions="Center" />
             </HorizontalStackLayout>
-
+            
+            <!-- Desktop navigation -->
+            <desktop:DesktopHeaderNavigation Grid.Column="1"  HorizontalOptions="End" 
+                                            VerticalOptions="Center"
+                                            CurrentPage="Dashboard" />
+            
             <!-- Profile -->
             <buttons:SfButton
                 Grid.Column="2"
@@ -90,102 +96,119 @@
                     </VerticalStackLayout>
  
                 </Grid>
+ 
+                <!-- Responsive cards -->
+                <Grid
+    x:Name="ResponsiveCardsGrid"
+    RowDefinitions="Auto,Auto"
+    ColumnDefinitions="*"
+    RowSpacing="18"
+    ColumnSpacing="18">
 
-                <!-- Scan hero -->
-                <Border
-                    HeightRequest="180"
-                    Padding="20"
-                    Background="#047857"
-                    Stroke="Transparent"
-                    StrokeShape="RoundRectangle 16">
+                    <!-- Scan hero -->
+                    <Border
+        x:Name="ScanCard"
+        Grid.Row="0"
+        Grid.Column="0"
+        HeightRequest="180"
+        Padding="20"
+        Background="#047857"
+        Stroke="Transparent"
+        StrokeShape="RoundRectangle 16">
 
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ScanCommand}" />
-                    </Border.GestureRecognizers>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ScanCommand}" />
+                        </Border.GestureRecognizers>
 
-                    <VerticalStackLayout
-                        Spacing="10"
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center">
+                        <VerticalStackLayout
+            Spacing="10"
+            HorizontalOptions="Center"
+            VerticalOptions="Center">
 
-                        <Border
-                            WidthRequest="58"
-                            HeightRequest="58"
-                            Background="#35FFFFFF"
-                            Stroke="Transparent"
-                            StrokeShape="RoundRectangle 29">
+                            <Border
+                WidthRequest="58"
+                HeightRequest="58"
+                Background="#35FFFFFF"
+                Stroke="Transparent"
+                StrokeShape="RoundRectangle 29">
 
-                             
-                            <buttons:SfButton  Text="{Binding ScannerIcon}"
-                                                FontFamily="MaterialIconsRegular"
-                                                FontSize="30"
-                                                TextColor="White" Background="#419278"
-                                                HorizontalTextAlignment="Center"
-                                                VerticalTextAlignment="Center"
-                                                Command="{Binding ScanCommand}" />
-                        </Border>
-
-                        <Label
-                            Text="Scan an Item"
-                            FontSize="24"
-                            FontAttributes="Bold"
-                            TextColor="White"
-                            HorizontalOptions="Center" />
-
-                        <Label
-                            Text="Analyze ingredients instantly"
-                            FontSize="14"
-                            TextColor="White"
-                            Opacity="0.9"
-                            HorizontalOptions="Center" />
-
-                        
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- Daily insight -->
-                <Border
-                    Padding="16"
-                    Background="#E9EFFA"
-                    Stroke="Transparent"
-                    StrokeShape="RoundRectangle 16">
-
-                    <Grid
-                        RowDefinitions="Auto,Auto"
-                        RowSpacing="10"
-                        ColumnDefinitions="Auto,*"
-                        ColumnSpacing="10">
-
-                        <Border
-                            WidthRequest="32" VerticalOptions="Start"
-                            HeightRequest="32"
-                            Background="#D9F2E8"
-                            Stroke="Transparent"
-                            StrokeShape="RoundRectangle 16">
+                                <buttons:SfButton
+                    Text="{Binding ScannerIcon}"
+                    FontFamily="MaterialIconsRegular"
+                    FontSize="30"
+                    TextColor="White"
+                    Background="#419278"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center"
+                    Command="{Binding ScanCommand}" />
+                            </Border>
 
                             <Label
-                                Text="{Binding TipsIcon}"
-                                FontFamily="MaterialIconsRegular"
-                                FontSize="17"
-                                TextColor="#047857"
-                                HorizontalTextAlignment="Center"
-                                VerticalTextAlignment="Center" />
-                        </Border>
-                        <StackLayout Grid.Column="1">
-                            <Label  Text="DAILY AI INSIGHT"
-                                    FontSize="11"
-                                    FontAttributes="Bold"
-                                    TextColor="#334155"
-                                    VerticalOptions="Center" />
+                Text="Scan an Item"
+                FontSize="24"
+                FontAttributes="Bold"
+                TextColor="White"
+                HorizontalOptions="Center" />
 
-                            <Label Text="{Binding DailyInsight}"
-                                    FontSize="15"
-                                    TextColor="#0F172A"
-                                    LineBreakMode="WordWrap" />
-                        </StackLayout>
-                        
-                    </Grid>
-                </Border>
+                            <Label
+                Text="Analyze ingredients instantly"
+                FontSize="14"
+                TextColor="White"
+                Opacity="0.9"
+                HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Daily insight -->
+                    <Border
+        x:Name="DailyInsightCard"
+        Grid.Row="1"
+        Grid.Column="0"
+        Padding="16"
+        Background="#E9EFFA"
+        Stroke="Transparent"
+        StrokeShape="RoundRectangle 16">
+
+                        <Grid
+            RowDefinitions="Auto,Auto"
+            RowSpacing="10"
+            ColumnDefinitions="Auto,*"
+            ColumnSpacing="10">
+
+                            <Border
+                WidthRequest="32"
+                HeightRequest="32"
+                VerticalOptions="Start"
+                Background="#D9F2E8"
+                Stroke="Transparent"
+                StrokeShape="RoundRectangle 16">
+
+                                <Label
+                    Text="{Binding TipsIcon}"
+                    FontFamily="MaterialIconsRegular"
+                    FontSize="17"
+                    TextColor="#047857"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center" />
+                            </Border>
+
+                            <StackLayout Grid.Column="1">
+                                <Label
+                    Text="DAILY AI INSIGHT"
+                    FontSize="11"
+                    FontAttributes="Bold"
+                    TextColor="#334155"
+                    VerticalOptions="Center" />
+
+                                <Label
+                    Text="{Binding DailyInsight}"
+                    FontSize="15"
+                    TextColor="#0F172A"
+                    LineBreakMode="WordWrap" />
+                            </StackLayout>
+                        </Grid>
+                    </Border>
+                </Grid>
 
                 <!-- Recent scans header -->
                 <Grid
