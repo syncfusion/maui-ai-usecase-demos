@@ -12,7 +12,7 @@ namespace NutriLens
 
         protected override Window CreateWindow(IActivationState? activationState)
         { 
-            return new Window(new NavigationPage(new AnalyzeIngredientsResultPage())); 
+            return new Window(new NavigationPage(new NutriLensDashboardPage())); 
         }
     }
 }

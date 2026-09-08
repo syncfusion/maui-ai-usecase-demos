@@ -189,162 +189,185 @@
                     </Grid>
                 </Border>
 
-                <!-- Average score card -->
-                <Border
-                    Margin="0,24,0,0"
-                    Style="{StaticResource TrendCardStyle}">
+                <!--
+                    Desktop-only two-column row:
+                      Phone  -> single column, stacked: Average score, Nutritional Trends label, Protein, Sugar
+                      Desktop-> left column: Average score (chart) spanning all rows,
+                               right column: Nutritional Trends label + Protein + Sugar
+                -->
+                <Grid
+                    ColumnDefinitions="{OnIdiom Phone='*', Default='*,*'}"
+                    RowDefinitions="{OnIdiom Phone='Auto,Auto,Auto,Auto', Default='Auto,Auto,Auto'}"
+                    ColumnSpacing="{OnIdiom Phone=0, Default=20}"
+                    RowSpacing="{OnIdiom Phone=0, Default=16}">
 
-                    <VerticalStackLayout Spacing="16">
+                    <!-- Average score card (chart) -->
+                    <Border
+                        Grid.Row="0"
+                        Grid.RowSpan="{OnIdiom Phone=1, Default=3}"
+                        Grid.Column="0"
+                        Margin="0,24,0,0"
+                        Style="{StaticResource TrendCardStyle}"
+                        VerticalOptions="{OnIdiom Phone=Fill, Default=Start}">
 
-                        <Label
-                            Text="Average Health Score"
-                            FontSize="15"
-                            TextColor="#64748B" />
+                        <VerticalStackLayout Spacing="16">
 
-                        <Grid ColumnDefinitions="*,Auto">
+                            <Label
+                                Text="Average Health Score"
+                                FontSize="15"
+                                TextColor="#64748B" />
 
-                            <HorizontalStackLayout
-                                Spacing="4"
-                                VerticalOptions="Center">
+                            <Grid ColumnDefinitions="*,Auto">
 
-                                <Label
-                                    Text="{Binding AverageScoreText}"
-                                    FontSize="42"
-                                    FontAttributes="Bold"
-                                    TextColor="#047857" />
-
-                                <Label
-                                    Text="/100"
-                                    FontSize="16"
-                                    TextColor="#64748B"
-                                    VerticalTextAlignment="Center" />
-                            </HorizontalStackLayout>
-
-                            <Border
-                                Grid.Column="1"
-                                Padding="10,6"
-                                BackgroundColor="#DFF7EC"
-                                Stroke="Transparent"
-                                StrokeShape="RoundRectangle 12"
-                                VerticalOptions="Center">
-
-                                <HorizontalStackLayout Spacing="5">
-                                    <Label
-                                        Text="{Binding TrendingUpIcon}"
-                                        Style="{StaticResource TrendIconStyle}"
-                                        FontSize="17"
-                                        TextColor="#047857" />
+                                <HorizontalStackLayout
+                                    Spacing="4"
+                                    VerticalOptions="Center">
 
                                     <Label
-                                        Text="{Binding AverageScoreDelta}"
-                                        FontSize="13"
+                                        Text="{Binding AverageScoreText}"
+                                        FontSize="42"
                                         FontAttributes="Bold"
                                         TextColor="#047857" />
+
+                                    <Label
+                                        Text="/100"
+                                        FontSize="16"
+                                        TextColor="#64748B"
+                                        VerticalTextAlignment="Center" />
                                 </HorizontalStackLayout>
-                            </Border>
-                        </Grid>
 
-                        <chart:SfCartesianChart
-                            HeightRequest="220"
-                            IsTransposed="False">
+                                <Border
+                                    Grid.Column="1"
+                                    Padding="10,6"
+                                    BackgroundColor="#DFF7EC"
+                                    Stroke="Transparent"
+                                    StrokeShape="RoundRectangle 12"
+                                    VerticalOptions="Center">
 
-                            <chart:SfCartesianChart.XAxes>
-                                <chart:CategoryAxis Interval="2"
-                                    ShowMajorGridLines="False"
-                                    LabelStyle="{chart:ChartAxisLabelStyle TextColor=#64748B, FontSize=11}" />
-                            </chart:SfCartesianChart.XAxes>
+                                    <HorizontalStackLayout Spacing="5">
+                                        <Label
+                                            Text="{Binding TrendingUpIcon}"
+                                            Style="{StaticResource TrendIconStyle}"
+                                            FontSize="17"
+                                            TextColor="#047857" />
 
-                            <chart:SfCartesianChart.YAxes>
-                                <chart:NumericalAxis
-                                    Minimum="{Binding YMinimum}" IsVisible="False"
-                                    Maximum="{Binding YMaximum}"
-                                    Interval="10"
-                                    ShowMajorGridLines="False"
-                                    LabelStyle="{chart:ChartAxisLabelStyle TextColor=#94A3B8, FontSize=10}" />
-                            </chart:SfCartesianChart.YAxes>
+                                        <Label
+                                            Text="{Binding AverageScoreDelta}"
+                                            FontSize="13"
+                                            FontAttributes="Bold"
+                                            TextColor="#047857" />
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </Grid>
 
-                            <chart:SfCartesianChart.Series>
-                                <chart:LineSeries
-                                    ItemsSource="{Binding HealthScoreTrend}"
-                                    XBindingPath="Day"
-                                    YBindingPath="Score" ShowMarkers="True"
-                                    StrokeWidth="3" Fill="#047857"
-                                    EnableTooltip="True">
-                                    <chart:LineSeries.MarkerSettings>
-                                        <chart:ChartMarkerSettings
-                                            Width="8" Type="Circle"
-                                            Height="8"
-                                            Fill="White"
-                                            Stroke="#047857"
-                                            StrokeWidth="2" />
-                                    </chart:LineSeries.MarkerSettings>
-                                </chart:LineSeries>
-                            </chart:SfCartesianChart.Series>
-                        </chart:SfCartesianChart>
-                    </VerticalStackLayout>
-                </Border>
+                            <chart:SfCartesianChart
+                                HeightRequest="220"
+                                IsTransposed="False">
 
-                <!-- Nutritional trends -->
-                <Label
-                    Text="Nutritional Trends"
-                    FontSize="26"
-                    FontAttributes="Bold"
-                    TextColor="#0F172A"
-                    Margin="0,32,0,0" />
+                                <chart:SfCartesianChart.XAxes>
+                                    <chart:CategoryAxis Interval="2"
+                                        ShowMajorGridLines="False"
+                                        LabelStyle="{chart:ChartAxisLabelStyle TextColor=#64748B, FontSize=11}" />
+                                </chart:SfCartesianChart.XAxes>
 
-                <!-- Protein -->
-                <Border
-                    Margin="0,12,0,0"
-                    Style="{StaticResource TrendCardStyle}">
+                                <chart:SfCartesianChart.YAxes>
+                                    <chart:NumericalAxis
+                                        Minimum="{Binding YMinimum}" IsVisible="False"
+                                        Maximum="{Binding YMaximum}"
+                                        Interval="10"
+                                        ShowMajorGridLines="False"
+                                        LabelStyle="{chart:ChartAxisLabelStyle TextColor=#94A3B8, FontSize=10}" />
+                                </chart:SfCartesianChart.YAxes>
 
-                    <VerticalStackLayout Spacing="10">
+                                <chart:SfCartesianChart.Series>
+                                    <chart:LineSeries
+                                        ItemsSource="{Binding HealthScoreTrend}"
+                                        XBindingPath="Day"
+                                        YBindingPath="Score" ShowMarkers="True"
+                                        StrokeWidth="3" Fill="#047857"
+                                        EnableTooltip="True">
+                                        <chart:LineSeries.MarkerSettings>
+                                            <chart:ChartMarkerSettings
+                                                Width="8" Type="Circle"
+                                                Height="8"
+                                                Fill="White"
+                                                Stroke="#047857"
+                                                StrokeWidth="2" />
+                                        </chart:LineSeries.MarkerSettings>
+                                    </chart:LineSeries>
+                                </chart:SfCartesianChart.Series>
+                            </chart:SfCartesianChart>
+                        </VerticalStackLayout>
+                    </Border>
 
-                        <Grid ColumnDefinitions="*,Auto">
+                    <!-- Nutritional Trends label -->
+                    <Label
+                        Grid.Row="{OnIdiom Phone=1, Default=0}"
+                        Grid.Column="{OnIdiom Phone=0, Default=1}"
+                        Text="Nutritional Trends"
+                        FontSize="26"
+                        FontAttributes="Bold"
+                        TextColor="#0F172A"
+                        Margin="0,32,0,0" />
+
+                    <!-- Protein -->
+                    <Border
+                        Grid.Row="{OnIdiom Phone=2, Default=1}"
+                        Grid.Column="{OnIdiom Phone=0, Default=1}"
+                        Margin="0,12,0,0"
+                        Style="{StaticResource TrendCardStyle}">
+
+                        <VerticalStackLayout Spacing="10">
+
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label
+                                    Text="Protein Intake"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    TextColor="#0F172A" />
+
+                            </Grid>
+                            <progressBar:SfLinearProgressBar Progress="{Binding ProteinProgress}"
+                                                            HeightRequest="6" Maximum="1"
+                                                            ProgressFill="#047857"
+                                                            BackgroundColor="#DCE9FF"/>
+
                             <Label
-                                Text="Protein Intake"
-                                FontSize="16"
-                                FontAttributes="Bold"
-                                TextColor="#0F172A" />
- 
-                        </Grid>
-                        <progressBar:SfLinearProgressBar Progress="{Binding ProteinProgress}"
-                                                        HeightRequest="6" Maximum="1"
-                                                        ProgressFill="#047857"
-                                                        BackgroundColor="#DCE9FF"/> 
+                                Text="{Binding ProteinNote}"
+                                FontSize="13"
+                                TextColor="#334155" />
+                        </VerticalStackLayout>
+                    </Border>
 
-                        <Label
-                            Text="{Binding ProteinNote}"
-                            FontSize="13"
-                            TextColor="#334155" />
-                    </VerticalStackLayout>
-                </Border>
+                    <!-- Sugar -->
+                    <Border
+                        Grid.Row="{OnIdiom Phone=3, Default=2}"
+                        Grid.Column="{OnIdiom Phone=0, Default=1}"
+                        Margin="0,14,0,0"
+                        Style="{StaticResource TrendCardStyle}">
 
-                <!-- Sugar -->
-                <Border
-                    Margin="0,14,0,0"
-                    Style="{StaticResource TrendCardStyle}">
+                        <VerticalStackLayout Spacing="10">
 
-                    <VerticalStackLayout Spacing="10">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label
+                                    Text="Sugar Intake"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    TextColor="#0F172A" />
 
-                        <Grid ColumnDefinitions="*,Auto">
+                            </Grid>
+                            <progressBar:SfLinearProgressBar Progress="{Binding SugarProgress}"
+                                                            HeightRequest="6" Maximum="1"
+                                                            ProgressFill="#F4A261"
+                                                            BackgroundColor="#DCE9FF"/>
+
                             <Label
-                                Text="Sugar Intake"
-                                FontSize="16"
-                                FontAttributes="Bold"
-                                TextColor="#0F172A" />
- 
-                        </Grid>
-                        <progressBar:SfLinearProgressBar Progress="{Binding SugarProgress}"
-                                                        HeightRequest="6" Maximum="1"
-                                                        ProgressFill="#F4A261"
-                                                        BackgroundColor="#DCE9FF"/> 
-
-                        <Label
-                            Text="{Binding SugarNote}"
-                            FontSize="13"
-                            TextColor="#334155" />
-                    </VerticalStackLayout>
-                </Border>
+                                Text="{Binding SugarNote}"
+                                FontSize="13"
+                                TextColor="#334155" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
 
                 <!-- Frequent additives -->
                 <Label
@@ -394,7 +417,7 @@
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>
                 </Border>
- 
+
             </VerticalStackLayout>
         </ScrollView>
 
