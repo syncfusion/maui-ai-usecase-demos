@@ -1,0 +1,355 @@
+﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:NutriLens"
+             xmlns:h="clr-namespace:NutriLens.Helpers"
+             xmlns:helpers="clr-namespace:NutriLens.Helpers" xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             x:Class="NutriLens.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" /> 
+                <ResourceDictionary Source="Resources/Styles/NutriLensStyles.xaml" />
+                
+            </ResourceDictionary.MergedDictionaries>
+            <helpers:HistoryScoreConverter
+    x:Key="HistoryScoreConverterCircular" />
+
+            <helpers:HistoryScoreBrushConverter
+    x:Key="HistoryScoreBrushConverter" />
+            <h:HistoryScoreConverter
+    x:Key="HistoryScoreConverter" />
+            <helpers:BoolToColorConverter 
+    x:Key="BoolToWhiteGrayConverter"
+    TrueColor="White"
+    FalseColor="#374151" />
+
+            <!-- Boolean to White/Orange Converter for Allergies -->
+            <helpers:BoolToColorConverter 
+    x:Key="BoolToWhiteOrangeConverter"
+    TrueColor="White"
+    FalseColor="#B8600C" />
+            <helpers:InverseBoolConverter
+                x:Key="InverseBoolConverter" />
+            <helpers:BoolToPeriodBackgroundConverter
+    x:Key="BoolToPeriodBackgroundConverter" />
+
+            <helpers:BoolToPeriodTextColorConverter
+    x:Key="BoolToPeriodTextColorConverter" />
+            <Style
+        x:Key="ProfileIconStyle"
+        TargetType="Label">
+
+                <Setter Property="FontFamily" Value="MaterialIconsRegular" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+
+            <Style
+        x:Key="ProfileCardStyle"
+        TargetType="Border">
+
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="Stroke" Value="Transparent" />
+                <Setter Property="Padding" Value="20" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="16" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style
+        x:Key="ProfileCardTitleStyle"
+        TargetType="Label">
+
+                <Setter Property="FontSize" Value="22" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="#0F172A" />
+            </Style>
+
+            <Style
+        x:Key="ProfileDescriptionStyle"
+        TargetType="Label">
+
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="#64748B" />
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+            </Style>
+
+            <Style
+        x:Key="ProfileNavigationButtonStyle"
+        TargetType="buttons:SfButton">
+
+                <Setter Property="WidthRequest" Value="40" />
+                <Setter Property="HeightRequest" Value="34" />
+                <Setter Property="FontFamily" Value="MaterialIconsRegular" />
+                <Setter Property="FontSize" Value="21" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Stroke" Value="Transparent" />
+                <Setter Property="Padding" Value="0" />
+            </Style>
+            <Style
+        x:Key="TrendIconStyle"
+        TargetType="Label">
+
+                <Setter Property="FontFamily" Value="MaterialIconsRegular" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+
+            <Style
+        x:Key="TrendCardStyle"
+        TargetType="Border">
+
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="Stroke" Value="Transparent" />
+                <Setter Property="Padding" Value="18" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="16" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style
+        x:Key="TrendNavButtonStyle"
+        TargetType="buttons:SfButton">
+
+                <Setter Property="WidthRequest" Value="40" />
+                <Setter Property="HeightRequest" Value="34" />
+                <Setter Property="FontFamily" Value="MaterialIconsRegular" />
+                <Setter Property="FontSize" Value="21" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Stroke" Value="Transparent" />
+                <Setter Property="Padding" Value="0" />
+            </Style>
+            <Style
+        x:Key="HistoryIconStyle"
+        TargetType="Label">
+
+                <Setter Property="FontFamily" Value="MaterialIconsRegular" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+            </Style>
+
+            <Style
+        x:Key="HistoryCardStyle"
+        TargetType="Border">
+
+                <Setter Property="HeightRequest" Value="90" />
+                <Setter Property="Padding" Value="14" />
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="Stroke" Value="Transparent" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="14" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style
+        x:Key="HistoryNavButtonStyle"
+        TargetType="buttons:SfButton">
+
+                <Setter Property="WidthRequest" Value="40" />
+                <Setter Property="HeightRequest" Value="34" />
+                <Setter Property="FontFamily" Value="MaterialIconsRegular" />
+                <Setter Property="FontSize" Value="21" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Stroke" Value="Transparent" />
+                <Setter Property="Padding" Value="0" />
+            </Style>
+
+            <Style
+        x:Key="HistoryFilterChipStyle"
+        TargetType="Border">
+
+                <Setter Property="HeightRequest" Value="36" />
+                <Setter Property="Padding" Value="14,0" />
+                <Setter Property="Stroke" Value="Transparent" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="18" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style
+        x:Key="HistoryBottomBarStyle"
+        TargetType="Grid">
+
+                <Setter Property="HeightRequest" Value="84" />
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="Padding" Value="12,10,12,6" />
+                <Setter Property="ColumnDefinitions" Value="*,*,*,*,*" />
+            </Style>
+            <Color x:Key="BreakdownBackground">#F4F6FA</Color>
+            <Color x:Key="BreakdownPrimary">#047857</Color>
+            <Color x:Key="BreakdownText">#0F172A</Color>
+            <Color x:Key="BreakdownSecondary">#64748B</Color>
+            <Color x:Key="BreakdownHeaderText">#334155</Color>
+
+            <Style
+        x:Key="BreakdownHeaderStyle"
+        TargetType="Grid">
+
+                <Setter Property="HeightRequest" Value="56" />
+                <Setter Property="Padding" Value="16,0" />
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="ColumnDefinitions" Value="Auto,*,Auto" />
+            </Style>
+
+            <Style
+        x:Key="BreakdownBackButtonStyle"
+        TargetType="buttons:SfButton">
+
+                <Setter Property="WidthRequest" Value="32" />
+                <Setter Property="HeightRequest" Value="32" />
+                <Setter Property="FontFamily" Value="MaterialIconsRegular" />
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="TextColor" Value="#475569" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Stroke" Value="Transparent" />
+                <Setter Property="Padding" Value="0" />
+            </Style>
+
+            <Style
+        x:Key="BreakdownProfileButtonStyle"
+        TargetType="buttons:SfButton">
+
+                <Setter Property="WidthRequest" Value="32" />
+                <Setter Property="HeightRequest" Value="32" />
+                <Setter Property="FontFamily" Value="MaterialIconsRegular" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="Background" Value="#0B8E69" />
+                <Setter Property="Stroke" Value="Transparent" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="Padding" Value="0" />
+            </Style>
+
+            <Style
+        x:Key="BreakdownCardStyle"
+        TargetType="Border">
+
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="Stroke" Value="Transparent" />
+                <Setter Property="Padding" Value="18" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="16" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style
+        x:Key="SectionTitleStyle"
+        TargetType="Label">
+
+                <Setter Property="FontSize" Value="22" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="#0F172A" />
+            </Style>
+
+            <Style
+        x:Key="BodyTextStyle"
+        TargetType="Label">
+
+                <Setter Property="FontSize" Value="13" />
+                <Setter Property="TextColor" Value="#64748B" />
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+            </Style>
+
+            <Style
+        x:Key="MaterialIconStyle"
+        TargetType="Label">
+
+                <Setter Property="FontFamily" Value="MaterialIconsRegular" />
+                <Setter Property="TextColor" Value="#047857" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+
+            <Style
+        x:Key="FactorCardStyle"
+        TargetType="Border">
+
+                <Setter Property="Padding" Value="16" />
+                <Setter Property="Stroke" Value="Transparent" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="12" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style
+        x:Key="PrimaryActionStyle"
+        TargetType="buttons:SfButton">
+
+                <Setter Property="HeightRequest" Value="56" />
+                <Setter Property="Background" Value="#047857" />
+                <Setter Property="Stroke" Value="Transparent" />
+                <Setter Property="CornerRadius" Value="28" />
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="White" />
+            </Style>
+            <Color x:Key="AnalysisBackground">#F3F5FA</Color>
+            <Color x:Key="AnalysisPrimary">#047857</Color>
+            <Color x:Key="AnalysisTextPrimary">#0F172A</Color>
+            <Color x:Key="AnalysisTextSecondary">#475569</Color>
+            <Color x:Key="AnalysisMuted">#9CA3AF</Color>
+
+            <Style
+        x:Key="AnalysisCard"
+        TargetType="Border">
+
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="Stroke" Value="Transparent" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="12" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Padding" Value="14" />
+            </Style>
+
+            <Style
+        x:Key="AnalysisSectionTitle"
+        TargetType="Label">
+
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="#0F172A" />
+            </Style>
+
+            <Style
+        x:Key="AnalysisBodyText"
+        TargetType="Label">
+
+                <Setter Property="FontSize" Value="13" />
+                <Setter Property="TextColor" Value="#475569" />
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+            </Style>
+            <Style
+        x:Key="DashboardPageStyle"
+        TargetType="ContentPage">
+                <Setter Property="BackgroundColor" Value="#F5F7FB" />
+                <Setter Property="Padding" Value="0" />
+            </Style>
+
+            <Style
+        x:Key="DashboardPrimaryButton"
+        TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#047857" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="CornerRadius" Value="18" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="HeightRequest" Value="42" />
+            </Style>
+        </ResourceDictionary>
+        
+    </Application.Resources>
+</Application>

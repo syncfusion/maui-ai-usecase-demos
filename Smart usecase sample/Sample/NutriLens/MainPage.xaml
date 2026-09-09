@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:models="clr-namespace:NutriLens.Models"
+             x:Class="NutriLens.MainPage"
+             BackgroundColor="{StaticResource Surface}"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid BackgroundColor="White">
+
+        <Image
+    Source="nutrisplashscreen.png"
+    WidthRequest="250"
+    HeightRequest="250"
+    HorizontalOptions="Center"
+    VerticalOptions="Center"
+    Aspect="AspectFit" />
+
+    </Grid>
+</ContentPage>

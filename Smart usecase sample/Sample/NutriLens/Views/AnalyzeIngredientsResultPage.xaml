@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:gauge="clr-namespace:Syncfusion.Maui.Gauges;assembly=Syncfusion.Maui.Gauges"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    x:Class="NutriLens.Views.AnalyzeIngredientsResultPage"
+    NavigationPage.HasNavigationBar="False"
+    BackgroundColor="#F3F5FA">
+
+    <Grid RowDefinitions="56,*,76">
+
+        <!-- Header -->
+        <Grid
+            Grid.Row="0"
+            Padding="16,8"
+            HeightRequest="56"
+            ColumnDefinitions="48,*,48"
+            BackgroundColor="White">
+
+            <buttons:SfButton
+                Grid.Column="0"
+                WidthRequest="40"
+                HeightRequest="40"
+                Text="&#xE5C4;"
+                FontFamily="MaterialIconsRegular"
+                FontSize="24"
+                TextColor="#475569"
+                Background="Transparent"
+                Stroke="Transparent"
+                Padding="0"
+                Clicked="OnBackClicked" />
+
+            <Label
+                Grid.Column="1"
+                Text="Scan Result"
+                FontSize="18"
+                FontAttributes="Bold"
+                TextColor="#334155"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center" />
+
+            <buttons:SfButton
+                Grid.Column="2"
+                WidthRequest="34"
+                HeightRequest="34"
+                Text="&#xE7FD;"
+                FontFamily="MaterialIconsRegular"
+                FontSize="19"
+                TextColor="White"
+                Background="#047857"
+                Stroke="Transparent"
+                CornerRadius="17"
+                Padding="0" />
+        </Grid>
+
+        <!-- Scrollable content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout
+                Padding="16"
+                Spacing="16">
+
+                <!-- Profile badge -->
+                <Border
+                    Padding="12"
+                    Stroke="Transparent"
+                    StrokeShape="RoundRectangle 18">
+
+                    <HorizontalStackLayout
+                        Spacing="8"
+                        HorizontalOptions="Center">
+
+                        <Label
+                            Text="&#xE87B;"
+                            FontFamily="MaterialIconsRegular"
+                            FontSize="20"
+                            TextColor="#0F766E"
+                            VerticalTextAlignment="Center" />
+
+                        <Label
+                            Text="{Binding Profile}"
+                            FontSize="11"
+                            FontAttributes="Bold"
+                            TextColor="#1E293B"
+                            VerticalTextAlignment="Center" />
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!--
+                    Desktop-only two-column row:
+                      Phone  -> single column, stacked: Score, Recommendation, Positive Attributes, Metabolic Conflict
+                      Desktop-> left column: Score + Recommendation, right column: Positive Attributes + Metabolic Conflict
+                -->
+                <Grid
+                    ColumnDefinitions="{OnIdiom Phone='*', Default='*,*'}"
+                    RowDefinitions="{OnIdiom Phone='Auto,Auto,Auto,Auto', Default='Auto,Auto'}"
+                    ColumnSpacing="{OnIdiom Phone=0, Default=16}"
+                    RowSpacing="{OnIdiom Phone=16, Default=16}">
+
+                    <!-- Score -->
+                    <VerticalStackLayout
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Spacing="6"
+                        HorizontalOptions="Center">
+
+                        <gauge:SfRadialGauge
+                            WidthRequest="230"
+                            HeightRequest="230">
+
+                            <gauge:SfRadialGauge.Axes>
+                                <gauge:RadialAxis
+                                    Minimum="0"
+                                    Maximum="100"
+                                    StartAngle="270"
+                                    EndAngle="270"
+                                    ShowTicks="False"
+                                    BackgroundColor="#F3F5FA"
+                                    ShowLabels="False"
+                                    CanScaleToFit="True">
+
+                                    <gauge:RadialAxis.AxisLineStyle>
+                                        <gauge:RadialLineStyle Thickness="18" />
+                                    </gauge:RadialAxis.AxisLineStyle>
+
+                                    <gauge:RadialAxis.Pointers>
+                                        <gauge:RangePointer
+                                            Value="{Binding Score}"
+                                            Fill="#F5A623"
+                                            WidthUnit="Factor"
+                                            PointerWidth="0.18" />
+                                    </gauge:RadialAxis.Pointers>
+
+                                    <gauge:RadialAxis.Annotations>
+                                        <gauge:GaugeAnnotation
+                                            DirectionUnit="Angle"
+                                            DirectionValue="270"
+                                            PositionFactor="0.1">
+
+                                            <gauge:GaugeAnnotation.Content>
+                                                <VerticalStackLayout
+                                                    Spacing="2"
+                                                    HorizontalOptions="Center">
+
+                                                    <Label
+                                                        Text="{Binding ScoreLabelText}"
+                                                        FontSize="40"
+                                                        FontAttributes="Bold"
+                                                        TextColor="#0F172A"
+                                                        HorizontalTextAlignment="Center" />
+
+                                                    <Label
+                                                        Text="{Binding CategoryDisplay}"
+                                                        FontSize="12"
+                                                        FontAttributes="Bold"
+                                                        TextColor="#1F2937"
+                                                        CharacterSpacing="2"
+                                                        HorizontalTextAlignment="Center" />
+                                                </VerticalStackLayout>
+                                            </gauge:GaugeAnnotation.Content>
+                                        </gauge:GaugeAnnotation>
+                                    </gauge:RadialAxis.Annotations>
+                                </gauge:RadialAxis>
+                            </gauge:SfRadialGauge.Axes>
+                        </gauge:SfRadialGauge>
+
+                        <HorizontalStackLayout
+                            Spacing="6"
+                            HorizontalOptions="Center">
+
+                            <Label
+                                Text="&#xE88E;"
+                                FontFamily="MaterialIconsRegular"
+                                FontSize="17"
+                                TextColor="#0F766E"
+                                VerticalTextAlignment="Center" />
+
+                            <Label
+                                Text="How this score is calculated"
+                                FontSize="13"
+                                TextColor="#0F766E"
+                                VerticalTextAlignment="Center" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+
+                    <!-- Recommendation (below Score on phone; below Score in left column on desktop) -->
+                    <VerticalStackLayout
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Spacing="6"
+                        HorizontalOptions="Center">
+
+                        <Label
+                            Text="{Binding Recommendation}"
+                            FontSize="20"
+                            FontAttributes="Bold"
+                            TextColor="#0F172A"
+                            HorizontalTextAlignment="Center" />
+
+                        <Label
+                            Text="{Binding Summary}"
+                            FontSize="15"
+                            TextColor="#334155"
+                            HorizontalTextAlignment="Center"
+                            LineBreakMode="WordWrap" />
+                    </VerticalStackLayout>
+
+                    <!-- Positive attributes (stacked under on phone; top of right column on desktop) -->
+                    <Border
+                        Grid.Row="{OnIdiom Phone=2, Default=0}"
+                        Grid.Column="{OnIdiom Phone=0, Default=1}"
+                        Padding="18"
+                        BackgroundColor="#18C58F"
+                        Stroke="Transparent"
+                        StrokeShape="RoundRectangle 16"
+                        VerticalOptions="{OnIdiom Phone=Fill, Default=Start}">
+
+                        <Grid
+                            RowDefinitions="Auto,Auto,Auto"
+                            ColumnDefinitions="Auto,*"
+                            RowSpacing="10"
+                            ColumnSpacing="8">
+
+                            <Border
+                                WidthRequest="34"
+                                HeightRequest="34"
+                                BackgroundColor="#269F7D"
+                                Stroke="Transparent"
+                                StrokeShape="RoundRectangle 17">
+
+                                <Label
+                                    Text="&#xE86C;"
+                                    FontFamily="MaterialIconsRegular"
+                                    FontSize="19"
+                                    TextColor="#073B2D"
+                                    HorizontalTextAlignment="Center"
+                                    VerticalTextAlignment="Center" />
+                            </Border>
+
+                            <Label
+                                Grid.Column="1"
+                                Text="Positive Attributes"
+                                FontSize="18"
+                                FontAttributes="Bold"
+                                TextColor="#073B2D"
+                                VerticalTextAlignment="Center" />
+
+                            <Ellipse
+                                Grid.Row="1"
+                                WidthRequest="6"
+                                HeightRequest="6"
+                                Fill="#073B2D"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Start"
+                                Margin="0,7,0,0" />
+
+                            <Label
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Text="{Binding PositiveSummary}"
+                                FontSize="14"
+                                TextColor="#073B2D"
+                                LineBreakMode="WordWrap" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Metabolic conflict (stacked under on phone; bottom of right column on desktop) -->
+                    <Border
+                        Grid.Row="{OnIdiom Phone=3, Default=1}"
+                        Grid.Column="{OnIdiom Phone=0, Default=1}"
+                        Padding="18"
+                        BackgroundColor="#FFD9D4"
+                        Stroke="Transparent"
+                        StrokeShape="RoundRectangle 16"
+                        VerticalOptions="{OnIdiom Phone=Fill, Default=Start}">
+
+                        <Grid
+                            ColumnDefinitions="Auto,*"
+                            ColumnSpacing="10"
+                            RowSpacing="8">
+
+                            <Label
+                                Text="&#xE002;"
+                                FontFamily="MaterialIconsRegular"
+                                FontSize="22"
+                                TextColor="#DC2626"
+                                VerticalOptions="Start" />
+
+                            <StackLayout Grid.Column="1">
+                                <Label
+                                    Text="Metabolic Conflict"
+                                    FontSize="18"
+                                    FontAttributes="Bold"
+                                    TextColor="#DC2626" />
+
+                                <Label
+                                    Text="{Binding MetabolicConflict}"
+                                    FontSize="14"
+                                    TextColor="#B91C1C"
+                                    LineBreakMode="WordWrap" />
+                            </StackLayout>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Section title -->
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    Margin="0,8,0,0">
+
+                    <Label
+                        Text="Ingredient Breakdown"
+                        FontSize="28"
+                        FontAttributes="Bold"
+                        TextColor="#0F172A" />
+
+                    <Label
+                        Grid.Column="1"
+                        Text="{Binding IngredientBreakdown.Count, StringFormat='{0} ingredients reviewed'}"
+                        FontSize="13"
+                        TextColor="#64748B"
+                        VerticalTextAlignment="Center" />
+                </Grid>
+
+                <CollectionView
+                    ItemsSource="{Binding IngredientBreakdown}"
+                    SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border
+                                Padding="14"
+                                Margin="0,0,0,8"
+                                BackgroundColor="White"
+                                Stroke="Transparent"
+                                StrokeShape="RoundRectangle 12">
+
+                                <Border.Shadow>
+                                    <Shadow
+                                        Brush="#25000000"
+                                        Offset="0,2"
+                                        Radius="7"
+                                        Opacity="0.35" />
+                                </Border.Shadow>
+
+                                <VerticalStackLayout Spacing="8">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label
+                                            Text="{Binding Name}"
+                                            FontSize="16"
+                                            FontAttributes="Bold"
+                                            TextColor="#0F172A" />
+
+                                        <Border
+                                            Grid.Column="1"
+                                            Padding="9,5"
+                                            BackgroundColor="{Binding BadgeBackground}"
+                                            Stroke="Transparent"
+                                            StrokeShape="RoundRectangle 12">
+
+                                            <Label
+                                                Text="{Binding BadgeText}"
+                                                FontSize="11"
+                                                FontAttributes="Bold"
+                                                TextColor="{Binding BadgeTextColor}" />
+                                        </Border>
+                                    </Grid>
+
+                                    <Label
+                                        Text="{Binding Purpose}"
+                                        FontSize="13"
+                                        TextColor="#475569"
+                                        LineBreakMode="WordWrap" />
+
+                                    <Label
+                                        Text="{Binding Explanation}"
+                                        FontSize="13"
+                                        TextColor="#475569"
+                                        LineBreakMode="WordWrap" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Disclaimer -->
+                <Label
+                    Text="This analysis is generated by AI based on label data and is for educational purposes only. It is not medical advice. Consult a healthcare professional before making dietary changes."
+                    FontSize="11"
+                    TextColor="#9CA3AF"
+                    HorizontalTextAlignment="Center"
+                    LineBreakMode="WordWrap"
+                    Margin="8,0" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Fixed bottom action bar -->
+        <Grid
+            Grid.Row="2"
+            Padding="16,10"
+            HeightRequest="76" 
+            ColumnSpacing="12"
+            BackgroundColor="#F3F5FA">
+
+            <Border 
+                HeightRequest="48"
+                BackgroundColor="#EAF0FB"
+                Stroke="Transparent"
+                StrokeShape="RoundRectangle 12">
+
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnSaveResultClicked" />
+                </Border.GestureRecognizers>
+
+                <Grid
+                    ColumnDefinitions="Auto,*"
+                    ColumnSpacing="8"
+                    Padding="12,0"
+                    HorizontalOptions="Center">
+
+                    <Label
+                        Text="&#xE867;"
+                        FontFamily="MaterialIconsRegular"
+                        FontSize="20"
+                        TextColor="#475569"
+                        VerticalTextAlignment="Center" />
+
+                    <Label
+                        Grid.Column="1"
+                        Text="Save Result"
+                        FontSize="14"
+                        FontAttributes="Bold"
+                        TextColor="#475569"
+                        VerticalTextAlignment="Center" />
+                </Grid>
+            </Border>
+
+
+        </Grid>
+    </Grid>
+</ContentPage>
