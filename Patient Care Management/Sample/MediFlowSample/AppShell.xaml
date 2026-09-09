@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="MediFlowSample.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:MediFlowSample"
+    xmlns:views="clr-namespace:MediFlowSample.Views"
+    Shell.TabBarIsVisible="False"
+    FlyoutBehavior="Disabled"
+    Title="Patient Care Management">
+
+    <!-- Splash Screen - First page shown on app startup -->
+    <ShellContent
+        Title="Splash"
+        ContentTemplate="{DataTemplate views:SplashPage}"
+        Route="splash" />
+
+    <!-- Main application content. Custom in-page navigation (sidebar/bottom bar) drives page switching; the native Shell tab bar is hidden. -->
+    <TabBar>
+        <ShellContent
+            Title="Dashboard"
+            Icon="home.png"
+            ContentTemplate="{DataTemplate views:DashboardPage}"
+            Route="dashboard" />
+        <ShellContent
+            Title="Patients"
+            Icon="home.png"
+            ContentTemplate="{DataTemplate views:PatientsPage}"
+            Route="patients" />
+        <ShellContent
+            Title="Schedule"
+            Icon="home.png"
+            ContentTemplate="{DataTemplate views:AppointmentsPage}"
+            Route="schedule" />
+        <ShellContent
+            Title="Care Plans"
+            Icon="home.png"
+            ContentTemplate="{DataTemplate views:CarePlansPage}"
+            Route="careplans" />
+    </TabBar>
+
+</Shell>

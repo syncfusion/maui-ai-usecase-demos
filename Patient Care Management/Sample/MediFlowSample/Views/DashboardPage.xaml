@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts" 
+             xmlns:gauge="clr-namespace:Syncfusion.Maui.Gauges;assembly=Syncfusion.Maui.Gauges" 
+             xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
+             xmlns:list="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView" 
+             xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core" 
+             xmlns:avatar="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:models="clr-namespace:MediFlowSample.Models"
+             xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:controls="clr-namespace:MediFlowSample.Controls"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             x:Class="MediFlowSample.Views.DashboardPage"
+             Title="Dashboard" 
+             Shell.NavBarIsVisible="False" 
+             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource BackgroundColorDark}}">
+    
+    <ContentPage.Resources>
+        <Style TargetType="list:ListViewItem">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="Background" Value="Transparent" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="PointerOver">
+                            <VisualState.Setters>
+                                <Setter Property="Background" Value="Transparent" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter Property="Background" Value="Transparent" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="Background" Value="Transparent" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+        <DataTemplate x:Key="AlertTemplate" x:DataType="models:CareAlert">
+            <Border BackgroundColor="{Binding IconBackground}" Stroke="{AppThemeBinding Light=#FED7D7, Dark=#FED7D7}" StrokeThickness="1" Padding="12" Margin="6">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="#20000000" Offset="0,2" Radius="4" Opacity="0.12" />
+                </Border.Shadow>
+                <Grid ColumnDefinitions="46,*" VerticalOptions="Center" ColumnSpacing="10">
+                    <Border WidthRequest="46" HeightRequest="46" BackgroundColor="{Binding AccentColor}" StrokeThickness="0" VerticalOptions="Start">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Label Text="{Binding IconGlyph}" FontFamily="MaterialIcons" FontSize="18" TextColor="White" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                    </Border>
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="3">
+                        <Label Text="{Binding Title}" FontFamily="OpenSansSemibold" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                        <Label Text="{Binding Description}" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" LineBreakMode="WordWrap" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="AppointmentTemplate" x:DataType="models:DashboardAppointment">
+            <Border BackgroundColor="{StaticResource SurfaceColor}" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Margin="6" StrokeThickness="1" Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="#20000000" Offset="0,2" Radius="4" Opacity="0.12" />
+                </Border.Shadow>
+                <Grid ColumnDefinitions="48,*,Auto" ColumnSpacing="10">
+                    <core:SfAvatarView Grid.Column="0" ImageSource="{Binding PatientPhoto}" AvatarShape="Circle" ContentType="Default" AvatarSize="Medium" WidthRequest="44" HeightRequest="44" VerticalOptions="Center" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="{Binding PatientName}" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" LineBreakMode="TailTruncation" />
+                        <Label Text="{Binding VisitType}" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" LineBreakMode="TailTruncation" />
+                        <HorizontalStackLayout Spacing="4">
+                            <Label Text="{Binding TimeText}" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                            <Label Text="{Binding MeridiemText}" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                    <Border Grid.Column="2" BackgroundColor="#E6F0FF" StrokeThickness="0" Padding="10,6" VerticalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="10" />
+                        </Border.StrokeShape>
+                        <Label Text="{Binding DisplayStatus}" FontSize="11" TextColor="{StaticResource Secondary}" />
+                    </Border>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </ContentPage.Resources>
+    <Grid ColumnDefinitions="{OnPlatform WinUI='248,*', MacCatalyst='248,*', Default='0,*'}">
+        <controls:AppSidebarView Grid.Column="0" IsVisible="{OnPlatform WinUI=True, MacCatalyst=True, Default=False}" ActiveRoute="dashboard" />
+        <ScrollView Grid.Column="1" IsVisible="{OnPlatform WinUI=True, MacCatalyst=True, Default=False}">
+            <VerticalStackLayout Padding="34,110,40,34" Spacing="22">
+                <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="14">
+                    <Border Grid.Column="0" BackgroundColor="{StaticResource SurfaceColor}" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="18" HeightRequest="112">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#20000000" Offset="3,2" Radius="6" Opacity="0.8" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="8">
+                            <HorizontalStackLayout Spacing="6">
+                                <Label Text="&#xE935;" FontFamily="MaterialIcons" FontSize="16" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                                <Label Text="APPOINTMENTS" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <Label Text="{Binding TodayAppointmentsCount}" FontFamily="OpenSansSemibold" FontSize="30" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" BackgroundColor="{StaticResource SurfaceColor}" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="18" HeightRequest="112">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#20000000" Offset="3,2" Radius="6" Opacity="0.8" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="8">
+                            <HorizontalStackLayout Spacing="4">
+                                <Label Text="&#xE88B;" FontFamily="MaterialIcons" FontSize="18" TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                                <Label Text="WAITING" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <Label Text="{Binding WaitingPatientsCount}" FontFamily="OpenSansSemibold" FontSize="30" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="2" BackgroundColor="#FFD9D6" StrokeThickness="0" Padding="18" HeightRequest="112">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#20000000" Offset="3,2" Radius="6" Opacity="0.8" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="8">
+                            <HorizontalStackLayout Spacing="2">
+                                <Label Text="&#xE645;" FontFamily="MaterialIcons" FontSize="18" TextColor="{StaticResource ErrorColor}" VerticalOptions="Center" />
+                                <Label Text="URGENT VISITS" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{StaticResource ErrorColor}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <Label Text="{Binding HighPriorityCount}" FontFamily="OpenSansSemibold" FontSize="30" TextColor="{StaticResource ErrorColor}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="3" BackgroundColor="#DFEAFF" StrokeThickness="0" Padding="18" HeightRequest="112">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#20000000" Offset="3,2" Radius="6" Opacity="0.8" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="8">
+                            <HorizontalStackLayout Spacing="4">
+                                <Label Text="&#xE86C;" FontFamily="MaterialIcons" FontSize="18" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                                <Label Text="COMPLETED" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <Label Text="{Binding CompletedVisitsCount}" FontFamily="OpenSansSemibold" FontSize="30" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+                <Grid ColumnDefinitions="1.4*,*,*" ColumnSpacing="14">
+                    <Border Grid.Column="0" BackgroundColor="White" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="18">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout>
+                            <Label Text="Appointments This Week" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                            <chart:SfCartesianChart Margin="0,20,0,0" HeightRequest="230">
+                                <chart:SfCartesianChart.XAxes>
+                                    <chart:CategoryAxis ShowMajorGridLines="False" >
+                                        <chart:CategoryAxis.MajorTickStyle>
+                                            <chart:ChartAxisTickStyle StrokeWidth="0"/>
+                                        </chart:CategoryAxis.MajorTickStyle>
+                                    </chart:CategoryAxis>
+                                </chart:SfCartesianChart.XAxes>
+                                <chart:SfCartesianChart.YAxes>
+                                    <chart:NumericalAxis Minimum="0" Maximum="20" Interval="5" ShowMajorGridLines="False">
+                                        <chart:NumericalAxis.MajorTickStyle>
+                                            <chart:ChartAxisTickStyle StrokeWidth="0"/>
+                                        </chart:NumericalAxis.MajorTickStyle>
+                                    </chart:NumericalAxis>
+                                </chart:SfCartesianChart.YAxes>
+                                <chart:ColumnSeries ItemsSource="{Binding WeeklyAppointments}" XBindingPath="Label" EnableTooltip="True" YBindingPath="Value" Fill="{StaticResource Primary}" />
+                            </chart:SfCartesianChart>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" BackgroundColor="White" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="18">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#20000000" Offset="0,2" Radius="6" Opacity="0.18" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="VISIT STATUS" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                            <chart:SfCircularChart HeightRequest="200">
+                                <chart:DoughnutSeries ItemsSource="{Binding VisitStatuses}" XBindingPath="Label" YBindingPath="Value" InnerRadius="0.80" />
+                            </chart:SfCircularChart>
+                            <VerticalStackLayout HorizontalOptions="Center" Spacing="5" Padding="0,4">
+                                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                    <BoxView WidthRequest="10" HeightRequest="10" BackgroundColor="#14B8A6" CornerRadius="12" />
+                                    <Label Text="Done" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                                    <Label Text="{Binding VisitStatuses[0].Percentage, StringFormat='{0:0}%'}" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" Margin="30,0,0,0" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                    <BoxView WidthRequest="10" HeightRequest="10" BackgroundColor="Black" CornerRadius="12" />
+                                    <Label Text="Wait" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                                    <Label Text="{Binding VisitStatuses[1].Percentage, StringFormat='{0:0}%'}" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" Margin="34,0,0,0" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="2" BackgroundColor="White" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="18">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#20000000" Offset="0,2" Radius="6" Opacity="0.18" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="6" VerticalOptions="Start">
+                            <Label Text="DAILY PROGRESS" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                            <progressBar:SfCircularProgressBar VerticalOptions="Center" BackgroundColor="White" Progress="{Binding CompletedPercentage}" HeightRequest="200" WidthRequest="220" HorizontalOptions="Center" ProgressCornerStyle="BothCurve" TrackCornerStyle="BothCurve" TrackThickness="10" ProgressThickness="10" ProgressFill="#14B8A6" TrackFill="#E0F2F1" StartAngle="140" EndAngle="400">
+                                <progressBar:SfCircularProgressBar.Content>
+                                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="2">
+                                        <Label Text="{Binding CompletedPercentage, StringFormat='{0:0}%'}" FontFamily="OpenSansSemibold" FontSize="20" WidthRequest="80" LineBreakMode="NoWrap" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" HorizontalTextAlignment="Center" />
+                                    </VerticalStackLayout>
+                                </progressBar:SfCircularProgressBar.Content>
+                            </progressBar:SfCircularProgressBar>
+                            <Label Text="Completed Today" FontFamily="OpenSansSemibold" FontSize="14" Margin="0,14,0,0" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+                <Grid ColumnDefinitions="1.3*,*" ColumnSpacing="14" HeightRequest="330">
+                    <Border Grid.Column="0" BackgroundColor="#FFF6F7" Stroke="#FED7D7" StrokeThickness="1" Padding="18" VerticalOptions="Fill">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#20000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="12">
+                            <HorizontalStackLayout Spacing="6">
+                                <Label Text="&#xE002;" FontFamily="MaterialIcons" FontSize="18" TextColor="{StaticResource ErrorColor}" VerticalOptions="Center" />
+                                <Label Text="Care Alerts" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <list:SfListView HeightRequest="270" ItemSize="90" ItemsSource="{Binding CareAlerts}" ItemTemplate="{StaticResource AlertTemplate}" SelectionMode="None" SelectionBackground="Transparent" BackgroundColor="Transparent" Background="Transparent" ScrollBarVisibility="Never" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" BackgroundColor="White" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" StrokeThickness="1" Padding="18" VerticalOptions="Fill">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#20000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="14">
+                            <Grid ColumnDefinitions="*,84" HorizontalOptions="Fill">
+                                <Label Grid.Column="0" Text="Upcoming Appointments" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" VerticalOptions="Center" />
+                                <buttons:SfButton Grid.Column="1" Text="VIEW ALL" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{StaticResource Secondary}" Background="Transparent" Stroke="Transparent" StrokeThickness="0" Padding="0" WidthRequest="84" HeightRequest="32" HorizontalOptions="End" VerticalOptions="Center" Clicked="OnViewAllClicked" x:Name="ViewAllButtonDesktop" />
+                            </Grid>
+                            <list:SfListView HeightRequest="270" ItemSize="90" ItemsSource="{Binding UpcomingAppointmentsLimited}" ItemTemplate="{StaticResource AppointmentTemplate}" SelectionMode="None" SelectionBackground="Transparent" Background="Transparent" ScrollBarVisibility="Never" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+            </VerticalStackLayout>
+        </ScrollView>
+        <Grid Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{OnPlatform WinUI=False, MacCatalyst=False, Default=True}" RowDefinitions="*,Auto" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource BackgroundColorDark}}">
+            <ScrollView Grid.Row="0">
+                <VerticalStackLayout Padding="16,78,16,24" Spacing="18">
+                    <VerticalStackLayout Spacing="3">
+                        <Label Text="Good morning, Dr. Wilson" FontFamily="OpenSansSemibold" FontSize="21" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                        <Label Text="Here is today's clinic overview." FontSize="13" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                    </VerticalStackLayout>
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                        <Border Grid.Row="0" Grid.Column="0" BackgroundColor="{StaticResource SurfaceColor}" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="14,12" HeightRequest="86">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="14" />
+                            </Border.StrokeShape>
+                            <Border.Shadow>
+                                <Shadow Brush="#20000000" Offset="3,2" Radius="6" Opacity="0.8" />
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="6">
+                                <HorizontalStackLayout Spacing="5">
+                                    <Label Text="&#xE935;" FontFamily="MaterialIcons" FontSize="13" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                                    <Label Text="Appointments" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                                <Label Text="{Binding TodayAppointmentsCount}" FontFamily="OpenSansSemibold" FontSize="24" TextColor="{StaticResource DarkText}" />
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="1" BackgroundColor="{StaticResource SurfaceColor}" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="14,12" HeightRequest="86">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="14" />
+                            </Border.StrokeShape>
+                            <Border.Shadow>
+                                <Shadow Brush="#20000000" Offset="3,2" Radius="6" Opacity="0.8" />
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="6">
+                                <HorizontalStackLayout Spacing="3">
+                                    <Label Text="&#xE88B;" FontFamily="MaterialIcons" FontSize="14" TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                                    <Label Text="Waiting" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                                <Label Text="{Binding WaitingPatientsCount}" FontFamily="OpenSansSemibold" FontSize="24" TextColor="{StaticResource DarkText}" />
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="0" BackgroundColor="#FFD9D6" StrokeThickness="0" Padding="14,12" HeightRequest="80">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="14" />
+                            </Border.StrokeShape>
+                            <Border.Shadow>
+                                <Shadow Brush="#20000000" Offset="3,2" Radius="6" Opacity="0.8" />
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="6">
+                                <HorizontalStackLayout Spacing="3">
+                                    <Label Text="&#xE645;" FontFamily="MaterialIcons" FontSize="14" TextColor="{StaticResource ErrorColor}" VerticalOptions="Center" />
+                                    <Label Text="High Priority" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{StaticResource ErrorColor}" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                                <Label Text="{Binding HighPriorityCount}" FontFamily="OpenSansSemibold" FontSize="24" TextColor="{StaticResource ErrorColor}" />
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="1" BackgroundColor="#DFEAFF" StrokeThickness="0" Padding="14,12" HeightRequest="80">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="14" />
+                            </Border.StrokeShape>
+                            <Border.Shadow>
+                                <Shadow Brush="#20000000" Offset="3,2" Radius="6" Opacity="0.8" />
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="6">
+                                <HorizontalStackLayout Spacing="3">
+                                    <Label Text="&#xE86C;" FontFamily="MaterialIcons" FontSize="14" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                                    <Label Text="Completed" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                                <Label Text="{Binding CompletedVisitsCount}" FontFamily="OpenSansSemibold" FontSize="24" TextColor="{StaticResource DarkText}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                    <Border BackgroundColor="White" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="14,14,14,10">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="14" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout>
+                            <Label Text="Appointments This Week" Margin="0,0,0,20" FontFamily="OpenSansSemibold" FontAttributes="Bold" FontSize="16" TextColor="{StaticResource DarkText}" />
+                            <chart:SfCartesianChart HeightRequest="220">
+                                <chart:SfCartesianChart.XAxes>
+                                    <chart:CategoryAxis ShowMajorGridLines="False">
+                                        <chart:CategoryAxis.MajorTickStyle>
+                                            <chart:ChartAxisTickStyle StrokeWidth="0"/>
+                                        </chart:CategoryAxis.MajorTickStyle>
+                                    </chart:CategoryAxis>
+                                </chart:SfCartesianChart.XAxes>
+                                <chart:SfCartesianChart.YAxes>
+                                    <chart:NumericalAxis ShowMajorGridLines="False" Minimum="0" Maximum="15" Interval="5">
+                                        <chart:NumericalAxis.MajorTickStyle>
+                                            <chart:ChartAxisTickStyle StrokeWidth="0"/>
+                                        </chart:NumericalAxis.MajorTickStyle>
+                                    </chart:NumericalAxis>
+                                </chart:SfCartesianChart.YAxes>
+                                <chart:ColumnSeries EnableTooltip="True" ItemsSource="{Binding WeeklyAppointments}" XBindingPath="Label" YBindingPath="Value" Fill="{StaticResource Primary}" />
+                            </chart:SfCartesianChart>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Border Grid.Column="0" BackgroundColor="White" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="12,12,12,10" HeightRequest="220">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="14" />
+                            </Border.StrokeShape>
+                            <Border.Shadow>
+                                <Shadow Brush="#20000000" Offset="0,2" Radius="6" Opacity="0.18" />
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="0">
+                                <Label Text="Visit Status" FontFamily="OpenSansSemibold" FontAttributes="Bold" FontSize="16" TextColor="{StaticResource DarkText}" />
+                                <chart:SfCircularChart HeightRequest="130">
+                                    <chart:DoughnutSeries ItemsSource="{Binding VisitStatuses}" XBindingPath="Label" YBindingPath="Value" InnerRadius="0.80" />
+                                </chart:SfCircularChart>
+                                <VerticalStackLayout HorizontalOptions="Center" Spacing="5">
+                                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                        <BoxView WidthRequest="10" HeightRequest="10" BackgroundColor="#14B8A6" CornerRadius="12" />
+                                        <Label Text="Done" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{StaticResource DarkText}" />
+                                        <Label Text="{Binding VisitStatuses[0].Percentage, StringFormat='{0:0}%'}" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{StaticResource DarkText}" Margin="30,0,0,0" />
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                        <BoxView WidthRequest="10" HeightRequest="10" BackgroundColor="Black" CornerRadius="12" />
+                                        <Label Text="Wait" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{StaticResource DarkText}" />
+                                        <Label Text="{Binding VisitStatuses[1].Percentage, StringFormat='{0:0}%'}" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{StaticResource DarkText}" Margin="34,0,0,0" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Column="1" BackgroundColor="White" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="12,12,12,10" HeightRequest="220">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="14" />
+                            </Border.StrokeShape>
+                            <Border.Shadow>
+                                <Shadow Brush="#20000000" Offset="0,2" Radius="6" Opacity="0.18" />
+                            </Border.Shadow>
+                            <VerticalStackLayout VerticalOptions="Start">
+                                <Label Text="Daily Progress" FontFamily="OpenSansSemibold" FontAttributes="Bold" FontSize="16" TextColor="{StaticResource DarkText}" />
+                                <progressBar:SfCircularProgressBar BackgroundColor="White" Progress="{Binding CompletedPercentage}" HeightRequest="130" WidthRequest="130" ProgressCornerStyle="BothCurve" TrackThickness="10" ProgressThickness="10" TrackCornerStyle="BothCurve" HorizontalOptions="Center" ProgressFill="#14B8A6" TrackFill="#E0F2F1" StartAngle="140" EndAngle="400">
+                                    <progressBar:SfCircularProgressBar.Content>
+                                        <Label Text="{Binding CompletedPercentage, StringFormat='{0:0}%'}" FontFamily="OpenSansSemibold" FontSize="20" TextColor="{StaticResource DarkText}" HorizontalOptions="Center" VerticalOptions="End" />
+                                    </progressBar:SfCircularProgressBar.Content>
+                                </progressBar:SfCircularProgressBar>
+                                <Label Text="Completed Today" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{StaticResource DarkText}" HorizontalTextAlignment="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                    <Border BackgroundColor="#FFF6F7" Stroke="#FED7D7" StrokeThickness="1" Padding="12,12,12,10">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="14" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#20000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="10">
+                            <HorizontalStackLayout Spacing="6">
+                                <Label Text="&#xE002;" FontFamily="MaterialIcons" FontSize="17" TextColor="{StaticResource ErrorColor}" VerticalOptions="Center" />
+                                <Label Text="Care Alerts" FontFamily="OpenSansSemibold" FontAttributes="Bold" FontSize="16" TextColor="{StaticResource DarkText}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <list:SfListView ItemsSource="{Binding CareAlerts}" ItemTemplate="{StaticResource AlertTemplate}" SelectionMode="None" SelectionBackground="Transparent" AutoFitMode="Height" Background="Transparent" ScrollBarVisibility="Never" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border BackgroundColor="White" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" StrokeThickness="1" Padding="12,12,12,8">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="14" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#20000000" Offset="0,2" Radius="6" Opacity="0.12" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="10">
+                            <Grid ColumnDefinitions="*,76" HorizontalOptions="Fill">
+                                <Label Grid.Column="0" Text="Upcoming Appointments" FontFamily="OpenSansSemibold" FontAttributes="Bold" FontSize="16" TextColor="{StaticResource DarkText}" VerticalOptions="Center" />
+                                <buttons:SfButton Grid.Column="1" Text="VIEW ALL" FontFamily="OpenSansSemibold" FontSize="11" TextColor="{StaticResource Secondary}" Background="Transparent" Stroke="Transparent" StrokeThickness="0" Padding="0" WidthRequest="76" HeightRequest="32" HorizontalOptions="End" VerticalOptions="Center" Clicked="OnViewAllClicked" x:Name="ViewAllButtonMobile" />
+                            </Grid>
+                            <list:SfListView ItemsSource="{Binding UpcomingAppointmentsLimited}" ItemTemplate="{StaticResource AppointmentTemplate}" SelectionMode="None" SelectionBackground="Transparent" AutoFitMode="Height" Background="Transparent" ScrollBarVisibility="Never" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </ScrollView>
+            <controls:AppBottomNavView Grid.Row="1" ActiveRoute="dashboard" />
+        </Grid>
+        <Border Grid.Column="1" IsVisible="{OnPlatform WinUI=True, MacCatalyst=True, Default=False}" HeightRequest="74" VerticalOptions="Start" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource SurfaceColorDark}}" StrokeThickness="0" Padding="22,10">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0,0,12,12" />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="#35000000" Offset="0,3" Radius="8" Opacity="0.22" />
+            </Border.Shadow>
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="0">
+                    <Label Text="Good morning, Dr. Wilson" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                </VerticalStackLayout>
+                <core:SfBadgeView Grid.Column="2" BadgeText="{Binding CareAlerts.Count}" VerticalOptions="Center">
+                    <core:SfBadgeView.BadgeSettings>
+                        <core:BadgeSettings Type="None" Background="{StaticResource Primary}" TextColor="White" FontSize="9" TextPadding="3" />
+                    </core:SfBadgeView.BadgeSettings>
+                    <core:SfBadgeView.Content>
+                        <Label Text="&#xE7F4;" FontFamily="MaterialIcons" FontSize="21" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnNotificationsTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </core:SfBadgeView.Content>
+                </core:SfBadgeView>
+            </Grid>
+        </Border>
+        <Border Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{OnPlatform WinUI=False, MacCatalyst=False, Default=True}" HeightRequest="64" VerticalOptions="Start" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource SurfaceColorDark}}" StrokeThickness="0" Padding="16,10">
+            <Border.StrokeShape>
+                <RoundRectangle />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="#40000000" Offset="0,4" Radius="10" Opacity="0.28" />
+            </Border.Shadow>
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                    <Image Source="logo.png" Aspect="AspectFit" Margin="6" />
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="0">
+                    <Label Text="Dashboard" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                    
+                </VerticalStackLayout>
+                <core:SfBadgeView Grid.Column="2" BadgeText="{Binding CareAlerts.Count}" VerticalOptions="Center">
+                    <core:SfBadgeView.BadgeSettings>
+                        <core:BadgeSettings Type="None" Background="{StaticResource Primary}" TextColor="White" FontSize="9" TextPadding="3" />
+                    </core:SfBadgeView.BadgeSettings>
+                    <core:SfBadgeView.Content>
+                        <Label Text="&#xE7F4;" FontFamily="MaterialIcons" FontSize="21" WidthRequest="20" HeightRequest="20" Margin="0,0,0,10" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnNotificationsTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </core:SfBadgeView.Content>
+                </core:SfBadgeView>
+            </Grid>
+        </Border>
+        <Grid x:Name="MobileAppointmentsSheet"
+              IsVisible="{OnPlatform WinUI=False, MacCatalyst=False, Default=False}"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              ZIndex="10"
+              Padding="12,0,12,0">
+            <Border BackgroundColor="White"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}"
+                    StrokeThickness="1"
+                                        VerticalOptions="End"
+                    MaximumHeightRequest="520">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18,18,0,0" />
+                </Border.StrokeShape>
+                <Grid RowDefinitions="Auto,*">
+                    <Grid ColumnDefinitions="*,Auto" Padding="16,10,10,10">
+                        <Label Text="All Appointments" FontFamily="OpenSansSemibold" FontAttributes="Bold" FontSize="18" TextColor="{StaticResource DarkText}" VerticalOptions="Center" />
+                        <buttons:SfButton Grid.Column="1" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="20" TextColor="{StaticResource DarkText}" Background="Transparent" Stroke="Transparent" StrokeThickness="0" Padding="4" WidthRequest="40" HeightRequest="40" Clicked="OnCloseAppointmentsPopupClicked" />
+                    </Grid>
+                    <Grid Grid.Row="1" Padding="16,0,16,20">
+                        <list:SfListView ScrollBarVisibility="Never" ItemsSource="{Binding UpcomingAppointments}" ItemTemplate="{StaticResource AppointmentTemplate}" SelectionMode="None" SelectionBackground="Transparent" AutoFitMode="Height" Background="Transparent" />
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+        <Grid x:Name="MobileCareAlertsSheet"
+              IsVisible="{OnPlatform WinUI=False, MacCatalyst=False, Default=False}"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              ZIndex="10"
+              Padding="12,0,12,0">
+            <Border BackgroundColor="#FFF6F7"
+                    Stroke="#FED7D7"
+                    StrokeThickness="1"
+                    VerticalOptions="End"
+                    MaximumHeightRequest="520">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18,18,0,0" />
+                </Border.StrokeShape>
+                <Grid RowDefinitions="Auto,*">
+                    <Grid ColumnDefinitions="*,Auto" Padding="16,10,10,10">
+                        <Label Text="Care Alerts" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{StaticResource DarkText}" VerticalOptions="Center" />
+                        <buttons:SfButton Grid.Column="1" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="20" TextColor="{StaticResource DarkText}" Background="Transparent" Stroke="Transparent" StrokeThickness="0" Padding="4" WidthRequest="40" HeightRequest="40" Clicked="OnCloseNotificationsPopupClicked" />
+                    </Grid>
+                    <Grid Grid.Row="1" Padding="16,0,16,20">
+                        <list:SfListView ItemsSource="{Binding CareAlerts}" ItemTemplate="{StaticResource AlertTemplate}" SelectionMode="None" SelectionBackground="Transparent" AutoFitMode="Height" Background="Transparent" ScrollBarVisibility="Never" />
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+        <popup:SfPopup x:Name="AppointmentsPopup"
+                       ShowHeader="True"
+                       HeaderTitle="All Appointments"
+                       ShowCloseButton="False"
+                       ShowOverlayAlways="True"
+                       AutoSizeMode="Height"
+                       WidthRequest="{OnIdiom Phone=330, Tablet=480, Desktop=520}"
+                       HeightRequest="{OnIdiom Phone=360, Tablet=460, Desktop=460}"
+                       MaximumHeightRequest="460"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       IsVisible="{OnPlatform WinUI=True, MacCatalyst=True, Default=False}">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle PopupBackground="White"
+                                  OverlayColor="Transparent"
+                                  CornerRadius="16"
+                                  HeaderFontAttribute="Bold"
+                                  HeaderBackground="{StaticResource SurfaceColor}"
+                                  HeaderTextColor="{StaticResource DarkText}"
+                                  HeaderFontFamily="OpenSansSemibold"
+                                  HeaderFontSize="18"
+                                  HeaderTextAlignment="Start" />
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.HeaderTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="*,Auto" Padding="16,10,10,10">
+                        <Label Text="All Appointments" FontFamily="OpenSansSemibold" FontAttributes="Bold" FontSize="18" TextColor="{StaticResource DarkText}" VerticalOptions="Center" />
+                        <buttons:SfButton Grid.Column="1" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="20" TextColor="{StaticResource DarkText}" Background="Transparent" Stroke="Transparent" StrokeThickness="0" Padding="4" WidthRequest="40" HeightRequest="40" Clicked="OnCloseAppointmentsPopupClicked" />
+                    </Grid>
+                </DataTemplate>
+            </popup:SfPopup.HeaderTemplate>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate>
+                    <Grid Padding="16,8,16,20" RowDefinitions="*">
+                        <list:SfListView Grid.Row="0" ItemsSource="{Binding UpcomingAppointments}" ItemTemplate="{StaticResource AppointmentTemplate}" SelectionMode="None" SelectionBackground="Transparent" AutoFitMode="Height" Background="Transparent" ScrollBarVisibility="Never" />
+                    </Grid>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+        <popup:SfPopup x:Name="NotificationsPopup"
+                       ShowHeader="True"
+                       HeaderTitle="Care Alerts"
+                       ShowCloseButton="False"
+                       ShowOverlayAlways="True"
+                       AutoSizeMode="Height"
+                       WidthRequest="{OnIdiom Phone=330, Tablet=480, Desktop=520}"
+                       HeightRequest="{OnIdiom Phone=360, Tablet=340, Desktop=340}"
+                       MaximumHeightRequest="460"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle PopupBackground="#FFF6F7"
+                                  OverlayColor="Transparent"
+                                  CornerRadius="16"
+                                  HeaderBackground="#FFF6F7"
+                                  HeaderTextColor="{StaticResource DarkText}"
+                                  HeaderFontFamily="OpenSansSemibold"
+                                  HeaderFontSize="18"
+                                  HeaderTextAlignment="Start" />
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.HeaderTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="*,Auto" Padding="16,10,10,10">
+                        <Label Text="Care Alerts" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{StaticResource DarkText}" VerticalOptions="Center" />
+                        <buttons:SfButton Grid.Column="1" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="20" TextColor="{StaticResource DarkText}" Background="Transparent" Stroke="Transparent" StrokeThickness="0" Padding="4" WidthRequest="40" HeightRequest="40" Clicked="OnCloseNotificationsPopupClicked" />
+                    </Grid>
+                </DataTemplate>
+            </popup:SfPopup.HeaderTemplate>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate>
+                    <Grid Padding="16,8,16,20" RowDefinitions="*">
+                        <list:SfListView Grid.Row="0" ItemsSource="{Binding CareAlerts}" ItemTemplate="{StaticResource AlertTemplate}" SelectionMode="None" SelectionBackground="Transparent" AutoFitMode="Height" Background="Transparent" ScrollBarVisibility="Never" />
+                    </Grid>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+    </Grid>
+</ContentPage>
+

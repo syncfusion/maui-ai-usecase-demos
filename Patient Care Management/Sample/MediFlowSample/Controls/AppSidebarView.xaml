@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MediFlowSample.Controls.AppSidebarView">
+    <Grid BackgroundColor="{AppThemeBinding Light={StaticResource Tertiary}, Dark=#0B1220}">
+        <Grid RowDefinitions="Auto,Auto,*" Padding="0,22,0,18">
+            <Grid Grid.Row="0" ColumnDefinitions="40,*" Padding="22,0" ColumnSpacing="12">
+                <Border WidthRequest="36" HeightRequest="36" BackgroundColor="{StaticResource Primary}" StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10" />
+                    </Border.StrokeShape>
+                    <Image Source="logo.png" Aspect="AspectFit" Margin="7" />
+                </Border>
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
+                    <Label Text="MediFlow" FontFamily="OpenSansSemibold" FontSize="16" TextColor="White" />
+                    <Label Text="Patient care" FontSize="11" TextColor="#CBD5E1" />
+                </VerticalStackLayout>
+            </Grid>
+            <BoxView Grid.Row="1" HeightRequest="1" BackgroundColor="#334155" Margin="22,22,22,16" />
+            <VerticalStackLayout Grid.Row="2" Spacing="6">
+                <Grid x:Name="DashboardItem" HeightRequest="50" Padding="22,0" ColumnDefinitions="30,*">
+                    <Label x:Name="DashboardIcon" Text="&#xE871;" FontFamily="MaterialIcons" FontSize="21" TextColor="#CBD5E1" VerticalOptions="Center" />
+                    <Label x:Name="DashboardLabel" Grid.Column="1" Text="Dashboard" FontSize="14" TextColor="#CBD5E1" VerticalOptions="Center" />
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnDashboardTapped" />
+                    </Grid.GestureRecognizers>
+                </Grid>
+                <Grid x:Name="PatientsItem" HeightRequest="50" Padding="22,0" ColumnDefinitions="30,*">
+                    <Label x:Name="PatientsIcon" Text="&#xE7FD;" FontFamily="MaterialIcons" FontSize="21" TextColor="#CBD5E1" VerticalOptions="Center" />
+                    <Label x:Name="PatientsLabel" Grid.Column="1" Text="Patients" FontSize="14" TextColor="#CBD5E1" VerticalOptions="Center" />
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPatientsTapped" />
+                    </Grid.GestureRecognizers>
+                </Grid>
+                <Grid x:Name="ScheduleItem" HeightRequest="50" Padding="22,0" ColumnDefinitions="30,*">
+                    <Label x:Name="ScheduleIcon" Text="&#xE935;" FontFamily="MaterialIcons" FontSize="21" TextColor="#CBD5E1" VerticalOptions="Center" />
+                    <Label x:Name="ScheduleLabel" Grid.Column="1" Text="Schedule" FontSize="14" TextColor="#CBD5E1" VerticalOptions="Center" />
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnScheduleTapped" />
+                    </Grid.GestureRecognizers>
+                </Grid>
+                <Grid x:Name="CarePlansItem" HeightRequest="50" Padding="22,0" ColumnDefinitions="30,*">
+                    <Label x:Name="CarePlansIcon" Text="&#xE85D;" FontFamily="MaterialIcons" FontSize="21" TextColor="#CBD5E1" VerticalOptions="Center" />
+                    <Label x:Name="CarePlansLabel" Grid.Column="1" Text="Care Plans" FontSize="14" TextColor="#CBD5E1" VerticalOptions="Center" />
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnCarePlansTapped" />
+                    </Grid.GestureRecognizers>
+                </Grid>
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+</ContentView>

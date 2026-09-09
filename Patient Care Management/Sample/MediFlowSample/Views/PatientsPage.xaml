@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:inputs="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:list="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+             xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
+             xmlns:models="clr-namespace:MediFlowSample.Models"
+             xmlns:controls="clr-namespace:MediFlowSample.Controls"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             x:Class="MediFlowSample.Views.PatientsPage" 
+             Title="Patients" 
+             Shell.NavBarIsVisible="False" 
+             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource BackgroundColorDark}}">
+
+    <ContentPage.Resources>
+        <Style TargetType="list:ListViewItem">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="Background" Value="Transparent" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="PointerOver">
+                            <VisualState.Setters>
+                                <Setter Property="Background" Value="Transparent" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter Property="Background" Value="Transparent" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="Background" Value="Transparent" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+        <DataTemplate x:Key="PatientCardTemplate" x:DataType="models:Patient">
+            <Border BackgroundColor="White"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}"
+                    StrokeThickness="1"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="14" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="#20000000" Offset="0,2" Radius="6" Opacity="0.14" />
+                </Border.Shadow>
+                <Grid ColumnDefinitions="*,5">
+                    <VerticalStackLayout Grid.Column="0" Padding="16" Spacing="12">
+                        <Grid ColumnDefinitions="48,*,Auto" ColumnSpacing="12">
+                            <core:SfAvatarView Grid.Column="0" ContentType="Initials" AvatarName="{Binding FullName}" AvatarShape="Circle" AvatarSize="Medium" WidthRequest="42" HeightRequest="42" VerticalOptions="Center" Background="{StaticResource Primary}" InitialsColor="White" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                <Label Text="{Binding FullName}" FontFamily="OpenSansSemibold" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" LineBreakMode="TailTruncation" />
+                                <Label Text="{Binding PatientId}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                            </VerticalStackLayout>
+                            <Border Grid.Column="2" BackgroundColor="{Binding PriorityBadgeBackground}" StrokeThickness="0" Padding="10,5" VerticalOptions="Center">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <HorizontalStackLayout Spacing="4">
+                                    <Label Text="{Binding PriorityBadgeIconGlyph}" FontFamily="MaterialIcons" FontSize="12" TextColor="{Binding PriorityBadgeTextColor}" VerticalOptions="Center" />
+                                    <Label Text="{Binding PriorityBadgeText}" FontFamily="OpenSansSemibold" FontSize="11" TextColor="{Binding PriorityBadgeTextColor}" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                                </HorizontalStackLayout>
+                            </Border>
+                        </Grid>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="{Binding LeftColumnLabel}" FontSize="10" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                                <HorizontalStackLayout Spacing="5">
+                                    <Ellipse WidthRequest="8" HeightRequest="8" Fill="{Binding StatusColor}" VerticalOptions="Center" />
+                                    <Label Text="{Binding LeftColumnValue}" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" LineBreakMode="TailTruncation" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout HorizontalOptions="End" Grid.Column="1" Spacing="2">
+                                <Label Text="NEXT APPT" FontSize="10" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                                <HorizontalStackLayout Spacing="5">
+                                    <Label Text="{Binding NextApptIconGlyph}" FontFamily="MaterialIcons" FontSize="13" TextColor="{Binding NextAppointmentTextColor}" VerticalOptions="Center" />
+                                    <Label Text="{Binding NextAppointmentDisplay}" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{Binding NextAppointmentTextColor}" LineBreakMode="TailTruncation" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Grid>
+                        <VerticalStackLayout Spacing="6">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0" Text="Care Plan Progress" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                                <Label Grid.Column="1" Text="{Binding CarePlanProgress, StringFormat='{0:0}%'}" FontFamily="OpenSansSemibold" FontSize="13" TextColor="{Binding ProgressColor}" />
+                            </Grid>
+                            <progressBar:SfLinearProgressBar Progress="{Binding CarePlanProgress}" ProgressFill="{Binding ProgressFill}" TrackFill="#E2E8F0" TrackHeight="6" ProgressHeight="6" HeightRequest="6" />
+                        </VerticalStackLayout>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8" Margin="0,2,0,0">
+                            <Border Grid.Column="0" BackgroundColor="Transparent" Stroke="{StaticResource BorderColor}" StrokeThickness="1" Padding="9,7">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnPatientCardTapped" CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="5">
+                                    <Label Text="View profile" FontFamily="OpenSansSemibold" FontSize="11" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                                    <Label Grid.Column="1" Text="&#xE5C8;" FontFamily="MaterialIcons" FontSize="16" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                                </Grid>
+                            </Border>
+                            <Border Grid.Column="1" BackgroundColor="Transparent" Stroke="{StaticResource BorderColor}" StrokeThickness="1" Padding="9,7">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnPatientCarePlanTapped" CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="5">
+                                    <Label Text="Care plan" FontFamily="OpenSansSemibold" FontSize="11" TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                                    <Label Grid.Column="1" Text="&#xE5C8;" FontFamily="MaterialIcons" FontSize="16" TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </VerticalStackLayout>
+                    <Border Grid.Column="1" BackgroundColor="{Binding RiskColor}" StrokeThickness="0" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </ContentPage.Resources>
+
+    <Grid ColumnDefinitions="{OnPlatform WinUI='248,*', MacCatalyst='248,*', Default='0,*'}">
+        <!-- Desktop / tablet left navigation -->
+        <controls:AppSidebarView Grid.Column="0" IsVisible="{OnPlatform WinUI=True, MacCatalyst=True, Default=False}" ActiveRoute="patients" />
+
+        <!-- Desktop / tablet content -->
+        <Grid Grid.Column="1" IsVisible="{OnPlatform WinUI=True, MacCatalyst=True, Default=False}" Padding="34,110,40,34" RowDefinitions="Auto,*" RowSpacing="18">
+            <Border Grid.Row="0" BackgroundColor="White" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="10,0" HorizontalOptions="Fill">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" HorizontalOptions="Fill">
+                    <Label Text="&#xE8B6;" FontFamily="MaterialIcons" FontSize="20" TextColor="#94A3B8" VerticalOptions="Center" />
+                    <inputs:SfAutocomplete Grid.Column="1" Text="{Binding SearchText, Mode=TwoWay}"
+                                                ItemsSource="{Binding PatientSearchSuggestions}"
+                                                Placeholder="Search patients by name or ID..."
+                                                PlaceholderColor="#94A3B8"
+                                                TextSearchMode="Contains"
+                                                ShowBorder="False"
+                                                IsClearButtonVisible="True"
+                                                Stroke="Transparent"
+                                                DropDownBackground="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource BackgroundColorDark}}"
+                                                HeightRequest="46"
+                                                HorizontalOptions="Fill"
+                                                BackgroundColor="Transparent" />
+                </Grid>
+            </Border>
+            <Border Grid.Row="1" BackgroundColor="White" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="0" HorizontalOptions="Fill">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Grid RowDefinitions="Auto,Auto,*" HorizontalOptions="Fill" VerticalOptions="Fill">
+                    <Grid Grid.Row="0" Padding="12,10" ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="12" HorizontalOptions="Fill">
+                        <buttons:SfButton x:Name="DesktopAllPatientsTab" Grid.Column="0" Text="All Patients" FontSize="14" TextColor="White" Background="{StaticResource Primary}" Stroke="{StaticResource Primary}" StrokeThickness="1" CornerRadius="10" Padding="16,0" HeightRequest="36" Clicked="OnDesktopFilterTabClicked" CommandParameter="All Patients" />
+                        <buttons:SfButton x:Name="DesktopHighPriorityTab" Grid.Column="1" Text="High Priority" FontSize="14" TextColor="{StaticResource DarkText}" Background="Transparent" Stroke="{StaticResource BorderColor}" StrokeThickness="1" CornerRadius="10" Padding="16,0" HeightRequest="36" Clicked="OnDesktopFilterTabClicked" CommandParameter="High Priority" />
+                        <buttons:SfButton x:Name="DesktopFollowUpTab" Grid.Column="2" Text="Follow-up Due" FontSize="14" TextColor="{StaticResource DarkText}" Background="Transparent" Stroke="{StaticResource BorderColor}" StrokeThickness="1" CornerRadius="10" Padding="16,0" HeightRequest="36" Clicked="OnDesktopFilterTabClicked" CommandParameter="Follow-up Due" />
+                    </Grid>
+
+                    <BoxView Grid.Row="1" HeightRequest="1" BackgroundColor="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" />
+
+                    <Grid Grid.Row="2" Margin="12" HorizontalOptions="Fill" VerticalOptions="Fill">
+                        <Label Text="No patients found. Try clearing the search or filters." IsVisible="{Binding HasNoResults}" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" HorizontalTextAlignment="Center" VerticalOptions="Center" Margin="0,24" />
+
+                        <list:SfListView ItemsSource="{Binding FilteredPatients}" ItemTemplate="{StaticResource PatientCardTemplate}" BackgroundColor="Transparent" InputTransparent="False" ItemSpacing="6" SelectionMode="None" SelectionBackground="Transparent" AutoFitMode="Height" Background="Transparent" ScrollBarVisibility="Never" HorizontalOptions="Fill" VerticalOptions="Fill">
+                            <list:SfListView.ItemsLayout>
+                                <list:GridLayout SpanCount="3" />
+                            </list:SfListView.ItemsLayout>
+                        </list:SfListView>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Desktop floating header -->
+        <Border Grid.Column="1" IsVisible="{OnPlatform WinUI=True, MacCatalyst=True, Default=False}" HeightRequest="74" VerticalOptions="Start" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource SurfaceColorDark}}" StrokeThickness="0" Padding="22,10">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0,0,12,12" />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="#35000000" Offset="0,3" Radius="8" Opacity="0.22" />
+            </Border.Shadow>
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                <Label Grid.Column="1" Text="Patients" FontFamily="OpenSansSemibold" FontSize="19" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" VerticalOptions="Center" />
+                <core:SfBadgeView x:Name="DesktopNotificationBadge" Grid.Column="2" BadgeText="0" VerticalOptions="Center">
+                    <core:SfBadgeView.BadgeSettings>
+                        <core:BadgeSettings Type="None" Background="{StaticResource Primary}" TextColor="White" FontSize="10" TextPadding="3" />
+                    </core:SfBadgeView.BadgeSettings>
+                    <core:SfBadgeView.Content>
+                        <Label Text="&#xE7F4;" FontFamily="MaterialIcons" FontSize="21" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnNotificationsTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </core:SfBadgeView.Content>
+                </core:SfBadgeView>
+            </Grid>
+        </Border>
+
+        <!-- Mobile layout -->
+        <Grid Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{OnPlatform WinUI=False, MacCatalyst=False, Default=True}" RowDefinitions="*,Auto" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource BackgroundColorDark}}">
+            <ScrollView Grid.Row="0">
+                <VerticalStackLayout Padding="16,78,16,24" Spacing="16">
+                    <Border BackgroundColor="White" Stroke="#D6DEE8" StrokeThickness="1" Padding="10,0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                            <Label Text="&#xE8B6;" FontFamily="MaterialIcons" FontSize="20" TextColor="#94A3B8" VerticalOptions="Center" />
+                            <inputs:SfAutocomplete Grid.Column="1" Text="{Binding SearchText, Mode=TwoWay}"
+                                                    ItemsSource="{Binding PatientSearchSuggestions}"
+                                                    Placeholder="Search patients by name or ID..."
+                                                    PlaceholderColor="#94A3B8"
+                                                    TextSearchMode="Contains"
+                                                    IsClearButtonVisible="True"
+                                                    Stroke="Transparent"
+                                                    DropDownBackground="{StaticResource SurfaceColor}"
+                                                    HeightRequest="46"
+                                                    BackgroundColor="Transparent" />
+                        </Grid>
+                    </Border>
+
+                    <ScrollView Margin="0,6,0,6" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <core:SfChipGroup x:Name="MobileFilterChips" ChipType="Choice" ChoiceMode="Single" HorizontalOptions="Center" SelectionChanged="OnFilterSelectionChanged"
+                                           ChipBackground="{StaticResource SurfaceColor}" ChipTextColor="{StaticResource DarkText}" ChipStroke="{StaticResource BorderColor}"
+                                           ChipStrokeThickness="1"
+                                           SelectedChipBackground="{StaticResource Primary}" SelectedChipTextColor="White"
+                                           ChipCornerRadius="24" ChipPadding="0">
+                            <core:SfChipGroup.ChipLayout>
+                                <HorizontalStackLayout Spacing="10" />
+                            </core:SfChipGroup.ChipLayout>
+                            <core:SfChipGroup.Items>
+                                <core:SfChip Text="All Patients" />
+                                <core:SfChip Text="High Priority" />
+                                <core:SfChip Text="Follow-up Due" />
+                            </core:SfChipGroup.Items>
+                        </core:SfChipGroup>
+                    </ScrollView>
+
+                    <Label Text="No patients found. Try clearing the search or filters." IsVisible="{Binding HasNoResults}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" HorizontalTextAlignment="Center" Margin="0,20,0,0" />
+
+                    <list:SfListView ItemsSource="{Binding FilteredPatients}" ItemTemplate="{StaticResource PatientCardTemplate}" SelectionMode="None" SelectionBackground="Transparent" AutoFitMode="Height" Background="Transparent" ScrollBarVisibility="Never" />
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <controls:AppBottomNavView Grid.Row="1" ActiveRoute="patients" />
+        </Grid>
+
+        <!-- Mobile floating header (matches Dashboard's elevated app bar) -->
+        <Border Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{OnPlatform WinUI=False, MacCatalyst=False, Default=True}" HeightRequest="64" VerticalOptions="Start" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource SurfaceColorDark}}" StrokeThickness="0" Padding="16,10">
+            <Border.StrokeShape>
+                <RoundRectangle />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="#40000000" Offset="0,4" Radius="10" Opacity="0.28" />
+            </Border.Shadow>
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                <Image Source="logo.png" HeightRequest="32" WidthRequest="32" Aspect="AspectFit" Margin="6" />
+                <Label Grid.Column="1" Text="Patients" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" VerticalOptions="Center" />
+                <core:SfBadgeView x:Name="MobileNotificationBadge" Grid.Column="2" BadgeText="0" VerticalOptions="Center">
+                    <core:SfBadgeView.BadgeSettings>
+                        <core:BadgeSettings Type="None" Background="{StaticResource Primary}" TextColor="White" FontSize="9" TextPadding="3" />
+                    </core:SfBadgeView.BadgeSettings>
+                    <core:SfBadgeView.Content>
+                        <Label Text="&#xE7F4;" FontFamily="MaterialIcons" FontSize="21" WidthRequest="20" HeightRequest="20" Margin="0,0,0,10" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnNotificationsTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </core:SfBadgeView.Content>
+                </core:SfBadgeView>
+            </Grid>
+        </Border>
+
+        <!-- Patient Profile surface (Overview only), mobile: full-screen page hosted within the Patients workflow -->
+        <Grid Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{OnPlatform WinUI=False, MacCatalyst=False, Default=True}" InputTransparent="True" CascadeInputTransparent="False">
+            <Grid IsVisible="{Binding IsProfileOpen}" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource BackgroundColorDark}}" RowDefinitions="Auto,*">
+                <Border Grid.Row="0" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource SurfaceColorDark}}" Padding="16,10">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="0" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="#35000000" Offset="0,3" Radius="8" Opacity="0.22" />
+                    </Border.Shadow>
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <buttons:SfButton Grid.Column="0" Text="&#xE5C4;" FontFamily="MaterialIcons" FontSize="24" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" Background="Transparent" Stroke="Transparent" StrokeThickness="0" Padding="4" WidthRequest="44" HeightRequest="44" Clicked="OnCloseProfileClicked" />
+                        <Label Grid.Column="1" Text="Patient Profile" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+                <ScrollView Grid.Row="1">
+                    <VerticalStackLayout Spacing="18" MaximumWidthRequest="640" HorizontalOptions="Center">
+                        <VerticalStackLayout Margin="14,18,10,0" Spacing="0">
+                            <HorizontalStackLayout Margin="0,0,0,14" Spacing="14">
+                                <core:SfAvatarView ContentType="Initials" AvatarName="{Binding SelectedPatient.FullName}" AvatarShape="Circle" AvatarSize="Large" WidthRequest="64" HeightRequest="64" />
+                                <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                                    <Label Text="{Binding SelectedPatient.FullName}" FontFamily="OpenSansSemibold" FontSize="19" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                                    <Label Text="{Binding SelectedPatient.IdentitySummary}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                                </VerticalStackLayout>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="10">
+                                <Border BackgroundColor="#DBEAFE" StrokeThickness="0" Padding="10,6">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="16" />
+                                    </Border.StrokeShape>
+                                    <HorizontalStackLayout Spacing="5">
+                                        <Label Text="&#xE8F4;" FontFamily="MaterialIcons" FontSize="13" TextColor="#1D4ED8" VerticalOptions="Center" />
+                                        <Label Text="{Binding SelectedPatient.StatusText}" FontFamily="OpenSansSemibold" FontSize="12" TextColor="#1D4ED8" VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                </Border>
+                                <Border BackgroundColor="#FEE2E2" StrokeThickness="0" Padding="10,6" IsVisible="{Binding SelectedPatient.HasAllergies}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="16" />
+                                    </Border.StrokeShape>
+                                    <HorizontalStackLayout Spacing="5">
+                                        <Label Text="&#xE645;" FontFamily="MaterialIcons" FontSize="13" TextColor="#DC2626" VerticalOptions="Center" />
+                                        <Label Text="{Binding SelectedPatient.PrimaryAllergyBadge}" FontFamily="OpenSansSemibold" FontSize="12" TextColor="#DC2626" VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                        <BoxView HeightRequest="1" BackgroundColor="{StaticResource BorderColor}" Margin="0,0,0,0" />
+                        <Border Margin="10,0,10,0" BackgroundColor="{StaticResource SurfaceColor}" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="16">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+                            <VerticalStackLayout Spacing="0">
+                                <VerticalStackLayout Spacing="12">
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Label Text="&#xE7FD;" FontFamily="MaterialIcons" FontSize="16" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                                        <Label Text="Demographics" FontFamily="OpenSansSemibold" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" RowSpacing="14" ColumnSpacing="10">
+                                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
+                                            <Label Text="DOB" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                                            <Label Text="{Binding SelectedPatient.DateOfBirthDisplay}" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                                        </VerticalStackLayout>
+                                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="2">
+                                            <Label Text="LANGUAGE" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                                            <Label Text="{Binding SelectedPatient.Language}" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                                        </VerticalStackLayout>
+                                        <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="2">
+                                            <Label Text="PHONE" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                                            <Label Text="{Binding SelectedPatient.PhoneNumber}" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                                        </VerticalStackLayout>
+                                        <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="2">
+                                            <Label Text="ALLERGIES" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                                            <Label Text="{Binding SelectedPatient.AllergiesDisplay}" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" LineBreakMode="WordWrap" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Margin="10,0,10,0" BackgroundColor="{StaticResource SurfaceColor}" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="16">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+                            <VerticalStackLayout Spacing="12">
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label Text="&#xE8B3;" FontFamily="MaterialIcons" FontSize="16" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                                    <Label Text="Recent Activity" FontFamily="OpenSansSemibold" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                                <list:SfListView ItemsSource="{Binding RecentActivities}" SelectionMode="None" SelectionBackground="Transparent" AutoFitMode="Height" Background="Transparent" ScrollBarVisibility="Never">
+                                    <list:SfListView.ItemTemplate>
+                                        <DataTemplate x:DataType="models:TimelineActivity">
+                                            <Grid ColumnDefinitions="20,*" Margin="0,0,0,14">
+                                                <Ellipse Grid.Column="0" WidthRequest="10" HeightRequest="10" Fill="{Binding MarkerFill}" VerticalOptions="Start" Margin="0,4,0,0" />
+                                                <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                                    <Label Text="{Binding TimestampDisplay}" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{StaticResource Primary}" />
+                                                    <Label Text="{Binding Title}" FontFamily="OpenSansSemibold" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" IsVisible="{Binding HasTitle}" />
+                                                    <Label Text="{Binding Description}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" LineBreakMode="WordWrap" />
+                                                </VerticalStackLayout>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </list:SfListView.ItemTemplate>
+                                </list:SfListView>
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Grid>
+        </Grid>
+
+        <!-- Patient Profile surface (Overview only), desktop/tablet: right-side drawer over the content column -->
+        <Grid Grid.Column="1" IsVisible="{OnPlatform WinUI=True, MacCatalyst=True, Default=False}" InputTransparent="True" CascadeInputTransparent="False">
+            <Grid IsVisible="{Binding IsProfileOpen}">
+                <BoxView HorizontalOptions="Fill" VerticalOptions="Fill" BackgroundColor="#99000000">
+                    <BoxView.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnCloseProfileTapped" />
+                    </BoxView.GestureRecognizers>
+                </BoxView>
+                <Border ZIndex="1" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource BackgroundColorDark}}"
+                        WidthRequest="400" HorizontalOptions="End" StrokeThickness="0" Padding="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="0" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="#40000000" Offset="-4,0" Radius="12" Opacity="0.3" />
+                    </Border.Shadow>
+                    <Grid RowDefinitions="Auto,*">
+                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="20,18">
+                            <Label Grid.Column="0" Text="Patient Profile" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" VerticalOptions="Center" />
+                            <buttons:SfButton Grid.Column="1" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="22" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" Background="Transparent" Stroke="Transparent" StrokeThickness="0" Padding="4" WidthRequest="44" HeightRequest="44" Clicked="OnCloseProfileClicked" />
+                        </Grid>
+                        <ScrollView Grid.Row="1">
+                            <VerticalStackLayout Padding="20,4,20,32" Spacing="18">
+                                <HorizontalStackLayout Spacing="14">
+                                    <core:SfAvatarView ContentType="Initials" AvatarName="{Binding SelectedPatient.FullName}" AvatarShape="Circle" AvatarSize="Large" WidthRequest="64" HeightRequest="64" Background="{StaticResource Primary}" InitialsColor="White" />
+                                    <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding SelectedPatient.FullName}" FontFamily="OpenSansSemibold" FontSize="19" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                                        <Label Text="{Binding SelectedPatient.IdentitySummary}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                                    </VerticalStackLayout>
+                                </HorizontalStackLayout>
+
+                                <HorizontalStackLayout Spacing="10">
+                                    <Border BackgroundColor="#DBEAFE" StrokeThickness="0" Padding="10,6">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="16" />
+                                        </Border.StrokeShape>
+                                        <HorizontalStackLayout Spacing="5">
+                                            <Label Text="&#xE8F4;" FontFamily="MaterialIcons" FontSize="13" TextColor="#1D4ED8" VerticalOptions="Center" />
+                                            <Label Text="{Binding SelectedPatient.StatusText}" FontFamily="OpenSansSemibold" FontSize="12" TextColor="#1D4ED8" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                    <Border BackgroundColor="#FEE2E2" StrokeThickness="0" Padding="10,6" IsVisible="{Binding SelectedPatient.HasAllergies}">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="16" />
+                                        </Border.StrokeShape>
+                                        <HorizontalStackLayout Spacing="5">
+                                            <Label Text="&#xE645;" FontFamily="MaterialIcons" FontSize="13" TextColor="#DC2626" VerticalOptions="Center" />
+                                            <Label Text="{Binding SelectedPatient.PrimaryAllergyBadge}" FontFamily="OpenSansSemibold" FontSize="12" TextColor="#DC2626" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </HorizontalStackLayout>
+
+                                <Border BackgroundColor="{StaticResource SurfaceColor}" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="16">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12" />
+                                    </Border.StrokeShape>
+                                    <VerticalStackLayout Spacing="12">
+                                        <HorizontalStackLayout Spacing="8">
+                                            <Label Text="&#xE7FD;" FontFamily="MaterialIcons" FontSize="16" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                                            <Label Text="Demographics" FontFamily="OpenSansSemibold" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" RowSpacing="14" ColumnSpacing="10">
+                                            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
+                                                <Label Text="DOB" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                                                <Label Text="{Binding SelectedPatient.DateOfBirthDisplay}" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="2">
+                                                <Label Text="LANGUAGE" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                                                <Label Text="{Binding SelectedPatient.Language}" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="2">
+                                                <Label Text="PHONE" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                                                <Label Text="{Binding SelectedPatient.PhoneNumber}" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="2">
+                                                <Label Text="ALLERGIES" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                                                <Label Text="{Binding SelectedPatient.AllergiesDisplay}" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" LineBreakMode="WordWrap" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Border>
+
+                                <Border BackgroundColor="{StaticResource SurfaceColor}" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="16">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12" />
+                                    </Border.StrokeShape>
+                                    <VerticalStackLayout Spacing="12">
+                                        <HorizontalStackLayout Spacing="8">
+                                            <Label Text="&#xE8B3;" FontFamily="MaterialIcons" FontSize="16" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                                            <Label Text="Recent Activity" FontFamily="OpenSansSemibold" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                        <list:SfListView ItemsSource="{Binding RecentActivities}" SelectionMode="None" SelectionBackground="Transparent" AutoFitMode="Height" Background="Transparent" ScrollBarVisibility="Never">
+                                            <list:SfListView.ItemTemplate>
+                                                <DataTemplate x:DataType="models:TimelineActivity">
+                                                    <Grid ColumnDefinitions="20,*" Margin="0,0,0,14">
+                                                        <Ellipse Grid.Column="0" WidthRequest="10" HeightRequest="10" Fill="{Binding MarkerFill}" VerticalOptions="Start" Margin="0,4,0,0" />
+                                                        <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                                            <Label Text="{Binding TimestampDisplay}" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{StaticResource Primary}" />
+                                                            <Label Text="{Binding Title}" FontFamily="OpenSansSemibold" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" IsVisible="{Binding HasTitle}" />
+                                                            <Label Text="{Binding Description}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" LineBreakMode="WordWrap" />
+                                                        </VerticalStackLayout>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </list:SfListView.ItemTemplate>
+                                        </list:SfListView>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </VerticalStackLayout>
+                        </ScrollView>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:scheduler="clr-namespace:Syncfusion.Maui.Scheduler;assembly=Syncfusion.Maui.Scheduler"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:models="clr-namespace:MediFlowSample.Models"
+             xmlns:converters="clr-namespace:MediFlowSample.Converters"
+             xmlns:controls="clr-namespace:MediFlowSample.Controls"
+             x:Class="MediFlowSample.Views.AppointmentsPage"
+             x:Name="RootPage"
+             Title="Schedule" 
+             Shell.NavBarIsVisible="False" 
+             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource BackgroundColorDark}}">
+
+    <ContentPage.Resources>
+        <converters:ClinicianHighlightConverter x:Key="ClinicianHighlightConverter" />
+
+        <DataTemplate x:Key="AppointmentBlockTemplate">
+            <Border Background="{Binding DataItem.BackgroundFill}" Padding="10,6" StrokeThickness="0" Margin="1">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="8" />
+                </Border.StrokeShape>
+                <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="2">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                        <Label Grid.Column="0" Text="{Binding DataItem.VisitType}" FontFamily="OpenSansSemibold" FontSize="12" TextColor="White" LineBreakMode="TailTruncation" />
+                        <Label Grid.Column="1" Text="{Binding DataItem.TimeRangeDisplay}" FontSize="10" TextColor="White" Opacity="0.9" />
+                    </Grid>
+                    <Label Grid.Row="1" Text="{Binding DataItem.PatientName}" FontSize="12" TextColor="White" LineBreakMode="TailTruncation" />
+                    <HorizontalStackLayout Grid.Row="2" Spacing="4" IsVisible="{Binding DataItem.HasNotes}">
+                        <Label Text="&#xE3F3;" FontFamily="MaterialIcons" FontSize="11" TextColor="White" Opacity="0.85" VerticalOptions="Center" />
+                        <Label Text="{Binding DataItem.Notes}" FontSize="10" TextColor="White" Opacity="0.85" LineBreakMode="TailTruncation" />
+                    </HorizontalStackLayout>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="LunchBreakTemplate">
+            <Grid BackgroundColor="#EEF1F6">
+                <Label Text="{Binding Text}" FontFamily="OpenSansSemibold" FontSize="11" TextColor="{StaticResource MutedText}" HorizontalOptions="Center" VerticalOptions="Center" CharacterSpacing="1" />
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ScheduleHeaderTemplate">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" Padding="10,0" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceColor}, Dark={StaticResource SurfaceColorDark}}">
+                <Border Grid.Column="0" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource BackgroundColorDark}}" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" StrokeThickness="1" Padding="2" HorizontalOptions="Start" VerticalOptions="Center">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10" />
+                    </Border.StrokeShape>
+                    <HorizontalStackLayout Spacing="2">
+                        <Label Text="&#xE5CB;" FontFamily="MaterialIcons" FontSize="16" TextColor="{StaticResource Primary}" VerticalOptions="Center" Padding="5">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnPreviousDateTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                        <Label Text="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectedDateDisplay}" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" VerticalOptions="Center" HorizontalTextAlignment="Center" LineBreakMode="TailTruncation">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnGoToTodayTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                        <Label Text="&#xE5CC;" FontFamily="MaterialIcons" FontSize="16" TextColor="{StaticResource Primary}" VerticalOptions="Center" Padding="5">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnNextDateTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </HorizontalStackLayout>
+                </Border>
+                <buttons:SfSegmentedControl Grid.Column="1" SelectedIndex="{Binding Source={x:Reference RootPage}, Path=BindingContext.ViewModeIndex}" SegmentWidth="62" HeightRequest="34" HorizontalOptions="End" VerticalOptions="Center" SelectionChanged="OnViewModeSelectionChanged" SegmentBackground="Transparent" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" StrokeThickness="1" CornerRadius="17">
+                    <buttons:SfSegmentedControl.TextStyle>
+                        <buttons:SegmentTextStyle TextColor="{StaticResource Neutral}" FontSize="12" />
+                    </buttons:SfSegmentedControl.TextStyle>
+                    <buttons:SfSegmentedControl.SelectionIndicatorSettings>
+                        <buttons:SelectionIndicatorSettings SelectionIndicatorPlacement="Fill" Background="{StaticResource Primary}" TextColor="White" />
+                    </buttons:SfSegmentedControl.SelectionIndicatorSettings>
+                    <buttons:SfSegmentedControl.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Day</x:String>
+                            <x:String>Week</x:String>
+                        </x:Array>
+                    </buttons:SfSegmentedControl.ItemsSource>
+                </buttons:SfSegmentedControl>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ClinicianCardTemplate" x:DataType="models:Clinician">
+            <Border StrokeThickness="1.5" Padding="12" Margin="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Border.BackgroundColor>
+                    <MultiBinding Converter="{StaticResource ClinicianHighlightConverter}">
+                        <Binding Path="." />
+                        <Binding Source="{x:Reference RootPage}" Path="BindingContext.SelectedClinician" />
+                    </MultiBinding>
+                </Border.BackgroundColor>
+                <Border.Stroke>
+                    <MultiBinding Converter="{StaticResource ClinicianHighlightConverter}" ConverterParameter="Stroke">
+                        <Binding Path="." />
+                        <Binding Source="{x:Reference RootPage}" Path="BindingContext.SelectedClinician" />
+                    </MultiBinding>
+                </Border.Stroke>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnClinicianCardTapped" CommandParameter="{Binding .}" />
+                </Border.GestureRecognizers>
+                <HorizontalStackLayout Spacing="10">
+                    <core:SfAvatarView ContentType="Initials" InitialsType="DoubleCharacter" AvatarName="{Binding Name}" AvatarShape="Circle" AvatarSize="Small" WidthRequest="36" HeightRequest="36" VerticalOptions="Center" Background="{StaticResource Primary}" InitialsColor="White" />
+                    <VerticalStackLayout Spacing="1" VerticalOptions="Center">
+                        <Label Text="{Binding Name}" FontFamily="OpenSansSemibold" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                        <Label Text="{Binding Specialty}" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Border>
+        </DataTemplate>
+    </ContentPage.Resources>
+
+    <Grid ColumnDefinitions="{OnPlatform WinUI='248,*', MacCatalyst='248,*', Default='0,*'}">
+        <!-- Desktop / tablet left navigation -->
+        <controls:AppSidebarView Grid.Column="0" IsVisible="{OnPlatform WinUI=True, MacCatalyst=True, Default=False}" ActiveRoute="schedule" />
+
+        <!-- Desktop / tablet content -->
+        <Grid Grid.Column="1" IsVisible="{OnPlatform WinUI=True, MacCatalyst=True, Default=False}" Padding="34,90,34,24" ColumnDefinitions="230,*" ColumnSpacing="16">
+            <ScrollView Grid.Column="0">
+                <VerticalStackLayout Spacing="0">
+                    <Label Text="Clinicians" FontFamily="OpenSansSemibold" FontSize="18" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" Margin="4,0,0,4" />
+                    <CollectionView ItemsSource="{Binding Clinicians}" ItemTemplate="{StaticResource ClinicianCardTemplate}" SelectionMode="None">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="4" />
+                        </CollectionView.ItemsLayout>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <Border Grid.Column="1" BackgroundColor="{StaticResource SurfaceColor}" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="2">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <scheduler:SfScheduler x:Name="DesktopScheduler"
+                                       View="{Binding ViewMode}"
+                                       DisplayDate="{Binding SelectedDate}"
+                                       AppointmentsSource="{Binding VisibleAppointments}"
+                                       AllowAppointmentDrag="False"
+                                       AllowedViews="Day,Week"
+                                       ShowAllowedViews="False"
+                                       ViewChanged="OnSchedulerViewChanged"
+                                       Tapped="OnSchedulerTapped">
+                    <scheduler:SfScheduler.AppointmentMapping>
+                        <scheduler:SchedulerAppointmentMapping Subject="VisitType" StartTime="StartTime" EndTime="EndTime" Id="AppointmentId" Notes="Notes" />
+                    </scheduler:SfScheduler.AppointmentMapping>
+                    <scheduler:SfScheduler.HeaderView>
+                        <scheduler:SchedulerHeaderView Height="60" HeaderTemplate="{StaticResource ScheduleHeaderTemplate}" />
+                    </scheduler:SfScheduler.HeaderView>
+                    <scheduler:SfScheduler.DaysView>
+                        <scheduler:SchedulerDaysView StartHour="8" EndHour="18" TimeFormat="HH:mm" TimeIntervalHeight="72" TimeRulerWidth="64"
+                                                      AppointmentTemplate="{StaticResource AppointmentBlockTemplate}"
+                                                      TimeRegionTemplate="{StaticResource LunchBreakTemplate}" />
+                    </scheduler:SfScheduler.DaysView>
+                </scheduler:SfScheduler>
+            </Border>
+        </Grid>
+
+        <!-- Desktop floating header -->
+        <Border Grid.Column="1" IsVisible="{OnPlatform WinUI=True, MacCatalyst=True, Default=False}" HeightRequest="74" VerticalOptions="Start" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource SurfaceColorDark}}" StrokeThickness="0" Padding="22,10">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0,0,12,12" />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="#35000000" Offset="0,3" Radius="8" Opacity="0.22" />
+            </Border.Shadow>
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="0">
+                    <Label Text="Appointments" FontFamily="OpenSansSemibold" FontSize="19" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                    <Label Text="Clinic schedule." FontSize="12" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                </VerticalStackLayout>
+                <core:SfBadgeView x:Name="DesktopNotificationBadge" Grid.Column="2" BadgeText="0" VerticalOptions="Center">
+                    <core:SfBadgeView.BadgeSettings>
+                        <core:BadgeSettings Type="None" Background="{StaticResource Primary}" TextColor="White" FontSize="10" TextPadding="3" />
+                    </core:SfBadgeView.BadgeSettings>
+                    <core:SfBadgeView.Content>
+                        <Label Text="&#xE7F4;" FontFamily="MaterialIcons" FontSize="21" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnNotificationsTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </core:SfBadgeView.Content>
+                </core:SfBadgeView>
+            </Grid>
+        </Border>
+
+        <!-- Mobile layout -->
+        <Grid Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{OnPlatform WinUI=False, MacCatalyst=False, Default=True}" RowDefinitions="*,Auto" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource BackgroundColorDark}}">
+            <ScrollView Grid.Row="0">
+                <VerticalStackLayout Padding="16,74,16,20" Spacing="14">
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <core:SfChipGroup x:Name="MobileClinicianChips" ChipType="Choice" ChoiceMode="Single"
+                                           ItemsSource="{Binding Clinicians}" DisplayMemberPath="Name"
+                                           SelectedItem="{Binding SelectedClinician, Mode=OneWay}"
+                                           SelectionChanged="OnClinicianSelectionChanged"
+                                           ChipBackground="{StaticResource SurfaceColor}" ChipTextColor="{StaticResource DarkText}" ChipStroke="{StaticResource BorderColor}"
+                                           SelectedChipBackground="{StaticResource Primary}" SelectedChipTextColor="White"
+                                           ChipCornerRadius="20" ChipPadding="2,6">
+                            <core:SfChipGroup.ChipLayout>
+                                <HorizontalStackLayout Spacing="4" />
+                            </core:SfChipGroup.ChipLayout>
+                        </core:SfChipGroup>
+                    </ScrollView>
+
+                    <Label Text="No appointments scheduled for this clinician and date." IsVisible="{Binding HasNoAppointments}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" HorizontalTextAlignment="Center" Margin="0,0,0,0" />
+
+                    <Border BackgroundColor="{StaticResource SurfaceColor}" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="2" HeightRequest="610">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <scheduler:SfScheduler x:Name="MobileScheduler"
+                                               View="{Binding ViewMode}"
+                                               DisplayDate="{Binding SelectedDate}"
+                                               AppointmentsSource="{Binding VisibleAppointments}"
+                                               AllowAppointmentDrag="False"
+                                               AllowedViews="Day,Week"
+                                               ShowAllowedViews="False"
+                                               ViewChanged="OnSchedulerViewChanged"
+                                               Tapped="OnSchedulerTapped">
+                            <scheduler:SfScheduler.AppointmentMapping>
+                                <scheduler:SchedulerAppointmentMapping Subject="VisitType" StartTime="StartTime" EndTime="EndTime" Id="AppointmentId" Notes="Notes" />
+                            </scheduler:SfScheduler.AppointmentMapping>
+                            <scheduler:SfScheduler.HeaderView>
+                                <scheduler:SchedulerHeaderView Height="56" HeaderTemplate="{StaticResource ScheduleHeaderTemplate}" />
+                            </scheduler:SfScheduler.HeaderView>
+                            <scheduler:SfScheduler.DaysView>
+                                <scheduler:SchedulerDaysView StartHour="8" EndHour="18" TimeFormat="HH:mm" TimeIntervalHeight="64" TimeRulerWidth="52"
+                                                              AppointmentTemplate="{StaticResource AppointmentBlockTemplate}"
+                                                              TimeRegionTemplate="{StaticResource LunchBreakTemplate}" />
+                            </scheduler:SfScheduler.DaysView>
+                        </scheduler:SfScheduler>
+                    </Border>
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <controls:AppBottomNavView Grid.Row="1" ActiveRoute="schedule" />
+        </Grid>
+
+        <!-- Mobile floating header -->
+        <Border Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{OnPlatform WinUI=False, MacCatalyst=False, Default=True}" HeightRequest="64" VerticalOptions="Start" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource SurfaceColorDark}}" StrokeThickness="0" Padding="16,10">
+            <Border.StrokeShape>
+                <RoundRectangle />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="#40000000" Offset="0,4" Radius="10" Opacity="0.28" />
+            </Border.Shadow>
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                    <Image Source="logo.png" Aspect="AspectFit" Margin="6" />
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="0">
+                    <Label Text="Appointments" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                    <Label Text="Clinic schedule." FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                </VerticalStackLayout>
+                <core:SfBadgeView x:Name="MobileNotificationBadge" Grid.Column="2" BadgeText="0" VerticalOptions="Center">
+                    <core:SfBadgeView.BadgeSettings>
+                        <core:BadgeSettings Type="None" Background="{StaticResource Primary}" TextColor="White" FontSize="9" TextPadding="3" />
+                    </core:SfBadgeView.BadgeSettings>
+                    <core:SfBadgeView.Content>
+                        <Label Text="&#xE7F4;" FontFamily="MaterialIcons" FontSize="21" WidthRequest="20" HeightRequest="20" Margin="0,0,0,10" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnNotificationsTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </core:SfBadgeView.Content>
+                </core:SfBadgeView>
+            </Grid>
+        </Border>
+
+        <!-- Read-only appointment details overlay -->
+        <Grid Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{Binding IsAppointmentDetailsOpen}">
+            <BoxView HorizontalOptions="Fill" VerticalOptions="Fill" BackgroundColor="Transparent">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCloseAppointmentDetailsTapped" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+                <Border ZIndex="1" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource BackgroundColorDark}}" WidthRequest="{OnPlatform WinUI=350, MacCatalyst=350, Default=-1}" MaximumWidthRequest="{OnPlatform WinUI=350, MacCatalyst=350, Default=1000}" MaximumHeightRequest="{OnPlatform WinUI=280, MacCatalyst=280, Default=390}" HorizontalOptions="{OnPlatform WinUI=Center, MacCatalyst=Center, Default=Fill}" VerticalOptions="{OnPlatform WinUI=Center, MacCatalyst=Center, Default=End}" Margin="{OnPlatform WinUI=0, MacCatalyst=0, Default='12,0,12,0'}" Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="{OnPlatform WinUI=16, MacCatalyst=16, Default='18,18,0,0'}" />
+                </Border.StrokeShape>
+                <ScrollView VerticalOptions="Start">
+                    <VerticalStackLayout Padding="20" Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="Appointment Details" FontFamily="OpenSansSemibold" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" VerticalOptions="Center" />
+                            <buttons:SfButton Grid.Column="1" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" Background="Transparent" Stroke="Transparent" StrokeThickness="0" Padding="6" WidthRequest="40" HeightRequest="40" Clicked="OnCloseAppointmentDetailsClicked" />
+                        </Grid>
+                        <Border BackgroundColor="{Binding SelectedAppointment.BackgroundFill}" StrokeThickness="0" Padding="10,6" HorizontalOptions="Start">
+                            <Border.StrokeShape>
+                                <RoundRectangle />
+                            </Border.StrokeShape>
+                            <HorizontalStackLayout Spacing="5">
+                                <Label Text="{Binding SelectedAppointment.StatusIconGlyph}" FontFamily="MaterialIcons" FontSize="12" TextColor="{Binding SelectedAppointment.TextColorValue}" VerticalOptions="Center" />
+                                <Label Text="{Binding SelectedAppointment.Status}" FontFamily="OpenSansSemibold" FontSize="11" TextColor="{Binding SelectedAppointment.TextColorValue}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </Border>
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{Binding SelectedAppointment.VisitType}" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                            <Label Text="{Binding SelectedAppointment.PatientName}" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                        </VerticalStackLayout>
+                        <BoxView HeightRequest="1" BackgroundColor="{StaticResource BorderColor}" />
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" RowSpacing="12" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
+                                <Label Text="CLINICIAN" FontSize="10" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                                <Label Text="{Binding SelectedClinician.Name}" FontFamily="OpenSansSemibold" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="2">
+                                <Label Text="TIME" FontSize="10" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                                <Label Text="{Binding SelectedAppointment.TimeRangeDisplay}" FontFamily="OpenSansSemibold" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="2">
+                                <Label Text="DATE" FontSize="10" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" />
+                                <Label Text="{Binding SelectedAppointment.StartTime, StringFormat='{0:MMM dd, yyyy}'}" FontFamily="OpenSansSemibold" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

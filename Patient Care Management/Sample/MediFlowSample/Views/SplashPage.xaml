@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:progressbar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
+             x:Class="MediFlowSample.Views.SplashPage"
+             NavigationPage.HasNavigationBar="False"
+             Shell.NavBarIsVisible="False"
+             Shell.FlyoutBehavior="Disabled"
+             Padding="0">
+    
+    <Grid RowDefinitions="*" BackgroundColor="White">
+        <!-- Gradient Background -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#F0F9FF" Offset="0.0"/>
+                <GradientStop Color="#E0F2FE" Offset="0.5"/>
+                <GradientStop Color="#CCF0FF" Offset="1.0"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        
+        <!-- Center Logo, Title, and Progress Bar -->
+        <VerticalStackLayout Grid.Row="0"
+                           Spacing="0" 
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center"
+                           Padding="20">
+            
+            <!-- Logo -->
+            <Image Source="logo.png" 
+                   WidthRequest="120" 
+                   HeightRequest="120"
+                   HorizontalOptions="Center"
+                   Aspect="AspectFit"
+                   Margin="0,0,0,20"/>
+            
+            <!-- Application Title -->
+            <Label Text="MediFlow Patient Care" 
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   FontFamily="Inter"
+                   TextColor="#087F73"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"
+                   LineBreakMode="WordWrap"
+                   Margin="0,0,0,40"/>
+            
+            <!-- Syncfusion Linear Progress Bar -->
+            <progressbar:SfLinearProgressBar x:Name="LoadingProgress"
+                                            Progress="0"
+                                            Minimum="0"
+                                            Maximum="100"
+                                            ProgressFill="#087F73"
+                                            TrackFill="#D1E7E4"
+                                            ProgressCornerRadius="3"
+                                            TrackCornerRadius="3"
+                                            ProgressHeight="8"
+                                            TrackHeight="8"
+                                            HorizontalOptions="Center"
+                                            WidthRequest="240"
+                                            AnimationDuration="600"/>
+            
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MediFlowSample.Controls.AppBottomNavView">
+    <Grid ColumnDefinitions="*,*,*,*" HeightRequest="68" BackgroundColor="{StaticResource SurfaceColor}" Padding="4,8,4,4">
+        <VerticalStackLayout Grid.Column="0">
+            <Label x:Name="DashboardIcon" Text="&#xE871;" FontFamily="MaterialIcons" FontSize="22" TextColor="{StaticResource Neutral}" HorizontalTextAlignment="Center" />
+            <Label x:Name="DashboardLabel" Text="Dashboard" FontSize="12" TextColor="{StaticResource Neutral}" HorizontalTextAlignment="Center" />
+            <VerticalStackLayout.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnDashboardTapped" />
+            </VerticalStackLayout.GestureRecognizers>
+        </VerticalStackLayout>
+        <VerticalStackLayout Grid.Column="1">
+            <Label x:Name="PatientsIcon" Text="&#xE7FD;" FontFamily="MaterialIcons" FontSize="22" TextColor="{StaticResource Neutral}" HorizontalTextAlignment="Center" />
+            <Label x:Name="PatientsLabel" Text="Patients" FontSize="12" TextColor="{StaticResource Neutral}" HorizontalTextAlignment="Center" />
+            <VerticalStackLayout.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnPatientsTapped" />
+            </VerticalStackLayout.GestureRecognizers>
+        </VerticalStackLayout>
+        <VerticalStackLayout Grid.Column="2">
+            <Label x:Name="ScheduleIcon" Text="&#xE935;" FontFamily="MaterialIcons" FontSize="22" TextColor="{StaticResource Neutral}" HorizontalTextAlignment="Center" />
+            <Label x:Name="ScheduleLabel" Text="Schedule" FontSize="12" TextColor="{StaticResource Neutral}" HorizontalTextAlignment="Center" />
+            <VerticalStackLayout.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnScheduleTapped" />
+            </VerticalStackLayout.GestureRecognizers>
+        </VerticalStackLayout>
+        <VerticalStackLayout Grid.Column="3">
+            <Label x:Name="CarePlansIcon" Text="&#xE85D;" FontFamily="MaterialIcons" FontSize="22" TextColor="{StaticResource Neutral}" HorizontalTextAlignment="Center" />
+            <Label x:Name="CarePlansLabel" Text="Care Plans" FontSize="12" TextColor="{StaticResource Neutral}" HorizontalTextAlignment="Center" />
+            <VerticalStackLayout.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnCarePlansTapped" />
+            </VerticalStackLayout.GestureRecognizers>
+        </VerticalStackLayout>
+    </Grid>
+</ContentView>

@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:models="clr-namespace:MediFlowSample.Models"
+             xmlns:controls="clr-namespace:MediFlowSample.Controls"
+             x:Class="MediFlowSample.Views.CarePlansPage"
+             x:Name="RootPage"
+             Title="Care Plans"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource BackgroundColorDark}}">
+
+    <ContentPage.Resources>
+        <DataTemplate x:Key="TaskCardTemplate" x:DataType="models:CareTask">
+            <Border BackgroundColor="{Binding CardBackgroundValue}" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" StrokeThickness="1" Padding="0" Margin="0,0,0,10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <Grid ColumnDefinitions="4,*">
+                    <BoxView Grid.Column="0" Color="{Binding IndicatorColorValue}" />
+                          <Grid Grid.Column="1" Padding="14,12" Margin="0" RowDefinitions="Auto,Auto,Auto" RowSpacing="6" VerticalOptions="End">
+                              <Grid.Triggers>
+                                  <DataTrigger TargetType="Grid" Binding="{Binding IsCompleted}" Value="True">
+                                      <Setter Property="Margin" Value="0,10,0,0" />
+                                  </DataTrigger>
+                              </Grid.Triggers>
+                              <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" VerticalOptions="End">
+                            <Label Grid.Column="0" Text="{Binding Title}" FontFamily="OpenSansSemibold" FontSize="14" TextDecorations="{Binding TitleDecoration}"
+                                   TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" LineBreakMode="TailTruncation" />
+                            <Border Grid.Column="1" IsVisible="{Binding IsHighPriority}" BackgroundColor="#FEE2E2" StrokeThickness="0" Padding="8,3" VerticalOptions="Center">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Label Text="High Priority" FontFamily="OpenSansSemibold" FontSize="10" TextColor="#DC2626" />
+                            </Border>
+                            <Border Grid.Column="2" IsVisible="{Binding ShowCompletedAction}" BackgroundColor="Transparent" Stroke="#087F73" StrokeThickness="1" WidthRequest="20" HeightRequest="20" Padding="0" VerticalOptions="Center">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Label Text="&#xE86C;" FontFamily="MaterialIcons" FontSize="13" TextColor="#087F73" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                            </Border>
+                        </Grid>
+                        <Label Grid.Row="1" Text="{Binding Description}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" LineBreakMode="WordWrap" IsVisible="{Binding ShowTaskDetails}" />
+                        <Grid VerticalOptions="End" Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="8" IsVisible="{Binding ShowTaskDetails}">
+                            <HorizontalStackLayout Grid.Column="0" Spacing="6">
+                                <Label Text="{Binding StatusIconGlyph}" FontFamily="MaterialIcons" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" VerticalOptions="Center" />
+                                <Label Text="{Binding DueDisplay}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource MutedText}, Dark={StaticResource MutedTextDark}}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <Border Grid.Column="1" BackgroundColor="{Binding ActionBackgroundValue}" StrokeThickness="0" WidthRequest="28" HeightRequest="28" Padding="0" IsVisible="{Binding HasActionIcon}" HorizontalOptions="End" VerticalOptions="Center">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="14" />
+                                </Border.StrokeShape>
+                                <Label Text="{Binding ActionIconGlyph}" FontFamily="MaterialIcons" FontSize="16" TextColor="{Binding ActionIconColorValue}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                            </Border>
+
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+    </ContentPage.Resources>
+
+    <Grid ColumnDefinitions="{OnPlatform WinUI='248,*', MacCatalyst='248,*', Default='0,*'}">
+        <!-- Desktop / tablet left navigation -->
+        <controls:AppSidebarView Grid.Column="0" IsVisible="{OnPlatform WinUI=True, MacCatalyst=True, Default=False}" ActiveRoute="careplans" />
+
+        <!-- Desktop / tablet content -->
+        <ScrollView Grid.Column="1" IsVisible="{OnPlatform WinUI=True, MacCatalyst=True, Default=False}">
+            <VerticalStackLayout Padding="34,90,34,24" Spacing="16" VerticalOptions="Fill">
+                <Grid ColumnDefinitions="1.35*,*" ColumnSpacing="16" HorizontalOptions="Fill" VerticalOptions="Fill">
+                    <VerticalStackLayout Grid.Column="0" Spacing="16" VerticalOptions="Fill">
+                        <Border BackgroundColor="{StaticResource SecondaryLight}" StrokeThickness="0" Padding="18,14" VerticalOptions="Fill">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="14" />
+                            </Border.StrokeShape>
+                            <VerticalStackLayout Spacing="12">
+                                <Grid ColumnDefinitions="52,*,Auto" ColumnSpacing="16">
+                                    <core:SfAvatarView Grid.Column="0" ContentType="Initials" AvatarName="{Binding SelectedPatient.FullName}" AvatarShape="Circle" AvatarSize="Medium" WidthRequest="48" HeightRequest="48" VerticalOptions="Center" Background="{StaticResource Primary}" InitialsColor="White" />
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding SelectedPatient.FullName}" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{StaticResource DarkText}" />
+                                        <Label Text="{Binding SelectedPatient.IdentitySummary}" FontSize="12" TextColor="{StaticResource MutedText}" />
+                                    </VerticalStackLayout>
+                                    <Border Grid.Column="2" BackgroundColor="{StaticResource Primary}" StrokeThickness="0" Padding="12,7" VerticalOptions="Center">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="16" />
+                                        </Border.StrokeShape>
+                                        <HorizontalStackLayout Spacing="5">
+                                            <Label Text="&#xE8E8;" FontFamily="MaterialIcons" FontSize="12" TextColor="White" VerticalOptions="Center" />
+                                            <Label Text="{Binding CareStatusText}" FontFamily="OpenSansSemibold" FontSize="12" TextColor="White" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </Grid>
+                                <progressBar:SfStepProgressBar Margin="0,20,0,20" Orientation="Horizontal" ItemsSource="{Binding DesktopCareStages}" ActiveStepIndex="{Binding ActiveStepIndex}" ProgressAnimationDuration="0" HeightRequest="80" HorizontalOptions="Center" ProgressBarBackground="#A7BDCD">
+                                    <progressBar:SfStepProgressBar.CompletedStepSettings>
+                                        <progressBar:StepSettings Background="#087F73" ContentFillColor="White" ProgressColor="#087F73" />
+                                    </progressBar:SfStepProgressBar.CompletedStepSettings>
+                                    <progressBar:SfStepProgressBar.InProgressStepSettings>
+                                        <progressBar:StepSettings Background="#087F73" ContentFillColor="White" ProgressColor="#A7BDCD" />
+                                    </progressBar:SfStepProgressBar.InProgressStepSettings>
+                                    <progressBar:SfStepProgressBar.NotStartedStepSettings>
+                                        <progressBar:StepSettings Background="{StaticResource BorderColor}" ContentFillColor="White" ProgressColor="#A7BDCD" />
+                                    </progressBar:SfStepProgressBar.NotStartedStepSettings>
+                                </progressBar:SfStepProgressBar>
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <Border Grid.Column="1" BackgroundColor="#DCE9FF" StrokeThickness="0" Padding="0" VerticalOptions="Fill">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="14" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout Spacing="0">
+                            <Border BackgroundColor="#0759D6" StrokeThickness="0" Padding="16,12">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="14,14,0,0" />
+                                </Border.StrokeShape>
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label Text="&#xE85C;" FontFamily="MaterialIcons" FontSize="18" TextColor="White" VerticalOptions="Center" />
+                                    <Label Text="Care Assistant" FontFamily="OpenSansSemibold" FontSize="15" TextColor="White" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                            </Border>
+                            <VerticalStackLayout Padding="14,12,14,14" Spacing="12">
+                            <FlexLayout Wrap="Wrap" JustifyContent="Start">
+                                <Border BackgroundColor="White" Stroke="#C8D8F5" StrokeThickness="1" Padding="8,5" Margin="0,0,6,6">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="14" />
+                                    </Border.StrokeShape>
+                                    <HorizontalStackLayout Spacing="5">
+                                        <Label Text="&#xE3F3;" FontFamily="MaterialIcons" FontSize="10" TextColor="#0759D6" />
+                                        <Label Text="Create visit summary" FontSize="10" TextColor="#14213D" />
+                                    </HorizontalStackLayout>
+                                </Border>
+                                <Border BackgroundColor="White" Stroke="#C8D8F5" StrokeThickness="1" Padding="8,5" Margin="0,0,6,6">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="14" />
+                                    </Border.StrokeShape>
+                                    <HorizontalStackLayout Spacing="5">
+                                        <Label Text="&#xE8B5;" FontFamily="MaterialIcons" FontSize="10" TextColor="#0759D6" />
+                                        <Label Text="List incomplete tasks" FontSize="10" TextColor="#14213D" />
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </FlexLayout>
+                            <Border BackgroundColor="White" StrokeThickness="0" Padding="14">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="8">
+                                    <Border BackgroundColor="#FEF3C7" StrokeThickness="0" Padding="8,3" HorizontalOptions="Start">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8" />
+                                        </Border.StrokeShape>
+                                        <Label Text="SAMPLE DATA ONLY" FontFamily="OpenSansSemibold" FontSize="9" TextColor="#92400E" />
+                                    </Border>
+                                    <Label FontSize="12" TextColor="{StaticResource DarkText}" LineBreakMode="WordWrap">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding AssistantIntro}" />
+                                                <Span Text=" " />
+                                                <Span Text="Action required: " FontAttributes="Bold" />
+                                                <Span Text="{Binding AssistantAction}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </VerticalStackLayout>
+                            </Border>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!-- Read-only task board: plain columns sized to their content, not SfKanban, so tasks cannot be dragged/moved -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="14" HorizontalOptions="Fill" VerticalOptions="Fill">
+                    <Border Grid.Column="1" BackgroundColor="{StaticResource SurfaceColor}" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="14" VerticalOptions="Fill">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout Spacing="10">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+                                <Label Grid.Column="0" Text="&#xE8B5;" FontFamily="MaterialIcons" FontSize="14" TextColor="{StaticResource Neutral}" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="PLANNED" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{StaticResource DarkText}" VerticalOptions="Center" />
+                                <Border Grid.Column="2" BackgroundColor="{StaticResource BorderColor}" StrokeThickness="0" Padding="7,2" MinimumWidthRequest="22">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10" />
+                                    </Border.StrokeShape>
+                                    <Label Text="{Binding PlannedTasks.Count}" FontFamily="OpenSansSemibold" FontSize="11" TextColor="{StaticResource DarkText}" HorizontalTextAlignment="Center" />
+                                </Border>
+                            </Grid>
+                            <Label Text="No planned tasks" IsVisible="{Binding HasNoPlannedTasks}" FontSize="12" TextColor="{StaticResource MutedText}" />
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding PlannedTasks}" BindableLayout.ItemTemplate="{StaticResource TaskCardTemplate}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Column="0" BackgroundColor="{StaticResource SurfaceColor}" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="14" VerticalOptions="Fill">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout Spacing="10">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+                                <Label Grid.Column="0" Text="&#xF1BB;" FontFamily="MaterialIcons" FontSize="14" TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="IN PROGRESS" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{StaticResource DarkText}" VerticalOptions="Center" />
+                                <Border Grid.Column="2" BackgroundColor="{StaticResource BorderColor}" StrokeThickness="0" Padding="7,2" MinimumWidthRequest="22">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10" />
+                                    </Border.StrokeShape>
+                                    <Label Text="{Binding InProgressTasks.Count}" FontFamily="OpenSansSemibold" FontSize="11" TextColor="{StaticResource DarkText}" HorizontalTextAlignment="Center" />
+                                </Border>
+                            </Grid>
+                            <Label Text="No in-progress tasks" IsVisible="{Binding HasNoInProgressTasks}" FontSize="12" TextColor="{StaticResource MutedText}" />
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding InProgressTasks}" BindableLayout.ItemTemplate="{StaticResource TaskCardTemplate}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Column="2" BackgroundColor="{StaticResource SurfaceColor}" Stroke="{AppThemeBinding Light={StaticResource BorderColor}, Dark={StaticResource BorderColorDark}}" Padding="14" VerticalOptions="Fill">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout Spacing="10">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+                                <Label Grid.Column="0" Text="&#xE86C;" FontFamily="MaterialIcons" FontSize="14" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="COMPLETED" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{StaticResource DarkText}" VerticalOptions="Center" />
+                                <Border Grid.Column="2" BackgroundColor="{StaticResource BorderColor}" StrokeThickness="0" Padding="7,2" MinimumWidthRequest="22">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10" />
+                                    </Border.StrokeShape>
+                                    <Label Text="{Binding CompletedTasks.Count}" FontFamily="OpenSansSemibold" FontSize="11" TextColor="{StaticResource DarkText}" HorizontalTextAlignment="Center" />
+                                </Border>
+                            </Grid>
+                            <Label Text="No completed tasks" IsVisible="{Binding HasNoCompletedTasks}" FontSize="12" TextColor="{StaticResource MutedText}" />
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding CompletedTasks}" BindableLayout.ItemTemplate="{StaticResource TaskCardTemplate}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Desktop floating header -->
+        <Border Grid.Column="1" IsVisible="{OnPlatform WinUI=True, MacCatalyst=True, Default=False}" HeightRequest="74" VerticalOptions="Start" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource SurfaceColorDark}}" StrokeThickness="0" Padding="22,10">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0,0,12,12" />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="#35000000" Offset="0,3" Radius="8" Opacity="0.22" />
+            </Border.Shadow>
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14">
+                <Label Grid.Column="0" Text="Care Plans" FontFamily="OpenSansSemibold" FontSize="19" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" VerticalOptions="Center" />
+                <core:SfBadgeView x:Name="DesktopNotificationBadge" Grid.Column="1" BadgeText="0" VerticalOptions="Center">
+                    <core:SfBadgeView.BadgeSettings>
+                        <core:BadgeSettings Type="None" Background="{StaticResource Primary}" TextColor="White" FontSize="10" TextPadding="3" />
+                    </core:SfBadgeView.BadgeSettings>
+                    <core:SfBadgeView.Content>
+                        <Label Text="&#xE7F4;" FontFamily="MaterialIcons" FontSize="21" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnNotificationsTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </core:SfBadgeView.Content>
+                </core:SfBadgeView>
+            </Grid>
+        </Border>
+
+        <!-- Mobile layout -->
+        <Grid Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{OnPlatform WinUI=False, MacCatalyst=False, Default=True}" RowDefinitions="*,Auto" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource BackgroundColorDark}}">
+            <ScrollView Grid.Row="0">
+                <VerticalStackLayout Padding="10,74,10,24" Margin="0,10,0,0" Spacing="16">
+                    <Border BackgroundColor="{StaticResource SecondaryLight}" StrokeThickness="0" Padding="12,12">
+                        <Border.StrokeShape>
+                            <RoundRectangle />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout Spacing="20">
+                            <Grid ColumnDefinitions="48,*,Auto" ColumnSpacing="12">
+                                <core:SfAvatarView Grid.Column="0" ContentType="Initials" AvatarName="{Binding SelectedPatient.FullName}" AvatarShape="Circle" AvatarSize="Medium" WidthRequest="46" HeightRequest="46" VerticalOptions="Center" Background="{StaticResource Primary}" InitialsColor="White" />
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="{Binding SelectedPatient.FullName}" FontFamily="OpenSansSemibold" FontSize="17" TextColor="{StaticResource DarkText}" />
+                                    <Label Text="{Binding SelectedPatient.IdentitySummary}" FontSize="12" TextColor="{StaticResource MutedText}" />
+                                </VerticalStackLayout>
+                                <Border Grid.Column="2" BackgroundColor="{StaticResource Primary}" StrokeThickness="0" Padding="10,6" VerticalOptions="Center">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="16" />
+                                    </Border.StrokeShape>
+                                    <HorizontalStackLayout Spacing="5">
+                                        <Label Text="&#xE8E8;" FontFamily="MaterialIcons" FontSize="12" TextColor="White" VerticalOptions="Center" />
+                                        <Label Text="{Binding CareStatusText}" FontFamily="OpenSansSemibold" FontSize="11" TextColor="White" VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </Grid>
+                            <progressBar:SfStepProgressBar Orientation="Horizontal" LabelPosition="Bottom" ItemsSource="{Binding CareStages}" ActiveStepIndex="{Binding ActiveStepIndex}" ProgressAnimationDuration="0" HeightRequest="76" ProgressBarBackground="#A7BDCD">
+                                <progressBar:SfStepProgressBar.CompletedStepSettings>
+                                    <progressBar:StepSettings Background="#087F73" ContentFillColor="White" ProgressColor="#087F73" />
+                                </progressBar:SfStepProgressBar.CompletedStepSettings>
+                                <progressBar:SfStepProgressBar.InProgressStepSettings>
+                                    <progressBar:StepSettings Background="#087F73" ContentFillColor="White" ProgressColor="#A7BDCD" />
+                                </progressBar:SfStepProgressBar.InProgressStepSettings>
+                                <progressBar:SfStepProgressBar.NotStartedStepSettings>
+                                    <progressBar:StepSettings Background="{StaticResource BorderColor}" ContentFillColor="White" ProgressColor="#A7BDCD" />
+                                </progressBar:SfStepProgressBar.NotStartedStepSettings>
+                            </progressBar:SfStepProgressBar>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+                                <Label Grid.Column="0" Text="&#xF1BB;" FontFamily="MaterialIcons" FontSize="14" TextColor="{StaticResource Secondary}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="IN PROGRESS" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{StaticResource DarkText}" VerticalOptions="Center" />
+                            <Border Grid.Column="2" BackgroundColor="{StaticResource BorderColor}" StrokeThickness="0" Padding="7,2" MinimumWidthRequest="22">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Label Text="{Binding InProgressTasks.Count}" FontFamily="OpenSansSemibold" FontSize="11" TextColor="{StaticResource DarkText}" HorizontalTextAlignment="Center" />
+                            </Border>
+                        </Grid>
+                        <Label Text="No in-progress tasks" IsVisible="{Binding HasNoInProgressTasks}" FontSize="12" TextColor="{StaticResource MutedText}" />
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding InProgressTasks}" BindableLayout.ItemTemplate="{StaticResource TaskCardTemplate}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+                            <Label Grid.Column="0" Text="&#xE878;" FontFamily="MaterialIcons" FontSize="14" TextColor="{StaticResource Neutral}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="PLANNED" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{StaticResource DarkText}" VerticalOptions="Center" />
+                            <Border Grid.Column="2" BackgroundColor="{StaticResource BorderColor}" StrokeThickness="0" Padding="7,2" MinimumWidthRequest="22">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Label Text="{Binding PlannedTasks.Count}" FontFamily="OpenSansSemibold" FontSize="11" TextColor="{StaticResource DarkText}" HorizontalTextAlignment="Center" />
+                            </Border>
+                        </Grid>
+                        <Label Text="No planned tasks" IsVisible="{Binding HasNoPlannedTasks}" FontSize="12" TextColor="{StaticResource MutedText}" />
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding PlannedTasks}" BindableLayout.ItemTemplate="{StaticResource TaskCardTemplate}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+                            <Label Grid.Column="0" Text="&#xE86C;" FontFamily="MaterialIcons" FontSize="14" TextColor="{StaticResource Primary}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="COMPLETED" FontFamily="OpenSansSemibold" FontSize="12" TextColor="{StaticResource DarkText}" VerticalOptions="Center" />
+                            <Border Grid.Column="2" BackgroundColor="{StaticResource BorderColor}" StrokeThickness="0" Padding="7,2" MinimumWidthRequest="22">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Label Text="{Binding CompletedTasks.Count}" FontFamily="OpenSansSemibold" FontSize="11" TextColor="{StaticResource DarkText}" HorizontalTextAlignment="Center" />
+                            </Border>
+                        </Grid>
+                        <Label Text="No completed tasks" IsVisible="{Binding HasNoCompletedTasks}" FontSize="12" TextColor="{StaticResource MutedText}" />
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding CompletedTasks}" BindableLayout.ItemTemplate="{StaticResource TaskCardTemplate}" />
+                    </VerticalStackLayout>
+
+                    <Border BackgroundColor="#DCE9FF" StrokeThickness="0" Padding="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="14" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout Spacing="0">
+                            <Border BackgroundColor="#0759D6" StrokeThickness="0" Padding="16,12">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="14,14,0,0" />
+                                </Border.StrokeShape>
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label Text="&#xE85C;" FontFamily="MaterialIcons" FontSize="18" TextColor="White" VerticalOptions="Center" />
+                                    <Label Text="Care Assistant" FontFamily="OpenSansSemibold" FontSize="16" TextColor="White" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                            </Border>
+                            <VerticalStackLayout Padding="14,12,14,14" Spacing="12">
+                            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                                <HorizontalStackLayout Spacing="8">
+                                    <Border BackgroundColor="White" Stroke="#C8D8F5" StrokeThickness="1" Padding="10,6">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="14" />
+                                        </Border.StrokeShape>
+                                        <HorizontalStackLayout Spacing="5">
+                                            <Label Text="&#xE3F3;" FontFamily="MaterialIcons" FontSize="11" TextColor="#0759D6" VerticalOptions="Center" />
+                                            <Label Text="Create visit summary" FontSize="11" TextColor="#14213D" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                    <Border BackgroundColor="White" Stroke="#C8D8F5" StrokeThickness="1" Padding="10,6">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="14" />
+                                        </Border.StrokeShape>
+                                        <HorizontalStackLayout Spacing="5">
+                                            <Label Text="&#xE8B5;" FontFamily="MaterialIcons" FontSize="11" TextColor="#0759D6" VerticalOptions="Center" />
+                                            <Label Text="List incomplete tasks" FontSize="11" TextColor="#14213D" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </HorizontalStackLayout>
+                            </ScrollView>
+                            <Border BackgroundColor="White" StrokeThickness="0" Padding="14">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="8">
+                                    <Border BackgroundColor="#FEF3C7" StrokeThickness="0" Padding="8,3" HorizontalOptions="Start">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8" />
+                                        </Border.StrokeShape>
+                                        <Label Text="SAMPLE DATA ONLY" FontFamily="OpenSansSemibold" FontSize="9" TextColor="#92400E" />
+                                    </Border>
+                                    <Label FontSize="13" TextColor="{StaticResource DarkText}" LineBreakMode="WordWrap">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding AssistantIntro}" />
+                                                <Span Text=" " />
+                                                <Span Text="Action required: " FontAttributes="Bold" />
+                                                <Span Text="{Binding AssistantAction}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </VerticalStackLayout>
+                            </Border>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <controls:AppBottomNavView Grid.Row="1" ActiveRoute="careplans" />
+        </Grid>
+
+        <!-- Mobile floating header -->
+        <Border Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{OnPlatform WinUI=False, MacCatalyst=False, Default=True}" HeightRequest="64" VerticalOptions="Start" BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundColor}, Dark={StaticResource SurfaceColorDark}}" StrokeThickness="0" Padding="16,10">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0,0,14,14" />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="#40000000" Offset="0,4" Radius="10" Opacity="0.28" />
+            </Border.Shadow>
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                    <Image Source="logo.png" Aspect="AspectFit" Margin="6" />
+                <Label Grid.Column="1" Text="Care Plans" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}" VerticalOptions="Center" />
+                <core:SfBadgeView x:Name="MobileNotificationBadge" Grid.Column="2" BadgeText="0" VerticalOptions="Center">
+                    <core:SfBadgeView.BadgeSettings>
+                        <core:BadgeSettings Type="None" Background="{StaticResource Primary}" TextColor="White" FontSize="9" TextPadding="3" />
+                    </core:SfBadgeView.BadgeSettings>
+                    <core:SfBadgeView.Content>
+                        <Label Text="&#xE7F4;" FontFamily="MaterialIcons" FontSize="21" WidthRequest="20" HeightRequest="20" Margin="0,0,0,10" TextColor="{AppThemeBinding Light={StaticResource DarkText}, Dark={StaticResource DarkTextDark}}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnNotificationsTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </core:SfBadgeView.Content>
+                </core:SfBadgeView>
+            </Grid>
+        </Border>
+    </Grid>
+</ContentPage>
