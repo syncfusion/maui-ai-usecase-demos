@@ -1,0 +1,1016 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:til="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:combo="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:vm="clr-namespace:SmartVehicleCare.ViewModels"
+             xmlns:models="clr-namespace:SmartVehicleCare.Models"
+             xmlns:converters="clr-namespace:SmartVehicleCare.Converters"
+             xmlns:behaviors="clr-namespace:SmartVehicleCare.Behaviors"
+             x:Class="SmartVehicleCare.Views.WelcomePage"
+             Title="Welcome"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource BrandSurfaceLight}, Dark={StaticResource BrandNavy}}">
+
+    <ContentPage.Resources>
+        <converters:InvertedBoolConverter x:Key="InvertedBoolConverter"/>
+        <converters:BoolToColorConverter x:Key="DotColorConverter"
+                                         TrueColor="#B45309"
+                                         FalseColor="#CBD5E1"/>
+        <converters:BoolToColorConverter x:Key="CardBgConverter"
+                                         TrueColor="#FEF3C7"
+                                         FalseColor="Transparent"/>
+        <converters:BoolToColorConverter x:Key="CardStrokeConverter"
+                                         TrueColor="#B45309"
+                                         FalseColor="#E2E8F0"/>
+        <converters:BoolToColorConverter x:Key="IconBgConverter"
+                                         TrueColor="#FEF3C7"
+                                         FalseColor="#F1F5F9"/>
+        <converters:BoolToColorConverter x:Key="IconColorConverter"
+                                         TrueColor="#B45309"
+                                         FalseColor="#94A3B8"/>
+        <converters:BoolToColorConverter x:Key="ChipTextConverter"
+                                         TrueColor="#B45309"
+                                         FalseColor="#64748B"/>
+    </ContentPage.Resources>
+
+    <!-- Root: left panel + right panel -->
+    <Grid x:Name="RootLayout">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{Binding Source={x:Reference RootLayout}, Path=Width, Converter={StaticResource WidthToGridLengthConverter}, ConverterParameter=*}"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ===============================================================
+             LEFT PANEL � always dark, visible on desktop only
+             =============================================================== -->
+        <Grid Grid.Column="0"
+              IsVisible="{Binding Source={x:Reference RootLayout}, Path=Width, Converter={StaticResource WidthToBooleanConverter}, ConverterParameter=desktop}"
+              BackgroundColor="{StaticResource BrandNavy}">
+
+            <Image Source="car.png"
+                   Aspect="AspectFill"/>
+
+            <BoxView>
+                <BoxView.Background>
+                    <LinearGradientBrush StartPoint="0,0"
+                                         EndPoint="0,1">
+                        <GradientStop Color="#B20B1929"
+                                      Offset="1"/>
+                    </LinearGradientBrush>
+                </BoxView.Background>
+            </BoxView>
+
+            <Grid RowDefinitions="Auto,*,Auto"
+                  Padding="36,48,36,44">
+
+                <!-- Top: Logo badge -->
+                <StackLayout Grid.Row="0"
+                             Orientation="Horizontal"
+                             Spacing="10">
+                    <Border BackgroundColor="#B45309"
+                            StrokeThickness="0"
+                            WidthRequest="40"
+                            HeightRequest="40">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="10"/>
+                        </Border.StrokeShape>
+                        <Label Text="&#xE531;"
+                               FontFamily="MaterialIcons"
+                               FontSize="22"
+                               TextColor="White"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"/>
+                    </Border>
+                    <Label Text="Vehicle Care AI"
+                           TextColor="White"
+                           FontSize="13"
+                           FontAttributes="Bold"
+                           CharacterSpacing="1.2"
+                           VerticalOptions="Center"/>
+                </StackLayout>
+
+                <!-- Middle: headline + feature list -->
+                <StackLayout Grid.Row="1"
+                             VerticalOptions="End"
+                             Spacing="22">
+                    <Label Text="Your personal vehicle companion"
+                           TextColor="White"
+                           FontSize="32"
+                           FontAttributes="Bold"
+                           LineBreakMode="WordWrap"
+                           LineHeight="1.3"/>
+                    <Label Text="Set up your vehicle profile and unlock AI-powered insights, smart reminders, and expense tracking."
+                           TextColor="#B0CCDDFF"
+                           FontSize="13"
+                           LineBreakMode="WordWrap"
+                           LineHeight="1.5"/>
+
+                    <StackLayout Spacing="14"
+                                 Margin="0,4,0,0">
+                        <StackLayout Orientation="Horizontal"
+                                     Spacing="10">
+                            <Label Text="&#xE876;"
+                                   FontFamily="MaterialIcons"
+                                   FontSize="16"
+                                   TextColor="{StaticResource BrandGreen}"
+                                   VerticalOptions="Center"/>
+                            <Label Text="Never miss a service or renewal"
+                                   TextColor="#DDEEFF"
+                                   FontSize="13"
+                                   VerticalOptions="Center"/>
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal"
+                                     Spacing="10">
+                            <Label Text="&#xE876;"
+                                   FontFamily="MaterialIcons"
+                                   FontSize="16"
+                                   TextColor="{StaticResource BrandGreen}"
+                                   VerticalOptions="Center"/>
+                            <Label Text="AI-powered health score"
+                                   TextColor="#DDEEFF"
+                                   FontSize="13"
+                                   VerticalOptions="Center"/>
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal"
+                                     Spacing="10">
+                            <Label Text="&#xE876;"
+                                   FontFamily="MaterialIcons"
+                                   FontSize="16"
+                                   TextColor="{StaticResource BrandGreen}"
+                                   VerticalOptions="Center"/>
+                            <Label Text="Track all expenses in one place"
+                                   TextColor="#DDEEFF"
+                                   FontSize="13"
+                                   VerticalOptions="Center"/>
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal"
+                                     Spacing="10">
+                            <Label Text="&#xE876;"
+                                   FontFamily="MaterialIcons"
+                                   FontSize="16"
+                                   TextColor="{StaticResource BrandGreen}"
+                                   VerticalOptions="Center"/>
+                            <Label Text="Smart reminders &amp; nearby service centers"
+                                   TextColor="#DDEEFF"
+                                   FontSize="13"
+                                   VerticalOptions="Center"/>
+                        </StackLayout>
+                    </StackLayout>
+                </StackLayout>
+
+
+            </Grid>
+        </Grid>
+
+        <!-- ===============================================================
+             RIGHT PANEL � Landing (step 0)
+             =============================================================== -->
+        <Grid Grid.Column="1"
+              IsVisible="{Binding IsLandingVisible}"
+              BackgroundColor="{AppThemeBinding Light={StaticResource BrandSurfaceLight}, Dark={StaticResource BrandNavy}}">
+            <ScrollView>
+                <StackLayout VerticalOptions="Center"
+                             Padding="{OnPlatform WinUI='48,48', MacCatalyst='40,48', Default='20,32'}"
+                             Spacing="0">
+
+                    <Border BackgroundColor="{OnPlatform Default=Transparent, WinUI={AppThemeBinding Light=White, Dark={StaticResource BrandDarkCard}}, MacCatalyst={AppThemeBinding Light=White, Dark={StaticResource BrandDarkCard}}}"
+                            Stroke="{OnPlatform Default=Transparent, WinUI={AppThemeBinding Light={StaticResource BrandBorderLight}, Dark={StaticResource BrandDarkCardAlt}}, MacCatalyst={AppThemeBinding Light={StaticResource BrandBorderLight}, Dark={StaticResource BrandDarkCardAlt}}}"
+                            StrokeThickness="{OnPlatform Default=0, WinUI=1, MacCatalyst=1}"
+                            Padding="{OnPlatform WinUI='40,36', MacCatalyst='36,32', Default='0,0'}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="{OnPlatform Default=0, WinUI=16, MacCatalyst=16}"/>
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="{OnPlatform Default=Transparent, WinUI={AppThemeBinding Light=#1A3B5BDB, Dark=#33000000}, MacCatalyst={AppThemeBinding Light=#1A3B5BDB, Dark=#33000000}}"
+                                    Offset="0,6"
+                                    Radius="28"
+                                    Opacity="0.18"/>
+                        </Border.Shadow>
+                        <StackLayout Spacing="0">
+
+                            <!-- Header -->
+                            <StackLayout Spacing="8"
+                                         Margin="0,0,0,28">
+                                <Label Text="Welcome to Vehicle Care AI"
+                                       FontSize="{OnPlatform WinUI=28, Default=24}"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"/>
+                                <Label Text="Your vehicle, smarter — track services and fuel all in one place."
+                                       FontSize="14"
+                                       LineBreakMode="WordWrap"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandMutedOnLight}, Dark={StaticResource BrandMutedOnDark}}"/>
+                            </StackLayout>
+
+                            <!-- A: Login with Mobile Number (primary CTA) -->
+                                <buttons:SfButton Text="Login with mobile number"
+                                              Command="{Binding ShowLoginCommand}"
+                                              Background="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                              TextColor="White"
+                                              FontSize="16"
+                                              FontAttributes="Bold"
+                                              CornerRadius="12"
+                                              HeightRequest="54"
+                                              Margin="0,0,0,14"/>
+
+                            <!-- OR divider -->
+                            <Grid ColumnDefinitions="*,Auto,*"
+                                  Margin="0,0,0,14">
+                                <Label Grid.Column="1"
+                                       Text="  OR  "
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandMutedOnLight}, Dark={StaticResource BrandMutedOnDark}}"
+                                       VerticalOptions="Center"/>
+                            </Grid>
+
+                            <!-- B: Add Your Vehicle (outlined) -->
+                                <buttons:SfButton Text="Add your vehicle"
+                                              Background="Transparent"
+                                              TextColor="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                              Stroke="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                              StrokeThickness="1.5"
+                                              FontSize="14"
+                                              FontAttributes="Bold"
+                                              CornerRadius="12"
+                                              HeightRequest="48"
+                                              Margin="0,0,0,20"
+                                              Command="{Binding GoToWizardCommand}"/>
+
+                            <!-- C: Skip (sample data) -->
+                            <buttons:SfButton Text="Skip &amp; explore with sample data"
+                                              Command="{Binding ExploreWithSampleDataCommand}"
+                                              IsEnabled="{Binding IsLoadingSampleData, Converter={StaticResource InvertedBoolConverter}}"
+                                              Background="Transparent"
+                                              TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"
+                                              FontFamily="OpenSansSemibold"
+                                              FontSize="14"
+                                              FontAttributes="Bold"
+                                              CornerRadius="10"
+                                              HeightRequest="42"
+                                              HorizontalOptions="Center"
+                                              Padding="14,0">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup Name="CommonStates">
+                                        <VisualState Name="Normal"/>
+                                        <VisualState Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Property="Opacity" Value="0.65"/>
+                                                <Setter Property="Background" Value="{AppThemeBinding Light=#E2E8F0, Dark=#2D2117}"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Property="Opacity" Value="0.75"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </buttons:SfButton>
+
+                        </StackLayout>
+                    </Border>
+                    <!-- /elevated welcome card -->
+
+                </StackLayout>
+            </ScrollView>
+        </Grid>
+
+        <!-- ===============================================================
+             PHONE ENTRY � Login with Mobile Number
+             =============================================================== -->
+        <Grid Grid.Column="1"
+              IsVisible="{Binding IsLoginPhoneVisible}"
+              BackgroundColor="{AppThemeBinding Light={StaticResource BrandSurfaceLight}, Dark={StaticResource BrandNavy}}">
+            <ScrollView>
+                <StackLayout VerticalOptions="Center"
+                             Padding="{OnPlatform WinUI='48,48', MacCatalyst='40,48', Default='20,32'}"
+                             Spacing="0">
+                    <Border BackgroundColor="{OnPlatform Default=Transparent, WinUI={AppThemeBinding Light=White, Dark={StaticResource BrandDarkCard}}, MacCatalyst={AppThemeBinding Light=White, Dark={StaticResource BrandDarkCard}}}"
+                            Stroke="{OnPlatform Default=Transparent, WinUI={AppThemeBinding Light={StaticResource BrandBorderLight}, Dark={StaticResource BrandDarkCardAlt}}, MacCatalyst={AppThemeBinding Light={StaticResource BrandBorderLight}, Dark={StaticResource BrandDarkCardAlt}}}"
+                            StrokeThickness="{OnPlatform Default=0, WinUI=1, MacCatalyst=1}"
+                            Padding="{OnPlatform WinUI='40,36', MacCatalyst='36,32', Default='0,0'}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="{OnPlatform Default=0, WinUI=16, MacCatalyst=16}"/>
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="{OnPlatform Default=Transparent, WinUI={AppThemeBinding Light=#1A3B5BDB, Dark=#33000000}, MacCatalyst={AppThemeBinding Light=#1A3B5BDB, Dark=#33000000}}"
+                                    Offset="0,6"
+                                    Radius="28"
+                                    Opacity="0.18"/>
+                        </Border.Shadow>
+                        <StackLayout Spacing="0">
+
+                            <!-- Back link � no SfButton, zero hover layout shift -->
+                            <HorizontalStackLayout Spacing="8"
+                                                   HorizontalOptions="Start"
+                                                   Margin="0,0,0,28">
+                                <HorizontalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding BackFromLoginCommand}"/>
+                                </HorizontalStackLayout.GestureRecognizers>
+                                <Label Text="&#xE5C4;"
+                                       FontFamily="MaterialIcons"
+                                       FontSize="16"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                       VerticalOptions="Center"/>
+                                <Label Text="Back"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+
+                            <!-- Smartphone icon badge -->
+                            <Border WidthRequest="64"
+                                    HeightRequest="64"
+                                    StrokeThickness="0"
+                                    HorizontalOptions="Start"
+                                    Margin="0,0,0,20">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="18"/>
+                                </Border.StrokeShape>
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0"
+                                                         EndPoint="1,1">
+                                        <GradientStop Color="#D97706"
+                                                      Offset="0"/>
+                                        <GradientStop Color="#B45309"
+                                                      Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Label Text="&#xE32C;"
+                                       FontFamily="MaterialIcons"
+                                       FontSize="30"
+                                       TextColor="White"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"/>
+                            </Border>
+
+                            <!-- Title &amp; subtitle -->
+                            <Label Text="Enter mobile number"
+                                   FontSize="{OnPlatform WinUI=24, Default=20}"
+                                   FontAttributes="Bold"
+                                   Margin="0,0,0,6"
+                                   TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"/>
+                            <Label Text="We'll send a one-time password to verify your number"
+                                   FontSize="14"
+                                   LineBreakMode="WordWrap"
+                                   Margin="0,0,0,28"
+                                   TextColor="{AppThemeBinding Light={StaticResource BrandMutedOnLight}, Dark={StaticResource BrandMutedOnDark}}"/>
+
+                            <!-- Phone number with +91 LeadingView � Hint must be empty so it does not overlap the prefix -->
+                            <til:SfTextInputLayout
+                                ContainerType="Outlined"
+                                OutlineCornerRadius="10"
+                                Hint="Mobile number"
+                                EnableFloating="False"
+                                ShowLeadingView="True"
+                                LeadingViewPosition="Inside"
+                                FocusedStrokeThickness="1.5"
+                                UnfocusedStrokeThickness="1.5"
+                                InputViewPadding="14,0"
+                                ReserveSpaceForAssistiveLabels="False"
+                                Margin="0,0,0,24"
+                                Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                                <til:SfTextInputLayout.HintLabelStyle>
+                                    <til:LabelStyle FontSize="14" TextColor="#94A3B8"/>
+                                </til:SfTextInputLayout.HintLabelStyle>
+                                <Entry Text="{Binding LoginPhone, Mode=TwoWay}"
+                                       Keyboard="Numeric"
+                                       MaxLength="10"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                       BackgroundColor="Transparent"
+                                       FontSize="14">
+                                    <Entry.Behaviors>
+                                        <behaviors:NumericOnlyBehavior/>
+                                    </Entry.Behaviors>
+                                </Entry>
+                            </til:SfTextInputLayout>
+
+                            <!-- Send OTP button -->
+                            <buttons:SfButton Text="Send OTP  &#x2192;"
+                                              Command="{Binding SendOtpCommand}"
+                                              Background="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                              TextColor="White"
+                                              FontSize="16"
+                                              FontAttributes="Bold"
+                                              CornerRadius="12"
+                                              HeightRequest="52"
+                                              Margin="0,0,0,18"/>
+
+                            <!-- Terms -->
+                            <Label Text="By continuing, you agree to receive an OTP via SMS."
+                                   FontSize="11"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="{AppThemeBinding Light=#94A3B8, Dark=#4A6482}"/>
+
+                        </StackLayout>
+                    </Border>
+                </StackLayout>
+            </ScrollView>
+        </Grid>
+
+        <!-- ===============================================================
+             OTP ENTRY � Verify Mobile Number
+             =============================================================== -->
+        <Grid Grid.Column="1"
+              IsVisible="{Binding IsLoginOtpVisible}"
+              BackgroundColor="{AppThemeBinding Light={StaticResource BrandSurfaceLight}, Dark={StaticResource BrandNavy}}">
+            <ScrollView>
+                <StackLayout VerticalOptions="Center"
+                             Padding="{OnPlatform WinUI='48,48', MacCatalyst='40,48', Default='20,32'}"
+                             Spacing="0">
+                    <Border BackgroundColor="{OnPlatform Default=Transparent, WinUI={AppThemeBinding Light=White, Dark={StaticResource BrandDarkCard}}, MacCatalyst={AppThemeBinding Light=White, Dark={StaticResource BrandDarkCard}}}"
+                            Stroke="{OnPlatform Default=Transparent, WinUI={AppThemeBinding Light={StaticResource BrandBorderLight}, Dark={StaticResource BrandDarkCardAlt}}, MacCatalyst={AppThemeBinding Light={StaticResource BrandBorderLight}, Dark={StaticResource BrandDarkCardAlt}}}"
+                            StrokeThickness="{OnPlatform Default=0, WinUI=1, MacCatalyst=1}"
+                            Padding="{OnPlatform WinUI='40,36', MacCatalyst='36,32', Default='0,0'}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="{OnPlatform Default=0, WinUI=16, MacCatalyst=16}"/>
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="{OnPlatform Default=Transparent, WinUI={AppThemeBinding Light=#1A3B5BDB, Dark=#33000000}, MacCatalyst={AppThemeBinding Light=#1A3B5BDB, Dark=#33000000}}"
+                                    Offset="0,6"
+                                    Radius="28"
+                                    Opacity="0.18"/>
+                        </Border.Shadow>
+                        <StackLayout Spacing="0">
+
+                            <!-- Change Number link � no SfButton, zero hover layout shift -->
+                            <HorizontalStackLayout Spacing="8"
+                                                   HorizontalOptions="Start"
+                                                   Margin="0,0,0,28">
+                                <HorizontalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding BackToPhoneCommand}"/>
+                                </HorizontalStackLayout.GestureRecognizers>
+                                <Label Text="&#xE5C4;"
+                                       FontFamily="MaterialIcons"
+                                       FontSize="16"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                       VerticalOptions="Center"/>
+                                <Label Text="Change number"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+
+                            <!-- Lock icon badge -->
+                            <Border WidthRequest="64"
+                                    HeightRequest="64"
+                                    StrokeThickness="0"
+                                    HorizontalOptions="Start"
+                                    Margin="0,0,0,20">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="18"/>
+                                </Border.StrokeShape>
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0"
+                                                         EndPoint="1,1">
+                                        <GradientStop Color="#0EA5E9"
+                                                      Offset="0"/>
+                                        <GradientStop Color="#0369A1"
+                                                      Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Label Text="&#xE897;"
+                                       FontFamily="MaterialIcons"
+                                       FontSize="30"
+                                       TextColor="White"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"/>
+                            </Border>
+
+                            <!-- Title &amp; sent message -->
+                                <Label Text="Verify OTP"
+                                   FontSize="{OnPlatform WinUI=24, Default=20}"
+                                   FontAttributes="Bold"
+                                   Margin="0,0,0,6"
+                                   TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"/>
+                            <Label Text="{Binding OtpSentMessage}"
+                                   FontSize="14"
+                                   LineBreakMode="WordWrap"
+                                   Margin="0,0,0,28"
+                                   TextColor="{AppThemeBinding Light={StaticResource BrandMutedOnLight}, Dark={StaticResource BrandMutedOnDark}}"/>
+
+                            <!-- OTP: centered SfTextInputLayout -->
+                            <til:SfTextInputLayout
+                                ContainerType="Outlined"
+                                OutlineCornerRadius="10"
+                                Hint="- - - - - -"
+                                EnableFloating="False"
+                                ShowLeadingView="True"
+                                LeadingViewPosition="Inside"
+                                FocusedStrokeThickness="1.5"
+                                
+                                UnfocusedStrokeThickness="1.5"
+                                InputViewPadding="14,0"
+                                HeightRequest="64"
+                                ReserveSpaceForAssistiveLabels="False"
+                                Margin="0,0,0,24"
+                                Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                                <Entry Text="{Binding LoginOtp, Mode=TwoWay}"
+                                       Keyboard="Numeric"
+                                       MaxLength="6"
+                                       HorizontalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                       BackgroundColor="Transparent"
+                                       FontSize="24"
+                                       FontAttributes="Bold"
+                                       CharacterSpacing="8">
+                                    <Entry.Behaviors>
+                                        <behaviors:NumericOnlyBehavior/>
+                                    </Entry.Behaviors>
+                                </Entry>
+                            </til:SfTextInputLayout>
+
+                            <!-- Resend OTP with ripple -->
+                            <StackLayout Orientation="Horizontal"
+                                         HorizontalOptions="Center"
+                                         Spacing="4"
+                                         Margin="0,0,0,24">
+                                <Label Text="Didn't receive the code?"
+                                       FontSize="13"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandMutedOnLight}, Dark={StaticResource BrandMutedOnDark}}"
+                                       VerticalOptions="Center"/>
+                                <Label Text="{Binding  ResendOtpText}"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="Center">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding ResendOtpCommand}"/>
+                                    </Label.GestureRecognizers>
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label"
+                                                     Binding="{Binding IsResendEnabled}"
+                                                     Value="True">
+                                            <Setter Property="TextColor"
+                                                    Value="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label"
+                                                     Binding="{Binding IsResendEnabled}"
+                                                     Value="False">
+                                            <Setter Property="TextColor"
+                                                    Value="#94A3B8"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </StackLayout>
+
+                            <!-- Verify button -->
+                            <buttons:SfButton Text="Verify &amp; Continue  &#x2192;"
+                                              Command="{Binding VerifyOtpCommand}"
+                                              Background="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                              TextColor="White"
+                                              FontSize="16"
+                                              FontAttributes="Bold"
+                                              CornerRadius="12"
+                                              HeightRequest="52"
+                                              Margin="0,0,0,18"/>
+
+                            <!-- Demo note -->
+                            <Label Text="For this demo, any 6-digit code is accepted."
+                                   FontSize="11"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="{AppThemeBinding Light=#94A3B8, Dark=#4A6482}"/>
+
+                        </StackLayout>
+                    </Border>
+                </StackLayout>
+            </ScrollView>
+        </Grid>
+
+        <!-- ===============================================================
+             WIZARD OVERLAY � steps 1�4 (spans both columns)
+             =============================================================== -->
+        <Grid Grid.Column="0"
+              Grid.ColumnSpan="2"
+              IsVisible="{Binding IsWizardVisible}"
+              BackgroundColor="#B2000000">
+
+            <Border BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource BrandDarkCard}}"
+                    Stroke="{AppThemeBinding Light={StaticResource BrandBorderLight}, Dark={StaticResource BrandDarkCardAlt}}"
+                    StrokeThickness="1"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    WidthRequest="{Binding Source={x:Reference RootLayout}, Path=Width, Converter={StaticResource WidthToDoubleConverter}, ConverterParameter='620,360'}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18"/>
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Offset="0,8"
+                            Radius="32"
+                            Opacity="0.25"/>
+                </Border.Shadow>
+
+                <Grid RowDefinitions="Auto,Auto,*,Auto"
+                      VerticalOptions="Center">
+
+                    <!-- Header row -->
+                    <Grid Grid.Row="0"
+                          ColumnDefinitions="*,Auto,Auto"
+                          Padding="28,22,24,0">
+
+                        <!-- Title -->
+                        <Label Grid.Column="0"
+                               Text="Add your vehicle"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource BrandTextDark},
+                                                          Dark={StaticResource BrandTextOnDark}}"/>
+
+                        <!-- Step Indicator -->
+                        <StackLayout Grid.Column="1"
+                                     Orientation="Horizontal"
+                                     Spacing="6"
+                                     VerticalOptions="Center">
+
+                            <BoxView WidthRequest="8"
+                                     HeightRequest="8"
+                                     CornerRadius="4"
+                                     VerticalOptions="Center"
+                                     Color="#B45309"/>
+
+                            <BoxView WidthRequest="8"
+                                     HeightRequest="8"
+                                     CornerRadius="4"
+                                     VerticalOptions="Center"
+                                     Color="{Binding Dot2Active,
+                                                     Converter={StaticResource DotColorConverter}}"/>
+
+                            <BoxView WidthRequest="8"
+                                     HeightRequest="8"
+                                     CornerRadius="4"
+                                     VerticalOptions="Center"
+                                     Color="{Binding Dot3Active,
+                                                     Converter={StaticResource DotColorConverter}}"/>
+
+                        </StackLayout>
+
+                    </Grid>
+                    <!-- Divider -->
+                    <BoxView Grid.Row="1"
+                             HeightRequest="1"
+                             Margin="0,16,0,0"
+                             Color="{AppThemeBinding Light={StaticResource BrandBorderLight}, Dark={StaticResource BrandDarkCardAlt}}"/>
+
+                    <!-- Step content -->
+                    <ScrollView Grid.Row="2"
+                                VerticalOptions="Center">
+                        <Grid Padding="28,20,28,8">
+
+                            <!-- STEP 1: Vehicle Type -->
+                            <StackLayout IsVisible="{Binding IsStep1Visible}"
+                                         Spacing="16">
+                                <Label Text="What type of vehicle do you own?"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"/>
+                                <Label Text="Select one to continue"
+                                       FontSize="13"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandMutedOnLight}, Dark={StaticResource BrandMutedOnDark}}"/>
+
+                                <Grid ColumnDefinitions="*,*"
+                                      RowDefinitions="Auto,Auto"
+                                      ColumnSpacing="12"
+                                      RowSpacing="12">
+
+                                    <!-- Car / Sedan -->
+                                    <Border Grid.Row="0"
+                                            Grid.Column="0"
+                                            Padding="16,18"
+                                            BackgroundColor="{Binding IsCarSelected, Converter={StaticResource CardBgConverter}}"
+                                            Stroke="{Binding IsCarSelected, Converter={StaticResource CardStrokeConverter}}"
+                                            StrokeThickness="2">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="12"/>
+                                        </Border.StrokeShape>
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding SelectVehicleTypeCommand}"
+                                                                  CommandParameter="0"/>
+                                        </Border.GestureRecognizers>
+                                        <StackLayout Spacing="10"
+                                                     HorizontalOptions="Center">
+                                            <Border BackgroundColor="{Binding IsCarSelected, Converter={StaticResource IconBgConverter}}"
+                                                    WidthRequest="52"
+                                                    HeightRequest="52"
+                                                    StrokeThickness="0"
+                                                    HorizontalOptions="Center">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="14"/>
+                                                </Border.StrokeShape>
+                                                <Label Text="&#xE531;"
+                                                       FontFamily="MaterialIcons"
+                                                       FontSize="26"
+                                                       TextColor="{Binding IsCarSelected, Converter={StaticResource IconColorConverter}}"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"/>
+                                            </Border>
+                                            <Label Text="Car"
+                                                   FontSize="13"
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="Center"
+                                                   TextColor="{AppThemeBinding Light={StaticResource BrandMutedOnLight}, Dark={StaticResource BrandMutedOnDark}}"/>
+                                            <Label Text="Sedan, SUV, Hatchback"
+                                                   FontSize="11"
+                                                   HorizontalOptions="Center"
+                                                   TextColor="{AppThemeBinding Light={StaticResource BrandMutedOnLight}, Dark={StaticResource BrandMutedOnDark}}"/>
+                                        </StackLayout>
+                                    </Border>
+
+                                    <!-- Motorcycle -->
+                                    <Border Grid.Row="0"
+                                            Grid.Column="1"
+                                            Padding="16,18"
+                                            BackgroundColor="{Binding IsMotoSelected, Converter={StaticResource CardBgConverter}}"
+                                            Stroke="{Binding IsMotoSelected, Converter={StaticResource CardStrokeConverter}}"
+                                            StrokeThickness="2">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="12"/>
+                                        </Border.StrokeShape>
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding SelectVehicleTypeCommand}"
+                                                                  CommandParameter="1"/>
+                                        </Border.GestureRecognizers>
+                                        <StackLayout Spacing="10"
+                                                     HorizontalOptions="Center">
+                                            <Border BackgroundColor="{Binding IsMotoSelected, Converter={StaticResource IconBgConverter}}"
+                                                    WidthRequest="52"
+                                                    HeightRequest="52"
+                                                    StrokeThickness="0"
+                                                    HorizontalOptions="Center">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="14"/>
+                                                </Border.StrokeShape>
+                                                <Label Text="&#xE91B;"
+                                                       FontFamily="MaterialIcons"
+                                                       FontSize="26"
+                                                       TextColor="{Binding IsMotoSelected, Converter={StaticResource IconColorConverter}}"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"/>
+                                            </Border>
+                                            <Label Text="Motorcycle"
+                                                   FontSize="13"
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="Center"
+                                                   TextColor="{AppThemeBinding Light={StaticResource BrandMutedOnLight}, Dark={StaticResource BrandMutedOnDark}}"/>
+                                            <Label Text="Bike, Scooter, Cruiser"
+                                                   FontSize="11"
+                                                   HorizontalOptions="Center"
+                                                   TextColor="{AppThemeBinding Light={StaticResource BrandMutedOnLight}, Dark={StaticResource BrandMutedOnDark}}"/>
+                                        </StackLayout>
+                                    </Border>
+
+                                </Grid>
+                            </StackLayout>
+
+                            <!-- STEP 2: Vehicle Details -->
+                            <StackLayout IsVisible="{Binding IsStep2Visible}"
+                                         Spacing="12">
+                                <Label Text="Tell us about your vehicle"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       Margin="0,0,0,2"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"/>
+
+                                <!-- Make (required) -->
+                                <StackLayout Spacing="4">
+                                    <Label Text="Vehicle make"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                                    <til:SfTextInputLayout
+                                        ContainerType="Outlined"
+                                        OutlineCornerRadius="10"
+                                        InputViewPadding="14,0"
+                                        EnableFloating="False"
+                                        ReserveSpaceForAssistiveLabels="False"
+                                        Hint="{Binding MakeHint}"
+                                        Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                        ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                                        <til:SfTextInputLayout.HintLabelStyle>
+                                            <til:LabelStyle FontSize="14"
+                                                            TextColor="#94A3B8"></til:LabelStyle>
+                                        </til:SfTextInputLayout.HintLabelStyle>
+                                        <Entry Text="{Binding SelectedMake}"
+                                               TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                               BackgroundColor="Transparent"/>
+                                    </til:SfTextInputLayout>
+                                </StackLayout>
+
+                                <!-- Model (required) -->
+                                <StackLayout Spacing="4">
+                                    <Label Text="Model"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                                    <til:SfTextInputLayout
+                                        ContainerType="Outlined"
+                                        OutlineCornerRadius="10"
+                                        InputViewPadding="14,0"
+                                        EnableFloating="False"
+                                        Hint="{Binding ModelHint}"
+                                        ReserveSpaceForAssistiveLabels="False"
+                                        Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                        ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                                        <til:SfTextInputLayout.HintLabelStyle>
+                                            <til:LabelStyle FontSize="14"
+                                                            TextColor="#94A3B8"></til:LabelStyle>
+                                        </til:SfTextInputLayout.HintLabelStyle>
+                                        <Entry Text="{Binding VehicleModel}"
+                                               TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                               BackgroundColor="Transparent"/>
+                                    </til:SfTextInputLayout>
+                                </StackLayout>
+
+                                <!-- Variant -->
+                                <StackLayout Spacing="4">
+                                    <Label Text="Variant (optional)"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                                    <til:SfTextInputLayout
+                                        ContainerType="Outlined"
+                                        OutlineCornerRadius="10"
+                                        Hint="{Binding VariantHint}"
+                                        EnableFloating="False"
+                                        InputViewPadding="14,0"
+                                        ReserveSpaceForAssistiveLabels="False"
+                                        Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                        ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                                        <til:SfTextInputLayout.HintLabelStyle>
+                                            <til:LabelStyle FontSize="14"
+                                                            TextColor="#94A3B8"></til:LabelStyle>
+                                        </til:SfTextInputLayout.HintLabelStyle>
+                                        <Entry Text="{Binding Variant}"
+                                               PlaceholderColor="#94A3B8"
+                                               TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                               BackgroundColor="Transparent"/>
+                                    </til:SfTextInputLayout>
+                                </StackLayout>
+
+                                <!-- Mileage -->
+                                <StackLayout Spacing="4">
+                                    <Label Text="Current odometer (km)"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                                    <til:SfTextInputLayout
+                                        ContainerType="Outlined"
+                                        OutlineCornerRadius="10"
+                                        EnableFloating="False"
+                                        Hint="e.g. 45000 km"
+                                        InputViewPadding="14,0"
+                                        ReserveSpaceForAssistiveLabels="False"
+                                        Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                        ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                                        <til:SfTextInputLayout.HintLabelStyle>
+                                            <til:LabelStyle FontSize="14"
+                                                            TextColor="#94A3B8"></til:LabelStyle>
+                                        </til:SfTextInputLayout.HintLabelStyle>
+                                        <Entry Text="{Binding OdaMeterReading}"
+                                               Keyboard="Numeric"
+                                               TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                               BackgroundColor="Transparent">
+                                            <Entry.Behaviors>
+                                                <behaviors:NumericOnlyBehavior/>
+                                            </Entry.Behaviors>
+                                        </Entry>
+                                    </til:SfTextInputLayout>
+                                </StackLayout>
+
+                            </StackLayout>
+
+
+                            <!-- STEP 3: Redirect to dashboard -->
+                            <StackLayout IsVisible="{Binding IsStep3Visible}"
+                                         Spacing="20">
+                                <Border WidthRequest="80"
+                                        HeightRequest="80"
+                                        StrokeThickness="0"
+                                        HorizontalOptions="Center"
+                                        Margin="0,12,0,0">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="24"/>
+                                    </Border.StrokeShape>
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0"
+                                                             EndPoint="1,1">
+                                            <GradientStop Color="{AppThemeBinding Light={StaticResource BrandCyan}, Dark={StaticResource BrandCyanBright}}"
+                                                          Offset="0"/>
+                                            <GradientStop Color="{AppThemeBinding Light={StaticResource BrandCyanBright}, Dark={StaticResource BrandCyan}}"
+                                                          Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Label Text="&#xE5CA;"
+                                           FontFamily="MaterialIcons"
+                                           FontSize="40"
+                                           TextColor="White"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"/>
+                                </Border>
+
+                                <StackLayout Spacing="6"
+                                             HorizontalOptions="Center">
+                                    <Label Text="Your vehicle is ready!"
+                                           FontSize="20"
+                                           FontAttributes="Bold"
+                                           HorizontalOptions="Center"
+                                           TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"/>
+                                    <Label Text="Preparing your dashboard..."
+                                           FontSize="13"
+                                           HorizontalOptions="Center"
+                                           TextColor="{AppThemeBinding Light={StaticResource BrandMutedOnLight}, Dark={StaticResource BrandMutedOnDark}}"/>
+                                </StackLayout>
+
+                            </StackLayout>
+
+                        </Grid>
+                    </ScrollView>
+
+                    <!-- Wizard footer: Back | Skip? | Next -->
+                    <Grid Grid.Row="3"
+                          ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="10"
+                          Padding="20,10,20,16"
+                          MinimumHeightRequest="52"
+                          HeightRequest="64">
+
+                        <!-- Close button shown only in Step 1 -->
+                        <buttons:SfButton
+                            Text="Close"
+                            HeightRequest="38"
+                            WidthRequest="92"
+                            FontSize="14"
+                            FontAttributes="Bold"
+                            Background="#FEE2E2"
+                            TextColor="#DC2626"
+                            StrokeThickness="0"
+                            IsVisible="{Binding IsStep1CloseVisible}"
+                            Command="{Binding CloseWizardCommand}"/>
+
+                        <!-- Back button shown from Step 2 onwards -->
+                        <buttons:SfButton
+                            Text="Back"
+                            HeightRequest="38"
+                            WidthRequest="92"
+                            FontSize="14"
+                            FontAttributes="Bold"
+                            Background="#DCFCE7"
+                            TextColor="{AppThemeBinding Light={StaticResource BrandTextMid},
+                                                                   Dark={StaticResource BrandMutedOnDark}}"
+                            StrokeThickness="0"
+                            IsVisible="{Binding IsBackEnabled}"
+                            Command="{Binding BackStepCommand}"/>
+
+                        <Grid Grid.Column="1" WidthRequest="0" />
+
+                        <StackLayout Grid.Column="2"
+                                     Orientation="Horizontal"
+                                     Spacing="10"
+                                     HorizontalOptions="End"
+                                     IsVisible="{Binding IsStep3Visible, Converter={StaticResource InvertedBoolConverter}}">
+                            <buttons:SfButton Text="Skip"
+                                              Background="Transparent"
+                                              TextColor="{AppThemeBinding Light={StaticResource BrandMutedOnLight}, Dark={StaticResource BrandMutedOnDark}}"
+                                              FontSize="13"
+                                              StrokeThickness="0"
+                                              IsVisible="{Binding IsStep2Visible}"
+                                                                                            Command="{Binding NextStepCommand}"/>
+                            <buttons:SfButton
+                                Text="{Binding NextButtonText}"
+                                IsEnabled="{Binding CanProceedToNext}"
+                                                                Command="{Binding NextStepCommand}"
+                                Background="{AppThemeBinding Light={StaticResource BrandBlue},
+                                                    Dark={StaticResource BrandBlueBright}}"
+                                TextColor="White"
+                                FontSize="13"
+                                FontAttributes="Bold"
+                                CornerRadius="10"
+                                WidthRequest="150"
+                                HeightRequest="42"/>
+                        </StackLayout>
+                    </Grid>
+
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Column="0"
+              Grid.ColumnSpan="2"
+              ZIndex="1000"
+              IsVisible="{Binding IsLoadingSampleData}"
+              BackgroundColor="Transparent">
+            <ActivityIndicator IsRunning="True"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               Color="{AppThemeBinding Light=#B45309, Dark=#F59E0B}"
+                               WidthRequest="58"
+                               HeightRequest="58"/>
+        </Grid>
+    </Grid>
+
+</ContentPage>

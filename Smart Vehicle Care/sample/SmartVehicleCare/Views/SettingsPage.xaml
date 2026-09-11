@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SmartVehicleCare.ViewModels"
+             xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:til="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:models="clr-namespace:SmartVehicleCare.Models"
+             xmlns:behaviors="clr-namespace:SmartVehicleCare.Behaviors"
+             x:Class="SmartVehicleCare.Views.SettingsPage"
+             BackgroundColor="{AppThemeBinding Light=#F3F6FB, Dark=#111009}">
+
+    <Grid x:Name="RootSettings" x:DataType="vm:SettingsViewModel">
+        <ScrollView>
+            <StackLayout Spacing="0"
+                         Padding="{Binding Source={x:Reference RootSettings}, Path=Width, Converter={StaticResource WidthToThicknessConverter}, ConverterParameter='32,28,32,32|22,28,22,32|16,20,16,24'}">
+
+                
+                <Label Text="Appearance"
+                       Style="{StaticResource SectionLabelStyle}"
+                       Margin="0,0,0,8"/>
+
+                <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1917}"
+                        Stroke="{AppThemeBinding Light=#E8ECF0, Dark=Transparent}"
+                        StrokeThickness="1" StrokeShape="RoundRectangle 14"
+                        Padding="20,18" Margin="0,0,0,24">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+
+                        <!-- Icon -->
+                        <Border Grid.Column="0" WidthRequest="42" HeightRequest="42" StrokeThickness="0"
+                                BackgroundColor="{AppThemeBinding Light=#EBF5FF, Dark=#2D2117}">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="11"/></Border.StrokeShape>
+                            <Label Text="&#xE51C;" FontFamily="MaterialIcons" FontSize="22"
+                                   TextColor="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                   HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+
+                        <!-- Label -->
+                        <StackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                            <Label Text="App theme"
+                                   FontSize="14" FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#0F172A, Dark=#EDF6FF}"/>
+                        </StackLayout>
+
+                        <!-- Syncfusion ComboBox � matches header vehicle-selector pill style -->
+                        <Border Grid.Column="2"
+                                BackgroundColor="{AppThemeBinding Light=#FAF9F5, Dark=#2D2117}"
+                                Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"
+                                StrokeThickness="1"
+                                Padding="4,0"
+                                HeightRequest="40"
+                                WidthRequest="180"
+                                VerticalOptions="Center">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="20"/></Border.StrokeShape>
+                            <editors:SfComboBox
+                                ItemsSource="{Binding ThemeOptions}"
+                                SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
+                                IsClearButtonVisible="False"
+                                IsEditable="False"
+                                Background="Transparent"
+                                ShowBorder="False"
+                                DropDownPlacement="Bottom"
+                                DropDownBackground="{AppThemeBinding Light=#FFFFFF, Dark=#2D2117}"
+                                SelectedDropDownItemBackground="{AppThemeBinding Light=#EBF5FF, Dark=#3D2E24}"
+                                TextColor="{AppThemeBinding Light=#0F172A, Dark=#EDF6FF}"
+                                DropDownItemTextColor="{AppThemeBinding Light=Black, Dark=White}"
+                                DropDownIconColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"
+                                FontSize="13" FontAttributes="Bold">
+                                <editors:SfComboBox.SelectedDropDownItemTextStyle>
+                                    <editors:DropDownTextStyle TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
+                                </editors:SfComboBox.SelectedDropDownItemTextStyle>
+                            </editors:SfComboBox>
+                        </Border>
+
+                    </Grid>
+                </Border>
+
+                <Label Text="AI configuration"
+                       Style="{StaticResource SectionLabelStyle}"
+                       Margin="0,0,0,8"/>
+
+                <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1917}"
+                        Stroke="{AppThemeBinding Light=#E8ECF0, Dark=Transparent}"
+                        StrokeThickness="1" StrokeShape="RoundRectangle 14"
+                        Padding="20,18" Margin="0,0,0,24">
+                    <StackLayout Spacing="14">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                            <Border Grid.Column="0" WidthRequest="42" HeightRequest="42" StrokeThickness="0"
+                                    BackgroundColor="{AppThemeBinding Light=#FEF3C7, Dark=#2D2117}">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="11"/></Border.StrokeShape>
+                                <Label Text="&#xE65F;" FontFamily="MaterialIcons" FontSize="22"
+                                       TextColor="{AppThemeBinding Light=#B45309, Dark=#F59E0B}"
+                                       HorizontalOptions="Center" VerticalOptions="Center"/>
+                            </Border>
+                            <StackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                <Label Text="Azure OpenAI API key"
+                                       FontSize="13" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=#0F172A, Dark=#EDF6FF}"/>
+                                <Label Text="{Binding ApiKeyStatusText}" FontSize="{OnPlatform Default=12, WinUI=11, MacCatalyst=11}" LineBreakMode="WordWrap"
+                                       TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"/>
+                            </StackLayout>
+                        </Grid>
+
+                        <!-- Secured key entry — IsPassword obscures the value -->
+                        <Label Text="API key"
+                               FontSize="12" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#0F172A, Dark=#EDF6FF}"/>
+                        <til:SfTextInputLayout
+                            ContainerType="Outlined" OutlineCornerRadius="10"
+                            EnableFloating="False" Hint="{Binding ApiKeyHint}"
+                            FocusedStrokeThickness="1.5" UnfocusedStrokeThickness="1.5"
+                            InputViewPadding="14,0" ReserveSpaceForAssistiveLabels="False"
+                            Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                            ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                            <til:SfTextInputLayout.HintLabelStyle>
+                                <til:LabelStyle FontSize="13" TextColor="{AppThemeBinding Light={StaticResource BrandDimOnLight}, Dark={StaticResource BrandDimOnDark}}"/>
+                            </til:SfTextInputLayout.HintLabelStyle>
+                            <Entry Text="{Binding ApiKeyEntry, Mode=TwoWay}"
+                                   IsPassword="True"
+                                   IsEnabled="{Binding HasApiKey, Converter={StaticResource InvertedBoolConverter}}"
+                                   TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                   BackgroundColor="Transparent"/>
+                        </til:SfTextInputLayout>
+
+                        <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
+                            <Border StrokeThickness="1"
+                                    Padding="14,9"
+                                    IsVisible="{Binding HasApiKey}"
+                                    Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"
+                                    BackgroundColor="Transparent"
+                                    WidthRequest="88"
+                                    HorizontalOptions="Center">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ClearApiKeyCommand}"/>
+                                </Border.GestureRecognizers>
+                                <Label Text="Remove" FontSize="12" FontAttributes="Bold"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light=#DC2626, Dark=#F87171}"/>
+                            </Border>
+
+                            <Border StrokeThickness="0"
+                                    Padding="14,9"
+                                    IsVisible="{Binding HasApiKey, Converter={StaticResource InvertedBoolConverter}}"
+                                    BackgroundColor="{AppThemeBinding Light=#B45309, Dark=#D97706}"
+                                    WidthRequest="120"
+                                    HorizontalOptions="Center">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SaveApiKeyCommand}"/>
+                                </Border.GestureRecognizers>
+                                <Label Text="Save key" FontSize="12" FontAttributes="Bold"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center"
+                                       TextColor="White"/>
+                            </Border>
+                        </HorizontalStackLayout>
+                    </StackLayout>
+                </Border>
+
+                <Label Text="Your vehicles"
+                       Style="{StaticResource SectionLabelStyle}"
+                       Margin="0,0,0,8"/>
+
+                <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1917}"
+                        Stroke="{AppThemeBinding Light=#E8ECF0, Dark=Transparent}"
+                        StrokeThickness="1" StrokeShape="RoundRectangle 14"
+                        Padding="0" Margin="0,0,0,24">
+                    <Grid>
+                    <!-- Empty state -->
+                    <StackLayout IsVisible="{Binding NoVehicles}" Padding="20,24" Spacing="8" HorizontalOptions="Center">
+                        <Label Text="&#xE531;" FontFamily="MaterialIcons" FontSize="36"
+                               TextColor="{AppThemeBinding Light=#CBD5E1, Dark=#2A4A6A}"
+                               HorizontalOptions="Center"/>
+                        <Label Text="No vehicles added yet"
+                               FontSize="13" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#94A3B8, Dark=#4A6482}"
+                               HorizontalTextAlignment="Center"/>
+                        <Label Text="Add a vehicle from the Dashboard to manage it here."
+                               FontSize="{OnPlatform Default=12, WinUI=11, MacCatalyst=11}"
+                               TextColor="{AppThemeBinding Light=#B0BEC5, Dark=#3A5570}"
+                               HorizontalTextAlignment="Center" LineBreakMode="WordWrap"/>
+                    </StackLayout>
+
+                    <!-- Vehicle rows -->
+                    <StackLayout BindableLayout.ItemsSource="{Binding Vehicles}"
+                                 IsVisible="{Binding HasVehicles}"
+                                 Spacing="0">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:Vehicle">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto" Padding="20,14" ColumnSpacing="10">
+                                    <Border Grid.Column="0" WidthRequest="42" HeightRequest="42"
+                                            StrokeThickness="0"
+                                            BackgroundColor="{AppThemeBinding Light=#EBF5FF, Dark=#2D2117}">
+                                        <Border.StrokeShape><RoundRectangle CornerRadius="11"/></Border.StrokeShape>
+                                        <Label Text="&#xE531;" FontFamily="MaterialIcons" FontSize="20"
+                                               TextColor="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                               HorizontalOptions="Center" VerticalOptions="Center"/>
+                                    </Border>
+                                    <StackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding MakeModel}" FontSize="14" FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light=#0F172A, Dark=#EDF6FF}"
+                                               LineBreakMode="TailTruncation"/>
+                                    </StackLayout>
+                                    <Border Grid.Column="2" StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"
+                                            BackgroundColor="Transparent"
+                                            Padding="12,6" VerticalOptions="Center">
+                                        <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SettingsViewModel}}, Path=EditVehicleCommand}"
+                                                CommandParameter="{Binding .}"/>
+                                        </Border.GestureRecognizers>
+                                        <HorizontalStackLayout Spacing="6">
+                                            <Label Text="&#xE3C9;" FontFamily="MaterialIcons" FontSize="14"
+                                                   TextColor="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                                   VerticalOptions="Center"/>
+                                            <Label Text="Edit" FontSize="12" FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                                   VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                    <Border Grid.Column="3" StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light=#FCA5A5, Dark=#7F1D1D}"
+                                            BackgroundColor="Transparent"
+                                            Padding="10,6" VerticalOptions="Center">
+                                        <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SettingsViewModel}}, Path=DeleteVehicleCommand}"
+                                                CommandParameter="{Binding .}"/>
+                                        </Border.GestureRecognizers>
+                                        <HorizontalStackLayout Spacing="5">
+                                            <Label Text="&#xE872;" FontFamily="MaterialIcons" FontSize="14"
+                                                   TextColor="{AppThemeBinding Light=#DC2626, Dark=#F87171}"
+                                                   VerticalOptions="Center"/>
+                                            <Label Text="Delete" FontSize="12" FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light=#DC2626, Dark=#F87171}"
+                                                   VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </StackLayout>
+                    </Grid>
+                </Border>
+
+                <Border StrokeThickness="1.5"
+                        Stroke="{AppThemeBinding Light=#FCA5A5, Dark=#991B1B}"
+                        BackgroundColor="{AppThemeBinding Light=#FEF2F2, Dark=#2A0A0A}"
+                        StrokeShape="RoundRectangle 14"
+                        Padding="16,10"
+                        Margin="0,8,0,0"
+                        WidthRequest="{OnPlatform WinUI=180, MacCatalyst=180, Android=140, iOS=140}"
+                        HorizontalOptions="End">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ExitToWelcomeCommand}"/>
+                    </Border.GestureRecognizers>
+                    <HorizontalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Label Text="&#xE9BA;" FontFamily="MaterialIcons" FontSize="18"
+                               TextColor="{AppThemeBinding Light=#DC2626, Dark=#F87171}"
+                               VerticalOptions="Center"/>
+                            <Label Text="Sign out" FontSize="12" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#DC2626, Dark=#F87171}"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+            </StackLayout>
+        </ScrollView>
+
+        <Grid IsVisible="{Binding IsEditVehiclePanelVisible}" ZIndex="100">
+
+            <!-- Backdrop -->
+            <BoxView BackgroundColor="#B2000000">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CancelEditCommand}"/>
+                </BoxView.GestureRecognizers>
+            </BoxView>
+
+            <!-- Drawer -->
+            <Border HorizontalOptions="End"
+                    WidthRequest="{OnPlatform WinUI=420, MacCatalyst=420, Default=340}"
+                    MaximumWidthRequest="420"
+                    BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource BrandNavy}}"
+                    StrokeThickness="0">
+                <Border.StrokeShape><RoundRectangle CornerRadius="0"/></Border.StrokeShape>
+
+                <Grid RowDefinitions="Auto,*,Auto">
+
+                    <!-- Header -->
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto"
+                          BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1917}"
+                          Padding="24,20">
+                        <StackLayout Spacing="2">
+                            <Label Text="Edit vehicle" FontSize="18" FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#0F172A, Dark=#EDF6FF}"/>
+                            <Label Text="{Binding EditPanelVehicleName}" FontSize="12"
+                                   TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"/>
+                        </StackLayout>
+                        <Label Grid.Column="1" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="22"
+                               TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"
+                               VerticalOptions="Center">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding CancelEditCommand}"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Grid>
+
+                    <!-- Form fields -->
+                    <ScrollView Grid.Row="1" BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                        <StackLayout Spacing="16" Padding="24,20">
+
+                            <!-- Make + Model -->
+                            <Grid ColumnDefinitions="*,10,*">
+                                <StackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="Make" FontSize="12" FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                                    <til:SfTextInputLayout
+                                        ContainerType="Outlined" OutlineCornerRadius="10"
+                                        EnableFloating="False" Hint="e.g. Hyundai"
+                                        FocusedStrokeThickness="1.5"
+                                        UnfocusedStrokeThickness="1.5"
+                                        InputViewPadding="14,0" ReserveSpaceForAssistiveLabels="False"
+                                        Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                        ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                                        <til:SfTextInputLayout.HintLabelStyle>
+                                            <til:LabelStyle FontSize="14" TextColor="#94A3B8"/>
+                                        </til:SfTextInputLayout.HintLabelStyle>
+                                        <Entry Text="{Binding EditingVehicle.Make}"
+                                               TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                               BackgroundColor="Transparent"/>
+                                    </til:SfTextInputLayout>
+                                </StackLayout>
+                                <StackLayout Grid.Column="2" Spacing="4">
+                                    <Label Text="Model" FontSize="12" FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                                    <til:SfTextInputLayout
+                                        ContainerType="Outlined" OutlineCornerRadius="10"
+                                        EnableFloating="False" Hint="e.g. i20"
+                                        FocusedStrokeThickness="1.5"
+                                        UnfocusedStrokeThickness="1.5"
+                                        InputViewPadding="14,0" ReserveSpaceForAssistiveLabels="False"
+                                        Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                        ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                                        <til:SfTextInputLayout.HintLabelStyle>
+                                            <til:LabelStyle FontSize="14" TextColor="#94A3B8"/>
+                                        </til:SfTextInputLayout.HintLabelStyle>
+                                        <Entry Text="{Binding EditingVehicle.Model}"
+                                               TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                               BackgroundColor="Transparent"/>
+                                    </til:SfTextInputLayout>
+                                </StackLayout>
+                            </Grid>
+
+                            <!-- Variant -->
+                            <StackLayout Spacing="4">
+                                            <Label Text="Variant / trim" FontSize="12" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                                <til:SfTextInputLayout
+                                    ContainerType="Outlined" OutlineCornerRadius="10"
+                                    EnableFloating="False" Hint="e.g. Sportz"
+                                    FocusedStrokeThickness="1.5"
+                                    UnfocusedStrokeThickness="1.5"
+                                    InputViewPadding="14,0" ReserveSpaceForAssistiveLabels="False"
+                                    Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                    ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                                    <til:SfTextInputLayout.HintLabelStyle>
+                                        <til:LabelStyle FontSize="14" TextColor="#94A3B8"/>
+                                    </til:SfTextInputLayout.HintLabelStyle>
+                                    <Entry Text="{Binding EditingVehicle.Variant}"
+                                           TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                           BackgroundColor="Transparent"/>
+                                </til:SfTextInputLayout>
+                            </StackLayout>
+
+                            <!-- Odometer -->
+                            <StackLayout Spacing="4">
+                                <Label Text="Odometer (km)" FontSize="12" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                                <til:SfTextInputLayout
+                                    ContainerType="Outlined" OutlineCornerRadius="10"
+                                    EnableFloating="False" Hint="e.g. 42500"
+                                    FocusedStrokeThickness="1.5"
+                                    UnfocusedStrokeThickness="1.5"
+                                    InputViewPadding="14,0" ReserveSpaceForAssistiveLabels="False"
+                                    Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                    ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                                    <til:SfTextInputLayout.HintLabelStyle>
+                                        <til:LabelStyle FontSize="14" TextColor="#94A3B8"/>
+                                    </til:SfTextInputLayout.HintLabelStyle>
+                                    <Entry Text="{Binding EditingVehicle.OdaMeterReading}" Keyboard="Numeric"
+                                           TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                           BackgroundColor="Transparent">
+                                        <Entry.Behaviors>
+                                            <behaviors:NumericOnlyBehavior/>
+                                        </Entry.Behaviors>
+                                    </Entry>
+                                </til:SfTextInputLayout>
+                            </StackLayout>
+
+                        </StackLayout>
+                    </ScrollView>
+
+                    <!-- Action buttons -->
+                    <Grid Grid.Row="2" ColumnDefinitions="1*,1*" ColumnSpacing="12"
+                          Padding="24,16"
+                          BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1917}">
+                        <Border Grid.Column="0" StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"
+                                BackgroundColor="Transparent" Padding="0,14">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding CancelEditCommand}"/>
+                            </Border.GestureRecognizers>
+                            <Label Text="Cancel" FontSize="14" FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"/>
+                        </Border>
+                        <Border Grid.Column="1" StrokeThickness="0" Padding="0,14"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SaveVehicleCommand}"/>
+                            </Border.GestureRecognizers>
+                            <Label Text="Save changes" FontSize="14" FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center" TextColor="White"/>
+                        </Border>
+                    </Grid>
+
+                </Grid>
+            </Border>
+        </Grid>
+
+    </Grid>
+</ContentView>
+
