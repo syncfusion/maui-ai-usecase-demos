@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    x:Class="PatientCompanion.Views.HomePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:PatientCompanion.Controls"
+    xmlns:models="clr-namespace:PatientCompanion.Models"
+    xmlns:local="clr-namespace:PatientCompanion"
+    xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:cards="clr-namespace:Syncfusion.Maui.Cards;assembly=Syncfusion.Maui.Cards"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:carousel="clr-namespace:Syncfusion.Maui.Carousel;assembly=Syncfusion.Maui.Carousel"
+    xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
+    BackgroundColor="#F7F9FB"
+    Shell.NavBarIsVisible="True">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0">
+
+            <VerticalStackLayout
+                Padding="16"
+                Spacing="24">
+
+                <!-- WELCOME -->
+
+                <VerticalStackLayout Spacing="4">
+
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="24"
+                        Text="Good morning, Maya"
+                        TextColor="#191C1E" />
+
+                    <HorizontalStackLayout Spacing="6">
+
+                        <Label
+                            FontFamily="MaterialIcons"
+                            FontSize="14"
+                            Text="{x:Static local:MaterialIcons.Shield}"
+                            TextColor="#00685F"
+                            VerticalTextAlignment="Center" />
+
+                        <Label
+                            FontSize="16"
+                            Text="Patient ID: MF-2094-11"
+                            TextColor="#3D4947" />
+
+                    </HorizontalStackLayout>
+
+                </VerticalStackLayout>
+
+                <!-- NEXT APPOINTMENTS -->
+
+                    <VerticalStackLayout Spacing="12">
+
+                        <Label
+        FontAttributes="Bold"
+        FontSize="12"
+        Text="NEXT APPOINTMENTS"
+        TextColor="#191C1E" />
+
+                        <CollectionView
+                            HeightRequest="300"
+                            ItemsSource="{Binding NextAppointments}"
+                            SelectionMode="None">
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout
+                                    Orientation="Horizontal"
+                                    ItemSpacing="12" />
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <controls:AppointmentCardView
+                                        WidthRequest="300" />
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                    
+
+                </VerticalStackLayout>
+
+                <!-- TODAY'S CARE -->
+
+                <VerticalStackLayout Spacing="12">
+
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="12"
+                        Text="TODAY'S CARE"
+                        TextColor="#191C1E" />
+
+                    <Border
+                        BackgroundColor="White"
+                        Padding="16"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 14">
+
+                        <VerticalStackLayout Spacing="16">
+
+                            <Grid ColumnDefinitions="*,Auto">
+
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="12"
+                                    Text="CARE PLAN PROGRESS"
+                                    TextColor="#3D4947" />
+
+                                <Label
+                                    Grid.Column="1"
+                                    FontAttributes="Bold"
+                                    FontSize="12"
+                                    Text="75%"
+                                    TextColor="#00685F" />
+
+                            </Grid>
+
+                            <progressBar:SfLinearProgressBar
+                                HeightRequest="8"
+                                Progress="75"
+                                TrackCornerRadius="4"
+                                ProgressCornerRadius="4"
+                                TrackFill="#E0E3E5"
+                                ProgressFill="#00685F" />
+
+                            <Label
+                                FontSize="14"
+                                Text="3 of 4 tasks completed today. Great job!"
+                                TextColor="#3D4947" />
+
+                            <Border
+                                BackgroundColor="#F7F9FB"
+                                Padding="16"
+                                StrokeThickness="0"
+                                StrokeShape="RoundRectangle 14">
+
+                                <Grid
+                                    ColumnDefinitions="40,*,Auto"
+                                    ColumnSpacing="16">
+
+                                    <Label
+                                        FontFamily="MaterialIcons"
+                                        FontSize="22"
+                                        Text="{x:Static local:MaterialIcons.CheckCircle}"
+                                        TextColor="#7C8A87"
+                                        VerticalOptions="Center"
+                                        VerticalTextAlignment="Center" />
+
+                                    <VerticalStackLayout
+                                        Grid.Column="1">
+
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="16"
+                                            Text="Metformin"
+                                            TextColor="#191C1E" />
+
+                                        <Label
+                                            FontSize="14"
+                                            Text="500mg • 08:00 AM"
+                                            TextColor="#3D4947" />
+
+                                    </VerticalStackLayout>
+
+                                    <Label
+                                        Grid.Column="2"
+                                        FontAttributes="Bold"
+                                        FontSize="12"
+                                        Text="Taken"
+                                        TextColor="#00685F"
+                                        VerticalOptions="Center" />
+
+                                </Grid>
+
+                            </Border>
+
+                        </VerticalStackLayout>
+
+                    </Border>
+
+                </VerticalStackLayout>
+
+                <!-- RECENT VITALS -->
+
+                <VerticalStackLayout Spacing="12">
+
+                    <Label
+        FontAttributes="Bold"
+        FontSize="12"
+        Text="RECENT VITALS"
+        TextColor="#191C1E" />
+
+                    <carousel:SfCarousel
+    ViewMode="Linear"
+    HeightRequest="140"
+    ItemWidth="280"
+                        HorizontalOptions="Start">
+
+                        <carousel:SfCarousel.ItemsSource>
+
+                            <x:Array Type="{x:Type models:Vital}">
+
+                                <models:Vital
+                    Title="Blood Pressure"
+                    Value="120/80"
+                    Unit="mmHg"
+                    UpdatedText="Updated today at 8:30 AM"
+                    Icon="{x:Static local:MaterialIcons.Favorite}"
+                    TrendIcon="{x:Static local:MaterialIcons.TrendingUp}" />
+
+                                <models:Vital
+                    Title="Heart Rate"
+                    Value="72"
+                    Unit="bpm"
+                    UpdatedText="Updated today at 8:30 AM"
+                    Icon="{x:Static local:MaterialIcons.Favorite}"
+                    TrendIcon="{x:Static local:MaterialIcons.ArrowForward}" />
+
+                                <models:Vital
+                    Title="Weight"
+                    Value="165"
+                    Unit="lbs"
+                    UpdatedText="Updated today at 8:30 AM"
+                    Icon="{x:Static local:MaterialIcons.Scale}"
+                    TrendIcon="{x:Static local:MaterialIcons.TrendingDown}" />
+
+                            </x:Array>
+
+                        </carousel:SfCarousel.ItemsSource>
+
+                        <carousel:SfCarousel.ItemTemplate>
+
+                            <DataTemplate>
+
+                                <controls:VitalCardView />
+
+                            </DataTemplate>
+
+                        </carousel:SfCarousel.ItemTemplate>
+
+                    </carousel:SfCarousel>
+
+                </VerticalStackLayout>
+
+                <!-- QUICK ACTIONS -->
+
+                <!-- QUICK ACTIONS -->
+
+                <VerticalStackLayout Spacing="12">
+
+                    <Label
+        FontAttributes="Bold"
+        FontSize="12"
+        Text="QUICK ACTIONS"
+        TextColor="#191C1E" />
+
+                    <Grid
+        ColumnDefinitions="*,*"
+        RowDefinitions="Auto,Auto"
+        ColumnSpacing="12"
+        RowSpacing="12">
+
+                        <controls:QuickActionCardView
+            Grid.Row="0"
+            Grid.Column="0"
+            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenAppointmentCommand}">
+
+                            <controls:QuickActionCardView.BindingContext>
+
+                                <models:QuickAction
+                    Title="Book&#10;Appointment"
+                    Icon="{x:Static local:MaterialIcons.CalendarMonth}" />
+
+                            </controls:QuickActionCardView.BindingContext>
+
+                        </controls:QuickActionCardView>
+
+                        <controls:QuickActionCardView
+            Grid.Row="0"
+            Grid.Column="1"
+            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenVitalsCommand}">
+
+                            <controls:QuickActionCardView.BindingContext>
+
+                                <models:QuickAction
+                    Title="Record&#10;Vitals"
+                    Icon="{x:Static local:MaterialIcons.Favorite}" />
+
+                            </controls:QuickActionCardView.BindingContext>
+
+                        </controls:QuickActionCardView>
+
+                        <controls:QuickActionCardView
+            Grid.Row="1"
+            Grid.Column="0"
+            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenReportsCommand}">
+
+                            <controls:QuickActionCardView.BindingContext>
+
+                                <models:QuickAction
+                    Title="View&#10;Reports"
+                    Icon="{x:Static local:MaterialIcons.Description}" />
+
+                            </controls:QuickActionCardView.BindingContext>
+
+                        </controls:QuickActionCardView>
+
+                        <controls:QuickActionCardView
+            Grid.Row="1"
+            Grid.Column="1"
+            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenAssistantCommand}">
+
+                            <controls:QuickActionCardView.BindingContext>
+
+                                <models:QuickAction
+                    Title="Ask&#10;Assistant"
+                    Icon="{x:Static local:MaterialIcons.Help}" />
+
+                            </controls:QuickActionCardView.BindingContext>
+
+                        </controls:QuickActionCardView>
+
+                    </Grid>
+
+                </VerticalStackLayout>
+
+                <!-- DISCLAIMER -->
+
+                <Border
+                    BackgroundColor="#E0E3E5"
+                    Opacity="0.5"
+                    Padding="16,8"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 8">
+
+                    <Label
+                        FontSize="11"
+                        HorizontalTextAlignment="Center"
+                        Text="ⓘ Sample data only — not medical advice"
+                        TextColor="#6D7A77" />
+
+                </Border>
+
+            </VerticalStackLayout>
+
+        </ScrollView>
+
+        <controls:BottomNavigationView Grid.Row="1" />
+    </Grid>
+
+</ContentPage>

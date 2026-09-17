@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentView
+    x:Class="PatientCompanion.Views.AppointmentReviewView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        xmlns:local="clr-namespace:PatientCompanion"
+    xmlns:cards="clr-namespace:Syncfusion.Maui.Cards;assembly=Syncfusion.Maui.Cards"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:map="clr-namespace:Syncfusion.Maui.Maps;assembly=Syncfusion.Maui.Maps">
+
+        <ContentView.Resources>
+                <DataTemplate x:Key="LocationMarkerTemplate">
+                        <Label
+                                FontFamily="MaterialIcons"
+                                FontSize="24"
+                                Text="{x:Static local:MaterialIcons.LocationOn}"
+                                TextColor="#2563EB" />
+                </DataTemplate>
+        </ContentView.Resources>
+
+    <ScrollView>
+
+        <VerticalStackLayout
+            Padding="0"
+            Spacing="16">
+
+            <!-- Doctor + DateTime + Location Card -->
+
+            <cards:SfCardView
+    CornerRadius="16"
+    Background="#FFFFFF"
+                HeightRequest="400">
+
+                <VerticalStackLayout
+        Padding="16"
+        Spacing="16">
+
+                    <!-- Doctor -->
+
+                    <Grid
+            ColumnDefinitions="56,*"
+            ColumnSpacing="12">
+
+                        <core:SfAvatarView
+                WidthRequest="52"
+                HeightRequest="52"
+                            CornerRadius="32"
+                ContentType="Custom"
+                ImageSource="{Binding DoctorImage}" />
+
+                        <VerticalStackLayout
+                Grid.Column="1"
+                VerticalOptions="Center"
+                Spacing="4">
+
+                            <Label
+                    FontSize="20"
+                    FontAttributes="Bold"
+                    Text="{Binding DoctorName}"
+                    TextColor="#191C1E" />
+
+                            <HorizontalStackLayout
+                    Spacing="6">
+
+                                <Label
+                        FontFamily="MaterialIcons"
+                        FontSize="16"
+                        Text="{x:Static local:MaterialIcons.Favorite}"
+                        TextColor="#00685F"
+                        VerticalTextAlignment="Center" />
+
+                                <Label
+                        FontSize="14"
+                        Text="{Binding Specialization}"
+                        TextColor="#5F6B68" />
+
+                            </HorizontalStackLayout>
+
+                        </VerticalStackLayout>
+
+                    </Grid>
+
+                    <!-- Divider -->
+
+                    <BoxView
+            HeightRequest="1"
+            Color="#E7E7E7" />
+
+                    <!-- Date & Time -->
+
+                    <Grid
+            ColumnDefinitions="24,*"
+            ColumnSpacing="10">
+
+                        <Label
+                FontFamily="MaterialIcons"
+                FontSize="18"
+                Text="{x:Static local:MaterialIcons.CalendarMonth}"
+                TextColor="#00685F"
+                VerticalOptions="Start"
+                VerticalTextAlignment="Center" />
+
+                        <VerticalStackLayout
+                Grid.Column="1"
+                Spacing="2">
+
+                            <Label
+                    FontSize="11"
+                    Text="DATE TIME"
+                    TextColor="#6D7A77" />
+
+                            <Label
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    Text="{Binding AppointmentDate}"
+                    TextColor="#191C1E" />
+
+                            <Label
+                    FontSize="14"
+                    Text="{Binding AppointmentTime}"
+                    TextColor="#00685F" />
+
+                        </VerticalStackLayout>
+
+                    </Grid>
+
+                    <!-- Location -->
+
+                    <Grid
+            ColumnDefinitions="24,*"
+            ColumnSpacing="10">
+
+                        <Label
+                FontFamily="MaterialIcons"
+                FontSize="18"
+                Text="{x:Static local:MaterialIcons.LocationOn}"
+                TextColor="#00685F"
+                VerticalOptions="Start"
+                VerticalTextAlignment="Center" />
+
+                        <VerticalStackLayout
+                Grid.Column="1"
+                Spacing="2">
+
+                            <Label
+                    FontSize="11"
+                    Text="LOCATION"
+                    TextColor="#6D7A77" />
+
+                            <Label
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    Text="{Binding HospitalName}"
+                    TextColor="#191C1E" />
+
+                            <Label
+                    FontSize="14"
+                    Text="{Binding Address}"
+                    TextColor="#5F6B68" />
+
+                        </VerticalStackLayout>
+
+                    </Grid>
+
+                    <!-- Map -->
+
+                    <Border 
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 12"
+                        HeightRequest="140">
+                                                <map:SfMaps>
+                            <map:SfMaps.Layer>
+                                                                <map:MapShapeLayer
+                                                                        ShapesSource="https://cdn.syncfusion.com/maps/map-data/world-map.json"
+                                                                        ShapeStroke="DarkGrey"
+                                                                        MarkerTemplate="{StaticResource LocationMarkerTemplate}"
+                                                                        ShowMarkerTooltip="True">
+                                                                        <map:MapShapeLayer.Markers>
+                                        <map:MapMarkerCollection>
+                                            <map:MapMarker
+                                                                                                Latitude="20.5595"
+                                                                                                Longitude="22.9375"
+                                                                                                HorizontalAlignment="Center"
+                                                                                                VerticalAlignment="Start"
+                                                IconFill="Red"/>
+                                        </map:MapMarkerCollection>
+                                                                        </map:MapShapeLayer.Markers>
+                                                                </map:MapShapeLayer>
+                            </map:SfMaps.Layer>
+                        </map:SfMaps>
+                    </Border>
+                </VerticalStackLayout>
+
+            </cards:SfCardView>
+
+            <!-- Patient Details -->
+
+            <cards:SfCardView
+    CornerRadius="16"
+    Background="#FFFFFF">
+
+                <VerticalStackLayout
+        Padding="16"
+        Spacing="16">
+
+                    <Label
+            Text="Patient Details"
+            FontSize="20"
+            FontAttributes="Bold"
+            TextColor="#191C1E" />
+
+                    <!-- Patient Name -->
+
+                    <Grid
+            ColumnDefinitions="*,Auto">
+
+                        <Label
+                Text="Patient Name"
+                FontSize="12"
+                TextColor="#5F6B68"
+                VerticalOptions="Center" />
+
+                        <Label
+                Grid.Column="1"
+                Text="{Binding PatientName}"
+                FontSize="16"
+                TextColor="#191C1E"
+                HorizontalOptions="End" />
+
+                    </Grid>
+
+                    <!-- Reason -->
+
+                    <VerticalStackLayout
+            Spacing="6">
+
+                        <Label
+                Text="REASON FOR VISIT (OPTIONAL)"
+                FontSize="11"
+                TextColor="#5F6B68"
+                CharacterSpacing="1" />
+
+                        <Label
+                
+                Text="{Binding PurposeOfVisit}"
+                FontSize="13"
+                TextColor="#191C1E" />
+
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+
+            </cards:SfCardView>
+
+            <!-- Information Note -->
+
+            <cards:SfCardView
+    CornerRadius="14"
+    Background="#F8F9FA">
+
+                <Grid
+        Padding="16"
+        ColumnDefinitions="24,*"
+        ColumnSpacing="12">
+
+                    <!-- Info Icon -->
+
+                    <Border
+            WidthRequest="18"
+            HeightRequest="18"
+            Stroke="#00685F"
+            StrokeThickness="1.5"
+            StrokeShape="RoundRectangle 9"
+            VerticalOptions="Start">
+
+                        <Label
+                Text="i"
+                FontSize="11"
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                TextColor="#00685F" />
+
+                    </Border>
+
+                    <!-- Text -->
+
+                    <Label
+            Grid.Column="1"
+            FontSize="13"
+            LineHeight="1.3"
+            VerticalOptions="Start"
+            TextColor="#5F6B68"
+            Text="Please arrive 15 minutes early to complete any necessary paperwork. Bring your ID and insurance card." />
+
+                </Grid>
+
+            </cards:SfCardView>
+
+            <!-- Confirm -->
+
+            <buttons:SfButton
+                Margin="0,8,0,0"
+                HeightRequest="50"
+                CornerRadius="28"
+                Background="#00685F"
+                Text="Confirm Appointment"
+                TextColor="White"
+                Command="{Binding ConfirmAppointmentCommand}" />
+
+            <!-- Cancel -->
+
+            <buttons:SfButton
+                HeightRequest="50"
+                CornerRadius="28"
+                Background="White"
+                Stroke="#8FC3BB"
+                StrokeThickness="1"
+                Text="Cancel"
+                TextColor="#00685F"
+                Command="{Binding EditAppointmentCommand}" />
+
+            <!-- Footer -->
+
+            <Label
+                Margin="0,8,0,16"
+                FontSize="10"
+                HorizontalTextAlignment="Center"
+                Text="Sample data only — not medical advice"
+                TextColor="#8F9D99" />
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentView>

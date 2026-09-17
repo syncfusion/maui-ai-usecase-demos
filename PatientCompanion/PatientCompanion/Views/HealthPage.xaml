@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    x:Class="PatientCompanion.Views.HealthPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:PatientCompanion.Controls"
+    BackgroundColor="#F7F9FB"
+    Shell.NavBarIsVisible="True">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0">
+
+            <VerticalStackLayout
+                Padding="16"
+                Spacing="20">
+
+                <!-- Metric Cards -->
+
+                <Grid
+                    ColumnDefinitions="*,*,*"
+                    ColumnSpacing="14">
+
+                    <controls:HealthMetricCardView
+                        Grid.Column="0"
+                        HeightRequest="140"
+                        BindingContext="{Binding HealthMetrics[0]}" />
+
+                    <controls:HealthMetricCardView
+                        Grid.Column="1"
+                        HeightRequest="140"
+                        BindingContext="{Binding HealthMetrics[1]}" />
+
+                    <controls:HealthMetricCardView
+                        Grid.Column="2"
+                        HeightRequest="140"
+                        BindingContext="{Binding HealthMetrics[2]}" />
+
+                </Grid>
+
+                <controls:HealthChartCardView />
+
+                <!-- Temporary Spacer -->
+
+                <BoxView
+                    HeightRequest="400"
+                    Color="Transparent" />
+
+            </VerticalStackLayout>
+
+        </ScrollView>
+
+        <controls:BottomNavigationView Grid.Row="1" />
+    </Grid>
+
+</ContentPage>

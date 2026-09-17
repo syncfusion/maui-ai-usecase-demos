@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    x:Class="PatientCompanion.Views.VisitsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:PatientCompanion.Controls"
+    BackgroundColor="#F7F9FB"
+    Shell.NavBarIsVisible="True">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0">
+
+            <VerticalStackLayout
+                Padding="16"
+                Spacing="24">
+
+                <!-- Upcoming / Past Tabs -->
+
+                <Grid
+                    ColumnDefinitions="*,*"
+                    ColumnSpacing="14">
+
+                    <!-- Upcoming -->
+
+                    <Border
+                        BackgroundColor="{Binding UpcomingBackground}"
+                        HeightRequest="50"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 25">
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding ShowUpcomingCommand}" />
+                        </Border.GestureRecognizers>
+
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="14"
+                            HorizontalOptions="Center"
+                            Text="Upcoming"
+                            TextColor="{Binding UpcomingTextColor}"
+                            VerticalOptions="Center" />
+
+                    </Border>
+
+                    <!-- Past -->
+
+                    <Border
+                        Grid.Column="1"
+                        BackgroundColor="{Binding PastBackground}"
+                        HeightRequest="50"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 25">
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding ShowPastCommand}" />
+                        </Border.GestureRecognizers>
+
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="14"
+                            HorizontalOptions="Center"
+                            Text="Past"
+                            TextColor="{Binding PastTextColor}"
+                            VerticalOptions="Center" />
+
+                    </Border>
+
+                </Grid>
+
+                <!-- Appointment List -->
+
+                <CollectionView
+                    ItemsSource="{Binding DisplayVisits}"
+                    SelectionMode="None">
+
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" />
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.ItemTemplate>
+
+                        <DataTemplate>
+
+                            <controls:VisitCardView />
+
+                        </DataTemplate>
+
+                    </CollectionView.ItemTemplate>
+
+                </CollectionView>
+
+                <!-- Empty State -->
+
+                <Border
+                    Padding="20"
+                    BackgroundColor="#EEF4F3"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 16">
+
+                    <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        Spacing="12">
+
+                        <Label
+                            FontSize="40"
+                            HorizontalTextAlignment="Center"
+                            Text="🛡"
+                            TextColor="#00685F" />
+
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            HorizontalTextAlignment="Center"
+                            Text="Staying on top of it!"
+                            TextColor="#191C1E" />
+
+                        <Label
+                            FontSize="14"
+                            HorizontalTextAlignment="Center"
+                            Text="You have upcoming appointments. Need another checkup?"
+                            TextColor="#3D4947" />
+
+                    </VerticalStackLayout>
+
+                </Border>
+
+                <!-- Space for Floating Button -->
+
+                <BoxView
+                    HeightRequest="80"
+                    Color="Transparent" />
+
+            </VerticalStackLayout>
+
+        </ScrollView>
+
+        <!-- Floating Action Button -->
+        <!-- Floating Action Button -->
+
+        <Border
+    Grid.Row="0"
+    Margin="0,0,20,20"
+    BackgroundColor="#00685F"
+    HeightRequest="56"
+    HorizontalOptions="End"
+    StrokeThickness="0"
+    StrokeShape="RoundRectangle 28"
+    VerticalOptions="End"
+    WidthRequest="56">
+
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer
+            Tapped="OnBookAppointmentTapped" />
+            </Border.GestureRecognizers>
+
+            <Label
+        FontSize="28"
+        HorizontalOptions="Center"
+        HorizontalTextAlignment="Center"
+        Text="+"
+        TextColor="White"
+        VerticalOptions="Center" />
+
+        </Border>
+
+        <controls:BottomNavigationView Grid.Row="1" />
+    </Grid>
+
+</ContentPage>

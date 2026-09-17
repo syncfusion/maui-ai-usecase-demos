@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentView
+    x:Class="PatientCompanion.Controls.BottomNavigationView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:PatientCompanion"
+    IsVisible="{OnPlatform Android=True, WinUI=True, Default=False}">
+
+    <Border
+        BackgroundColor="{StaticResource PageBackgroundColor}"
+        Padding="8,8,8,6"
+        Stroke="#E0E3E5"
+        StrokeThickness="0.3">
+        <Grid ColumnDefinitions="*,*,*,*,*" ColumnSpacing="4">
+            <Border Grid.Column="0" Style="{StaticResource BottomNavigationItemStyle}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="HomeTapped" />
+                </Border.GestureRecognizers>
+                <VerticalStackLayout Spacing="2">
+                    <Label x:Name="HomeIcon" FontFamily="MaterialIcons" Text="{x:Static local:MaterialIcons.Home}" Style="{StaticResource BottomNavigationIconStyle}" />
+                    <Label x:Name="HomeText" Text="HOME" Style="{StaticResource BottomNavigationTextStyle}" />
+                </VerticalStackLayout>
+            </Border>
+            <Border Grid.Column="1" Style="{StaticResource BottomNavigationItemStyle}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="VisitsTapped" />
+                </Border.GestureRecognizers>
+                <VerticalStackLayout Spacing="2">
+                    <Label x:Name="VisitsIcon" FontFamily="MaterialIcons" Text="{x:Static local:MaterialIcons.CalendarMonth}" Style="{StaticResource BottomNavigationIconStyle}" />
+                    <Label x:Name="VisitsText" Text="VISITS" Style="{StaticResource BottomNavigationTextStyle}" />
+                </VerticalStackLayout>
+            </Border>
+            <Border Grid.Column="2" Style="{StaticResource BottomNavigationItemStyle}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="HealthTapped" />
+                </Border.GestureRecognizers>
+                <VerticalStackLayout Spacing="2">
+                    <Label x:Name="HealthIcon" FontFamily="MaterialIcons" Text="{x:Static local:MaterialIcons.Favorite}" Style="{StaticResource BottomNavigationIconStyle}" />
+                    <Label x:Name="HealthText" Text="HEALTH" Style="{StaticResource BottomNavigationTextStyle}" />
+                </VerticalStackLayout>
+            </Border>
+            <Border Grid.Column="3" Style="{StaticResource BottomNavigationItemStyle}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="MedicationsTapped" />
+                </Border.GestureRecognizers>
+                <VerticalStackLayout Spacing="2">
+                    <Label x:Name="MedicationsIcon" FontFamily="MaterialIcons" Text="{x:Static local:MaterialIcons.LocalPharmacy}" Style="{StaticResource BottomNavigationIconStyle}" />
+                    <Label x:Name="MedicationsText" Text="MEDS" Style="{StaticResource BottomNavigationTextStyle}" />
+                </VerticalStackLayout>
+            </Border>
+            <Border Grid.Column="4" Style="{StaticResource BottomNavigationItemStyle}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="HelpTapped" />
+                </Border.GestureRecognizers>
+                <VerticalStackLayout Spacing="2">
+                    <Label x:Name="HelpIcon" FontFamily="MaterialIcons" Text="{x:Static local:MaterialIcons.Help}" Style="{StaticResource BottomNavigationIconStyle}" />
+                    <Label x:Name="HelpText" Text="HELP" Style="{StaticResource BottomNavigationTextStyle}" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Border>
+</ContentView>

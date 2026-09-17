@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentView
+    x:Class="PatientCompanion.Views.AppointmentDateTimeView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:local="clr-namespace:PatientCompanion"
+    xmlns:models="clr-namespace:PatientCompanion.Models"
+    xmlns:views="clr-namespace:PatientCompanion.Views">
+
+    <Grid RowDefinitions="*,Auto" BackgroundColor="{StaticResource PageBackgroundColor}">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="0,0,0,14" Spacing="16">
+
+                <Border
+                    BackgroundColor="#F0F6F5"
+                    Padding="10"
+                    Stroke="#E5ECEB"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10">
+                    <Grid ColumnDefinitions="48,*" ColumnSpacing="10">
+                        <core:SfAvatarView
+                            WidthRequest="44"
+                            HeightRequest="44"
+                            CornerRadius="22"
+                            ContentType="Custom"
+                            ImageSource="{Binding SelectedDoctor.Image}" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                            <Label
+                                FontSize="13"
+                                FontAttributes="Bold"
+                                Text="{Binding SelectedDoctor.Name}"
+                                TextColor="#191C1E" />
+                            <HorizontalStackLayout Spacing="3">
+                                <Label
+                                    FontFamily="MaterialIcons"
+                                    FontSize="13"
+                                    Text="{x:Static local:MaterialIcons.Favorite}"
+                                    TextColor="#00685F" />
+                                <Label
+                                    FontSize="10"
+                                    Text="{Binding SelectedDoctor.Specialization}"
+                                    TextColor="#3D4947" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <Label
+                    FontSize="12"
+                    FontAttributes="Bold"
+                    Text="Visit Type"
+                    TextColor="#191C1E" />
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                    <Border
+                        HeightRequest="52"
+                        BackgroundColor="White"
+                        Stroke="#D5DDDC"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 9">
+                        <Border.Triggers>
+                            <DataTrigger Binding="{Binding IsClinicVisitSelected}" TargetType="Border" Value="True">
+                                <Setter Property="BackgroundColor" Value="#00685F" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectVisitTypeCommand}" CommandParameter="Clinic Visit" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout HorizontalOptions="Center" Spacing="2" VerticalOptions="Center">
+                            <Label FontFamily="MaterialIcons" FontSize="18" Text="{x:Static local:MaterialIcons.MedicalServices}" TextColor="#00685F" HorizontalTextAlignment="Center">
+                                <Label.Triggers>
+                                    <DataTrigger Binding="{Binding IsClinicVisitSelected}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="White" /></DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                            <Label FontSize="10" Text="Clinic Visit" TextColor="#191C1E" HorizontalTextAlignment="Center">
+                                <Label.Triggers>
+                                    <DataTrigger Binding="{Binding IsClinicVisitSelected}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="White" /></DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" HeightRequest="52" BackgroundColor="White" Stroke="#D5DDDC" StrokeThickness="1" StrokeShape="RoundRectangle 9">
+                        <Border.Triggers>
+                            <DataTrigger Binding="{Binding IsVideoVisitSelected}" TargetType="Border" Value="True"><Setter Property="BackgroundColor" Value="#00685F" /></DataTrigger>
+                        </Border.Triggers>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SelectVisitTypeCommand}" CommandParameter="Video Visit" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout HorizontalOptions="Center" Spacing="2" VerticalOptions="Center">
+                            <Label FontFamily="MaterialIcons" FontSize="18" Text="{x:Static local:MaterialIcons.Videocam}" TextColor="#00685F" HorizontalTextAlignment="Center">
+                                <Label.Triggers>
+                                    <DataTrigger Binding="{Binding IsVideoVisitSelected}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="White" /></DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                            <Label FontSize="10" Text="Video Visit" TextColor="#191C1E" HorizontalTextAlignment="Center">
+                                <Label.Triggers>
+                                    <DataTrigger Binding="{Binding IsVideoVisitSelected}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="White" /></DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,-6">
+                    <Label
+                        FontSize="12"
+                        FontAttributes="Bold"
+                        Text="Select Date"
+                        TextColor="#191C1E" />
+                    <HorizontalStackLayout Grid.Column="1" Spacing="4">
+                        <Label
+                            FontSize="10"
+                            Text="{Binding SelectedMonthText}"
+                            TextColor="#00685F" />
+                        <Label
+                            FontFamily="MaterialIcons"
+                            FontSize="14"
+                            Text="{x:Static local:MaterialIcons.CalendarMonth}"
+                            TextColor="#00685F">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="CalendarTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </HorizontalStackLayout>
+                </Grid>
+
+                <Picker
+                    x:Name="monthPicker"
+                    ItemsSource="{Binding MonthOptions}"
+                    SelectedItem="{Binding SelectedMonthText, Mode=OneWay}"
+                    SelectedIndexChanged="MonthPicker_SelectedIndexChanged"
+                    HeightRequest="1"
+                    WidthRequest="1"
+                    Opacity="0.01" />
+
+                <CollectionView
+                    ItemsSource="{Binding DateOptions}"
+                    SelectionMode="None"
+                    Margin="0,-50,0,0"
+                    HeightRequest="58">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="6" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:AppointmentDateOption">
+                            <Border
+                                WidthRequest="39"
+                                HeightRequest="54"
+                                Padding="2"
+                                BackgroundColor="#ECEEF0"
+                                StrokeThickness="0"
+                                StrokeShape="RoundRectangle 6">
+                                <Border.Triggers>
+                                    <DataTrigger Binding="{Binding IsSelected}" TargetType="Border" Value="True">
+                                        <Setter Property="BackgroundColor" Value="#00685F" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type views:AppointmentDateTimeView}}, Path=BindingContext.SelectDateCommand}"
+                                        CommandParameter="{Binding}" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                                    <Label FontSize="7" HorizontalTextAlignment="Center" Text="{Binding DayLabel}" TextColor="#64748B">
+                                        <Label.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelected}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="White" /></DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                    <Label FontSize="14" FontAttributes="Bold" HorizontalTextAlignment="Center" Text="{Binding DateNumber}" TextColor="#191C1E">
+                                        <Label.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelected}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="White" /></DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,-6">
+                    <Label
+                        FontSize="12"
+                        FontAttributes="Bold"
+                        Text="Available Times"
+                        TextColor="#191C1E" />
+                    <Label
+                        Grid.Column="1"
+                        FontSize="10"
+                        Text="{Binding SelectedDate, StringFormat='{0:ddd, MMM dd}'}"
+                        TextColor="#64748B" />
+                </Grid>
+
+                <core:SfChipGroup
+                    x:Name="TimeChips"
+                    ItemsSource="{Binding TimeOptions}"
+                    DisplayMemberPath="Value"
+                    ChipType="Choice"
+                    ChipBackground="White"
+                    ChipTextColor="#191C1E"
+                    SelectedChipBackground="#00685F"
+                    SelectedChipTextColor="White"
+                    ChipStroke="#D5DDDC"
+                    ChipStrokeThickness="1"
+                    ChipPadding="4,4,0,0"
+                    ItemHeight="34"
+                    SelectionChanged="Time_SelectionChanged">
+                    <core:SfChipGroup.ChipLayout>
+                        <FlexLayout
+                            Direction="Row"
+                            Wrap="Wrap"
+                            JustifyContent="Start"
+                            AlignItems="Start" />
+                    </core:SfChipGroup.ChipLayout>
+                </core:SfChipGroup>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Border
+            Grid.Row="1"
+            BackgroundColor="White"
+            Padding="0,8,0,0"
+            StrokeThickness="0">
+            <VerticalStackLayout Spacing="7">
+                <Label
+                    FontSize="9"
+                    Text="Selected Appointment"
+                    TextColor="#64748B" />
+                <HorizontalStackLayout Spacing="5">
+                    <Label
+                        FontFamily="MaterialIcons"
+                        FontSize="14"
+                        Text="{x:Static local:MaterialIcons.CalendarToday}"
+                        TextColor="#00685F" />
+                    <Label
+                        FontSize="11"
+                        FontAttributes="Bold"
+                        Text="{Binding SelectedAppointmentText}"
+                        TextColor="#191C1E" />
+                </HorizontalStackLayout>
+                <buttons:SfButton
+                    HeightRequest="42"
+                    CornerRadius="8"
+                    Background="#00685F"
+                    Text="Continue to Review  →"
+                    TextColor="White"
+                    IsEnabled="{Binding CanContinue}"
+                    Command="{Binding ContinueToReviewCommand}" />
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentView>

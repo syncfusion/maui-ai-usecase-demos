@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentView
+    x:Class="PatientCompanion.Controls.AppHeaderView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:PatientCompanion"
+    xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    HorizontalOptions="Fill"
+    NavigationPage.HasNavigationBar="False">
+
+    <Grid
+        HeightRequest="56"
+        Padding="16,12"
+        HorizontalOptions="Fill"
+        BackgroundColor="{StaticResource PageBackgroundColor}"
+        ColumnDefinitions="*,Auto,Auto">
+
+        <HorizontalStackLayout
+            VerticalOptions="Center"
+            Spacing="8">
+
+            <Image
+                Aspect="AspectFit"
+                HeightRequest="32"
+                Source="mediflow_logo.png"
+                WidthRequest="32"
+                VerticalOptions="Start"/>
+
+            <Label
+                FontAttributes="Bold"
+                FontSize="18"
+                Text="MediFlow"
+                TextColor="#1F2937"
+                VerticalOptions="Center" />
+
+        </HorizontalStackLayout>
+
+        <core:SfBadgeView
+            Grid.Column="1"
+            Margin="0,0,16,0"
+            VerticalOptions="Center"
+            WidthRequest="20"
+            HeightRequest="20">
+
+            <core:SfBadgeView.BadgeSettings>
+                <core:BadgeSettings
+                    IsVisible="True"
+                    Icon="Dot"
+                    Type="Error"
+                    Offset="0, 0"
+                    Position="TopRight"
+                    StrokeThickness="1.5" />
+            </core:SfBadgeView.BadgeSettings>
+
+            <core:SfBadgeView.Content>
+                <Label
+                    FontFamily="MaterialIcons"
+                    FontSize="18"
+                    Text="{x:Static local:MaterialIcons.Notifications}"
+                    TextColor="#3D4947"
+                    VerticalTextAlignment="Center" />
+            </core:SfBadgeView.Content>
+
+            
+
+        </core:SfBadgeView>
+
+        <Border
+            Grid.Column="2"
+            WidthRequest="30"
+            HeightRequest="30"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 18">
+
+            <Image
+                Aspect="AspectFill"
+                Source="patient_avatar.png" />
+
+        </Border>
+
+    </Grid>
+
+</ContentView>

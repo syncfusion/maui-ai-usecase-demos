@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<Shell
+    x:Class="PatientCompanion.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:PatientCompanion.Controls"
+    xmlns:local="clr-namespace:PatientCompanion"
+    xmlns:views="clr-namespace:PatientCompanion.Views"
+    FlyoutBehavior="Disabled"
+    Shell.NavBarIsVisible="True"
+    Shell.NavBarHasShadow="False"
+    Shell.BackgroundColor="#FFFFFF"
+    Shell.TabBarBackgroundColor="White"
+    Shell.TabBarForegroundColor="#00685F"
+    Shell.TabBarUnselectedColor="#64748B"
+    Shell.TabBarTitleColor="#00685F">
+
+    <Shell.TitleView>
+        <controls:AppHeaderView />
+    </Shell.TitleView>
+
+    <TabBar Route="MainTabs">
+        <ShellContent
+            Title="HOME"
+            Icon="{FontImageSource FontFamily=MaterialIcons, Glyph={x:Static local:MaterialIcons.Home}, Size=22}"
+            Route="HomePage"
+            ContentTemplate="{DataTemplate views:HomePage}" />
+        <ShellContent
+            Title="VISITS"
+            Icon="{FontImageSource FontFamily=MaterialIcons, Glyph={x:Static local:MaterialIcons.CalendarMonth}, Size=22}"
+            Route="VisitsPage"
+            ContentTemplate="{DataTemplate views:VisitsPage}" />
+        <ShellContent
+            Title="HEALTH"
+            Icon="{FontImageSource FontFamily=MaterialIcons, Glyph={x:Static local:MaterialIcons.Favorite}, Size=22}"
+            Route="HealthPage"
+            ContentTemplate="{DataTemplate views:HealthPage}" />
+        <ShellContent
+            Title="MEDS"
+            Icon="{FontImageSource FontFamily=MaterialIcons, Glyph={x:Static local:MaterialIcons.LocalPharmacy}, Size=22}"
+            Route="MedicationsPage"
+            ContentTemplate="{DataTemplate views:MedicationsPage}" />
+        <ShellContent
+            Title="HELP"
+            Icon="{FontImageSource FontFamily=MaterialIcons, Glyph={x:Static local:MaterialIcons.Help}, Size=22}"
+            Route="RecordsPage"
+            ContentTemplate="{DataTemplate views:RecordsPage}" />
+    </TabBar>
+
+</Shell>

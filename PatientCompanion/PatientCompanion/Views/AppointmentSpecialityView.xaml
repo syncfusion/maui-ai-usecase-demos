@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentView
+    x:Class="PatientCompanion.Views.AppointmentSpecialityView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:models="clr-namespace:PatientCompanion.Models"
+    xmlns:views="clr-namespace:PatientCompanion.Views">
+
+    <ContentView.Content>
+
+        <VerticalStackLayout Spacing="20">
+
+            <!-- Title -->
+
+            <VerticalStackLayout Spacing="4">
+
+                <Label
+                    Text="Select Specialty"
+                    FontSize="19"
+                    FontAttributes="Bold" />
+
+                <Label
+                    Text="Choose the type of care you need."
+                    FontSize="14"
+                    TextColor="#7A7A7A" />
+
+            </VerticalStackLayout>
+
+            <!-- Chips -->
+
+            <CollectionView
+                ItemsSource="{Binding Specialties}"
+                SelectionMode="None">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout
+                        Orientation="Vertical"
+                        Span="2"
+                        HorizontalItemSpacing="8"
+                        VerticalItemSpacing="8" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:SpecialtyItem">
+                        <Border
+                            HeightRequest="68"
+                            Margin="0"
+                            Padding="8"
+                            BackgroundColor="#ECEEF0"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 9">
+                            <Border.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding IsSelected}"
+                                    TargetType="Border"
+                                    Value="True">
+                                    <Setter Property="BackgroundColor" Value="#00685F" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type views:AppointmentSpecialityView}}, Path=BindingContext.SelectSpecialtyCommand}"
+                                    CommandParameter="{Binding}" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout
+                                HorizontalOptions="Center"
+                                Spacing="5"
+                                VerticalOptions="Center">
+                                <Label
+                                    FontFamily="MaterialIcons"
+                                    FontSize="22"
+                                    HorizontalTextAlignment="Center"
+                                    Text="{Binding Icon}"
+                                    TextColor="#00685F">
+                                    <Label.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding IsSelected}"
+                                            TargetType="Label"
+                                            Value="True">
+                                            <Setter Property="TextColor" Value="White" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                                <Label
+                                    FontSize="12"
+                                    HorizontalTextAlignment="Center"
+                                    Text="{Binding Name}"
+                                    TextColor="#191C1E">
+                                    <Label.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding IsSelected}"
+                                            TargetType="Label"
+                                            Value="True">
+                                            <Setter Property="TextColor" Value="White" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Continue Button -->
+
+            <buttons:SfButton
+                HeightRequest="48"
+                CornerRadius="24"
+                Text="Continue to Doctors"
+                Command="{Binding ContinueToDoctorsCommand}"
+                IsEnabled="{Binding CanContinue}"
+                Background="#00685F"
+                TextColor="White" />
+
+            <!-- Disclaimer -->
+
+            <Label
+                Margin="0,14,0,0"
+                Text="Sample data only — not medical advice"
+                FontSize="11"
+                TextColor="#9E9E9E"
+                HorizontalTextAlignment="Center" />
+
+        </VerticalStackLayout>
+
+    </ContentView.Content>
+
+</ContentView>
