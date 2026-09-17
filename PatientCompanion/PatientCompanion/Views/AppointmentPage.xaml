@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    x:Class="PatientCompanion.Views.AppointmentPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:PatientCompanion"
+    BackgroundColor="{StaticResource PageBackgroundColor}"
+    Shell.NavBarIsVisible="False">
+
+    <Grid
+        Padding="20"
+        RowDefinitions="Auto,Auto,*">
+
+        <!-- App Bar -->
+
+        <Grid
+            Grid.Row="0"
+            Margin="0,8"
+            BackgroundColor="{StaticResource PageBackgroundColor}"
+            ColumnDefinitions="Auto,*">
+
+            <Label
+                FontFamily="MaterialIcons"
+                FontSize="24"
+                Text="{x:Static local:MaterialIcons.ArrowBack}"
+                TextColor="#00685F"
+                VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="ImageButton_Clicked" />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <Label
+                Grid.Column="1"
+                Margin="12,0,0,0"
+                Text="Book Appointment"
+                FontSize="18"
+                FontAttributes="Bold"
+                TextColor="#1B1B1B"
+                VerticalOptions="Center" />
+
+        </Grid>
+
+        <Grid
+            Grid.Row="1"
+            Margin="0,26,0,0"
+            RowDefinitions="Auto,Auto">
+            <Grid ColumnDefinitions="Auto,*">
+                <Label
+                    Text="{Binding StepText}"
+                    FontSize="10"
+                    FontAttributes="Bold"
+                    TextColor="#5C6773" />
+                <Label
+                    Grid.Column="1"
+                    HorizontalOptions="End"
+                    Text="{Binding StepTitle}"
+                    FontSize="10"
+                    FontAttributes="Bold"
+                    TextColor="#00685F" />
+            </Grid>
+            <Grid
+                Grid.Row="1"
+                Margin="0,12,0,0"
+                HeightRequest="4"
+                ColumnDefinitions="*,8,*,8,*,8,*">
+                <Border
+                    Grid.Column="0"
+                    BackgroundColor="{Binding Step1Color}"
+                    StrokeThickness="0" />
+                <BoxView Grid.Column="1" Color="Transparent" />
+                <Border
+                    Grid.Column="2"
+                    BackgroundColor="{Binding Step2Color}"
+                    StrokeThickness="0" />
+                <BoxView Grid.Column="3" Color="Transparent" />
+                <Border
+                    Grid.Column="4"
+                    BackgroundColor="{Binding Step3Color}"
+                    StrokeThickness="0" />
+                <BoxView Grid.Column="5" Color="Transparent" />
+                <Border
+                    Grid.Column="6"
+                    BackgroundColor="{Binding Step4Color}"
+                    StrokeThickness="0" />
+            </Grid>
+        </Grid>
+
+        <!-- Dynamic Step Content -->
+
+        <ContentView
+            Grid.Row="2"
+            Margin="0,22,0,0"
+            Content="{Binding CurrentStepView}" />
+
+    </Grid>
+
+</ContentPage>

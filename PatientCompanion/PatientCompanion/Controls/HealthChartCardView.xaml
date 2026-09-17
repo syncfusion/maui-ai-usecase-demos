@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentView
+    x:Class="PatientCompanion.Controls.HealthChartCardView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:cards="clr-namespace:Syncfusion.Maui.Cards;assembly=Syncfusion.Maui.Cards"
+    xmlns:charts="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts">
+
+    <cards:SfCardView
+        Margin="0,12,0,0"
+        HeightRequest="450"
+        BackgroundColor="White"
+        CornerRadius="20">
+
+        <VerticalStackLayout
+            Padding="20"
+            Spacing="10">
+
+            <!-- Header -->
+
+            <Grid
+                HeightRequest="34"
+                ColumnDefinitions="*,Auto">
+
+                <Label
+                    Text="{Binding SelectedMetricCard.ChartTitle}"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    VerticalOptions="Start" />
+
+                <buttons:SfSegmentedControl
+                    Grid.Column="1"
+                    SegmentHeight="18"
+                    SegmentWidth="40"
+                    ShowSeparator="False"
+                    SelectionMode="SingleDeselect"
+                    SelectedIndex="{Binding SelectedRangeIndex, Mode=TwoWay}"
+                    CornerRadius="5"
+                    SegmentCornerRadius="5"
+                    VerticalOptions="Start"
+                    StrokeThickness="0"
+                    Background="#f2f4f6">
+
+                    <buttons:SfSegmentedControl.TextStyle>
+                        <buttons:SegmentTextStyle FontSize="12" FontAttributes="Bold"/>
+                    </buttons:SfSegmentedControl.TextStyle>
+
+                    <buttons:SfSegmentedControl.SelectionIndicatorSettings>
+                        <buttons:SelectionIndicatorSettings Background="#00685F" />
+                    </buttons:SfSegmentedControl.SelectionIndicatorSettings>
+
+                    <buttons:SfSegmentedControl.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>7D</x:String>
+                            <x:String>30D</x:String>
+                            <x:String>90D</x:String>
+                        </x:Array>
+                    </buttons:SfSegmentedControl.ItemsSource>
+
+                </buttons:SfSegmentedControl>
+
+            </Grid>
+
+            <!-- Current Reading -->
+
+            <HorizontalStackLayout
+                Margin="0,-6,0,0"
+                Spacing="4">
+
+                <Label
+                    Text="{Binding SelectedMetricCard.DisplayValue}"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    TextColor="#00685F"
+                    VerticalOptions="Center" />
+
+                <Label
+                    Text="{Binding SelectedMetricCard.Unit}"
+                    FontSize="14"
+                    VerticalOptions="Center" />
+
+            </HorizontalStackLayout>
+
+            <!-- Updated Time -->
+
+            <Label
+                Text="{Binding LastUpdatedText}"
+                FontSize="14"
+                TextColor="#64748B" />
+
+            <!-- Blood Pressure Chart -->
+
+            <charts:SfCartesianChart
+                IsVisible="{Binding ShowBloodPressureChart}">
+
+                <charts:SfCartesianChart.XAxes>
+
+                    <charts:DateTimeAxis
+                        x:Name="DateAxis"
+                        IntervalType="Days"
+                        ShowMajorGridLines="False">
+                        <charts:DateTimeAxis.AxisLineStyle>
+                            <charts:ChartLineStyle StrokeWidth="0" />
+                        </charts:DateTimeAxis.AxisLineStyle>
+                        <charts:DateTimeAxis.LabelStyle>
+                            <charts:ChartAxisLabelStyle LabelFormat="ddd"></charts:ChartAxisLabelStyle>
+                        </charts:DateTimeAxis.LabelStyle>
+                    </charts:DateTimeAxis>
+
+                </charts:SfCartesianChart.XAxes>
+
+                <charts:SfCartesianChart.YAxes>
+
+                    <charts:NumericalAxis
+                        Minimum="60"
+                        Maximum="140"
+                        Interval="20" >
+                        <charts:NumericalAxis.AxisLineStyle>
+                            <charts:ChartLineStyle StrokeWidth="0" />
+                        </charts:NumericalAxis.AxisLineStyle>
+                    </charts:NumericalAxis>
+
+                </charts:SfCartesianChart.YAxes>
+
+                <charts:SfCartesianChart.Legend>
+
+                    <charts:ChartLegend
+                        IsVisible="True"
+                        Placement="Bottom"
+                        ToggleSeriesVisibility="True" />
+
+                </charts:SfCartesianChart.Legend>
+
+                <charts:LineSeries
+                    ItemsSource="{Binding CurrentBloodPressureData}"
+                    XBindingPath="Date"
+                    YBindingPath="Systolic"
+                    Label="Systolic"
+                    Fill="#00685F"
+                    StrokeWidth="4" />
+
+                <charts:LineSeries
+                    ItemsSource="{Binding CurrentBloodPressureData}"
+                    XBindingPath="Date"
+                    YBindingPath="Diastolic"
+                    Label="Diastolic"
+                    Fill="#1565C0"
+                    StrokeWidth="4" />
+
+            </charts:SfCartesianChart>
+
+            <!-- Heart Rate Chart -->
+
+            <charts:SfCartesianChart
+                IsVisible="{Binding ShowHeartRateChart}">
+
+                <charts:SfCartesianChart.XAxes>
+                    <charts:DateTimeAxis IntervalType="Days" />
+                </charts:SfCartesianChart.XAxes>
+
+                <charts:SfCartesianChart.YAxes>
+
+                    <charts:NumericalAxis
+                        Minimum="50"
+                        Maximum="100"
+                        Interval="10" />
+
+                </charts:SfCartesianChart.YAxes>
+
+                <charts:LineSeries
+                    ItemsSource="{Binding CurrentChartData}"
+                    XBindingPath="Date"
+                    YBindingPath="Value"
+                    Label="Heart Rate"
+                    Fill="#E53935"
+                    StrokeWidth="4" />
+
+            </charts:SfCartesianChart>
+
+            <!-- SpO₂ Chart -->
+
+            <charts:SfCartesianChart
+                IsVisible="{Binding ShowSpo2Chart}">
+
+                <charts:SfCartesianChart.XAxes>
+                    <charts:DateTimeAxis IntervalType="Days" />
+                </charts:SfCartesianChart.XAxes>
+
+                <charts:SfCartesianChart.YAxes>
+
+                    <charts:NumericalAxis
+                        Minimum="90"
+                        Maximum="100"
+                        Interval="2" />
+
+                </charts:SfCartesianChart.YAxes>
+
+                <charts:LineSeries
+                    ItemsSource="{Binding CurrentChartData}"
+                    XBindingPath="Date"
+                    YBindingPath="Value"
+                    Label="SpO₂"
+                    Fill="#00ACC1"
+                    StrokeWidth="4" />
+
+            </charts:SfCartesianChart>
+
+        </VerticalStackLayout>
+
+    </cards:SfCardView>
+
+</ContentView>

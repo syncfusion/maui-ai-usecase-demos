@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentView
+    x:Class="PatientCompanion.Controls.AppointmentCardView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:PatientCompanion"
+    xmlns:cards="clr-namespace:Syncfusion.Maui.Cards;assembly=Syncfusion.Maui.Cards"
+    xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons">
+
+    <cards:SfCardView
+        Margin="0,0,0,0"
+        CornerRadius="16"
+        Background="#FFFFFF">
+
+        <VerticalStackLayout Spacing="0">
+
+            <!-- Teal Header Accent -->
+
+            <Border
+                HeightRequest="8"
+                BackgroundColor="#00685F"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 16,16,0,0" />
+
+            <VerticalStackLayout Padding="16" Spacing="16">
+
+                <!-- Date -->
+                <HorizontalStackLayout Spacing="8">
+
+                    <Label
+                        FontFamily="MaterialIcons"
+                        FontSize="18"
+                        Text="{x:Static local:MaterialIcons.CalendarMonth}"
+                        TextColor="#00685F"
+                        VerticalTextAlignment="Center" />
+
+                    <Label
+                        Text="{Binding DisplayDate}"
+                        TextColor="#3D4947"
+                        FontSize="12"
+                        VerticalOptions="Center" />
+
+                </HorizontalStackLayout>
+
+                <!-- Doctor -->
+
+                <Grid
+                    ColumnDefinitions="64,*"
+                    ColumnSpacing="16">
+
+                    <core:SfAvatarView
+                        WidthRequest="64"
+                        HeightRequest="64"
+                        CornerRadius="32"
+                        VerticalOptions="Center"
+                        ContentType="Custom"
+                        ImageSource="{Binding DoctorImage}" />
+
+                    <VerticalStackLayout
+                        Grid.Column="1"
+                        VerticalOptions="Center"
+                        Spacing="2">
+
+                        <Label
+                            Text="{Binding DoctorName}"
+                            TextColor="#191C1E"
+                            FontSize="17"
+                            FontAttributes="Bold"
+                            LineBreakMode="TailTruncation" />
+
+                        <Label
+                            Text="{Binding Specialization}"
+                            TextColor="#3D4947"
+                            FontSize="14" />
+
+                    </VerticalStackLayout>
+
+                </Grid>
+
+                <!-- Appointment Type -->
+
+                <Border
+                    Padding="12"
+                    BackgroundColor="#ECEEF0"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 12">
+
+                    <Grid
+                        ColumnDefinitions="24,*"
+                        ColumnSpacing="10">
+
+                        <Label
+                            FontFamily="MaterialIcons"
+                            FontSize="18"
+                            Text="{x:Static local:MaterialIcons.Videocam}"
+                            TextColor="#00685F"
+                            VerticalOptions="Center"
+                            VerticalTextAlignment="Center" />
+
+                        <VerticalStackLayout
+                            Grid.Column="1"
+                            Spacing="0">
+
+                            <Label
+                                Text="{Binding Time}"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                TextColor="#191C1E" />
+
+                            <Label
+                                Text="{Binding VisitType}"
+                                FontSize="12"
+                                TextColor="#3D4947" />
+
+                        </VerticalStackLayout>
+
+                    </Grid>
+
+                </Border>
+
+                <!-- Action Button -->
+
+                <buttons:SfButton
+                    HeightRequest="48"
+                    Text="View Details"
+                    FontSize="12"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    Background="#FFFFFF"
+                    TextColor="#00685F"
+                    Stroke="#BCC9C6"
+                    StrokeThickness="1" />
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+
+    </cards:SfCardView>
+
+</ContentView>

@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    x:Class="PatientCompanion.Views.MedicationsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:PatientCompanion.Controls"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
+    xmlns:cards="clr-namespace:Syncfusion.Maui.Cards;assembly=Syncfusion.Maui.Cards"
+    xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:local="clr-namespace:PatientCompanion"
+    BackgroundColor="#F7F9FB"
+    Shell.NavBarIsVisible="True">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <ScrollView Grid.Row="0">
+
+            <VerticalStackLayout
+                Padding="16"
+                Spacing="24">
+
+                <!-- Next Dose -->
+                <!-- Next Dose -->
+
+                <Border
+    BackgroundColor="#008378"
+    Padding="16"
+    StrokeThickness="0"
+    StrokeShape="RoundRectangle 16">
+
+                    <Grid
+        ColumnDefinitions="*,56"
+        ColumnSpacing="12">
+
+                        <!-- Left Content -->
+
+                        <VerticalStackLayout
+            Spacing="6"
+            VerticalOptions="Center">
+
+                            <Label
+                Text="Next Dose"
+                FontSize="22"
+                FontAttributes="Bold"
+                TextColor="White" />
+
+                            <Label
+    FontSize="15"
+    TextColor="#DDF4F1">
+
+                                <Label.FormattedText>
+
+                                    <FormattedString>
+
+                                        <Span Text="{Binding NextDose.Name}" />
+
+                                        <Span Text=" • " />
+
+                                        <Span Text="{Binding NextDose.Time}" />
+
+                                        <Span Text=" " />
+
+                                        <Span Text="{Binding NextDoseDateText}" />
+
+                                    </FormattedString>
+
+                                </Label.FormattedText>
+
+                            </Label>
+
+                        </VerticalStackLayout>
+
+                        <!-- Clock Icon -->
+
+                        <Border
+            Grid.Column="1"
+            WidthRequest="50"
+            HeightRequest="50"
+            BackgroundColor="#3FA79E"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 25"
+            HorizontalOptions="End"
+            VerticalOptions="Center">
+
+                            <Label
+                FontFamily="MaterialIcons"
+                Text="{x:Static local:MaterialIcons.AccessTime}"
+                FontSize="22"
+                TextColor="White"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center" />
+
+                        </Border>
+
+                    </Grid>
+
+                </Border>
+
+                <!-- Weekly Adherence -->
+
+                <Border
+                    BackgroundColor="White"
+                    Padding="16"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 16">
+
+                    <Grid ColumnDefinitions="*,80">
+
+                        <VerticalStackLayout
+                            Spacing="4"
+                            VerticalOptions="Center">
+
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="22"
+                                Text="Weekly Adherence"
+                                TextColor="#191C1E" />
+
+                            <Label
+                                FontSize="14"
+                                Text="Great job! You're on track."
+                                TextColor="#3D4947" />
+
+                        </VerticalStackLayout>
+
+                        <Grid
+                            Grid.Column="1"
+                            WidthRequest="64"
+                            HeightRequest="64"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center">
+
+                            <progressBar:SfCircularProgressBar
+                                Progress="{Binding WeeklyAdherence}"
+                                Maximum="100"
+                                ProgressThickness="6"
+                                TrackThickness="6"
+                                ProgressFill="#00685F"
+                                TrackFill="#E5E7EB" />
+
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                Text="{Binding WeeklyAdherence,StringFormat='{0}%'}"
+                                TextColor="#00685F" />
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- Filter Chips -->
+                <core:SfChipGroup
+                    ItemsSource="{Binding Filters}"
+                    ChipType="Choice"
+                    SelectedItem="{Binding SelectedChip, Mode=TwoWay}"
+                    SelectedChipBackground="#00685F"
+                    SelectedChipTextColor="White"
+                    ChipBackground="#F7F9FB"
+                    ChipTextColor="#6B7280"
+                    ChipStrokeThickness="0"
+                    ChipPadding="12,6,12,6"
+                    ItemHeight="30">
+
+                </core:SfChipGroup>
+
+                <!-- Medication List -->
+
+                <CollectionView
+    ItemsSource="{Binding MedicationGroups}"
+    SelectionMode="None">
+
+                    <CollectionView.ItemTemplate>
+
+                        <DataTemplate>
+
+                            <VerticalStackLayout
+                Spacing="10">
+
+                                <HorizontalStackLayout
+                    Margin="0,8,0,0"
+                    Spacing="6">
+
+                                    <Label
+                        Text="{Binding Icon}"
+                        FontFamily="MaterialIcons"
+                        FontSize="16"
+                        VerticalOptions="End"
+                        TextColor="#00685F"/>
+
+                                    <Label
+                        Text="{Binding Title}"
+                        FontAttributes="Bold"
+                        FontSize="14"/>
+
+                                </HorizontalStackLayout>
+
+                                <VerticalStackLayout
+                    BindableLayout.ItemsSource="{Binding Medications}">
+
+                                    <BindableLayout.ItemTemplate>
+
+                                        <DataTemplate>
+
+                                            <controls:MedicationCardView/>
+
+                                        </DataTemplate>
+
+                                    </BindableLayout.ItemTemplate>
+
+                                </VerticalStackLayout>
+
+                            </VerticalStackLayout>
+
+                        </DataTemplate>
+
+                    </CollectionView.ItemTemplate>
+
+                </CollectionView>
+
+                <!-- Disclaimer -->
+
+                <Border
+                    BackgroundColor="#E0E3E5"
+                    Opacity="0.6"
+                    Padding="16,10"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 10">
+
+                    <Label
+                        FontSize="11"
+                        HorizontalTextAlignment="Center"
+                        Text="ⓘ Sample data only — not medical advice"
+                        TextColor="#6D7A77" />
+
+                </Border>
+
+            </VerticalStackLayout>
+
+        </ScrollView>
+
+        <controls:BottomNavigationView Grid.Row="1" />
+
+        <!-- Footer -->
+
+    </Grid>
+
+</ContentPage>

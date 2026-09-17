@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    x:Class="PatientCompanion.Views.RecordsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:PatientCompanion"
+    xmlns:controls="clr-namespace:PatientCompanion.Controls"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+    xmlns:cards="clr-namespace:Syncfusion.Maui.Cards;assembly=Syncfusion.Maui.Cards"
+    BackgroundColor="#F7F9FB"
+    Shell.NavBarIsVisible="True">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <ScrollView Grid.Row="0">
+
+            <VerticalStackLayout
+                Padding="20"
+                Spacing="20">
+
+                <VerticalStackLayout
+                    IsVisible="{Binding IsRecordsTabVisible}"
+                    Spacing="12">
+
+                    <Label
+                        Text="Medical Records"
+                        FontSize="20"
+                        TextColor="#191C1E" />
+
+                    <cards:SfCardView
+    CornerRadius="20"
+    BackgroundColor="White">
+
+                        <listView:SfListView
+        ItemsSource="{Binding MedicalRecords}"
+                            HeightRequest="300"
+        SelectionMode="None"
+        AutoFitMode="Height">
+
+                            <listView:SfListView.ItemTemplate>
+
+                                <DataTemplate>
+
+                                    <Grid
+                    Padding="20,18"
+                    ColumnDefinitions="60,*,70"
+                    RowDefinitions="Auto">
+
+                                        <!-- Icon -->
+
+                                        <Border
+                        WidthRequest="48"
+                        HeightRequest="48"
+                        BackgroundColor="#E8EEFF"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 24"
+                        VerticalOptions="Start">
+
+                                            <Label
+                            FontFamily="MaterialIcons"
+                            FontSize="24"
+                            Text="{x:Static local:MaterialIcons.Description}"
+                            TextColor="#00685F"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            VerticalTextAlignment="Center" />
+
+                                        </Border>
+
+                                        <!-- Details -->
+
+                                        <VerticalStackLayout
+                        Grid.Column="1"
+                        Margin="16,0,0,0"
+                        Spacing="6">
+
+                                            <Label
+                            Text="{Binding Title}"
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            TextColor="#1D1B20"
+                            LineBreakMode="TailTruncation" />
+
+                                            <Label
+                            Text="{Binding Description}"
+                            FontSize="12"
+                            TextColor="#49454F" />
+
+                                        </VerticalStackLayout>
+
+                                        <!-- Open -->
+
+                                        <Label
+                        Grid.Column="2"
+                        Text="Open"
+                        FontSize="14"
+                        TextColor="#00796B"
+                        HorizontalTextAlignment="End"
+                        VerticalOptions="Center" />
+
+                                    </Grid>
+
+                                </DataTemplate>
+
+                            </listView:SfListView.ItemTemplate>
+
+                        </listView:SfListView>
+
+                    </cards:SfCardView>
+
+                </VerticalStackLayout>
+
+                <!-- Disclaimer -->
+
+                <Label
+                    Text="Sample data only — not medical advice"
+                    FontSize="12"
+                    TextColor="#6D7A77"
+                    HorizontalTextAlignment="Center" />
+
+            </VerticalStackLayout>
+
+        </ScrollView>
+
+        <controls:BottomNavigationView Grid.Row="1" />
+
+        <!-- Footer -->
+
+    </Grid>
+
+</ContentPage>

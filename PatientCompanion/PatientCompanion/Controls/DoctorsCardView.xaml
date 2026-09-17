@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentView
+    x:Class="PatientCompanion.Controls.DoctorsCardView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:PatientCompanion"
+    xmlns:cards="clr-namespace:Syncfusion.Maui.Cards;assembly=Syncfusion.Maui.Cards"
+    xmlns:avatar="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:views="clr-namespace:PatientCompanion.Views">
+
+    <cards:SfCardView
+        Margin="0,0,0,16"
+        CornerRadius="16"
+        Background="#FFFFFF"
+        HeightRequest="250">
+
+        <Grid Padding="16">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="12" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="16" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Doctor Header -->
+
+            <Grid
+                Grid.Row="0"
+                ColumnDefinitions="72,*">
+
+                <!-- Avatar -->
+
+                <Grid>
+
+                    <avatar:SfAvatarView
+                        WidthRequest="64"
+                        HeightRequest="64"
+                        CornerRadius="32"
+                        ContentType="Custom"
+                        ImageSource="{Binding Image}" />
+
+                    <Border
+                        WidthRequest="14"
+                        HeightRequest="14"
+                        BackgroundColor="#35C759"
+                        HorizontalOptions="End"
+                        VerticalOptions="End"
+                        Stroke="White"
+                        StrokeThickness="2"
+                        StrokeShape="RoundRectangle 7" />
+
+                </Grid>
+
+                <!-- Details -->
+
+                <VerticalStackLayout
+                    Grid.Column="1"
+                    Margin="14,0,0,0"
+                    Spacing="4">
+
+                    <HorizontalStackLayout Spacing="6">
+
+                        <Label
+                            Text="{Binding Name}"
+                            FontSize="18"
+                            FontAttributes="Bold"
+                            TextColor="#191C1E" />
+
+                        <Label
+                            FontFamily="MaterialIcons"
+                            FontSize="16"
+                            Text="{x:Static local:MaterialIcons.CheckCircle}"
+                            TextColor="#00685F"
+                            VerticalOptions="Center"
+                            VerticalTextAlignment="Center" />
+
+                    </HorizontalStackLayout>
+
+                    <Label
+                        Text="{Binding Specialization}"
+                        FontSize="14"
+                        TextColor="#3D4947" />
+
+                    <!-- Rating Row -->
+
+                    <HorizontalStackLayout
+                        Spacing="6">
+
+                        <Border
+                            Padding="6,2"
+                            BackgroundColor="#DBE1FF"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 6">
+
+                            <HorizontalStackLayout
+                                Spacing="4">
+
+                                <Label
+                                    Text="★"
+                                    TextColor="#0051D5"
+                                    FontSize="12" />
+
+                                <Label
+                                    Text="{Binding Rating}"
+                                    FontSize="12"
+                                    FontAttributes="Bold"
+                                    TextColor="#0051D5" />
+
+                            </HorizontalStackLayout>
+
+                        </Border>
+
+                        <Label
+                            VerticalOptions="Center"
+                            FontSize="13"
+                            TextColor="#3D4947"
+                            Text="(120 reviews)" />
+
+                    </HorizontalStackLayout>
+
+                </VerticalStackLayout>
+
+            </Grid>
+
+            <!-- Availability Card -->
+
+            <Border
+                Grid.Row="2"
+                Padding="12"
+                BackgroundColor="#F2F4F6"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 12">
+
+                <Grid ColumnDefinitions="40,*">
+
+                    <Border
+                        WidthRequest="32"
+                        HeightRequest="32"
+                        BackgroundColor="#FFFFFF"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 16">
+
+                        <Label
+                            FontFamily="MaterialIcons"
+                            FontSize="18"
+                            Text="{x:Static local:MaterialIcons.CalendarMonth}"
+                            TextColor="#00685F"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            VerticalTextAlignment="Center" />
+
+                    </Border>
+
+                    <VerticalStackLayout
+                        Grid.Column="1"
+                        Margin="10,0,0,0"
+                        Spacing="2">
+
+                        <Label
+                            Text="Next Available"
+                            FontSize="12"
+                            TextColor="#3D4947" />
+
+                        <Label
+                            Text="{Binding AvailableSlots[0]}"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            TextColor="#191C1E" />
+
+                    </VerticalStackLayout>
+
+                </Grid>
+
+            </Border>
+
+            <!-- Select Button -->
+
+            <buttons:SfButton
+    Grid.Row="4"
+    HeightRequest="48"
+    CornerRadius="24"
+    Text="Select Doctor →"
+    FontAttributes="Bold"
+    Background="#00685F"
+    TextColor="White"
+    Command="{Binding Source={RelativeSource AncestorType={x:Type views:AppointmentDoctorSelectionView}}, Path=BindingContext.SelectDoctorCommand}"
+    CommandParameter="{Binding}" />
+
+        </Grid>
+
+    </cards:SfCardView>
+
+</ContentView>

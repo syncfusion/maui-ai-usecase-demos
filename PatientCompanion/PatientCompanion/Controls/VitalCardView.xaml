@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentView
+    x:Class="PatientCompanion.Controls.VitalCardView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:PatientCompanion"
+    xmlns:cards="clr-namespace:Syncfusion.Maui.Cards;assembly=Syncfusion.Maui.Cards">
+
+    <cards:SfCardView
+    WidthRequest="280"
+    HeightRequest="125"
+    VerticalOptions="Start"
+    CornerRadius="16"
+        Background="#FFFFFF">
+
+        <VerticalStackLayout
+            Padding="16"
+            Spacing="14">
+
+            <!-- Header -->
+
+            <Grid ColumnDefinitions="*,Auto">
+
+                <HorizontalStackLayout Spacing="8">
+
+                    <Label
+                        FontFamily="MaterialIcons"
+                        FontSize="16"
+                        Text="{Binding Icon}"
+                        TextColor="#00685F"
+                        VerticalTextAlignment="Center" />
+
+                    <Label
+                        FontSize="12"
+                        Text="{Binding Title}"
+                        TextColor="#3D4947"
+                        VerticalOptions="Center" />
+
+                </HorizontalStackLayout>
+
+                <Label
+                    Grid.Column="1"
+                    FontFamily="MaterialIcons"
+                    FontSize="16"
+                    Text="{Binding TrendIcon}"
+                    TextColor="#00685F"
+                    VerticalOptions="Center" />
+
+            </Grid>
+
+            <!-- Value -->
+
+            <HorizontalStackLayout
+                Spacing="4">
+
+                <Label
+                    FontSize="24"
+                    FontAttributes="Bold"
+                    Text="{Binding Value}"
+                    TextColor="#191C1E" />
+
+                <Label
+                    FontSize="12"
+                    Text="{Binding Unit}"
+                    TextColor="#3D4947"
+                    VerticalOptions="End" />
+
+            </HorizontalStackLayout>
+
+            <!-- Footer -->
+
+            <Label
+                FontSize="11"
+                Text="{Binding UpdatedText}"
+                TextColor="#6D7A77" />
+
+        </VerticalStackLayout>
+
+    </cards:SfCardView>
+
+</ContentView>
