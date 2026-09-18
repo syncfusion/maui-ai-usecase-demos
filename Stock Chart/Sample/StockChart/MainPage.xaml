@@ -1,0 +1,747 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:calendar="clr-namespace:Syncfusion.Maui.Calendar;assembly=Syncfusion.Maui.Calendar"
+             xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+             xmlns:converters="clr-namespace:StockChart.Converters"
+             xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:models="clr-namespace:StockChart.Models"
+             xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:sliders="clr-namespace:Syncfusion.Maui.Sliders;assembly=Syncfusion.Maui.Sliders"
+             xmlns:input="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
+             xmlns:vm="clr-namespace:StockChart.ViewModels"
+             x:Name="RootPage"
+             x:Class="StockChart.MainPage"
+             x:DataType="vm:StockChartViewModel"
+             Background="{AppThemeBinding Light=#F8FAFC, Dark=#0F172A}"
+             Shell.NavBarIsVisible="False">
+
+    <ContentPage.Resources>
+        <converters:StockEqualityConverter x:Key="EqualityConverter" />
+        <converters:StockInequalityConverter x:Key="InequalityConverter" />
+        <converters:StockSelectionBackgroundConverter x:Key="StockSelectionBackgroundConverter" />
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <converters:WatchlistStarColorConverter x:Key="WatchlistStarColorConverter" />
+        <converters:MobilePickerItemAppearanceConverter x:Key="MobilePickerItemAppearanceConverter" />
+        <converters:MobilePickerBackgroundConverter x:Key="MobilePickerBackgroundConverter" />
+        <x:String x:Key="DisclaimerMessage">The stock data displayed here is for demonstration purposes only and represents the period from January 01, 2023 to January 01, 2025. This information does not reflect any actual market values or investment performances.</x:String>
+
+        <DataTemplate x:Key="DisclaimerContentTemplate" x:DataType="vm:StockChartViewModel">
+            <Border Margin="16,0" Padding="22,22,22,20" StrokeShape="RoundRectangle 28" Background="{AppThemeBinding Light=#F8F8FF, Dark=#1E293B}">
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="28">
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                        <Label Text="Disclaimer" FontSize="28" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" VerticalOptions="Center" />
+                        <buttons:SfButton Grid.Column="1" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="24" WidthRequest="40" HeightRequest="40" Padding="0" Background="Transparent" TextColor="{AppThemeBinding Light=#374151, Dark=#CBD5E1}" Clicked="OnDisclaimerCloseClicked" AutomationId="DisclaimerCloseButton" />
+                    </Grid>
+                    <Label Grid.Row="1" Text="{StaticResource DisclaimerMessage}" FontSize="17" LineHeight="1.35" TextColor="{AppThemeBinding Light=#2F3440, Dark=#E5E7EB}" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <Style TargetType="editors:SfComboBox">
+            <Setter Property="DropDownBackground" Value="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" />
+            <Setter Property="SelectedDropDownItemBackground" Value="{AppThemeBinding Light=#EFF6FF, Dark=#334155}" />
+            <Setter Property="DropDownStroke" Value="{AppThemeBinding Light=#CBD5E1, Dark=#475569}" />
+            <Setter Property="DropDownStrokeThickness" Value="1" />
+            <Setter Property="DropDownCornerRadius" Value="8" />
+            <Setter Property="IsDropDownShadowVisible" Value="True" />
+        </Style>
+
+        <popup:SfPopup x:Key="SettingsPopup" ShowHeader="False" ShowFooter="False" ShowCloseButton="False" StaysOpen="False">
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:StockChartViewModel">
+                    <Border Padding="28,24,28,20" Stroke="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 28,28,0,0" Background="{AppThemeBinding Light=#F8F8FF, Dark=#1E293B}">
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="18">
+                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                <Label Text="Settings" FontSize="28" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" VerticalOptions="Center" />
+                                <buttons:SfButton Grid.Column="1" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="24" WidthRequest="36" HeightRequest="36" Padding="0" Background="Transparent" TextColor="{AppThemeBinding Light=#374151, Dark=#CBD5E1}" Clicked="OnSettingsCloseClicked" />
+                            </Grid>
+                            <Label Grid.Row="1" Text="Chart Interactions" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" />
+                            <HorizontalStackLayout Grid.Row="2" Spacing="16">
+                                <CheckBox IsChecked="{Binding SettingsDraft.IsTooltipEnabled, Mode=TwoWay}" Color="{AppThemeBinding Light=#49679D, Dark=#93A9D7}" VerticalOptions="Center" />
+                                <Label Text="Enable Tooltip" FontSize="16" VerticalOptions="Center" TextColor="{AppThemeBinding Light=#374151, Dark=#E5E7EB}" />
+                            </HorizontalStackLayout>
+                            <Label Grid.Row="3" Text="Chart Axis Type" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" />
+                            <Grid Grid.Row="4" ColumnDefinitions="*,*" ColumnSpacing="20">
+                                <RadioButton Grid.Column="0" Content="Numeric Axis" GroupName="AxisType" IsChecked="{Binding SettingsDraft.IsLogarithmicAxis, Converter={StaticResource InverseBooleanConverter}, Mode=TwoWay}" FontSize="16" TextColor="{AppThemeBinding Light=#374151, Dark=#E5E7EB}" />
+                                <RadioButton Grid.Column="1" Content="Log Axis" GroupName="AxisType" IsChecked="{Binding SettingsDraft.IsLogarithmicAxis, Mode=TwoWay}" FontSize="16" TextColor="{AppThemeBinding Light=#374151, Dark=#E5E7EB}" />
+                            </Grid>
+                            <Label Grid.Row="5" Text="Chart Axis Positioning" FontFamily="OpenSansSemibold" FontSize="18" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" />
+                            <VerticalStackLayout Grid.Row="6" Spacing="10">
+                                <HorizontalStackLayout Spacing="16">
+                                    <CheckBox IsChecked="{Binding SettingsDraft.IsAxisInverted, Mode=TwoWay}" Color="{AppThemeBinding Light=#49679D, Dark=#93A9D7}" />
+                                    <Label Text="Inverted Axis" FontSize="16" VerticalOptions="Center" TextColor="{AppThemeBinding Light=#374151, Dark=#E5E7EB}" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="16">
+                                    <CheckBox IsChecked="{Binding SettingsDraft.IsAxisOpposed, Mode=TwoWay}" Color="{AppThemeBinding Light=#49679D, Dark=#93A9D7}" />
+                                    <Label Text="Opposed Y Axis" FontSize="16" VerticalOptions="Center" TextColor="{AppThemeBinding Light=#374151, Dark=#E5E7EB}" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="16">
+                                    <CheckBox IsChecked="{Binding SettingsDraft.IsRangeControlEnabled, Mode=TwoWay}" Color="{AppThemeBinding Light=#49679D, Dark=#93A9D7}" />
+                                    <Label Text="Enable Range Control" FontSize="16" VerticalOptions="Center" TextColor="{AppThemeBinding Light=#374151, Dark=#E5E7EB}" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout HorizontalOptions="End" Spacing="26" Margin="0,6,0,0">
+                                    <buttons:SfButton Text="Cancel" FontSize="16" Background="Transparent" TextColor="{AppThemeBinding Light=#49679D, Dark=#93A9D7}" Clicked="OnSettingsCancelClicked" />
+                                    <buttons:SfButton Text="Apply" FontSize="16" Background="Transparent" TextColor="{AppThemeBinding Light=#49679D, Dark=#93A9D7}" Clicked="OnSettingsApplyClicked" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+
+        <popup:SfPopup x:Key="DisclaimerPopup" WidthRequest="680" HeightRequest="250" ShowHeader="False" ShowFooter="False" ShowCloseButton="False" StaysOpen="False" ContentTemplate="{StaticResource DisclaimerContentTemplate}">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle CornerRadius="0" PopupBackground="Transparent" Stroke="Transparent" StrokeThickness="0" />
+            </popup:SfPopup.PopupStyle>
+        </popup:SfPopup>
+
+        <popup:SfPopup x:Key="InformationPopup" WidthRequest="350" HeightRequest="175" ShowHeader="False" ShowFooter="False" ShowCloseButton="False" StaysOpen="False">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle CornerRadius="6" Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#334155}" StrokeThickness="1" />
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:StockChartViewModel">
+                    <Grid HorizontalOptions="Center" VerticalOptions="Center">
+                        <Label Margin="14,10" Text="{StaticResource DisclaimerMessage}" FontSize="16" LineHeight="1.3" TextColor="{AppThemeBinding Light=#2F3440, Dark=#E5E7EB}" />
+                    </Grid>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+
+        <popup:SfPopup x:Key="WatchlistMenuPopup" WidthRequest="240" HeightRequest="105" ShowHeader="False" ShowFooter="False" ShowCloseButton="False" StaysOpen="False">
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:StockChartViewModel">
+                    <Border Padding="0" StrokeShape="RoundRectangle 6" Background="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#334155}" StrokeThickness="1">
+                        <VerticalStackLayout Spacing="0" VerticalOptions="Center">
+                            <buttons:SfButton FontSize="14" HorizontalOptions="Fill" Padding="16,0" HeightRequest="52" Background="Transparent" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" Clicked="OnEditWatchlistFromMenuClicked" AutomationId="EditWatchlistMenuButton" SemanticProperties.Description="Edit watchlist">
+                                <buttons:SfButton.Content>
+                                    <DataTemplate>
+                                        <HorizontalStackLayout Spacing="12" HorizontalOptions="Center" VerticalOptions="Center">
+                                            <Label Text="&#xE3C9;" FontFamily="MaterialIcons" FontSize="18" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" VerticalOptions="Center" />
+                                            <Label Text="Edit Watchlist" FontSize="14" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                    </DataTemplate>
+                                </buttons:SfButton.Content>
+                            </buttons:SfButton>
+                            <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E2E8F0, Dark=#334155}" IsVisible="{Binding CanDeleteSelectedWatchlist}" />
+                            <buttons:SfButton FontSize="14" HorizontalOptions="Fill" Padding="16,0" HeightRequest="52" Background="Transparent" TextColor="{AppThemeBinding Light=#DC2626, Dark=#FCA5A5}" Clicked="OnDeleteWatchlistFromMenuClicked" IsVisible="{Binding CanDeleteSelectedWatchlist}" AutomationId="DeleteWatchlistMenuButton" SemanticProperties.Description="Delete watchlist">
+                                <buttons:SfButton.Content>
+                                    <DataTemplate>
+                                        <HorizontalStackLayout Spacing="12" HorizontalOptions="Center" VerticalOptions="Center">
+                                            <Label Text="&#xE872;" FontFamily="MaterialIcons" FontSize="18" TextColor="{AppThemeBinding Light=#DC2626, Dark=#FCA5A5}" VerticalOptions="Center" />
+                                            <Label Text="Delete Watchlist" FontSize="14" TextColor="{AppThemeBinding Light=#DC2626, Dark=#FCA5A5}" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                    </DataTemplate>
+                                </buttons:SfButton.Content>
+                            </buttons:SfButton>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+
+        <popup:SfPopup x:Key="DeleteWatchlistPopup" WidthRequest="530" HeightRequest="235" ShowHeader="False" ShowFooter="False" ShowCloseButton="False" StaysOpen="False">
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:StockChartViewModel">
+                    <Border Padding="30,26,30,24" Stroke="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 6,6,0,0" Background="{AppThemeBinding Light=#F8F8FF, Dark=#1E293B}">
+                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="18">
+                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                <Label Text="Delete Watchlist" FontSize="26" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" VerticalOptions="Center" />
+                                <buttons:SfButton Grid.Column="1" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="24" WidthRequest="40" HeightRequest="40" Padding="0" Background="Transparent" TextColor="{AppThemeBinding Light=#374151, Dark=#CBD5E1}" Clicked="OnDeleteWatchlistCloseClicked" AutomationId="DeleteWatchlistCloseButton" />
+                            </Grid>
+                            <Label Grid.Row="1" Text="{Binding DeleteWatchlistConfirmationText}" FontSize="17" TextColor="{AppThemeBinding Light=#374151, Dark=#E5E7EB}" />
+                            <HorizontalStackLayout Grid.Row="2" HorizontalOptions="End" Spacing="24">
+                                <buttons:SfButton Text="Cancel" FontSize="16" Background="Transparent" TextColor="{AppThemeBinding Light=#49679D, Dark=#93A9D7}" Clicked="OnDeleteWatchlistCloseClicked" />
+                                <buttons:SfButton Text="Delete" FontSize="16" Background="Transparent" TextColor="#DC2626" Clicked="OnDeleteWatchlistConfirmClicked" AutomationId="ConfirmDeleteWatchlistButton" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+
+        <popup:SfPopup x:Key="FavoritePopup" WidthRequest="420" HeightRequest="360" ShowHeader="False" ShowFooter="False" ShowCloseButton="False" StaysOpen="False">
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:StockChartViewModel">
+                    <Border Padding="28,24,28,20" Stroke="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 24,24,0,0" Background="{AppThemeBinding Light=#F8F8FF, Dark=#1E293B}">
+                        <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="14">
+                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                <Label Text="Add stock to watchlist" FontSize="24" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" VerticalOptions="Center" />
+                                <buttons:SfButton Grid.Column="1" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="24" WidthRequest="40" HeightRequest="40" Padding="0" Background="Transparent" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" Clicked="OnFavoriteCloseClicked" />
+                            </Grid>
+                            <Label Grid.Row="1" Text="Select watchlists" FontSize="14" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" />
+                            <CollectionView Grid.Row="2" ItemsSource="{Binding AddStockWatchlists}" SelectionMode="None" VerticalScrollBarVisibility="Never" AutomationId="FavoriteWatchlists">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:WatchlistSelectionModel">
+                                        <Grid HeightRequest="48" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Color="{AppThemeBinding Light=#49679D, Dark=#93A9D7}" VerticalOptions="Center" />
+                                            <Label Grid.Column="1" Text="{Binding Name}" FontSize="15" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" VerticalOptions="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                            <HorizontalStackLayout Grid.Row="3" HorizontalOptions="End" Spacing="16">
+                                <buttons:SfButton Text="Cancel" FontSize="14" Background="Transparent" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Clicked="OnFavoriteCloseClicked" />
+                                <buttons:SfButton Text="Save" FontSize="14" Background="Transparent" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Clicked="OnFavoriteApplyClicked" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+
+        <popup:SfPopup x:Key="RemoveStockPopup" WidthRequest="530" HeightRequest="360" ShowHeader="False" ShowFooter="False" ShowCloseButton="False" StaysOpen="False">
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:StockChartViewModel">
+                    <Border Padding="30,26,30,24" Stroke="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 6,6,0,0" Background="{AppThemeBinding Light=#F8F8FF, Dark=#1E293B}">
+                        <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="16">
+                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                <Label Text="Remove Stock in Watchlist" FontSize="24" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" VerticalOptions="Center" />
+                                <buttons:SfButton Grid.Column="1" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="24" WidthRequest="40" HeightRequest="40" Padding="0" Background="Transparent" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" Clicked="OnRemoveStockCloseClicked" />
+                            </Grid>
+                            <Label Grid.Row="1" Text="Select Watchlist to Remove From" FontSize="18" TextColor="{AppThemeBinding Light=#374151, Dark=#E5E7EB}" />
+                            <CollectionView Grid.Row="2" ItemsSource="{Binding AddStockWatchlists}" SelectionMode="None" VerticalScrollBarVisibility="Never" AutomationId="RemoveStockWatchlists">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:WatchlistSelectionModel">
+                                        <Grid HeightRequest="48" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Color="{AppThemeBinding Light=#49679D, Dark=#93A9D7}" VerticalOptions="Center" />
+                                            <Label Grid.Column="1" Text="{Binding Name}" FontSize="15" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" VerticalOptions="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                            <HorizontalStackLayout Grid.Row="3" HorizontalOptions="End" Spacing="16">
+                                <buttons:SfButton Text="Cancel" FontSize="14" Background="Transparent" TextColor="{AppThemeBinding Light=#49679D, Dark=#93A9D7}" Clicked="OnRemoveStockCloseClicked" />
+                                <buttons:SfButton Text="Remove" FontSize="14" Background="Transparent" TextColor="{AppThemeBinding Light=#49679D, Dark=#93A9D7}" Clicked="OnRemoveStockApplyClicked" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+
+        <popup:SfPopup x:Key="AddStockPopup" ShowHeader="False" ShowFooter="False" ShowCloseButton="False" StaysOpen="False">
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:StockChartViewModel">
+                    <Border Padding="28,24,28,24" Stroke="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 20,20,0,0" Background="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="12">
+                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                <Label Text="Add stock" FontSize="26" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" VerticalOptions="Center" />
+                                <buttons:SfButton Grid.Column="1" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="24" WidthRequest="40" HeightRequest="40" Padding="0" Background="Transparent" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" Clicked="OnAddStockCloseClicked" />
+                            </Grid>
+                            <Label Grid.Row="1" Text="Search stock" FontSize="14" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" />
+                            <editors:SfComboBox Grid.Row="2" HeightRequest="48" ItemsSource="{Binding AddStockCandidates}" SelectedItem="{Binding PendingStock, Mode=TwoWay}" Text="{Binding AddStockSearchText, Mode=TwoWay}" DisplayMemberPath="Company" TextMemberPath="Company" Placeholder="Search stock" PlaceholderColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" IsEditable="True" IsFilteringEnabled="True" TextSearchMode="Contains" ShowSuggestionsOnFocus="True" IsClearButtonVisible="False" ShowBorder="True" Stroke="{AppThemeBinding Light=#64748B, Dark=#475569}" MaxDropDownHeight="170" NoResultsFoundText="No stocks found" AutomationId="AddStockSearch">
+                                <editors:SfComboBox.DropDownButtonSettings>
+                                    <editors:DropDownButtonSettings Width="42" Height="46">
+                                        <editors:DropDownButtonSettings.View>
+                                            <Grid WidthRequest="42" HeightRequest="46">
+                                                <Label Text="&#xE8B6;" FontFamily="MaterialIcons" FontSize="20" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                            </Grid>
+                                        </editors:DropDownButtonSettings.View>
+                                    </editors:DropDownButtonSettings>
+                                </editors:SfComboBox.DropDownButtonSettings>
+                                <editors:SfComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="models:StockModel">
+                                        <Grid HeightRequest="58" Padding="12,6" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                            <Border WidthRequest="34" HeightRequest="34" Padding="6" StrokeShape="RoundRectangle 17" Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#475569}" Background="{AppThemeBinding Light=#FFFFFF, Dark=#0F172A}">
+                                                <Image Source="{Binding LogoImageSource}" Aspect="AspectFit" />
+                                            </Border>
+                                            <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                                <Label Text="{Binding Company}" FontSize="14" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" />
+                                                <Label Text="{Binding OfficialName}" FontSize="12" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                                            </VerticalStackLayout>
+                                            <Label Grid.Column="2" Text="{Binding Symbol}" FontSize="12" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" VerticalOptions="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </editors:SfComboBox.ItemTemplate>
+                            </editors:SfComboBox>
+                            <Label Grid.Row="3" Text="Add to watchlists" FontSize="14" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" />
+                            <CollectionView Grid.Row="4" ItemsSource="{Binding AddStockWatchlists}" SelectionMode="None" HeightRequest="112" AutomationId="AddStockWatchlists">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:WatchlistSelectionModel">
+                                        <Grid HeightRequest="48" ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Color="{AppThemeBinding Light=#49679D, Dark=#93A9D7}" VerticalOptions="Center" />
+                                            <Label Grid.Column="1" Text="{Binding Name}" FontSize="14" VerticalOptions="Center" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                            <buttons:SfButton Grid.Row="5" FontSize="14" HorizontalOptions="Start" HeightRequest="40" Padding="12,8" CornerRadius="20" Background="Transparent" Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#64748B}" StrokeThickness="1" Clicked="OnAddWatchlistFromSelectorClicked" AutomationId="NewWatchlistFromAddStockButton" SemanticProperties.Description="New watchlist">
+                                <buttons:SfButton.Content>
+                                    <DataTemplate>
+                                        <HorizontalStackLayout Spacing="8" Margin="8,0,8,0" VerticalOptions="Center">
+                                            <Label Text="&#xE145;" FontFamily="MaterialIcons" FontSize="18" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" VerticalOptions="Center" />
+                                            <Label Text="New Watchlist" FontSize="14" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                    </DataTemplate>
+                                </buttons:SfButton.Content>
+                            </buttons:SfButton>
+                            <HorizontalStackLayout Grid.Row="6" HorizontalOptions="End" Spacing="12" Margin="0,4,0,50">
+                                <buttons:SfButton Text="Cancel" FontSize="14" Background="Transparent" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Clicked="OnAddStockCloseClicked" />
+                                <buttons:SfButton Text="Add" FontSize="14" Background="Transparent" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Clicked="OnAddStockApplyClicked" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+
+        <popup:SfPopup x:Key="NewWatchlistPopup" ShowHeader="False" ShowFooter="False" ShowCloseButton="False" StaysOpen="False">
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:StockChartViewModel">
+                    <Border Padding="30,26,30,24" Stroke="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 28,28,0,0" Background="{AppThemeBinding Light=#F8F8FF, Dark=#1E293B}">
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="14">
+                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                <Label Text="New Watchlist" FontSize="26" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" VerticalOptions="Center" />
+                                <buttons:SfButton Grid.Column="1" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="24" WidthRequest="40" HeightRequest="40" Padding="0" Background="Transparent" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" Clicked="OnNewWatchlistCloseClicked" />
+                            </Grid>
+                            <Label Grid.Row="1" Text="Watchlist name" FontSize="14" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" />
+                            <Entry Grid.Row="2" Text="{Binding NewWatchlistName, Mode=TwoWay}" Placeholder="Enter watchlist name" FontSize="14" VerticalOptions="Center" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" PlaceholderColor="{AppThemeBinding Light=#CBD5E1, Dark=#64748B}" AutomationId="NewWatchlistNameEntry" />
+                            <Label Grid.Row="3" Text="{Binding NewWatchlistNameError}" FontSize="12" TextColor="#DC2626" IsVisible="{Binding HasNewWatchlistNameError}" />
+                            <Label Grid.Row="4" Text="Add stock (optional)" FontSize="14" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" />
+                            <editors:SfComboBox Grid.Row="5" HeightRequest="48" ShowBorder="False" ItemsSource="{Binding Stocks}" SelectedItem="{Binding NewWatchlistStock, Mode=TwoWay}" Text="{Binding NewWatchlistSearchText, Mode=TwoWay}" DisplayMemberPath="Company" TextMemberPath="Company" Placeholder="Search stock" PlaceholderColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" IsEditable="True" IsFilteringEnabled="True" TextSearchMode="Contains" ShowSuggestionsOnFocus="True" IsClearButtonVisible="False" Stroke="{AppThemeBinding Light=#64748B, Dark=#475569}" MaxDropDownHeight="170" NoResultsFoundText="No stocks found" AutomationId="NewWatchlistStockSearch">
+                                <editors:SfComboBox.DropDownButtonSettings>
+                                    <editors:DropDownButtonSettings Width="42" Height="46">
+                                        <editors:DropDownButtonSettings.View>
+                                            <Grid WidthRequest="42" HeightRequest="46">
+                                                <Label Text="&#xE8B6;" FontFamily="MaterialIcons" FontSize="20" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                            </Grid>
+                                        </editors:DropDownButtonSettings.View>
+                                    </editors:DropDownButtonSettings>
+                                </editors:SfComboBox.DropDownButtonSettings>
+                                <editors:SfComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="models:StockModel">
+                                        <Grid HeightRequest="58" Padding="12,6" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                            <Border WidthRequest="34" HeightRequest="34" Padding="6" StrokeShape="RoundRectangle 17" Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#475569}" Background="{AppThemeBinding Light=#FFFFFF, Dark=#0F172A}">
+                                                <Image Source="{Binding LogoImageSource}" Aspect="AspectFit" />
+                                            </Border>
+                                            <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                                <Label Text="{Binding Company}" FontSize="14" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" />
+                                                <Label Text="{Binding OfficialName}" FontSize="12" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                                            </VerticalStackLayout>
+                                            <Label Grid.Column="2" Text="{Binding Symbol}" FontSize="12" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" VerticalOptions="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </editors:SfComboBox.ItemTemplate>
+                            </editors:SfComboBox>
+                            <HorizontalStackLayout Grid.Row="6" HorizontalOptions="End" Spacing="12" Margin="0,8,0,0">
+                                <buttons:SfButton Text="Cancel" FontSize="14" Background="Transparent" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Clicked="OnNewWatchlistCloseClicked" />
+                                <buttons:SfButton Text="Create" FontSize="14" Background="Transparent" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" IsEnabled="{Binding CanCreateWatchlist}" Clicked="OnNewWatchlistCreateClicked" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+
+        <popup:SfPopup x:Key="EditWatchlistPopup" ShowHeader="False" ShowFooter="False" ShowCloseButton="False" StaysOpen="False">
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:StockChartViewModel">
+                    <Border Padding="30,26,30,24" Stroke="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 6,6,0,0" Background="{AppThemeBinding Light=#F8F8FF, Dark=#1E293B}">
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="12">
+                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                <Label Text="Edit Watchlist" FontSize="26" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" VerticalOptions="Center" />
+                                <buttons:SfButton Grid.Column="1" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="24" WidthRequest="40" HeightRequest="40" Padding="0" Background="Transparent" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" Clicked="OnEditWatchlistCloseClicked" />
+                            </Grid>
+                            <Label Grid.Row="1" Text="Edit Watchlist" FontSize="14" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" />
+                            <Entry  Grid.Row="2" Text="{Binding EditWatchlistName, Mode=TwoWay}" Placeholder="Enter watchlist name" FontSize="14" VerticalOptions="Center" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" PlaceholderColor="{AppThemeBinding Light=#CBD5E1, Dark=#64748B}" AutomationId="EditWatchlistNameEntry" />
+                            <Label Grid.Row="3" Text="Select stock to add to your watchlist" Margin="0,20,0,0" FontSize="14" TextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" />
+                            <editors:SfComboBox Grid.Row="4" HeightRequest="48" ItemsSource="{Binding EditWatchlistCandidates}" SelectedItem="{Binding EditWatchlistCandidate, Mode=TwoWay}" Text="{Binding EditWatchlistSearchText, Mode=TwoWay}" DisplayMemberPath="Company" TextMemberPath="Company" Placeholder="Search Stocks" PlaceholderColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" IsEditable="True" IsFilteringEnabled="True" TextSearchMode="Contains" ShowSuggestionsOnFocus="True" IsClearButtonVisible="False" ShowBorder="True" Stroke="{AppThemeBinding Light=#64748B, Dark=#475569}" MaxDropDownHeight="170" NoResultsFoundText="No stocks found" AutomationId="EditWatchlistStockSearch">
+                                <editors:SfComboBox.DropDownButtonSettings>
+                                    <editors:DropDownButtonSettings Width="42" Height="46">
+                                        <editors:DropDownButtonSettings.View>
+                                            <Grid WidthRequest="42" HeightRequest="46">
+                                                <Label Text="&#xE8B6;" FontFamily="MaterialIcons" FontSize="20" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                            </Grid>
+                                        </editors:DropDownButtonSettings.View>
+                                    </editors:DropDownButtonSettings>
+                                </editors:SfComboBox.DropDownButtonSettings>
+                                <editors:SfComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="models:StockSelectionModel">
+                                        <Grid HeightRequest="48" Padding="12,6" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                            <Border WidthRequest="32" HeightRequest="32" Padding="5" StrokeShape="RoundRectangle 16" Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#475569}">
+                                                <Image Source="{Binding LogoImageSource}" Aspect="AspectFit" />
+                                            </Border>
+                                            <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                                <Label Text="{Binding Company}" FontSize="14" />
+                                                <Label Text="{Binding OfficialName}" FontSize="12" Style="{StaticResource Muted}" />
+                                            </VerticalStackLayout>
+                                            <Label Grid.Column="2" Text="{Binding Symbol}" FontSize="12" Style="{StaticResource Muted}" VerticalOptions="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </editors:SfComboBox.ItemTemplate>
+                            </editors:SfComboBox>
+                            <core:SfChipGroup Grid.Row="5" Margin="0,-12,0,0" HeightRequest="88" VerticalOptions="Start" ItemsSource="{Binding SelectedEditWatchlistStocks}" DisplayMemberPath="OfficialName" ChipType="Input" ChipPadding="8,0,0,0" ChipBackground="Transparent" ChipTextColor="{AppThemeBinding Light=#4B5563, Dark=#CBD5E1}" CloseButtonColor="{AppThemeBinding Light=#475569, Dark=#CBD5E1}" AutomationId="EditWatchlistSelectedStocks">
+                                <core:SfChipGroup.ChipLayout>
+                                    <FlexLayout Wrap="Wrap" HorizontalOptions="Start" VerticalOptions="Start" />
+                                </core:SfChipGroup.ChipLayout>
+                            </core:SfChipGroup>
+                            <HorizontalStackLayout Grid.Row="6" HorizontalOptions="End" Spacing="12" Margin="0,8,0,0">
+                                <buttons:SfButton Text="Cancel" FontSize="14" Background="Transparent" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Clicked="OnEditWatchlistCloseClicked" />
+                                <buttons:SfButton Text="Edit" FontSize="14" Background="Transparent" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Clicked="OnEditWatchlistApplyClicked" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*" RowSpacing="0">
+        <Grid x:Name="HeaderGrid" Grid.Row="0" Padding="20,14" Background="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+            <Label Text="Stock Chart" Style="{StaticResource PageTitle}" VerticalOptions="Center" />
+        </Grid>
+
+        <Grid x:Name="MainContentGrid" Grid.Row="1" Padding="{StaticResource PagePadding}" RowDefinitions="*,Auto" RowSpacing="16">
+            <Grid x:Name="WorkspaceGrid" Grid.Row="0" ColumnDefinitions="320,*" ColumnSpacing="16">
+                <Border x:Name="StockPanel" Grid.Column="0" Padding="16" StrokeShape="RoundRectangle 12" Background="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+                    <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="0">
+                        <Grid Grid.Row="0">
+                            <tabView:SfTabView HeightRequest="42" TabBarSize="42" TabWidthMode="Default" TabBarBackground="Transparent" IndicatorPlacement="Bottom" IndicatorWidthMode="Fit" IndicatorBackground="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" SelectedIndex="{Binding SelectedViewIndex, Mode=TwoWay}" AutomationId="StockViewMode">
+                                <tabView:SfTabView.Items>
+                                    <tabView:SfTabItem Header="All Stock" FontSize="14" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}">
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup Name="CommonStates">
+                                                <VisualState Name="Normal">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="TextColor" Value="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                                                        <Setter Property="FontAttributes" Value="None" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                                <VisualState Name="Selected">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="TextColor" Value="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" />
+                                                        <Setter Property="FontAttributes" Value="Bold" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                            </VisualStateGroup>
+                                        </VisualStateManager.VisualStateGroups>
+                                    </tabView:SfTabItem>
+                                    <tabView:SfTabItem Header="Watchlist" FontSize="14" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}">
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup Name="CommonStates">
+                                                <VisualState Name="Normal">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="TextColor" Value="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                                                        <Setter Property="FontAttributes" Value="None" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                                <VisualState Name="Selected">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="TextColor" Value="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" />
+                                                        <Setter Property="FontAttributes" Value="Bold" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                            </VisualStateGroup>
+                                        </VisualStateManager.VisualStateGroups>
+                                    </tabView:SfTabItem>
+                                </tabView:SfTabView.Items>
+                            </tabView:SfTabView>
+                            <BoxView HeightRequest="1" VerticalOptions="End" Color="{AppThemeBinding Light=#E2E8F0, Dark=#334155}" />
+                        </Grid>
+                        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" Margin="0,12,0,0" ColumnSpacing="8" IsVisible="{Binding IsWatchlistSelected}">
+                            <editors:SfComboBox x:Name="WatchlistSelector" Grid.Column="0" WidthRequest="160" IsEditable="False" ShowBorder="True" Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#475569}" IsClearButtonVisible="False" DropDownIconColor="{AppThemeBinding Light=#475569, Dark=#CBD5E1}" HeightRequest="38" HorizontalOptions="Start" ItemsSource="{Binding Watchlists}" TextMemberPath="Name" SelectedItem="{Binding SelectedWatchlist, Mode=TwoWay}" DropdownWidth="160" MaxDropDownHeight="300" DropDownItemHeight="44" ShowDropdownFooterView="True" DropdownFooterViewHeight="48" AutomationId="WatchlistSelector">
+                                <editors:SfComboBox.DropDownButtonSettings>
+                                    <editors:DropDownButtonSettings Width="40" Height="40" />
+                                </editors:SfComboBox.DropDownButtonSettings>
+                                <editors:SfComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="models:WatchlistModel">
+                                        <Grid HeightRequest="44" Padding="14,0">
+                                            <Label Text="{Binding Name}" FontSize="14" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" VerticalOptions="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </editors:SfComboBox.ItemTemplate>
+                                <editors:SfComboBox.DropdownFooterView>
+                                        <Border HeightRequest="48" Padding="0" Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#334155}" StrokeThickness="1" Background="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" AutomationId="AddWatchlistFromSelectorButton" SemanticProperties.Description="Add watchlist">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnAddWatchlistFromSelectorTapped" NumberOfTapsRequired="1" />
+                                            </Border.GestureRecognizers>
+                                            <HorizontalStackLayout Spacing="10" Padding="14,0" VerticalOptions="Center">
+                                                <Label Text="&#xE145;" FontFamily="MaterialIcons" FontSize="18" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" VerticalOptions="Center" />
+                                                <Label Text="Add Watchlist" FontSize="14" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" VerticalOptions="Center" />
+                                            </HorizontalStackLayout>
+                                        </Border>
+                                </editors:SfComboBox.DropdownFooterView>
+                            </editors:SfComboBox>
+                            <buttons:SfButton Grid.Column="1" WidthRequest="108" HeightRequest="36" CornerRadius="6" Padding="0" VerticalOptions="Center" Background="Transparent" Stroke="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" StrokeThickness="1" Clicked="OnAddStockClicked" AutomationId="AddStockButton" SemanticProperties.Description="Add stock">
+                                <buttons:SfButton.Content>
+                                    <DataTemplate>
+                                        <HorizontalStackLayout Spacing="7" HorizontalOptions="Center" VerticalOptions="Center">
+                                            <Label Text="&#xE145;" FontFamily="MaterialIcons" FontSize="18" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" VerticalOptions="Center" />
+                                            <Label Text="Add stock" FontSize="13" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                    </DataTemplate>
+                                </buttons:SfButton.Content>
+                            </buttons:SfButton>
+                            <buttons:SfButton x:Name="WatchlistOverflowButton" Grid.Column="2" Text="&#xE5D4;" FontFamily="MaterialIcons" FontSize="20" WidthRequest="40" HeightRequest="40" Padding="0" VerticalOptions="Center" Background="Transparent" TextColor="{AppThemeBinding Light=#475569, Dark=#CBD5E1}" Clicked="OnWatchlistOverflowClicked" AutomationId="WatchlistOverflowButton" SemanticProperties.Description="Watchlist actions" />
+                        </Grid>
+                        <input:SfTextInputLayout Grid.Row="2" Hint="Search Stocks" EnableFloating="False" IsHintAlwaysFloated="False" ContainerType="None" Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#475569}" TrailingViewPosition="Inside">
+                            <Entry Text="{Binding SearchText, Mode=TwoWay}" AutomationId="StockSearch" />
+                            <input:SfTextInputLayout.HintLabelStyle>
+                                <input:LabelStyle FontSize="14" TextColor="{AppThemeBinding Light=#94A3B8, Dark=#64748B}" />
+                            </input:SfTextInputLayout.HintLabelStyle>
+                            <input:SfTextInputLayout.TrailingView>
+                                <Grid WidthRequest="16" HeightRequest="16" Margin="0,0,4,0">
+                                    <Ellipse WidthRequest="10" HeightRequest="10" Stroke="{AppThemeBinding Light=#94A3B8, Dark=#64748B}" StrokeThickness="1.6" HorizontalOptions="Start" VerticalOptions="Start" />
+                                    <Line X1="9" Y1="9" X2="15" Y2="15" Stroke="{AppThemeBinding Light=#94A3B8, Dark=#64748B}" StrokeThickness="1.6" StrokeLineCap="Round" />
+                                </Grid>
+                            </input:SfTextInputLayout.TrailingView>
+                        </input:SfTextInputLayout>
+                        <Grid Grid.Row="3">
+                        <CollectionView x:Name="StockListView" ItemsSource="{Binding FilteredStocks}" SelectedItem="{Binding SelectedStock, Mode=TwoWay}" SelectionMode="Single" AutomationId="StockCollection" VerticalScrollBarVisibility="Never" SemanticProperties.Hint="{Binding StockCountText}">
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Vertical" ItemSpacing="6" />
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:StockModel">
+                                    <Grid RowDefinitions="Auto" RowSpacing="0" Margin="0" BackgroundColor="Transparent">
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup Name="CommonStates">
+                                                <VisualState Name="Normal" />
+                                                <VisualState Name="PointerOver">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="BackgroundColor" Value="Transparent" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                                <VisualState Name="Selected">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="BackgroundColor" Value="Transparent" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                            </VisualStateGroup>
+                                        </VisualStateManager.VisualStateGroups>
+                                        <Border Grid.Row="0" Padding="12" StrokeShape="RoundRectangle 8" Background="{Binding IsSelected, Converter={StaticResource StockSelectionBackgroundConverter}}">
+                                            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
+                                                <Border WidthRequest="38" HeightRequest="38" Padding="7" StrokeShape="RoundRectangle 19" Background="{AppThemeBinding Light=#FFFFFF, Dark=#0F172A}" Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#334155}" StrokeThickness="1">
+                                                    <Image Source="{Binding LogoImageSource}" Aspect="AspectFit" />
+                                                </Border>
+                                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                                    <Label Text="{Binding Company}" FontFamily="OpenSansSemibold" />
+                                                    <Label Text="{Binding OfficialName}" Style="{StaticResource Muted}" />
+                                                </VerticalStackLayout>
+                                                <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="End" VerticalOptions="Center">
+                                                    <Label Text="{Binding PriceText}" HorizontalTextAlignment="End" />
+                                                    <Label Text="{Binding ChangeText}" Style="{StaticResource Muted}" HorizontalTextAlignment="End" />
+                                                </VerticalStackLayout>
+                                                <buttons:SfButton Grid.Column="3" Text="&#xE5D4;" FontFamily="MaterialIcons" FontSize="20" WidthRequest="26" HeightRequest="28" Padding="0" HorizontalOptions="End" VerticalOptions="Center" Background="Transparent" TextColor="{AppThemeBinding Light=#475569, Dark=#CBD5E1}" Clicked="OnStockMoreClicked" AutomationId="StockItemMoreButton" SemanticProperties.Description="Stock watchlist actions" />
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                        <Label Text="No stocks in this watchlist." Style="{StaticResource Muted}" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding ShowEmptyWatchlistMessage}" />
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <Border x:Name="ChartPanel" Grid.Column="1" Padding="16" StrokeShape="RoundRectangle 12" Background="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+                    <Grid>
+                    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" IsVisible="{Binding IsChartVisible}">
+                        <Grid Grid.Row="0" RowDefinitions="Auto,Auto" RowSpacing="7">
+                            <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="24">
+                                <Grid Grid.Column="0" RowDefinitions="Auto,Auto" RowSpacing="3" VerticalOptions="Center">
+                                    <HorizontalStackLayout Grid.Row="0" Spacing="6">
+                                        <Label Text="{Binding LastSelectedStock.Company}" FontFamily="OpenSansSemibold" FontSize="16" TextColor="{AppThemeBinding Light=#0F172A, Dark=#F8FAFC}" VerticalOptions="Center" />
+                                        <Label Text="{Binding LastSelectedStock.ExchangeText}" Style="{StaticResource Muted}" VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout Grid.Row="1" Spacing="8">
+                                        <Label Text="{Binding SelectedStockPrice}" FontFamily="OpenSansSemibold" FontSize="18" />
+                                        <Label Text="{Binding SelectedStockChange}" FontSize="13" TextColor="{Binding SelectedStockChangeColor}" VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                </Grid>
+                                <HorizontalStackLayout HorizontalOptions="Start" Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                                    <buttons:SfButton Text="&#xE83A;" FontFamily="MaterialIcons" FontSize="18" WidthRequest="36" HeightRequest="36" Padding="0" VerticalOptions="Center" AutomationId="FavoriteButton" Background="Transparent" TextColor="{Binding IsLastSelectedStockInSelectedWatchlist, Converter={StaticResource WatchlistStarColorConverter}}" Clicked="OnFavoriteClicked" SemanticProperties.Description="Add stock to watchlist" />
+                                    <buttons:SfButton Text="&#xE88E;" FontFamily="MaterialIcons" FontSize="18" WidthRequest="36" HeightRequest="36" Padding="0" VerticalOptions="Center" AutomationId="InformationButton" Background="Transparent" TextColor="{AppThemeBinding Light=#475569, Dark=#CBD5E1}" Clicked="OnInformationClicked" />
+                                </HorizontalStackLayout>
+                            </Grid>
+                            <BoxView Grid.Row="1" HeightRequest="1.5" Margin="0,4,0,0" Color="{AppThemeBinding Light=#CBD5E1, Dark=#475569}" />
+                        </Grid>
+
+                        <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                            <editors:SfComboBox x:Name="TimeRangeComboBox" Grid.Column="0" WidthRequest="220" HeightRequest="40" VerticalOptions="Center" IsEditable="False" ShowBorder="True" Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#475569}" IsClearButtonVisible="False" DropDownIconColor="{AppThemeBinding Light=#475569, Dark=#CBD5E1}" ItemsSource="{Binding AvailableTimeRanges}" SelectedItem="{Binding SelectedTimeRange, Mode=TwoWay}" IsVisible="{Binding IsDesktopToolbar}" DropDownClosed="OnTimeRangeDropDownClosed" AutomationId="TimeRangeComboBox">
+                                <editors:SfComboBox.DropDownButtonSettings><editors:DropDownButtonSettings Width="40" Height="40" /></editors:SfComboBox.DropDownButtonSettings>
+                            </editors:SfComboBox>
+                            <Grid Grid.Column="2" ColumnDefinitions="140,160,40,40" ColumnSpacing="12" HorizontalOptions="End" VerticalOptions="Center" IsVisible="{Binding IsDesktopToolbar}">
+                                <editors:SfComboBox x:Name="ChartTypeComboBox" Grid.Column="0" WidthRequest="140" HeightRequest="40" IsEditable="False" ShowBorder="True" Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#475569}" IsClearButtonVisible="False" DropDownIconColor="{AppThemeBinding Light=#475569, Dark=#475569}" ItemsSource="{Binding AvailableChartTypes}" SelectedItem="{Binding SelectedChartType, Mode=TwoWay}" AutomationId="ChartTypeComboBox">
+                                    <editors:SfComboBox.DropDownButtonSettings><editors:DropDownButtonSettings Width="40" Height="40" /></editors:SfComboBox.DropDownButtonSettings>
+                                </editors:SfComboBox>
+                                <editors:SfComboBox x:Name="TrendlineComboBox" Grid.Column="1" WidthRequest="160" HeightRequest="40" IsEditable="False" ShowBorder="True" Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#475569}" IsClearButtonVisible="False" DropDownIconColor="{AppThemeBinding Light=#475569, Dark=#475569}" ItemsSource="{Binding AvailableTrendlines}" SelectedItem="{Binding SelectedTrendline, Mode=TwoWay}" AutomationId="TrendlineComboBox">
+                                    <editors:SfComboBox.DropDownButtonSettings><editors:DropDownButtonSettings Width="40" Height="40"/></editors:SfComboBox.DropDownButtonSettings>
+                                </editors:SfComboBox>
+                                <buttons:SfButton Grid.Column="2" Text="&#xE8B8;" FontFamily="MaterialIcons" FontSize="20" WidthRequest="40" HeightRequest="40" Padding="0" AutomationId="SettingsButton" Background="Transparent" TextColor="{AppThemeBinding Light=#475569, Dark=#CBD5E1}" Clicked="OnSettingsClicked" />
+                                <buttons:SfButton Grid.Column="3" x:Name="FullscreenButton" Text="&#xE5D0;" FontFamily="MaterialIcons" FontSize="20" WidthRequest="40" HeightRequest="40" Padding="0" AutomationId="FullscreenButton" Background="Transparent" TextColor="{AppThemeBinding Light=#475569, Dark=#CBD5E1}" Clicked="OnFullscreenClicked" SemanticProperties.Description="Enter chart fullscreen" />
+                            </Grid>
+                            <HorizontalStackLayout Grid.Column="2" Spacing="8" HorizontalOptions="End" VerticalOptions="Center" IsVisible="{Binding IsMobileToolbar}">
+                                <buttons:SfButton WidthRequest="40" HeightRequest="40" Padding="0" Background="Transparent" Clicked="OnMobileTimeRangeClicked" AutomationId="MobileTimeRangeButton" SemanticProperties.Description="Select time range"><buttons:SfButton.Content><DataTemplate><Label Text="&#xE916;" FontFamily="MaterialIcons" FontSize="20" TextColor="{AppThemeBinding Light=#475569, Dark=#CBD5E1}" HorizontalOptions="Center" VerticalOptions="Center" /></DataTemplate></buttons:SfButton.Content></buttons:SfButton>
+                                <buttons:SfButton WidthRequest="40" HeightRequest="40" Padding="0" Background="Transparent" Clicked="OnMobileChartTypeClicked" AutomationId="MobileChartTypeButton" SemanticProperties.Description="Select chart type"><buttons:SfButton.Content><DataTemplate><Label Text="&#xE24B;" FontFamily="MaterialIcons" FontSize="20" TextColor="{AppThemeBinding Light=#475569, Dark=#CBD5E1}" HorizontalOptions="Center" VerticalOptions="Center" /></DataTemplate></buttons:SfButton.Content></buttons:SfButton>
+                                <buttons:SfButton WidthRequest="40" HeightRequest="40" Padding="0" Background="Transparent" Clicked="OnMobileTrendlineClicked" AutomationId="MobileTrendlineButton" SemanticProperties.Description="Select trendline"><buttons:SfButton.Content><DataTemplate><Label Text="&#xE6E1;" FontFamily="MaterialIcons" FontSize="20" TextColor="{AppThemeBinding Light=#475569, Dark=#CBD5E1}" HorizontalOptions="Center" VerticalOptions="Center" /></DataTemplate></buttons:SfButton.Content></buttons:SfButton>
+                                <buttons:SfButton WidthRequest="40" HeightRequest="40" Padding="0" Background="Transparent" Clicked="OnSettingsClicked" AutomationId="MobileSettingsButton" SemanticProperties.Description="Open chart settings"><buttons:SfButton.Content><DataTemplate><Label Text="&#xE8B8;" FontFamily="MaterialIcons" FontSize="20" TextColor="{AppThemeBinding Light=#475569, Dark=#CBD5E1}" HorizontalOptions="Center" VerticalOptions="Center" /></DataTemplate></buttons:SfButton.Content></buttons:SfButton>
+                                <buttons:SfButton x:Name="MobileFullscreenButton" WidthRequest="40" HeightRequest="40" Padding="0" Background="Transparent" Clicked="OnFullscreenClicked" AutomationId="MobileFullscreenButton" SemanticProperties.Description="Enter chart fullscreen"><buttons:SfButton.Content><DataTemplate><Label Text="&#xE5D0;" FontFamily="MaterialIcons" FontSize="20" TextColor="{AppThemeBinding Light=#475569, Dark=#CBD5E1}" HorizontalOptions="Center" VerticalOptions="Center" /></DataTemplate></buttons:SfButton.Content></buttons:SfButton>
+                            </HorizontalStackLayout>
+
+                        </Grid>
+
+                        <Grid Grid.Row="2">
+                        <chart:SfCartesianChart x:Name="StockChartView" AutomationId="StockChart" Background="Transparent" ZoomEnd="OnChartZoomEnd">
+                            <chart:SfCartesianChart.TooltipBehavior>
+                                <chart:ChartTooltipBehavior Background="#172033" TextColor="White" FontSize="12" />
+                            </chart:SfCartesianChart.TooltipBehavior>
+                            <chart:SfCartesianChart.TrackballBehavior>
+                                <chart:ChartTrackballBehavior ShowLine="False" ShowLabel="False" ShowMarkers="False" />
+                            </chart:SfCartesianChart.TrackballBehavior>
+                                <chart:SfCartesianChart.ZoomPanBehavior>
+                                <chart:ChartZoomPanBehavior ZoomMode="X" EnablePanning="True" EnablePinchZooming="True" EnableDoubleTap="True" />
+                            </chart:SfCartesianChart.ZoomPanBehavior>
+                            <chart:SfCartesianChart.XAxes>
+                                <chart:DateTimeAxis Interval="1" IntervalType="Months" ShowMajorGridLines="True">
+                                    <chart:DateTimeAxis.LabelStyle>
+                                        <chart:ChartAxisLabelStyle FontSize="11" TextColor="{AppThemeBinding Light=#64748B, Dark=#CBD5E1}" />
+                                    </chart:DateTimeAxis.LabelStyle>
+                                </chart:DateTimeAxis>
+                            </chart:SfCartesianChart.XAxes>
+                            <chart:SfCartesianChart.YAxes>
+                                <chart:NumericalAxis IsVisible="False" ShowMajorGridLines="False" />
+                                <chart:NumericalAxis Name="PriceAxis" ShowMajorGridLines="True" LabelCreated="OnPriceAxisLabelCreated">
+                                    <chart:NumericalAxis.LabelStyle>
+                                        <chart:ChartAxisLabelStyle FontSize="11" TextColor="{AppThemeBinding Light=#64748B, Dark=#CBD5E1}" />
+                                    </chart:NumericalAxis.LabelStyle>
+                                </chart:NumericalAxis>
+                            </chart:SfCartesianChart.YAxes>
+                        </chart:SfCartesianChart>
+                            <CollectionView ZIndex="1" ItemsSource="{Binding ActiveTrendlines}" SelectionMode="None" VerticalScrollBarVisibility="Never" HorizontalOptions="Start" VerticalOptions="Start" WidthRequest="220" MaximumHeightRequest="220" AutomationId="TrendlineOverlays">
+                                <CollectionView.ItemsLayout>
+                                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="6" />
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:TrendlineViewModel">
+                                        <Border Padding="10,0" HeightRequest="40" StrokeShape="RoundRectangle 6" Background="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#334155}" StrokeThickness="1">
+                                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                                                <Label Text="{Binding Name}" FontSize="15" VerticalOptions="Center" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" />
+                                                <buttons:SfButton Grid.Column="1" Text="{Binding VisibilityIcon}" FontFamily="MaterialIcons" FontSize="18" WidthRequest="30" HeightRequest="34" Padding="0" Background="Transparent" TextColor="{AppThemeBinding Light=#64748B, Dark=#CBD5E1}" Clicked="OnTrendlineVisibilityClicked" SemanticProperties.Description="Toggle trendline visibility" />
+                                                <buttons:SfButton Grid.Column="2" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="18" WidthRequest="30" HeightRequest="34" Padding="0" Background="Transparent" TextColor="{AppThemeBinding Light=#64748B, Dark=#CBD5E1}" Clicked="OnTrendlineRemoveClicked" SemanticProperties.Description="Remove trendline" />
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                            <buttons:SfButton x:Name="ResetChartZoomButton" Text="&#xE5D5;" FontFamily="MaterialIcons" FontSize="22" WidthRequest="46" HeightRequest="46" Padding="0" CornerRadius="23" VerticalOptions="End" HorizontalOptions="Center" Margin="0,0,0,8" Background="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}" TextColor="{AppThemeBinding Light=#475569, Dark=#E2E8F0}" Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#475569}" StrokeThickness="1" IsVisible="False" Clicked="OnResetChartZoomClicked" AutomationId="ResetChartZoomButton" SemanticProperties.Description="Reset chart zoom" />
+                        </Grid>
+                        <sliders:SfRangeSelector x:Name="ChartRangeSelector" Grid.Row="3" HeightRequest="78" IsVisible="False" Minimum="{Binding RangeMinimum}" Maximum="{Binding RangeMaximum}" RangeStart="{Binding RangeStart, Mode=TwoWay}" RangeEnd="{Binding RangeEnd, Mode=TwoWay}" Interval="365" ShowLabels="True" ShowTicks="False" EdgeLabelsPlacement="Inside" LabelCreated="OnRangeSelectorLabelCreated" ValueChangeEnd="OnRangeSelectorValueChangeEnd" AutomationId="ChartRangeSelector">
+                            <sliders:SfRangeSelector.TrackStyle>
+                                <sliders:SliderTrackStyle ActiveFill="#10A7D4" InactiveFill="#D7EEF7" ActiveSize="5" InactiveSize="5" />
+                            </sliders:SfRangeSelector.TrackStyle>
+                            <sliders:SfRangeSelector.ThumbStyle>
+                                <sliders:SliderThumbStyle Radius="10" Fill="#FFFFFF" Stroke="#64748B" StrokeThickness="2" />
+                            </sliders:SfRangeSelector.ThumbStyle>
+                        </sliders:SfRangeSelector>
+                    </Grid>
+                    <Label Text="{Binding ChartPlaceholderText}" Style="{StaticResource Muted}" HorizontalOptions="Center" VerticalOptions="Center" HorizontalTextAlignment="Center" Margin="24,0" IsVisible="{Binding ShowChartPlaceholder}" />
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <buttons:SfButton x:Name="OpenStocksButton" Grid.Row="1" Text="Stocks &amp; Watchlists" IsVisible="False" Background="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" TextColor="White" CornerRadius="20" AutomationId="OpenStocksButton" Clicked="OnOpenStocksClicked" />
+
+            <Grid Grid.RowSpan="2" IsVisible="{Binding IsBusy}" Background="#660F172A">
+                <core:SfBusyIndicator IsRunning="{Binding IsBusy}" IndicatorColor="#FFFFFF" WidthRequest="64" HeightRequest="64" />
+            </Grid>
+
+            <Border Grid.RowSpan="2" IsVisible="{Binding HasError}" Padding="24" VerticalOptions="Center" HorizontalOptions="Center" StrokeShape="RoundRectangle 12" Background="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Unable to load stock information." Style="{StaticResource SectionTitle}" />
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource Muted}" />
+                    <buttons:SfButton Text="Retry" Command="{Binding RetryCommand}" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Row="1" IsVisible="{Binding IsCustomDateRangeVisible}" Background="#660F172A" Padding="12" InputTransparent="False">
+            <Border Padding="30,26,30,24" MaximumWidthRequest="680" MaximumHeightRequest="580" HorizontalOptions="Center" VerticalOptions="Center" StrokeShape="RoundRectangle 24" Background="{AppThemeBinding Light=#F8F8FF, Dark=#1E293B}">
+                <Grid RowDefinitions="Auto,*,Auto" RowSpacing="14">
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                        <Label Text="Custom Date Range" FontSize="26" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" />
+                        <buttons:SfButton Grid.Column="1" Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="24" WidthRequest="40" HeightRequest="40" Padding="0" Background="Transparent" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Command="{Binding CancelCustomDateRangeCommand}" AutomationId="CustomDateRangeCloseButton" />
+                    </Grid>
+                    <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding IsDesktopToolbar}">
+                        <VerticalStackLayout Grid.Column="0" Spacing="6">
+                            <Label Text="From" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" />
+                            <calendar:SfCalendar HeightRequest="360" View="Month" SelectionMode="Single" SelectedDate="{Binding CustomStartDate, Mode=TwoWay}" MinimumDate="{Binding AvailableDataStartDate}" MaximumDate="{Binding CustomEndDate}" SelectionBackground="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Background="Transparent" AutomationId="CustomRangeStartCalendar">
+                                <calendar:SfCalendar.MonthView>
+                                    <calendar:CalendarMonthView FirstDayOfWeek="Monday">
+                                        <calendar:CalendarMonthView.SelectionTextStyle>
+                                            <calendar:CalendarTextStyle TextColor="White" FontAttributes="Bold" />
+                                        </calendar:CalendarMonthView.SelectionTextStyle>
+                                    </calendar:CalendarMonthView>
+                                </calendar:SfCalendar.MonthView>
+                            </calendar:SfCalendar>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="6">
+                            <Label Text="To" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" />
+                            <calendar:SfCalendar HeightRequest="360" View="Month" SelectionMode="Single" SelectedDate="{Binding CustomEndDate, Mode=TwoWay}" MinimumDate="{Binding CustomStartDate}" MaximumDate="{Binding AvailableDataEndDate}" SelectionBackground="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Background="Transparent" AutomationId="CustomRangeEndCalendar">
+                                <calendar:SfCalendar.MonthView>
+                                    <calendar:CalendarMonthView FirstDayOfWeek="Monday">
+                                        <calendar:CalendarMonthView.SelectionTextStyle>
+                                            <calendar:CalendarTextStyle TextColor="White" FontAttributes="Bold" />
+                                        </calendar:CalendarMonthView.SelectionTextStyle>
+                                    </calendar:CalendarMonthView>
+                                </calendar:SfCalendar.MonthView>
+                            </calendar:SfCalendar>
+                        </VerticalStackLayout>
+                    </Grid>
+                    <Grid Grid.Row="1" RowDefinitions="Auto,*" RowSpacing="8" IsVisible="{Binding IsMobileToolbar}">
+                        <HorizontalStackLayout Grid.Row="0" HorizontalOptions="Center" Spacing="8">
+                            <buttons:SfButton Text="From" FontSize="14" Padding="16,8" Background="Transparent" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Command="{Binding SelectCustomStartDateCommand}" />
+                            <buttons:SfButton Text="To" FontSize="14" Padding="16,8" Background="Transparent" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Command="{Binding SelectCustomEndDateCommand}" />
+                        </HorizontalStackLayout>
+                        <VerticalStackLayout Grid.Row="1" Spacing="6" IsVisible="{Binding IsCustomStartCalendarVisible}">
+                            <Label Text="From" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" />
+                            <calendar:SfCalendar HeightRequest="360" View="Month" SelectionMode="Single" SelectedDate="{Binding CustomStartDate, Mode=TwoWay}" MinimumDate="{Binding AvailableDataStartDate}" MaximumDate="{Binding CustomEndDate}" SelectionBackground="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Background="Transparent" AutomationId="CustomRangeStartCalendarMobile" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Row="1" Spacing="6" IsVisible="{Binding IsCustomEndCalendarVisible}">
+                            <Label Text="To" FontFamily="OpenSansSemibold" FontSize="14" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" />
+                            <calendar:SfCalendar HeightRequest="360" View="Month" SelectionMode="Single" SelectedDate="{Binding CustomEndDate, Mode=TwoWay}" MinimumDate="{Binding CustomStartDate}" MaximumDate="{Binding AvailableDataEndDate}" SelectionBackground="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Background="Transparent" AutomationId="CustomRangeEndCalendarMobile" />
+                        </VerticalStackLayout>
+                    </Grid>
+                    <HorizontalStackLayout Grid.Row="2" HorizontalOptions="End" Spacing="22">
+                        <buttons:SfButton Text="Cancel" FontSize="15" Background="Transparent" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Command="{Binding CancelCustomDateRangeCommand}" />
+                        <buttons:SfButton Text="Apply" FontSize="15" Background="Transparent" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Command="{Binding ApplyCustomDateRangeCommand}" />
+                    </HorizontalStackLayout>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Row="1" ZIndex="20" IsVisible="{Binding IsMobilePickerVisible}" Background="#660F172A" VerticalOptions="Fill" InputTransparent="False">
+            <Border VerticalOptions="End" StrokeThickness="0" StrokeShape="RoundRectangle 24,24,0,0" Background="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}">
+                <Grid Padding="24,20,24,24" RowDefinitions="Auto,*" RowSpacing="12" MaximumHeightRequest="460">
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                        <Label Text="{Binding MobilePickerTitle}" FontFamily="OpenSansSemibold" FontSize="20" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" VerticalOptions="Center" />
+                        <buttons:SfButton Grid.Column="1" Text="×" FontSize="26" WidthRequest="40" HeightRequest="40" Padding="0" Background="Transparent" TextColor="{AppThemeBinding Light=#2563EB, Dark=#60A5FA}" Command="{Binding CloseMobilePickerCommand}" AutomationId="CloseMobilePickerButton" />
+                    </Grid>
+                    <CollectionView Grid.Row="1" ItemsSource="{Binding MobilePickerItems}" SelectionMode="None" VerticalScrollBarVisibility="Never">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:MobilePickerItem">
+                                <buttons:SfButton HorizontalOptions="Fill" HeightRequest="48" Padding="12,0" Clicked="OnMobilePickerItemClicked" Background="{Binding IsSelected, Converter={StaticResource MobilePickerBackgroundConverter}}">
+                                    <buttons:SfButton.Content>
+                                        <DataTemplate x:DataType="vm:MobilePickerItem">
+                                            <Grid ColumnDefinitions="*,Auto" Padding="12,0">
+                                                <Label Text="{Binding Value}" VerticalOptions="Center" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F8FAFC}" />
+                                                <Label Grid.Column="1" Text="&#xE5CA;" FontFamily="MaterialIcons" FontSize="20" VerticalOptions="Center" IsVisible="{Binding IsSelected}" TextColor="{AppThemeBinding Light=#2563EB, Dark=#93A9D7}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </buttons:SfButton.Content>
+                                </buttons:SfButton>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Border>
+        </Grid>
+
+    </Grid>
+</ContentPage>
