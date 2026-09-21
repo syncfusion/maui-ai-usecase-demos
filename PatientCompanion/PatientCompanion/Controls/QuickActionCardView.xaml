@@ -32,7 +32,7 @@
                 VerticalOptions="Center">
 
                 <Label
-                    FontFamily="MaterialIcons"
+                    FontFamily="Material Icons"
                     FontSize="20"
                     Text="{Binding Icon}"
                     TextColor="#00685F"

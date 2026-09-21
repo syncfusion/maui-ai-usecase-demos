@@ -11,9 +11,12 @@
     xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     xmlns:local="clr-namespace:PatientCompanion"
     BackgroundColor="#F7F9FB"
-    Shell.NavBarIsVisible="True">
+    Shell.NavBarIsVisible="False"
+    Title="">
 
-    <Grid RowDefinitions="*,Auto">
+    <controls:AppPageLayout>
+        <controls:AppPageLayout.PageContent>
+            <Grid RowDefinitions="*,Auto">
 
         <ScrollView Grid.Row="0">
 
@@ -85,7 +88,7 @@
             VerticalOptions="Center">
 
                             <Label
-                FontFamily="MaterialIcons"
+                FontFamily="Material Icons"
                 Text="{x:Static local:MaterialIcons.AccessTime}"
                 FontSize="22"
                 TextColor="White"
@@ -187,7 +190,7 @@
 
                                     <Label
                         Text="{Binding Icon}"
-                        FontFamily="MaterialIcons"
+                        FontFamily="Material Icons"
                         FontSize="16"
                         VerticalOptions="End"
                         TextColor="#00685F"/>
@@ -247,6 +250,8 @@
 
         <!-- Footer -->
 
-    </Grid>
+            </Grid>
+        </controls:AppPageLayout.PageContent>
+    </controls:AppPageLayout>
 
 </ContentPage>

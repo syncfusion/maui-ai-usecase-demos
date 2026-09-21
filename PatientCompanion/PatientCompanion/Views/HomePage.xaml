@@ -13,9 +13,12 @@
     xmlns:carousel="clr-namespace:Syncfusion.Maui.Carousel;assembly=Syncfusion.Maui.Carousel"
     xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
     BackgroundColor="#F7F9FB"
-    Shell.NavBarIsVisible="True">
+    Shell.NavBarIsVisible="False"
+    Title="">
 
-    <Grid RowDefinitions="*,Auto">
+    <controls:AppPageLayout>
+        <controls:AppPageLayout.PageContent>
+            <Grid RowDefinitions="*,Auto">
         <ScrollView Grid.Row="0">
 
             <VerticalStackLayout
@@ -35,7 +38,7 @@
                     <HorizontalStackLayout Spacing="6">
 
                         <Label
-                            FontFamily="MaterialIcons"
+                            FontFamily="Material Icons"
                             FontSize="14"
                             Text="{x:Static local:MaterialIcons.Shield}"
                             TextColor="#00685F"
@@ -131,6 +134,7 @@
 
                             <Border
                                 BackgroundColor="#F7F9FB"
+                                BindingContext="{Binding TodayMedication}"
                                 Padding="16"
                                 StrokeThickness="0"
                                 StrokeShape="RoundRectangle 14">
@@ -139,13 +143,23 @@
                                     ColumnDefinitions="40,*,Auto"
                                     ColumnSpacing="16">
 
-                                    <Label
-                                        FontFamily="MaterialIcons"
-                                        FontSize="22"
-                                        Text="{x:Static local:MaterialIcons.CheckCircle}"
-                                        TextColor="#7C8A87"
-                                        VerticalOptions="Center"
-                                        VerticalTextAlignment="Center" />
+                                    <Border
+                                        WidthRequest="40"
+                                        HeightRequest="40"
+                                        BackgroundColor="#E5E7EB"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 20"
+                                        VerticalOptions="Center">
+
+                                        <Label
+                                            FontFamily="Material Icons"
+                                            FontSize="22"
+                                            Text="{x:Static local:MaterialIcons.CheckCircle}"
+                                            TextColor="White"
+                                            HorizontalTextAlignment="Center"
+                                            VerticalTextAlignment="Center" />
+
+                                    </Border>
 
                                     <VerticalStackLayout
                                         Grid.Column="1">
@@ -153,12 +167,26 @@
                                         <Label
                                             FontAttributes="Bold"
                                             FontSize="16"
-                                            Text="Metformin"
-                                            TextColor="#191C1E" />
+                                            Text="{Binding Name}"
+                                            TextColor="#191C1E">
+                                            <Label.Style>
+                                                <Style TargetType="Label">
+                                                    <Style.Triggers>
+                                                        <DataTrigger
+                                                            Binding="{Binding IsTaken}"
+                                                            TargetType="Label"
+                                                            Value="True">
+                                                            <Setter Property="TextDecorations" Value="Strikethrough" />
+                                                            <Setter Property="TextColor" Value="#6B7280" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Label.Style>
+                                        </Label>
 
                                         <Label
                                             FontSize="14"
-                                            Text="500mg • 08:00 AM"
+                                            Text="{Binding ScheduleDisplay}"
                                             TextColor="#3D4947" />
 
                                     </VerticalStackLayout>
@@ -167,7 +195,7 @@
                                         Grid.Column="2"
                                         FontAttributes="Bold"
                                         FontSize="12"
-                                        Text="Taken"
+                                        Text="{Binding StatusText}"
                                         TextColor="#00685F"
                                         VerticalOptions="Center" />
 
@@ -206,24 +234,24 @@
                     Value="120/80"
                     Unit="mmHg"
                     UpdatedText="Updated today at 8:30 AM"
-                    Icon="{x:Static local:MaterialIcons.Favorite}"
-                    TrendIcon="{x:Static local:MaterialIcons.TrendingUp}" />
+                    Icon="{x:Static local:MaterialIcons.BloodPressureIcon}"
+                    TrendIcon="{x:Static local:MaterialIcons.TrendingUpIcon}" />
 
                                 <models:Vital
                     Title="Heart Rate"
                     Value="72"
                     Unit="bpm"
                     UpdatedText="Updated today at 8:30 AM"
-                    Icon="{x:Static local:MaterialIcons.Favorite}"
-                    TrendIcon="{x:Static local:MaterialIcons.ArrowForward}" />
+                    Icon="{x:Static local:MaterialIcons.HeartRate}"
+                    TrendIcon="{x:Static local:MaterialIcons.ArrowForwardIcon}" />
 
                                 <models:Vital
                     Title="Weight"
                     Value="165"
                     Unit="lbs"
                     UpdatedText="Updated today at 8:30 AM"
-                    Icon="{x:Static local:MaterialIcons.Scale}"
-                    TrendIcon="{x:Static local:MaterialIcons.TrendingDown}" />
+                    Icon="{x:Static local:MaterialIcons.WeightScale}"
+                    TrendIcon="{x:Static local:MaterialIcons.TrendingDownIcon}" />
 
                             </x:Array>
 
@@ -347,6 +375,8 @@
         </ScrollView>
 
         <controls:BottomNavigationView Grid.Row="1" />
-    </Grid>
+            </Grid>
+        </controls:AppPageLayout.PageContent>
+    </controls:AppPageLayout>
 
 </ContentPage>

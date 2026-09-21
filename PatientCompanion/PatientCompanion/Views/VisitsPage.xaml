@@ -6,9 +6,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:PatientCompanion.Controls"
     BackgroundColor="#F7F9FB"
-    Shell.NavBarIsVisible="True">
+    Shell.NavBarIsVisible="False"
+    Title="">
 
-    <Grid RowDefinitions="*,Auto">
+    <controls:AppPageLayout>
+        <controls:AppPageLayout.PageContent>
+            <Grid RowDefinitions="*,Auto">
         <ScrollView Grid.Row="0">
 
             <VerticalStackLayout
@@ -167,6 +170,8 @@
         </Border>
 
         <controls:BottomNavigationView Grid.Row="1" />
-    </Grid>
+            </Grid>
+        </controls:AppPageLayout.PageContent>
+    </controls:AppPageLayout>
 
 </ContentPage>

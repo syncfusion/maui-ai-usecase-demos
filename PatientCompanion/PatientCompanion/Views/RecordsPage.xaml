@@ -10,9 +10,12 @@
     xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
     xmlns:cards="clr-namespace:Syncfusion.Maui.Cards;assembly=Syncfusion.Maui.Cards"
     BackgroundColor="#F7F9FB"
-    Shell.NavBarIsVisible="True">
+    Shell.NavBarIsVisible="False"
+    Title="">
 
-    <Grid RowDefinitions="*,Auto">
+    <controls:AppPageLayout>
+        <controls:AppPageLayout.PageContent>
+            <Grid RowDefinitions="*,Auto">
 
         <ScrollView Grid.Row="0">
 
@@ -53,16 +56,16 @@
                                         <Border
                         WidthRequest="48"
                         HeightRequest="48"
-                        BackgroundColor="#E8EEFF"
+                        BackgroundColor="{Binding IconBackgroundColor}"
                         StrokeThickness="0"
                         StrokeShape="RoundRectangle 24"
                         VerticalOptions="Start">
 
                                             <Label
-                            FontFamily="MaterialIcons"
+                            FontFamily="Material Icons"
                             FontSize="24"
-                            Text="{x:Static local:MaterialIcons.Description}"
-                            TextColor="#00685F"
+                            Text="{Binding Icon}"
+                            TextColor="{Binding IconColor}"
                             HorizontalOptions="Center"
                             VerticalOptions="Center"
                             VerticalTextAlignment="Center" />
@@ -128,6 +131,8 @@
 
         <!-- Footer -->
 
-    </Grid>
+            </Grid>
+        </controls:AppPageLayout.PageContent>
+    </controls:AppPageLayout>
 
 </ContentPage>

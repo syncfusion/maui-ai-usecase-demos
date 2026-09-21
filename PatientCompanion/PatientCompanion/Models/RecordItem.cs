@@ -7,4 +7,8 @@
     public string FileName { get; set; } = string.Empty;
 
     public string Icon { get; set; } = string.Empty;
+
+    public string IconBackgroundColor { get; set; } = "#E8EEFF";
+
+    public string IconColor { get; set; } = "#00685F";
 }

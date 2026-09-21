@@ -25,7 +25,7 @@
                 <HorizontalStackLayout Spacing="8">
 
                     <Label
-                        FontFamily="MaterialIcons"
+                        FontFamily="Material Icons"
                         FontSize="16"
                         Text="{Binding Icon}"
                         TextColor="#00685F"
@@ -41,7 +41,7 @@
 
                 <Label
                     Grid.Column="1"
-                    FontFamily="MaterialIcons"
+                    FontFamily="Material Icons"
                     FontSize="16"
                     Text="{Binding TrendIcon}"
                     TextColor="#00685F"
@@ -58,13 +58,14 @@
                     FontSize="24"
                     FontAttributes="Bold"
                     Text="{Binding Value}"
-                    TextColor="#191C1E" />
+                    TextColor="#191C1E"
+                    VerticalOptions="End"/>
 
                 <Label
                     FontSize="12"
                     Text="{Binding Unit}"
                     TextColor="#3D4947"
-                    VerticalOptions="End" />
+                    VerticalOptions="End"/>
 
             </HorizontalStackLayout>
 

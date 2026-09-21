@@ -35,7 +35,7 @@
                                 TextColor="#191C1E" />
                             <HorizontalStackLayout Spacing="3">
                                 <Label
-                                    FontFamily="MaterialIcons"
+                                    FontFamily="Material Icons"
                                     FontSize="13"
                                     Text="{x:Static local:MaterialIcons.Favorite}"
                                     TextColor="#00685F" />
@@ -70,7 +70,7 @@
                             <TapGestureRecognizer Command="{Binding SelectVisitTypeCommand}" CommandParameter="Clinic Visit" />
                         </Border.GestureRecognizers>
                         <VerticalStackLayout HorizontalOptions="Center" Spacing="2" VerticalOptions="Center">
-                            <Label FontFamily="MaterialIcons" FontSize="18" Text="{x:Static local:MaterialIcons.MedicalServices}" TextColor="#00685F" HorizontalTextAlignment="Center">
+                            <Label FontFamily="Material Icons" FontSize="18" Text="{x:Static local:MaterialIcons.MedicalServices}" TextColor="#00685F" HorizontalTextAlignment="Center">
                                 <Label.Triggers>
                                     <DataTrigger Binding="{Binding IsClinicVisitSelected}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="White" /></DataTrigger>
                                 </Label.Triggers>
@@ -90,7 +90,7 @@
                             <TapGestureRecognizer Command="{Binding SelectVisitTypeCommand}" CommandParameter="Video Visit" />
                         </Border.GestureRecognizers>
                         <VerticalStackLayout HorizontalOptions="Center" Spacing="2" VerticalOptions="Center">
-                            <Label FontFamily="MaterialIcons" FontSize="18" Text="{x:Static local:MaterialIcons.Videocam}" TextColor="#00685F" HorizontalTextAlignment="Center">
+                            <Label FontFamily="Material Icons" FontSize="18" Text="{x:Static local:MaterialIcons.Videocam}" TextColor="#00685F" HorizontalTextAlignment="Center">
                                 <Label.Triggers>
                                     <DataTrigger Binding="{Binding IsVideoVisitSelected}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="White" /></DataTrigger>
                                 </Label.Triggers>
@@ -116,7 +116,7 @@
                             Text="{Binding SelectedMonthText}"
                             TextColor="#00685F" />
                         <Label
-                            FontFamily="MaterialIcons"
+                            FontFamily="Material Icons"
                             FontSize="14"
                             Text="{x:Static local:MaterialIcons.CalendarMonth}"
                             TextColor="#00685F">
@@ -230,7 +230,7 @@
                     TextColor="#64748B" />
                 <HorizontalStackLayout Spacing="5">
                     <Label
-                        FontFamily="MaterialIcons"
+                        FontFamily="Material Icons"
                         FontSize="14"
                         Text="{x:Static local:MaterialIcons.CalendarToday}"
                         TextColor="#00685F" />

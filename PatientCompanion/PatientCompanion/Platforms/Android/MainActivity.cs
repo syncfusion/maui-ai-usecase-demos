@@ -30,7 +30,20 @@ namespace PatientCompanion
                 toolbar.OverflowIcon = null;
                 toolbar.ContentInsetStartWithNavigation = 0;
                 toolbar.SetContentInsetsRelative(0, 0);
+                toolbar.SetContentInsetsAbsolute(0, 0);
                 toolbar.SetPadding(0, toolbar.PaddingTop, 0, toolbar.PaddingBottom);
+
+                for (var index = 0; index < toolbar.ChildCount; index++)
+                {
+                    var child = toolbar.GetChildAt(index);
+
+                    if (child?.LayoutParameters is ViewGroup.MarginLayoutParams layoutParams)
+                    {
+                        layoutParams.LeftMargin = 0;
+                        layoutParams.RightMargin = 0;
+                        child.LayoutParameters = layoutParams;
+                    }
+                }
             });
         }
 

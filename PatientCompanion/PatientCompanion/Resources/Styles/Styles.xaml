@@ -39,7 +39,7 @@
     </Style>
 
     <Style x:Key="IconLabelStyle" TargetType="Label">
-        <Setter Property="FontFamily" Value="MaterialIcons" />
+        <Setter Property="FontFamily" Value="Material Icons" />
         <Setter Property="FontSize" Value="20" />
         <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />

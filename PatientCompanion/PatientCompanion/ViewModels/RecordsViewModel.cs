@@ -28,7 +28,9 @@ public partial class RecordsViewModel : ObservableObject
         Title = "Comprehensive Metabolic Panel",
         Description = "Lab Results • Oct 24, 2026 • LabCorp",
         FileName = "CMP_Report.pdf",
-        Icon = "labresult.png"
+        Icon = MaterialIcons.Science,
+        IconBackgroundColor = "#DDE8FF",
+        IconColor = "#4F7CF3"
     },
 
     new()
@@ -36,7 +38,9 @@ public partial class RecordsViewModel : ObservableObject
         Title = "Lisinopril 10mg",
         Description = "Prescription • Oct 12, 2026 • Dr. Smith",
         FileName = "Lisinopril_Prescription.pdf",
-        Icon = "prescription.png"
+        Icon = MaterialIcons.Prescription,
+        IconBackgroundColor = "#DDF3EF",
+        IconColor = "#0F766E"
     },
 
     new()
@@ -44,7 +48,9 @@ public partial class RecordsViewModel : ObservableObject
         Title = "Influenza Vaccine",
         Description = "Immunization • Sep 15, 2026 • CVS Pharmacy",
         FileName = "Influenza_Vaccine_Record.pdf",
-        Icon = "vaccine.png"
+        Icon = MaterialIcons.Vaccine,
+        IconBackgroundColor = "#E5E7EB",
+        IconColor = "#64748B"
     }
 };
 

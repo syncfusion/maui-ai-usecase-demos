@@ -71,7 +71,7 @@
                             TextColor="#191C1E" />
 
                         <Label
-                            FontFamily="MaterialIcons"
+                            FontFamily="Material Icons"
                             FontSize="16"
                             Text="{x:Static local:MaterialIcons.CheckCircle}"
                             TextColor="#00685F"
@@ -145,7 +145,7 @@
                         StrokeShape="RoundRectangle 16">
 
                         <Label
-                            FontFamily="MaterialIcons"
+                            FontFamily="Material Icons"
                             FontSize="18"
                             Text="{x:Static local:MaterialIcons.CalendarMonth}"
                             TextColor="#00685F"

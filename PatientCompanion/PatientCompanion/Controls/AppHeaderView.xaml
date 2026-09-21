@@ -7,11 +7,12 @@
     xmlns:local="clr-namespace:PatientCompanion"
     xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     HorizontalOptions="Fill"
-    NavigationPage.HasNavigationBar="False">
+    NavigationPage.HasNavigationBar="False"
+    BackgroundColor="{StaticResource PageBackgroundColor}">
 
     <Grid
         HeightRequest="56"
-        Padding="16,12"
+        Padding="16, 0"
         HorizontalOptions="Fill"
         BackgroundColor="{StaticResource PageBackgroundColor}"
         ColumnDefinitions="*,Auto,Auto">
@@ -55,7 +56,7 @@
 
             <core:SfBadgeView.Content>
                 <Label
-                    FontFamily="MaterialIcons"
+                    FontFamily="Material Icons"
                     FontSize="18"
                     Text="{x:Static local:MaterialIcons.Notifications}"
                     TextColor="#3D4947"

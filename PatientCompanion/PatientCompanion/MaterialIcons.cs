@@ -37,4 +37,46 @@ public static class MaterialIcons
     public const string Videocam = "\uE04B";
     public const string Visibility = "\uE8F4";
     public const string WbSunny = "\uE430";
+
+public const string BloodPressureIcon = "\uE87E"; // favorite_border
+public const string HeartRate = "\uEAA2";         // monitor_heart
+public const string WeightScale = "\uE8D0";       // scale
+public const string TrendingUpIcon = "\uE8E5";    // trending_up
+public const string TrendingDownIcon = "\uE8E3";  // trending_down
+public const string ArrowForwardIcon = "\uE5C8";  // arrow_forward
+                                                  // Section icons
+    public const string Morning = "\uE430";       // wb_sunny
+    public const string Afternoon = "\uE518";     // light_mode
+    public const string Evening = "\uE51C";       // dark_mode
+
+    // Medication icons
+    public const string Metformin = "\uE86C";     // check_circle
+    public const string Lisinopril = "\uF109";    // medical_services
+    public const string VitaminD = "\uF033";      // medication
+    public const string Atorvastatin = "\uF033";  // medication
+    public const string Medication = "\uF033";    // medication
+    public const string LocalPharmacyIcon = "\uE54C"; // pharmacy
+
+    // Status icons
+    public const string Pending = "\uE8B5";       // upcoming / pending
+    public const string Error = "\uE000";         // due now
+
+    // Action icons
+    public const string ExpandMore = "\uE5CF";    // ▼
+    public const string ExpandLess = "\uE5CE";    // ▲
+    public const string Done = "\uE876";          // ✓
+    public const string SkipNext = "\uE044";      // skip
+
+    // Food / Instructions
+    public const string Restaurant = "\uE56C";    // fork & spoon
+    public const string Dining = "\uEA57";        // meal
+    public const string WaterDrop = "\uEFEC";     // water
+
+    // Vitamin / Supplement
+    public const string Vaccines = "\uE138";      // supplement / vitamin
+
+    // Medical record icons
+    public const string Science = "\uEB3B";       // lab results
+    public const string Prescription = "\uF033";  // prescription
+    public const string Vaccine = "\uE138";       // vaccine
 }

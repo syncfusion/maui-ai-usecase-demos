@@ -90,10 +90,10 @@ public partial class MedicationsViewModel : BaseViewModel
             Dosage = "500mg",
             MedicationTime = today.AddHours(8),
             Period = "Morning",
-            IconGlyph = MaterialIcons.CheckCircle,
+            IconGlyph = MaterialIcons.Metformin,
             AvatarText = "✓",
             AvatarBackgroundColor = "#DDF3EF",
-            InstructionIconGlyph = MaterialIcons.LocalPharmacy,
+            InstructionIconGlyph = MaterialIcons.Restaurant,
             Instructions = "Take with breakfast.",
             NotificationText = "Take with breakfast."
         });
@@ -104,10 +104,10 @@ public partial class MedicationsViewModel : BaseViewModel
             Dosage = "10mg",
             MedicationTime = today.AddHours(14),
             Period = "Afternoon",
-            IconGlyph = MaterialIcons.MedicalServices,
+            IconGlyph = MaterialIcons.Lisinopril,
             AvatarText = "+",
             AvatarBackgroundColor = "#4F7CF3",
-            InstructionIconGlyph = MaterialIcons.LocalPharmacy,
+            InstructionIconGlyph = MaterialIcons.Restaurant,
             Instructions = "Take with food. Do not take on an empty stomach.",
             NotificationText = "Take with food. Do not take on an empty stomach."
         });
@@ -118,10 +118,10 @@ public partial class MedicationsViewModel : BaseViewModel
             Dosage = "2000 IU",
             MedicationTime = today.AddHours(16),
             Period = "Afternoon",
-            IconGlyph = MaterialIcons.Favorite,
+            IconGlyph = MaterialIcons.VitaminD,
             AvatarText = "D",
             AvatarBackgroundColor = "#9CA3AF",
-            InstructionIconGlyph = MaterialIcons.LocalPharmacy,
+            InstructionIconGlyph = MaterialIcons.WaterDrop,
             Instructions = "Take with plenty of water.",
             NotificationText = "Take with plenty of water."
         });
@@ -132,22 +132,22 @@ public partial class MedicationsViewModel : BaseViewModel
             Dosage = "20mg",
             MedicationTime = today.AddHours(20),
             Period = "Evening",
-            IconGlyph = MaterialIcons.MedicalServices,
+            IconGlyph = MaterialIcons.Atorvastatin,
             AvatarText = "A",
             AvatarBackgroundColor = "#4F7CF3",
-            InstructionIconGlyph = MaterialIcons.LocalPharmacy,
+            InstructionIconGlyph = MaterialIcons.Dining,
             Instructions = "Take before bedtime.",
             NotificationText = "Take before bedtime."
         });
 
         Medications.Add(CreateUpcomingMedication(
-            "Losartan", "50mg", tomorrow.AddHours(9), "Morning", MaterialIcons.MedicalServices));
+            "Losartan", "50mg", tomorrow.AddHours(9), "Morning", MaterialIcons.Medication));
         Medications.Add(CreateUpcomingMedication(
-            "Amlodipine", "5mg", tomorrow.AddHours(13), "Afternoon", MaterialIcons.MedicalServices));
+            "Amlodipine", "5mg", tomorrow.AddHours(13), "Afternoon", MaterialIcons.Medication));
         Medications.Add(CreateUpcomingMedication(
-            "Vitamin B12", "1000mcg", tomorrow.AddHours(16), "Afternoon", MaterialIcons.Favorite));
+            "Vitamin B12", "1000mcg", tomorrow.AddHours(16), "Afternoon", MaterialIcons.Medication));
         Medications.Add(CreateUpcomingMedication(
-            "Levothyroxine", "75mcg", tomorrow.AddHours(21), "Evening", MaterialIcons.MedicalServices));
+            "Levothyroxine", "75mcg", tomorrow.AddHours(21), "Evening", MaterialIcons.Medication));
 
         UpdateMedicationStatus();
 
@@ -170,7 +170,7 @@ public partial class MedicationsViewModel : BaseViewModel
             IconGlyph = iconGlyph,
             AvatarText = name[..1],
             AvatarBackgroundColor = "#DDE8E6",
-            InstructionIconGlyph = MaterialIcons.LocalPharmacy,
+            InstructionIconGlyph = MaterialIcons.LocalPharmacyIcon,
             Instructions = "Take as prescribed.",
             NotificationText = "Take as prescribed."
         };
@@ -229,9 +229,9 @@ public partial class MedicationsViewModel : BaseViewModel
                 Title = group.Key,
                 Icon = group.Key switch
                 {
-                    "Morning" => MaterialIcons.LightMode,
-                    "Afternoon" => MaterialIcons.WbSunny,
-                    "Evening" => MaterialIcons.DarkMode,
+                    "Morning" => MaterialIcons.Morning,
+                    "Afternoon" => MaterialIcons.Afternoon,
+                    "Evening" => MaterialIcons.Evening,
                     _ => MaterialIcons.MoreHoriz
                 },
                 Medications = new ObservableCollection<Medication>(group)

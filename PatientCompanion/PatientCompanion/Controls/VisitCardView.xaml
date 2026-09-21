@@ -85,7 +85,7 @@
             <HorizontalStackLayout Spacing="12">
 
                 <Label
-                    FontFamily="MaterialIcons"
+                    FontFamily="Material Icons"
                     FontSize="18"
                     Text="{x:Static local:MaterialIcons.CalendarMonth}"
                     TextColor="#00685F"
@@ -105,7 +105,7 @@
             <HorizontalStackLayout Spacing="12">
 
                 <Label
-                    FontFamily="MaterialIcons"
+                    FontFamily="Material Icons"
                     FontSize="18"
                     Text="{x:Static local:MaterialIcons.Videocam}"
                     TextColor="#00685F"

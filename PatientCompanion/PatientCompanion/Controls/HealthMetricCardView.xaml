@@ -23,7 +23,7 @@
                 Spacing="8">
 
                 <Label
-                    FontFamily="MaterialIcons"
+                    FontFamily="Material Icons"
                     FontSize="26"
                     Text="{Binding Icon}"
                     TextColor="{Binding ValueColor}"

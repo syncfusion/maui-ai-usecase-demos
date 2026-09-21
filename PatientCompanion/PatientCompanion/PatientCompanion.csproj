@@ -92,6 +92,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<MauiXaml Update="Controls\AppPageLayout.xaml">
+			<Inflator>SourceGen</Inflator>
+		</MauiXaml>
 		<MauiXaml Update="Controls\AppHeaderView.xaml">
 			<Inflator>SourceGen</Inflator>
 		</MauiXaml>

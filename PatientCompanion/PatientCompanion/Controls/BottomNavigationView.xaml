@@ -8,7 +8,7 @@
     IsVisible="{OnPlatform Android=True, WinUI=True, Default=False}">
 
     <Border
-        BackgroundColor="{StaticResource PageBackgroundColor}"
+        BackgroundColor="{StaticResource CardBackgroundColor}"
         Padding="8,8,8,6"
         Stroke="#E0E3E5"
         StrokeThickness="0.3">
@@ -18,7 +18,7 @@
                     <TapGestureRecognizer Tapped="HomeTapped" />
                 </Border.GestureRecognizers>
                 <VerticalStackLayout Spacing="2">
-                    <Label x:Name="HomeIcon" FontFamily="MaterialIcons" Text="{x:Static local:MaterialIcons.Home}" Style="{StaticResource BottomNavigationIconStyle}" />
+                    <Label x:Name="HomeIcon" FontFamily="Material Icons" Text="{x:Static local:MaterialIcons.Home}" Style="{StaticResource BottomNavigationIconStyle}" />
                     <Label x:Name="HomeText" Text="HOME" Style="{StaticResource BottomNavigationTextStyle}" />
                 </VerticalStackLayout>
             </Border>
@@ -27,7 +27,7 @@
                     <TapGestureRecognizer Tapped="VisitsTapped" />
                 </Border.GestureRecognizers>
                 <VerticalStackLayout Spacing="2">
-                    <Label x:Name="VisitsIcon" FontFamily="MaterialIcons" Text="{x:Static local:MaterialIcons.CalendarMonth}" Style="{StaticResource BottomNavigationIconStyle}" />
+                    <Label x:Name="VisitsIcon" FontFamily="Material Icons" Text="{x:Static local:MaterialIcons.CalendarMonth}" Style="{StaticResource BottomNavigationIconStyle}" />
                     <Label x:Name="VisitsText" Text="VISITS" Style="{StaticResource BottomNavigationTextStyle}" />
                 </VerticalStackLayout>
             </Border>
@@ -36,7 +36,7 @@
                     <TapGestureRecognizer Tapped="HealthTapped" />
                 </Border.GestureRecognizers>
                 <VerticalStackLayout Spacing="2">
-                    <Label x:Name="HealthIcon" FontFamily="MaterialIcons" Text="{x:Static local:MaterialIcons.Favorite}" Style="{StaticResource BottomNavigationIconStyle}" />
+                    <Label x:Name="HealthIcon" FontFamily="Material Icons" Text="{x:Static local:MaterialIcons.Favorite}" Style="{StaticResource BottomNavigationIconStyle}" />
                     <Label x:Name="HealthText" Text="HEALTH" Style="{StaticResource BottomNavigationTextStyle}" />
                 </VerticalStackLayout>
             </Border>
@@ -45,7 +45,7 @@
                     <TapGestureRecognizer Tapped="MedicationsTapped" />
                 </Border.GestureRecognizers>
                 <VerticalStackLayout Spacing="2">
-                    <Label x:Name="MedicationsIcon" FontFamily="MaterialIcons" Text="{x:Static local:MaterialIcons.LocalPharmacy}" Style="{StaticResource BottomNavigationIconStyle}" />
+                    <Label x:Name="MedicationsIcon" FontFamily="Material Icons" Text="{x:Static local:MaterialIcons.LocalPharmacy}" Style="{StaticResource BottomNavigationIconStyle}" />
                     <Label x:Name="MedicationsText" Text="MEDS" Style="{StaticResource BottomNavigationTextStyle}" />
                 </VerticalStackLayout>
             </Border>
@@ -54,7 +54,7 @@
                     <TapGestureRecognizer Tapped="HelpTapped" />
                 </Border.GestureRecognizers>
                 <VerticalStackLayout Spacing="2">
-                    <Label x:Name="HelpIcon" FontFamily="MaterialIcons" Text="{x:Static local:MaterialIcons.Help}" Style="{StaticResource BottomNavigationIconStyle}" />
+                    <Label x:Name="HelpIcon" FontFamily="Material Icons" Text="{x:Static local:MaterialIcons.Help}" Style="{StaticResource BottomNavigationIconStyle}" />
                     <Label x:Name="HelpText" Text="HELP" Style="{StaticResource BottomNavigationTextStyle}" />
                 </VerticalStackLayout>
             </Border>

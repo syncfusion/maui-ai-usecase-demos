@@ -27,16 +27,23 @@
 
                 <!-- Medicine Icon -->
 
-                <Label
-                    WidthRequest="32"
-                    HeightRequest="32"
-                    FontFamily="MaterialIcons"
-                    FontSize="24"
-                    HorizontalTextAlignment="Center"
-                    Text="{x:Static local:MaterialIcons.LocalPharmacy}"
-                    TextColor="#00685F"
-                    VerticalOptions="Start"
-                    VerticalTextAlignment="Center" />
+                <Border
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    BackgroundColor="{Binding AvatarBackgroundColor}"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 20"
+                    VerticalOptions="Start">
+
+                    <Label
+                        FontFamily="Material Icons"
+                        FontSize="20"
+                        HorizontalTextAlignment="Center"
+                        Text="{Binding IconGlyph}"
+                        TextColor="White"
+                        VerticalTextAlignment="Center" />
+
+                </Border>
 
                 <!-- Medicine Details -->
 
@@ -95,7 +102,7 @@
                     ColumnSpacing="6">
 
                     <Label
-                        FontFamily="MaterialIcons"
+                        FontFamily="Material Icons"
                         Text="{Binding InstructionIconGlyph}"
                         FontSize="12"
                         VerticalOptions="Center" />

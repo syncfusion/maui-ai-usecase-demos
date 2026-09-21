@@ -13,7 +13,7 @@
         <ContentView.Resources>
                 <DataTemplate x:Key="LocationMarkerTemplate">
                         <Label
-                                FontFamily="MaterialIcons"
+                                FontFamily="Material Icons"
                                 FontSize="24"
                                 Text="{x:Static local:MaterialIcons.LocationOn}"
                                 TextColor="#2563EB" />
@@ -65,7 +65,7 @@
                     Spacing="6">
 
                                 <Label
-                        FontFamily="MaterialIcons"
+                        FontFamily="Material Icons"
                         FontSize="16"
                         Text="{x:Static local:MaterialIcons.Favorite}"
                         TextColor="#00685F"
@@ -95,7 +95,7 @@
             ColumnSpacing="10">
 
                         <Label
-                FontFamily="MaterialIcons"
+                FontFamily="Material Icons"
                 FontSize="18"
                 Text="{x:Static local:MaterialIcons.CalendarMonth}"
                 TextColor="#00685F"
@@ -133,7 +133,7 @@
             ColumnSpacing="10">
 
                         <Label
-                FontFamily="MaterialIcons"
+                FontFamily="Material Icons"
                 FontSize="18"
                 Text="{x:Static local:MaterialIcons.LocationOn}"
                 TextColor="#00685F"

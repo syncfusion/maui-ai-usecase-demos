@@ -41,6 +41,9 @@ public partial class HomeViewModel : BaseViewModel
     private int medicationCount;
 
     [ObservableProperty]
+    private Medication? todayMedication;
+
+    [ObservableProperty]
     private string healthStatus = "Healthy & Stable";
 
     private void LoadData()
@@ -49,9 +52,9 @@ public partial class HomeViewModel : BaseViewModel
 
         VitalSummary = _mockDataService.GetVitalSummary();
 
-        MedicationCount = _mockDataService
-            .GetMedications()
-            .Count;
+        var medications = _mockDataService.GetMedications();
+        MedicationCount = medications.Count;
+        TodayMedication = medications.FirstOrDefault();
 
         var upcoming = _appointmentService.GetAppointments()
             .Where(item => item.Status is "Upcoming" or "Confirmed" && item.ScheduledDateTime >= DateTime.Now)
