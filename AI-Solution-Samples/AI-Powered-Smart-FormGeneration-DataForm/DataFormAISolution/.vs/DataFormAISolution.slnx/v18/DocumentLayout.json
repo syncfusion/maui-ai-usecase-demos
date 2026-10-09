@@ -1,0 +1,309 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\NewSample\\DataFormAISolution\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|d:\\newsample\\dataformaisolution\\dataformaisolution\\mainpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|solutionrelative:dataformaisolution\\mainpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|d:\\newsample\\dataformaisolution\\dataformaisolution\\dataformaisolution.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|solutionrelative:dataformaisolution\\dataformaisolution.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|d:\\newsample\\dataformaisolution\\dataformaisolution\\ai\\azureformaiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|solutionrelative:dataformaisolution\\ai\\azureformaiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|d:\\newsample\\dataformaisolution\\dataformaisolution\\resources\\styles\\styles.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|solutionrelative:dataformaisolution\\resources\\styles\\styles.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|d:\\newsample\\dataformaisolution\\dataformaisolution\\resources\\styles\\colors.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|solutionrelative:dataformaisolution\\resources\\styles\\colors.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|d:\\newsample\\dataformaisolution\\dataformaisolution\\viewmodel\\formviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|solutionrelative:dataformaisolution\\viewmodel\\formviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|d:\\newsample\\dataformaisolution\\dataformaisolution\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|solutionrelative:dataformaisolution\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|d:\\newsample\\dataformaisolution\\dataformaisolution\\model\\formfield.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|solutionrelative:dataformaisolution\\model\\formfield.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|d:\\newsample\\dataformaisolution\\dataformaisolution\\ai\\azureopenaioptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|solutionrelative:dataformaisolution\\ai\\azureopenaioptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|d:\\newsample\\dataformaisolution\\dataformaisolution\\ai\\iaiformservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|solutionrelative:dataformaisolution\\ai\\iaiformservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\obj\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\Platforms\\Windows\\App.g.i.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:DataFormAISolution\\obj\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\Platforms\\Windows\\App.g.i.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|d:\\newsample\\dataformaisolution\\dataformaisolution\\appshell.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|solutionrelative:dataformaisolution\\appshell.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|d:\\newsample\\dataformaisolution\\dataformaisolution\\platforms\\android\\androidmanifest.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|solutionrelative:dataformaisolution\\platforms\\android\\androidmanifest.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|d:\\newsample\\dataformaisolution\\dataformaisolution\\platforms\\android\\mainapplication.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|solutionrelative:dataformaisolution\\platforms\\android\\mainapplication.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|d:\\newsample\\dataformaisolution\\dataformaisolution\\platforms\\android\\mainactivity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|solutionrelative:dataformaisolution\\platforms\\android\\mainactivity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\dotnet\\packs\\Microsoft.Android.Sdk.Windows\\36.1.69\\tools\\Xamarin.Android.Aapt2.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|d:\\newsample\\dataformaisolution\\dataformaisolution\\mauiprogram.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|solutionrelative:dataformaisolution\\mauiprogram.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|d:\\newsample\\dataformaisolution\\dataformaisolution\\mainpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{765D3575-13C0-3333-5C70-76911C5D9BA3}|DataFormAISolution\\DataFormAISolution.csproj|solutionrelative:dataformaisolution\\mainpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "AzureFormAIService.cs",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\AI\\AzureFormAIService.cs",
+              "RelativeDocumentMoniker": "DataFormAISolution\\AI\\AzureFormAIService.cs",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\AI\\AzureFormAIService.cs",
+              "RelativeToolTip": "DataFormAISolution\\AI\\AzureFormAIService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T10:38:31.71Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Styles.xaml",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\Resources\\Styles\\Styles.xaml",
+              "RelativeDocumentMoniker": "DataFormAISolution\\Resources\\Styles\\Styles.xaml",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\Resources\\Styles\\Styles.xaml",
+              "RelativeToolTip": "DataFormAISolution\\Resources\\Styles\\Styles.xaml",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAABoAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-09-25T05:11:29.757Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainPage.xaml",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\MainPage.xaml",
+              "RelativeDocumentMoniker": "DataFormAISolution\\MainPage.xaml",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\MainPage.xaml",
+              "RelativeToolTip": "DataFormAISolution\\MainPage.xaml",
+              "ViewState": "AgIAAHcAAAAAAAAAAAAAACwAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-09-22T11:48:54.676Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "AzureOpenAiOptions.cs",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\AI\\AzureOpenAiOptions.cs",
+              "RelativeDocumentMoniker": "DataFormAISolution\\AI\\AzureOpenAiOptions.cs",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\AI\\AzureOpenAiOptions.cs",
+              "RelativeToolTip": "DataFormAISolution\\AI\\AzureOpenAiOptions.cs",
+              "ViewState": "AgIAAEQAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T10:09:34.537Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DataFormAISolution.csproj",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\DataFormAISolution.csproj",
+              "RelativeDocumentMoniker": "DataFormAISolution\\DataFormAISolution.csproj",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\DataFormAISolution.csproj",
+              "RelativeToolTip": "DataFormAISolution\\DataFormAISolution.csproj",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAAAE8AAABUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-09-22T10:13:06.725Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "FormViewModel.cs",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\ViewModel\\FormViewModel.cs",
+              "RelativeDocumentMoniker": "DataFormAISolution\\ViewModel\\FormViewModel.cs",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\ViewModel\\FormViewModel.cs",
+              "RelativeToolTip": "DataFormAISolution\\ViewModel\\FormViewModel.cs",
+              "ViewState": "AgIAAGgAAAAAAAAAAAAAAHYAAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T10:35:21.953Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "App.xaml",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\App.xaml",
+              "RelativeDocumentMoniker": "DataFormAISolution\\App.xaml",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\App.xaml",
+              "RelativeToolTip": "DataFormAISolution\\App.xaml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-10-01T06:47:22.687Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Colors.xaml",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\Resources\\Styles\\Colors.xaml",
+              "RelativeDocumentMoniker": "DataFormAISolution\\Resources\\Styles\\Colors.xaml",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\Resources\\Styles\\Colors.xaml",
+              "RelativeToolTip": "DataFormAISolution\\Resources\\Styles\\Colors.xaml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-10-01T06:50:01.548Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "IAIFormService.cs",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\AI\\IAIFormService.cs",
+              "RelativeDocumentMoniker": "DataFormAISolution\\AI\\IAIFormService.cs",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\AI\\IAIFormService.cs",
+              "RelativeToolTip": "DataFormAISolution\\AI\\IAIFormService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T10:40:15.149Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "FormField.cs",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\Model\\FormField.cs",
+              "RelativeDocumentMoniker": "DataFormAISolution\\Model\\FormField.cs",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\Model\\FormField.cs",
+              "RelativeToolTip": "DataFormAISolution\\Model\\FormField.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAcwBsAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T10:27:01.047Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "App.g.i.cs",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\obj\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\Platforms\\Windows\\App.g.i.cs",
+              "RelativeDocumentMoniker": "DataFormAISolution\\obj\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\Platforms\\Windows\\App.g.i.cs",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\obj\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\Platforms\\Windows\\App.g.i.cs",
+              "RelativeToolTip": "DataFormAISolution\\obj\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\Platforms\\Windows\\App.g.i.cs",
+              "ViewState": "AgIAADMAAAAAAAAAAAAkwEQAAABEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T12:11:34.575Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "AppShell.xaml",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\AppShell.xaml",
+              "RelativeDocumentMoniker": "DataFormAISolution\\AppShell.xaml",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\AppShell.xaml",
+              "RelativeToolTip": "DataFormAISolution\\AppShell.xaml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-09-23T13:03:49.658Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "AndroidManifest.xml",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\Platforms\\Android\\AndroidManifest.xml",
+              "RelativeDocumentMoniker": "DataFormAISolution\\Platforms\\Android\\AndroidManifest.xml",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\Platforms\\Android\\AndroidManifest.xml",
+              "RelativeToolTip": "DataFormAISolution\\Platforms\\Android\\AndroidManifest.xml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003576|",
+              "WhenOpened": "2026-09-28T12:11:29.659Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "MainActivity.cs",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\Platforms\\Android\\MainActivity.cs",
+              "RelativeDocumentMoniker": "DataFormAISolution\\Platforms\\Android\\MainActivity.cs",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\Platforms\\Android\\MainActivity.cs",
+              "RelativeToolTip": "DataFormAISolution\\Platforms\\Android\\MainActivity.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-28T10:58:01.747Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Xamarin.Android.Aapt2.targets",
+              "DocumentMoniker": "C:\\Program Files\\dotnet\\packs\\Microsoft.Android.Sdk.Windows\\36.1.69\\tools\\Xamarin.Android.Aapt2.targets",
+              "ToolTip": "C:\\Program Files\\dotnet\\packs\\Microsoft.Android.Sdk.Windows\\36.1.69\\tools\\Xamarin.Android.Aapt2.targets",
+              "ViewState": "AgIAAMsAAAAAAAAAAAApwNcAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
+              "WhenOpened": "2026-09-28T11:54:42.467Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "MainApplication.cs",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\Platforms\\Android\\MainApplication.cs",
+              "RelativeDocumentMoniker": "DataFormAISolution\\Platforms\\Android\\MainApplication.cs",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\Platforms\\Android\\MainApplication.cs",
+              "RelativeToolTip": "DataFormAISolution\\Platforms\\Android\\MainApplication.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-28T10:58:02.95Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "MauiProgram.cs",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\MauiProgram.cs",
+              "RelativeDocumentMoniker": "DataFormAISolution\\MauiProgram.cs",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\MauiProgram.cs",
+              "RelativeToolTip": "DataFormAISolution\\MauiProgram.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAASwBgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T10:41:08.496Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "MainPage.xaml.cs",
+              "DocumentMoniker": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\MainPage.xaml.cs",
+              "RelativeDocumentMoniker": "DataFormAISolution\\MainPage.xaml.cs",
+              "ToolTip": "D:\\NewSample\\DataFormAISolution\\DataFormAISolution\\MainPage.xaml.cs",
+              "RelativeToolTip": "DataFormAISolution\\MainPage.xaml.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAjwEYAAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T12:10:23.603Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

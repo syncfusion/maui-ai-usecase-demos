@@ -1,0 +1,244 @@
+﻿using DataFormAISolution.Model;
+using DataFormAISolution.ViewModel;
+using Syncfusion.Maui.DataForm;
+using System.ComponentModel;
+using System.Dynamic;
+
+namespace DataFormAISolution
+{
+	public partial class MainPage : ContentPage
+	{
+		private readonly FormViewModel _viewModel;
+
+		private Dictionary<string, object> _formData = new();
+
+		public MainPage()
+		{
+			InitializeComponent();
+			_viewModel = new FormViewModel();
+
+			BindingContext = _viewModel;
+
+			_viewModel.PropertyChanged +=
+				ViewModel_PropertyChanged;
+		}
+
+		private void ViewModel_PropertyChanged(
+object? sender,
+PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName ==
+			nameof(FormViewModel.FormGenerationVersion))
+			{
+				MainThread.BeginInvokeOnMainThread(
+				GenerateDataForm);
+			}
+		}
+
+		public class DynamicDataFormItemManager : DataFormItemManager
+		{
+			private readonly Dictionary<string, object> _formData;
+
+			public DynamicDataFormItemManager(
+				Dictionary<string, object> formData)
+			{
+				_formData = formData;
+			}
+
+			public override object GetValue(
+				DataFormItem dataFormItem)
+			{
+				if (_formData.TryGetValue(
+					dataFormItem.FieldName,
+					out var value))
+				{
+					return value;
+				}
+
+				return string.Empty;
+			}
+
+			public override void SetValue(
+				DataFormItem dataFormItem,
+				object value)
+			{
+				_formData[dataFormItem.FieldName] = value;
+			}
+		}
+
+	private void GenerateDataForm()
+		{
+			GeneratedDataForm.Items.Clear();
+
+			_formData.Clear();
+
+			// STEP 1:
+			// Store all AI values.
+			foreach (var field in _viewModel.GeneratedFields)
+			{
+				string fieldName =
+					GetValidPropertyName(field.FieldName);
+
+				object value =
+					ConvertFieldValue(field);
+
+				_formData[fieldName] = value;
+			}
+
+			// STEP 2:
+			// Connect dictionary to SfDataForm.
+			GeneratedDataForm.ItemManager =
+				new DynamicDataFormItemManager(
+					_formData);
+
+			// STEP 3:
+			// Generate editors.
+			foreach (var field in _viewModel.GeneratedFields)
+			{
+				string fieldName =
+					GetValidPropertyName(field.FieldName);
+
+				DataFormItem item =
+					CreateDataFormItem(
+						field,
+						fieldName);
+
+				GeneratedDataForm.Items.Add(item);
+			}
+		}
+
+		private static string GetValidPropertyName(
+		string fieldName)
+		{
+			if (string.IsNullOrWhiteSpace(fieldName))
+			{
+				return "Field";
+			}
+
+			var characters =
+				fieldName.Where(char.IsLetterOrDigit);
+
+			string propertyName =
+				string.Concat(characters);
+
+			if (string.IsNullOrWhiteSpace(propertyName))
+			{
+				return "Field";
+			}
+
+			if (char.IsDigit(propertyName[0]))
+			{
+				propertyName =
+					"Field" + propertyName;
+			}
+
+			return propertyName;
+		}
+
+		private static DataFormItem CreateDataFormItem(
+		AIField field,
+		string fieldName)
+		{
+			switch (field.FieldType?.ToLowerInvariant())
+			{
+				case "number":
+
+					return new DataFormNumericItem
+					{
+						FieldName = fieldName,
+						LabelText = field.FieldName,						
+						PlaceholderText =
+							$"Enter {field.FieldName}",
+					};
+
+				case "phone":
+
+					return new DataFormMaskedTextItem
+					{
+						FieldName = fieldName,
+						LabelText = field.FieldName,
+						PlaceholderText =
+							$"Enter {field.FieldName}"
+					};
+
+				case "email":
+
+					return new DataFormTextItem
+					{
+						FieldName = fieldName,
+						LabelText = field.FieldName,
+						PlaceholderText =
+							$"Enter {field.FieldName}"
+					};
+
+				case "text":
+
+				default:
+
+					return new DataFormTextItem
+					{
+						FieldName = fieldName,
+						LabelText = field.FieldName,
+						PlaceholderText =
+							$"Enter {field.FieldName}"
+					};
+			}
+		}
+
+		private static object? ConvertFieldValue(
+	AIField field)
+		{
+			string value =
+				field.Value ?? string.Empty;
+
+			switch (field.FieldType?.ToLowerInvariant())
+			{
+				case "number":
+
+					if (double.TryParse(
+						value,
+						out double number))
+					{
+						return number;
+					}
+
+					return 0d;
+
+				case "phone":
+				case "email":
+				case "text":
+
+				default:
+
+					return value;
+			}
+		}
+
+
+		//private void ViewModel_PropertyChanged(
+		//	object? sender,
+		//	PropertyChangedEventArgs e)
+		//{
+		//	if (e.PropertyName ==
+		//		nameof(FormViewModel.GenerateFormAsync))
+		//	{
+		//		//GeneratedDataForm.DataObject =
+		//			//_viewModel.GenerateFormAsync;
+		//	}
+		//}
+
+		//private void GeneratedDataForm_GenerateDataFormItem(
+		//	object? sender,
+		//	GenerateDataFormItemEventArgs e)
+		//{
+		//	if (e.DataFormItem == null)
+		//		return;
+
+		//	e.DataFormItem.LabelText =
+		//		e.DataFormItem.FieldName;
+
+		//	e.DataFormItem.PlaceholderText =
+		//		$"Enter {e.DataFormItem.FieldName}";
+		//}
+	}
+}
