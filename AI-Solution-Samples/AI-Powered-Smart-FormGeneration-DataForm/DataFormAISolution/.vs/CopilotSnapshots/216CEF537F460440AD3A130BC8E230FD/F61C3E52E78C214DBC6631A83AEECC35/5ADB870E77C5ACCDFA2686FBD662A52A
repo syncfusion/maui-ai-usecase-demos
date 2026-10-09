@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			 xmlns:input="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+			 xmlns:dataForm="clr-namespace:Syncfusion.Maui.DataForm;assembly=Syncfusion.Maui.DataForm"
+			 xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+			 x:Class="DataFormAISolution.MainPage">
+
+	<ScrollView>
+
+		<VerticalStackLayout Padding="24"
+		MaximumWidthRequest="1200"
+							 Spacing="16">
+
+			<!-- YOUR CONTENT CARD -->
+
+			<Border StrokeThickness="0"
+					Background="#FFFFFF"
+					StrokeShape="RoundRectangle 16">
+
+				<VerticalStackLayout Padding="16"
+									 Spacing="12">
+
+					<Label FontSize="16"
+						   FontAttributes="Bold"
+						   Text="Your Content" />
+
+					<Border Background="#F5F6FF"
+							StrokeThickness="0"
+							StrokeShape="RoundRectangle 12">
+
+						<Editor HeightRequest="120"
+								BackgroundColor="Transparent"
+								Text="{Binding UserInput}"
+								Placeholder="Paste or type any free-form text..." />
+
+					</Border>
+
+					<HorizontalStackLayout Spacing="6">
+
+						<Label Text="ⓘ"
+							   FontSize="12"
+							   TextColor="#6B7280" />
+
+						<Label FontSize="12"
+							   TextColor="#6B7280"
+							   Text="Paste or type any free-form text." />
+
+					</HorizontalStackLayout>
+
+				</VerticalStackLayout>
+
+			</Border>
+
+			<!-- GENERATE BUTTON -->
+
+			<Button HeightRequest="52"
+					FontAttributes="Bold"
+					Text="Generate Form"
+					WidthRequest="200"
+					BackgroundColor="#1565D8"
+					TextColor="White"
+					CornerRadius="12"
+					Command="{Binding GenerateFormCommand}" />
+
+			<!-- LOADER -->
+
+			<core:SfBusyIndicator IsVisible="{Binding IsBusy}"
+								  IsRunning="{Binding IsBusy}" />
+
+			<!-- GENERATED FORM CARD -->
+
+			<Border IsVisible="{Binding ShowForm}"
+					Background="#FFFFFF"
+					StrokeThickness="0"
+					StrokeShape="RoundRectangle 16">
+
+				<VerticalStackLayout Padding="16"
+									 Spacing="12">
+
+					<Label FontSize="18"
+						   FontAttributes="Bold"
+						   Text="Generated Form" />
+
+					<!-- DATA FORM -->
+
+					<dataForm:SfDataForm x:Name="GeneratedDataForm"
+										 IsVisible="{Binding ShowForm}"
+										 AutoGenerateItems="False" />
+
+					<!-- FIELD RESOLUTION -->
+
+					<Grid ColumnDefinitions="*,100"
+						  Margin="0,8,0,0">
+
+						<Label VerticalOptions="Center"
+							   FontSize="12"
+							   TextColor="#334155">
+
+							<Label.FormattedText>
+
+								<FormattedString>
+
+									<Span Text="Field Resolution: " />
+
+									<Span FontAttributes="Bold"
+										  Text="{Binding ResolutionSummary}" />
+
+								</FormattedString>
+
+							</Label.FormattedText>
+
+						</Label>
+
+						<ProgressBar Grid.Column="1"
+									 Progress="{Binding CompletionPercentage}"
+									 ProgressColor="#1565D8"
+									 VerticalOptions="Center" />
+
+					</Grid>
+
+				</VerticalStackLayout>
+
+			</Border>
+
+		</VerticalStackLayout>
+
+	</ScrollView>
+
+</ContentPage>
