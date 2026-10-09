@@ -1,0 +1,109 @@
+﻿<ContentPage
+    x:Class="ContextAwareSuggestions.ContextAwareSuggestionsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:assistview="clr-namespace:Syncfusion.Maui.AIAssistView;assembly=Syncfusion.Maui.AIAssistView"
+    xmlns:viewModel="clr-namespace:ContextAwareSuggestions">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Label">
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="TextColor" Value="Black" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.BindingContext>
+        <viewModel:ContextAwareSuggestionsViewModel/>
+    </ContentPage.BindingContext>
+    
+    <ContentPage.Content>
+        <assistview:SfAIAssistView
+                    x:Name="AssistView"
+                    Grid.Row="2"
+                    Padding="10"
+                    AssistItems="{Binding Messages}"
+                    Suggestions="{Binding Suggestions}"
+                    RequestCommand="{Binding RequestCommand}"
+                    ShowToolbar="True"
+                    AutoScrollBehavior="ScrollToLastRequest"
+                    CanAutoScrollToBottom="True"
+                    ShowScrollToBottomButton="True"
+                    ShowActionButtons="True"
+                    ShowHeader="True">
+            <assistview:SfAIAssistView.RequestItemTemplate>
+                <DataTemplate>
+                    <Border
+                            Background="{StaticResource PrimaryBlue}"
+                            StrokeThickness="0"
+                            Padding="18,14"
+                            Margin="40,6,0,6"
+                            HorizontalOptions="End"
+                            StrokeShape="RoundRectangle 18">
+
+                        <Label
+                            Text="{Binding Text}"
+                            FontSize="16"
+                            TextColor="White"/>
+                    </Border>
+                </DataTemplate>
+            </assistview:SfAIAssistView.RequestItemTemplate>
+
+            <assistview:SfAIAssistView.ResponseSuggestionTemplate>
+                <DataTemplate>
+                    <Border
+                        Padding="14,8"
+                        HeightRequest="42"
+                        Background="White"
+                        Stroke="{StaticResource BorderColor}"
+                        StrokeThickness="1.5"
+                        StrokeShape="RoundRectangle 6">
+
+                        <Border.Shadow>
+                            <Shadow
+                                Brush="#30000000"
+                                Offset="0,6"
+                                Radius="18"
+                                Opacity="0.35" />
+                        </Border.Shadow>
+
+                        <HorizontalStackLayout Spacing="8">
+                            <Label
+                                Text="{Binding Text}"
+                                FontSize="14"/>
+                        </HorizontalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </assistview:SfAIAssistView.ResponseSuggestionTemplate>
+
+            <assistview:SfAIAssistView.SuggestionTemplate>
+                <DataTemplate>
+                    <Border
+                        Padding="14,8"
+                        HeightRequest="42"
+                        Background="White"
+                        Stroke="{StaticResource BorderColor}"
+                        StrokeThickness="1.5"
+                        StrokeShape="RoundRectangle 6">
+
+                        <Border.Shadow>
+                            <Shadow
+                                Brush="#30000000"
+                                Offset="0,6"
+                                Radius="18"
+                                Opacity="0.35" />
+                        </Border.Shadow>
+
+                        <HorizontalStackLayout Spacing="8">
+                            <Label
+                                Text="{Binding Text}"
+                                VerticalTextAlignment="Center"
+                                FontSize="14"/>
+                        </HorizontalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </assistview:SfAIAssistView.SuggestionTemplate>
+        </assistview:SfAIAssistView>
+    </ContentPage.Content>
+</ContentPage>

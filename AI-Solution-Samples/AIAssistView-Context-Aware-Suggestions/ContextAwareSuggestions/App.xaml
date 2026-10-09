@@ -1,0 +1,39 @@
+﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:syncTheme="clr-namespace:Syncfusion.Maui.Themes;assembly=Syncfusion.Maui.Core"
+             xmlns:local="clr-namespace:ContextAwareSuggestions"
+             x:Class="ContextAwareSuggestions.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <syncTheme:SyncfusionThemeResourceDictionary />
+                <ResourceDictionary>
+                    <x:String x:Key="SfAIAssistViewTheme">CommonTheme</x:String>
+                    <Color x:Key="SfAIAssistViewBackground">#F5F7FB</Color>
+                    <Color x:Key="SfAIAssistViewResponseItemBackground">#F5F7FB</Color>
+                    <Color x:Key="SfAIAssistViewNavigationPaneBackground">#F5F7FB</Color>
+                    <Color x:Key="SfAIAssistViewChatBackground">#F5F7FB</Color>
+                    <Color x:Key="SfAIAssistViewConversationBackground">#F5F7FB</Color>
+                    <Color x:Key="SfAIAssistViewConversationDrawerBackground">#F5F7FB</Color>
+                    <Color x:Key="SfAIAssistViewConversationSearchSelectionBackground">#EEF3FF</Color>
+                    <Color x:Key="SfAIAssistViewDefaultConversationDrawerBackground">#F5F7FB</Color>
+                    <Color x:Key="SfAIAssistViewSearchPanelBackground">#F5F7FB</Color>
+                    <Color x:Key="SfAIAssistViewHeaderSuggestionBackground">#F5F7FB</Color>
+                    <Color x:Key="SfAIAssistViewToolBarViewBackground">#F5F7FB</Color>
+                    <Color x:Key="SfAIAssistViewToolBarTitleTextColor">#004AC6</Color>
+                    <Color x:Key="SfAIAssistViewSendButtonBackground">#004AC6</Color>
+                    <Color x:Key="SfAIAssistViewSelectedItemBackground">#2563EB</Color>
+                    <Color x:Key="SfAIAssistViewSelectedItemTextColor">White</Color>
+                    <Color x:Key="SfAIAssistViewSelectedItemIconColor">White</Color>
+                    <Color x:Key="SfAIAssistViewItemBackground">#F5F7FB</Color>
+                    <Color x:Key="SfAIAssistViewItemTextColor">#111827</Color>
+                    <Color x:Key="SfAIAssistViewSearchBarBackground">#F5F7FB</Color>
+                    <Color x:Key="SfAIAssistViewSearchBarTextColor">#111827</Color>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

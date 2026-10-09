@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="ContextAwareSuggestions.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:ContextAwareSuggestions"
+    Title="ContextAwareSuggestions">
+
+    <ShellContent
+        Title="Home"
+        ContentTemplate="{DataTemplate local:ContextAwareSuggestionsPage}"
+        Route="MainPage" />
+
+</Shell>
