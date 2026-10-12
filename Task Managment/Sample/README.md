@@ -42,12 +42,12 @@ Task Managment/Sample/
 |------|----------------------------------------------|-------------------------|
 | 1-01 | Project folder structure                     | ✅ Folders + READMEs     |
 | 1-02 | Install and verify NuGet packages            | ✅ `Todo.csproj`         |
-| 1-03 | Base MVVM framework (`ViewModelBase`)        | ⬜ next                 |
+| 1-03 | Base MVVM framework (`ViewModelBase`)        | ✅ `ViewModels/` + `Utilities/` |
 | 1-04 | Resource dictionaries (Colors, Sizes, Fonts) | ⬜ next                 |
 | 1-05 | `MauiProgram` and DI registrations           | ⬜ next                 |
 | 1-06 | Navigation infrastructure (`AppShell` etc.)  | ⬜ next                 |
 | 1-07 | Database setup (`AppDbContext`, SQLite init) | ⬜ next                 |
-| 1-08 | Utility classes (Constants, Enums, Helpers)  | ⬜ next                 |
+| 1-08 | Utility classes (Constants, Enums, Helpers)  | ✅ shipped with Task 1-03 |
 
 ## Task 1-02 — Installed NuGet packages
 
@@ -55,22 +55,51 @@ The exact package versions added to `Todo.csproj` are documented in
 `Task Managment/Tasks/Module-01-Foundation/Task-1-02-NuGetPackages.md` and
 `Task Managment/SPECIFICATION.md § 11.2`.
 
-| Package                              | Version    | Purpose                       |
-|--------------------------------------|------------|-------------------------------|
-| Microsoft.Maui.Controls              | 8.0.100    | MAUI framework (8.0.x)        |
-| Microsoft.Extensions.Logging.Debug   | 8.0.0      | Debug log provider            |
-| Syncfusion.Maui.ListView             | 24.1.47    | Task list display             |
-| Syncfusion.Maui.Calendar             | 24.1.47    | Date picker                   |
-| Syncfusion.Maui.Core                 | 24.1.47    | Core framework / theme        |
-| Syncfusion.Maui.Buttons              | 24.1.47    | Button controls (future)      |
-| CommunityToolkit.Mvvm                | 8.4.0      | ObservableProperty / Command  |
-| sqlite-net-pcl                       | 1.8.116    | SQLite ORM (1.8.x)            |
-| SQLitePCLRaw.bundle_green            | 2.1.11     | SQLite native bindings (2.1.x)|
+The project has been retargeted to `net10.0-*` and the package versions
+use the floating `*` notation so that the restore step always pulls the
+latest stable release from `nuget.org`.  The original .NET 8 / Syncfusion
+24.1.x version pins are kept in
+`Task Managment/Tasks/Module-01-Foundation/Task-1-02-NuGetPackages.md`
+for reference.
+
+| Package                              | Version notation | Purpose                       |
+|--------------------------------------|------------------|-------------------------------|
+| Microsoft.Maui.Controls              | (SDK)            | MAUI framework (transitive)   |
+| Microsoft.Extensions.Logging.Debug   | `*`              | Debug log provider            |
+| Syncfusion.Maui.ListView             | `*`              | Task list display             |
+| Syncfusion.Maui.Calendar             | `*`              | Date picker                   |
+| Syncfusion.Maui.Core                 | `*`              | Core framework / theme        |
+| Syncfusion.Maui.Buttons              | `*`              | Button controls (future)      |
+| CommunityToolkit.Mvvm                | `*`              | ObservableProperty / Command  |
+| sqlite-net-pcl                       | `*`              | SQLite ORM                    |
+| SQLitePCLRaw.bundle_green            | `*`              | SQLite native bindings        |
 
 The `Microsoft.Maui.Controls.Hosting` package referenced in the task
 description is part of the `Microsoft.Maui.Controls` meta-package in MAUI
 8.0.x; the `IAppHostBuilder` extensions (e.g. `UseMauiApp`,
 `ConfigureSyncfusionCore`) live there.
+
+## Task 1-03 — Base MVVM framework
+
+Implemented in `Todo/ViewModels/ViewModelBase.cs` plus the supporting
+`Todo/Utilities/` helpers:
+
+- `ViewModelBase` — abstract base that wires
+  `CommunityToolkit.Mvvm.ComponentModel.ObservableObject`, an injected
+  `ILogger<ViewModelBase>`, the standard `IsLoading` / `HasError` /
+  `ErrorMessage` / `Title` observable properties, and a generic
+  `ExecuteAsync<T>(...)` wrapper that turns a throwing `Func<Task<T?>>`
+  into a `Result<T>` (no exceptions leak to the View).
+- `Utilities/Result.cs` — discriminated success/failure value type
+  returned by `ExecuteAsync`.
+- `Utilities/Constants.cs` — compile-time constants for the app,
+  database, navigation routes, timeouts, validation limits, reminder
+  presets, and feature flags.
+- `Utilities/Enums.cs` — `ListCategory`, `RecurrenceType`,
+  `TaskStatus`, `NotificationSeverity`, and `NavigationTarget`.
+- `Utilities/Helpers.cs` — date/time formatting, relative-date
+  descriptions, e-mail / password validation, hex colour parsing, and
+  `Chunk<T>` helper for in-memory pagination.
 
 ## Building
 
