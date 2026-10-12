@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    SettingsPage — placeholder.
+
+    Created in Task 1-06 (Navigation Setup) so that the Shell route
+    "settings" can be registered.  The full settings screen is
+    implemented in Module 10 (Polish).
+-->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Todo.Views.Main.SettingsPage"
+             Title="Settings">
+    <VerticalStackLayout
+        HorizontalOptions="Center"
+        VerticalOptions="Center"
+        Spacing="12">
+        <Label
+            Text="Settings"
+            FontSize="32"
+            HorizontalOptions="Center" />
+        <Label
+            Text="Placeholder — implemented in Module 10"
+            FontSize="14"
+            TextColor="Gray"
+            HorizontalOptions="Center" />
+    </VerticalStackLayout>
+</ContentPage>

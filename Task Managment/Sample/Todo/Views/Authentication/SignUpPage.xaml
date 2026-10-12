@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    SignUpPage — placeholder.
+
+    Created in Task 1-06 (Navigation Setup) so that the Shell route
+    "signup" can be registered.  The full sign-up screen is implemented
+    in Task 2-04.
+-->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Todo.Views.Authentication.SignUpPage"
+             Title="Sign Up">
+    <VerticalStackLayout
+        HorizontalOptions="Center"
+        VerticalOptions="Center"
+        Spacing="12">
+        <Label
+            Text="Sign Up"
+            FontSize="32"
+            HorizontalOptions="Center" />
+        <Label
+            Text="Placeholder — implemented in Task 2-04"
+            FontSize="14"
+            TextColor="Gray"
+            HorizontalOptions="Center" />
+    </VerticalStackLayout>
+</ContentPage>

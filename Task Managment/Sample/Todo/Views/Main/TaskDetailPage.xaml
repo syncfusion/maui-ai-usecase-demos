@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    TaskDetailPage — placeholder.
+
+    Created in Task 1-06 (Navigation Setup) so that the Shell route
+    "taskdetail" can be registered.  The full task detail / editor
+    screen is implemented in Module 4 (Task CRUD).
+-->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Todo.Views.Main.TaskDetailPage"
+             Title="Task">
+    <VerticalStackLayout
+        HorizontalOptions="Center"
+        VerticalOptions="Center"
+        Spacing="12">
+        <Label
+            Text="Task Detail"
+            FontSize="32"
+            HorizontalOptions="Center" />
+        <Label
+            Text="Placeholder — implemented in Module 4"
+            FontSize="14"
+            TextColor="Gray"
+            HorizontalOptions="Center" />
+    </VerticalStackLayout>
+</ContentPage>
