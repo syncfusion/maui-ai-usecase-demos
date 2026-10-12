@@ -64,16 +64,38 @@ public class NavigationService : INavigationService
             return false;
         }
 
-        string uri = clearStack ? $"//{route}" : BuildRouteUri(route, parameters);
         try
         {
+            if (clearStack)
+            {
+                // The "//" prefix in Shell.GoToAsync is the "absolute navigation"
+                // syntax and only reliably replaces the current Shell hierarchy
+                // for routes that are declared as <ShellContent> in the Shell XAML.
+                // In this app only the splash is a ShellContent; every other
+                // page (signin, signup, tasklist, ...) is registered globally via
+                // Routing.RegisterRoute.  Using "//<globalRoute>" therefore
+                // throws (typically ArgumentException: unable to figure out the
+                // route) which the surrounding try/catch swallows, leaving the
+                // user stranded on the previous page.
+                //
+                // Pop every pushed page first so the navigation stack is reset
+                // before pushing the new destination.  This is the equivalent
+                // of the "//" semantics for globally-registered routes and is
+                // what the splash → sign-in and sign-in/sign-up → task list
+                // transitions rely on.
+                await shell.Navigation
+                    .PopToRootAsync(animated: false)
+                    .ConfigureAwait(true);
+            }
+
+            string uri = BuildRouteUri(route, parameters);
             _logger.LogInformation("Navigating to {Route} (clearStack={ClearStack})", uri, clearStack);
             await shell.GoToAsync(uri, animate: true).ConfigureAwait(true);
             return true;
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            _logger.LogError(ex, "Navigation to {Route} failed", uri);
+            _logger.LogError(ex, "Navigation to {Route} failed", route);
             return false;
         }
     }
