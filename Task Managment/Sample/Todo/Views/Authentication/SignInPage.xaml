@@ -139,8 +139,6 @@
                     Keyboard="Email"
                     IsSpellCheckEnabled="False"
                     IsTextPredictionEnabled="False"
-                    AutocapitalizationType="None"
-                    AutocorrectionType="NoCorrect"
                     ReturnType="Next"
                     ReturnCommand="{Binding SignInCommand}"
                     BackgroundColor="Transparent" />
