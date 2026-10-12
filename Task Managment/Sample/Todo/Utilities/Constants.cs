@@ -146,4 +146,28 @@ public static class Constants
         /// <summary>Enable the "remember me" checkbox on the sign-in page.</summary>
         public const bool RememberMe = true;
     }
+
+    /// <summary>
+    /// Date / time format strings used by <c>DateTimeToStringConverter</c>
+    /// (Task 1-08) and anywhere else in the app that formats dates for
+    /// display.  Centralised here so the format can be adjusted globally
+    /// without hunting through XAML.
+    /// </summary>
+    public static class DateFormats
+    {
+        /// <summary>Short date pattern — e.g. <c>10/21/2026</c>.</summary>
+        public const string Short = "d";
+
+        /// <summary>Long date pattern — e.g. <c>Monday, October 21, 2026</c>.</summary>
+        public const string Long = "D";
+
+        /// <summary>Short time pattern — e.g. <c>2:00 PM</c>.</summary>
+        public const string ShortTime = "t";
+
+        /// <summary>Long time pattern — e.g. <c>2:00:30 PM</c>.</summary>
+        public const string LongTime = "T";
+
+        /// <summary>General date + short time — e.g. <c>10/21/2026 2:00 PM</c>.</summary>
+        public const string General = "g";
+    }
 }
