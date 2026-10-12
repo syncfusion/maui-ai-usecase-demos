@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>Todo.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <!--
+    Compile the foundation utility / converter source files directly
+    into the test project so we can exercise the logic without requiring
+    the full .NET MAUI workload (which is unavailable on CI build agents).
+    MAUI-specific types (IValueConverter, Color, Colors, IValueConverterExtensions)
+    are stubbed inside Stubs/ so the source files compile unchanged.
+  -->
+  <ItemGroup>
+    <Compile Include="..\Todo\Utilities\Constants.cs" Link="Utilities\Constants.cs" />
+    <Compile Include="..\Todo\Utilities\Enums.cs" Link="Utilities\Enums.cs" />
+    <Compile Include="..\Todo\Utilities\Helpers.cs" Link="Utilities\Helpers.cs" />
+    <Compile Include="..\Todo\Converters\BoolToVisibilityConverter.cs" Link="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="..\Todo\Converters\InvertedBoolConverter.cs" Link="Converters\InvertedBoolConverter.cs" />
+    <Compile Include="..\Todo\Converters\DateTimeToStringConverter.cs" Link="Converters\DateTimeToStringConverter.cs" />
+    <Compile Include="..\Todo\Converters\EnumToStringConverter.cs" Link="Converters\EnumToStringConverter.cs" />
+  </ItemGroup>
+
+</Project>

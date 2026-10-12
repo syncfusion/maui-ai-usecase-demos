@@ -10,10 +10,17 @@
     MAUI theme variables (used by the Syncfusion controls installed in
     Task 1-02) and is kept at the end of the merge list so it can override
     any default values it needs to.
+
+    Task 1-08 also registers the four value converters shipped with the
+    foundation layer (BoolToVisibility, DateTimeToString, InvertedBool,
+    EnumToString).  They are declared below the merged dictionaries so they
+    can be referenced from any page with
+    {StaticResource <Key>}.
 -->
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Todo"
+             xmlns:converters="clr-namespace:Todo.Converters"
              xmlns:syncTheme="clr-namespace:Syncfusion.Maui.Themes;assembly=Syncfusion.Maui.Core"
              x:Class="Todo.App">
     <Application.Resources>
@@ -25,6 +32,14 @@
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
                 <syncTheme:SyncfusionThemeResourceDictionary />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- ============================================================ -->
+            <!-- Value Converters (Task 1-08: Create Utility Classes)         -->
+            <!-- ============================================================ -->
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <converters:DateTimeToStringConverter x:Key="DateTimeToStringConverter" />
+            <converters:EnumToStringConverter x:Key="EnumToStringConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
