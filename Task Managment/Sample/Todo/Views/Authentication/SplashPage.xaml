@@ -1,28 +1,125 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-    SplashPage — placeholder.
+    SplashPage — Task 2-02 (Create Splash Screen / SplashPage).
 
-    Created in Task 1-06 (Navigation Setup) so that the Shell route
-    "splash" can be registered and the App launch flow can be wired up
-    end-to-end.  The full Splash screen is implemented in
-    Task 2-02 (Create SplashPage).
+    Shown on application launch while the SplashPageViewModel checks the
+    persisted authentication state and decides where to route the user
+    (TaskListPage when signed-in, SignInPage otherwise).
+
+    Layout matches the design in Task Managment/images/splash.png:
+        • 4×2 grid of rounded purple squares forming the brand "logo" mark
+          (rendered as BoxViews so we don't ship a binary asset).
+        • "todo" wordmark below the logo.
+        • Tagline below the wordmark.
+        • A centred ActivityIndicator for the loading state.
+        • An inline error label shown when the auth check times out.
 -->
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Todo.Views.Authentication.SplashPage"
-             Title="Todo">
-    <VerticalStackLayout
-        HorizontalOptions="Center"
-        VerticalOptions="Center"
-        Spacing="12">
-        <Label
-            Text="Splash"
-            FontSize="32"
-            HorizontalOptions="Center" />
-        <Label
-            Text="Placeholder — implemented in Task 2-02"
-            FontSize="14"
-            TextColor="Gray"
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Todo"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- 4 x 2 logo grid.
+             Each cell is a rounded BoxView tinted with a different shade
+             of the primary purple so the mark looks like a checkered
+             gradient. -->
+        <Grid Grid.Row="1"
+              HorizontalOptions="Center"
+              VerticalOptions="End"
+              Margin="0,0,0,24"
+              WidthRequest="120"
+              HeightRequest="60"
+              ColumnSpacing="6"
+              RowSpacing="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <BoxView Grid.Row="0" Grid.Column="0"
+                     Color="{StaticResource PrimaryDarkColor}"
+                     CornerRadius="6" />
+            <BoxView Grid.Row="0" Grid.Column="1"
+                     Color="{StaticResource PrimaryColor}"
+                     CornerRadius="6" />
+            <BoxView Grid.Row="0" Grid.Column="2"
+                     Color="{StaticResource PrimaryLightColor}"
+                     CornerRadius="6" />
+            <BoxView Grid.Row="0" Grid.Column="3"
+                     Color="{StaticResource PrimaryDarkColor}"
+                     CornerRadius="6" />
+
+            <BoxView Grid.Row="1" Grid.Column="0"
+                     Color="{StaticResource PrimaryColor}"
+                     CornerRadius="6" />
+            <BoxView Grid.Row="1" Grid.Column="1"
+                     Color="{StaticResource PrimaryLightColor}"
+                     CornerRadius="6" />
+            <BoxView Grid.Row="1" Grid.Column="2"
+                     Color="{StaticResource PrimaryColor}"
+                     CornerRadius="6" />
+            <BoxView Grid.Row="1" Grid.Column="3"
+                     Color="{StaticResource PrimaryLightColor}"
+                     CornerRadius="6" />
+        </Grid>
+
+        <!-- Wordmark. -->
+        <Label Grid.Row="2"
+               Text="todo"
+               Style="{StaticResource LabelHeading1}"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               Margin="0,0,0,8" />
+
+        <!-- Tagline. -->
+        <Label Grid.Row="3"
+               Text="Stay organised. Get things done."
+               Style="{StaticResource LabelSubtitle}"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               Margin="0,0,0,48" />
+
+        <!-- Loading / status region pinned to the bottom of the page. -->
+        <VerticalStackLayout Grid.Row="4"
+                             HorizontalOptions="Center"
+                             VerticalOptions="End"
+                             Spacing="12"
+                             Margin="0,0,0,48">
+
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                               IsVisible="{Binding IsLoading}"
+                               Color="{StaticResource PrimaryColor}"
+                               WidthRequest="32"
+                               HeightRequest="32"
+                               HorizontalOptions="Center" />
+
+            <Label Text="{Binding StatusMessage}"
+                   Style="{StaticResource LabelCaption}"
+                   HorizontalOptions="Center"
+                   IsVisible="{Binding ShowStatusMessage}" />
+
+            <Label Text="{Binding ErrorMessage}"
+                   Style="{StaticResource LabelError}"
+                   HorizontalOptions="Center"
+                   IsVisible="{Binding HasError}"
+                   Margin="24,0" />
+        </VerticalStackLayout>
+    </Grid>
 </ContentPage>

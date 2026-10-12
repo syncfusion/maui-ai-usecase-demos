@@ -77,4 +77,18 @@ public interface IAuthenticationService
     Task<Result> RequestPasswordResetAsync(
         string email,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Re-hydrates the in-memory <see cref="CurrentUser"/> from a token
+    /// previously persisted in <c>SecureStorage</c>.  Called by the splash
+    /// page on application start-up to honour the "Authentication state
+    /// persists on app restart" acceptance criterion.
+    /// </summary>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>
+    /// A successful <see cref="Result{T}"/> when a valid token is present,
+    /// or a failed <see cref="Result{T}"/> with a human-readable
+    /// <see cref="Result{T}.ErrorMessage"/> otherwise.
+    /// </returns>
+    Task<Result<UserDto>> RestoreSessionAsync(CancellationToken cancellationToken = default);
 }

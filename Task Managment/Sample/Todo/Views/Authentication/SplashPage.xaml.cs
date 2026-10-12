@@ -1,14 +1,18 @@
 namespace Todo.Views.Authentication;
 
 /// <summary>
-/// Splash screen placeholder.  Created in Task 1-06 (Navigation Setup) so
-/// that the "splash" route can be registered with the Shell.  The full
-/// implementation lives in Task 2-02.
+/// XAML-loaded partial of <see cref="SplashPage"/>.  The companion
+/// <c>SplashPage.cs</c> file holds the dependency-injected constructor
+/// used by the .NET MAUI Shell — the two halves together form the same
+/// class so the XAML UI is inflated when the Shell constructs the page
+/// via DI.
 /// </summary>
-public partial class SplashPage : ContentPage
+public partial class SplashPage
 {
     /// <summary>
-    /// Initialises a new instance of the <see cref="SplashPage"/> class.
+    /// Initialises a new instance of the <see cref="SplashPage"/> class
+    /// and inflates the XAML UI.  This constructor is invoked implicitly
+    /// by <c>SplashPage.cs</c>; the Shell never resolves it directly.
     /// </summary>
     public SplashPage()
     {

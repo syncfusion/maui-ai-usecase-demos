@@ -100,6 +100,13 @@ public static class Constants
 
         /// <summary>UI animation / activity indicator debounce.</summary>
         public const int UiDebounceMilliseconds = 250;
+
+        /// <summary>
+        /// Maximum time (seconds) the splash screen will wait for the
+        /// persisted-session check to complete before falling through to
+        /// the sign-in screen (Task 2-02).
+        /// </summary>
+        public const int SplashAuthCheckSeconds = 5;
     }
 
     /// <summary>
