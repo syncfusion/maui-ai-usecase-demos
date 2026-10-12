@@ -1,0 +1,37 @@
+## .NET / MAUI build artefacts
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+
+## Visual Studio
+.vs/
+.vscode/
+
+## Rider / Rider-style
+.idea/
+
+## Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+## Build output
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+ARM/
+ARM64/
+
+## NuGet
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## OS junk
+.DS_Store
+Thumbs.db
