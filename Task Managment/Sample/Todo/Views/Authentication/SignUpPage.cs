@@ -6,7 +6,7 @@ namespace Todo.Views.Authentication;
 /// Placeholder sign-up page.  The full XAML layout is added in Module 2
 /// (Task 2-01).
 /// </summary>
-public sealed class SignUpPage : ContentPage
+public sealed partial class SignUpPage : ContentPage
 {
     /// <summary>
     /// Initialises a new instance of the <see cref="SignUpPage"/> class.

@@ -1,4 +1,8 @@
 <Solution>
-  <Project Path="Todo/Todo.csproj" />
-  <Project Path="Todo.Tests/Todo.Tests.csproj" />
+  <Project Path="Todo/Todo.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
+  <Project Path="Todo.Tests/Todo.Tests.csproj">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
 </Solution>

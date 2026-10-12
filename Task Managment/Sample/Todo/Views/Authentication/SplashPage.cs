@@ -7,7 +7,7 @@ namespace Todo.Views.Authentication;
 /// <see cref="SplashPageViewModel"/> decides where to navigate (sign-in or
 /// main).  The full XAML layout is added in Task 1-06 (Navigation Setup).
 /// </summary>
-public sealed class SplashPage : ContentPage
+public sealed partial class SplashPage : ContentPage
 {
     /// <summary>
     /// Initialises a new instance of the <see cref="SplashPage"/> class.

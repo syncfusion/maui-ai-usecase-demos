@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Logging;
-using Todo.Services.Interfaces;
 using System.Text.Json;
 using SQLite;
 using Todo.Data;
 using Todo.Utilities;
+using SysTask = System.Threading.Tasks.Task;
 
 namespace Todo.Services.Storage;
 
@@ -247,7 +247,7 @@ public sealed class LocalStorageService : ILocalStorageService
     /// serialised through a <see cref="SemaphoreSlim"/> so two callers
     /// racing on cold-start cannot both create the table.
     /// </summary>
-    private async Task EnsureInitialisedAsync()
+    private async SysTask EnsureInitialisedAsync()
     {
         if (_initialised)
         {
@@ -273,6 +273,12 @@ public sealed class LocalStorageService : ILocalStorageService
         {
             _initLock.Release();
         }
+
+        // The `await _initLock.WaitAsync()` above never throws and the
+        // `try` / `finally` always falls off the end.  A bare `return;`
+        // is required so the compiler treats every code path as returning
+        // a `Task` (CS0161).
+        return;
     }
 
     /// <summary>

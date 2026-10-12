@@ -8,7 +8,7 @@ namespace Todo.Views.Authentication;
 /// <see cref="Todo.Services.Interfaces.IAuthenticationService"/>) is added
 /// in Module 2 (Task 2-01).
 /// </summary>
-public sealed class SignInPage : ContentPage
+public sealed partial class SignInPage : ContentPage
 {
     /// <summary>
     /// Initialises a new instance of the <see cref="SignInPage"/> class.

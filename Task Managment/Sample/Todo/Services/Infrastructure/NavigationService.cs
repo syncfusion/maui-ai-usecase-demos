@@ -1,8 +1,8 @@
-using Microsoft.Extensions.Logging;
-using Todo.Services.Interfaces;
-using Todo.Utilities;
 using System.Text;
+using Microsoft.Extensions.Logging;
+using Todo.Utilities;
 using Enums = Todo.Utilities.Enums;
+using SysTask = System.Threading.Tasks.Task;
 
 namespace Todo.Services.Infrastructure;
 
@@ -36,19 +36,6 @@ public class NavigationService : INavigationService
     }
 
     /// <inheritdoc />
-    public Task<Result> NavigateToAsync(
-        string route,
-        IDictionary<string, object>? parameters = null)
-    {
-        _logger.LogWarning(
-            "NavigationService.NavigateToAsync is not implemented yet (Task 1-06).");
-        throw new NotImplementedException(
-            "Shell navigation is implemented in Task 1-06 (Navigation Setup).");
-    }
-
-    /// <inheritdoc />
-    public Task<Result> GoBackAsync()
-        => throw new NotImplementedException("Implemented in Task 1-06.");
     public string? CurrentRoute =>
         Shell.Current?.CurrentState?.Location?.OriginalString;
 
@@ -101,7 +88,7 @@ public class NavigationService : INavigationService
         if (string.IsNullOrEmpty(route))
         {
             _logger.LogWarning("No registered route found for page type {PageType}", typeof(TPage).FullName);
-            return Task.FromResult(false);
+            return SysTask.FromResult(false);
         }
 
         return NavigateToAsync(route, parameters, clearStack);
@@ -124,7 +111,7 @@ public class NavigationService : INavigationService
         if (string.IsNullOrEmpty(route))
         {
             _logger.LogWarning("No route mapped for navigation target {Target}", navigationTarget);
-            return Task.FromResult(false);
+            return SysTask.FromResult(false);
         }
 
         return clearStack

@@ -7,7 +7,7 @@ namespace Todo.Views.Main;
 /// <c>SfListView</c>, sidebar, bottom input bar) is added in Module 4
 /// (Task 4-xx).
 /// </summary>
-public sealed class TaskListPage : ContentPage
+public sealed partial class TaskListPage : ContentPage
 {
     /// <summary>
     /// Initialises a new instance of the <see cref="TaskListPage"/> class.

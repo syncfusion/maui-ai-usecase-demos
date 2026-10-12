@@ -29,7 +29,7 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Sizes.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <!--<ResourceDictionary Source="Resources/Styles/Styles.xaml" />-->
                 <syncTheme:SyncfusionThemeResourceDictionary />
             </ResourceDictionary.MergedDictionaries>
 

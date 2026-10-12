@@ -7,7 +7,7 @@ namespace Todo.Views.Main;
 /// description, due date picker, recurrence controls) is added in Module 4
 /// (Task 4-xx).
 /// </summary>
-public sealed class TaskDetailPage : ContentPage
+public sealed partial class TaskDetailPage : ContentPage
 {
     /// <summary>
     /// Initialises a new instance of the <see cref="TaskDetailPage"/> class.

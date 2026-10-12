@@ -161,6 +161,7 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
         return builder;
+    }
     /// Registers the navigation service and the Shell-level ViewModel.
     /// Both are singletons because they hold process-wide state.
     /// </summary>
@@ -202,6 +203,7 @@ public static class MauiProgram
         builder.Services.AddTransient<SearchResultsPage>();
         builder.Services.AddTransient<ProfilePage>();
         builder.Services.AddTransient<SettingsPage>();
+    }
     /// Registers the <see cref="AppDbContext"/> and one
     /// <see cref="IRepository{T}"/> per aggregate root.  The database file
     /// is created lazily the first time the context is resolved.
