@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="MauiNotes.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:notes="clr-namespace:MauiNotes.Views.Notes"
+    Title="MauiNotes">
+
+    <ShellContent x:Name="HomeContent"
+        Title="Home"
+        ContentTemplate="{DataTemplate notes:NotesPageDesktopUI}"
+        Route="MainPage" />
+
+</Shell>

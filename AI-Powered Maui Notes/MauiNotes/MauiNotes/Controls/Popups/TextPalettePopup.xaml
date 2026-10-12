@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:controls="clr-namespace:MauiNotes.Controls"
+             xmlns:vm="clr-namespace:MauiNotes.ViewModels"
+             x:Class="MauiNotes.Controls.Popups.TextPalettePopup"
+             x:DataType="vm:NotesViewModel"
+             WidthRequest="0"
+             HeightRequest="0">
+    <ContentView.Resources>
+        <ResourceDictionary>
+<Style x:Key="PopupItemRowStyle" TargetType="Grid">
+            <Setter Property="controls:PopupHoverEffect.IsHoverEnabled" Value="True" />
+        </Style>
+        </ResourceDictionary>
+    </ContentView.Resources>
+    <Grid>
+<popup:SfPopup x:Name="PopupView" WidthRequest="100" AutoSizeMode="Height"
+            ShowHeader="False" ShowFooter="False" ShowOverlayAlways="False" StaysOpen="False">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle Stroke="Transparent" StrokeThickness="0" CornerRadius="10" />
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:NotesViewModel">
+                    <Border Padding="4" BackgroundColor="White" Stroke="#ECECEF" StrokeThickness="0.5"
+                        StrokeShape="RoundRectangle 10">
+                        <VerticalStackLayout Spacing="1">
+                            <Grid HeightRequest="20" ColumnDefinitions="12,*,12" Padding="3,0" Style="{StaticResource PopupItemRowStyle}">
+                                <Ellipse WidthRequest="6" HeightRequest="6" Fill="#BF5AF2" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="Purple" FontSize="10" TextColor="#45464D" VerticalTextAlignment="Center" />
+                                <Label Grid.Column="2" Text="&#x2713;" FontSize="9" TextColor="#FF9F0A" IsVisible="False" HorizontalTextAlignment="Center" VerticalTextAlignment="Center">
+                                    <Label.Triggers><DataTrigger TargetType="Label" Binding="{Binding SelectedTextColor}" Value="#BF5AF2"><Setter Property="IsVisible" Value="True" /></DataTrigger></Label.Triggers>
+                                </Label>
+                                <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding ToolbarActionCommand}" CommandParameter="TextColor:#BF5AF2" /></Grid.GestureRecognizers>
+                                <Grid.Triggers><DataTrigger TargetType="Grid" Binding="{Binding SelectedTextColor}" Value="#BF5AF2"><Setter Property="BackgroundColor" Value="#F4F4F6" /></DataTrigger></Grid.Triggers>
+                            </Grid>
+                            <Grid HeightRequest="20" ColumnDefinitions="12,*,12" Padding="3,0" Style="{StaticResource PopupItemRowStyle}">
+                                <Ellipse WidthRequest="6" HeightRequest="6" Fill="#FF375F" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="Pink" FontSize="10" TextColor="#45464D" VerticalTextAlignment="Center" />
+                                <Label Grid.Column="2" Text="&#x2713;" FontSize="9" TextColor="#FF9F0A" IsVisible="False" HorizontalTextAlignment="Center" VerticalTextAlignment="Center">
+                                    <Label.Triggers><DataTrigger TargetType="Label" Binding="{Binding SelectedTextColor}" Value="#FF375F"><Setter Property="IsVisible" Value="True" /></DataTrigger></Label.Triggers>
+                                </Label>
+                                <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding ToolbarActionCommand}" CommandParameter="TextColor:#FF375F" /></Grid.GestureRecognizers>
+                                <Grid.Triggers><DataTrigger TargetType="Grid" Binding="{Binding SelectedTextColor}" Value="#FF375F"><Setter Property="BackgroundColor" Value="#F4F4F6" /></DataTrigger></Grid.Triggers>
+                            </Grid>
+                            <Grid HeightRequest="20" ColumnDefinitions="12,*,12" Padding="3,0" Style="{StaticResource PopupItemRowStyle}">
+                                <Ellipse WidthRequest="6" HeightRequest="6" Fill="#FF9F0A" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="Orange" FontSize="10" TextColor="#45464D" VerticalTextAlignment="Center" />
+                                <Label Grid.Column="2" Text="&#x2713;" FontSize="9" TextColor="#FF9F0A" IsVisible="False" HorizontalTextAlignment="Center" VerticalTextAlignment="Center">
+                                    <Label.Triggers><DataTrigger TargetType="Label" Binding="{Binding SelectedTextColor}" Value="#FF9F0A"><Setter Property="IsVisible" Value="True" /></DataTrigger></Label.Triggers>
+                                </Label>
+                                <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding ToolbarActionCommand}" CommandParameter="TextColor:#FF9F0A" /></Grid.GestureRecognizers>
+                                <Grid.Triggers><DataTrigger TargetType="Grid" Binding="{Binding SelectedTextColor}" Value="#FF9F0A"><Setter Property="BackgroundColor" Value="#F4F4F6" /></DataTrigger></Grid.Triggers>
+                            </Grid>
+                            <Grid HeightRequest="20" ColumnDefinitions="12,*,12" Padding="3,0" Style="{StaticResource PopupItemRowStyle}">
+                                <Ellipse WidthRequest="6" HeightRequest="6" Fill="#36BDB7" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="Mint" FontSize="10" TextColor="#45464D" VerticalTextAlignment="Center" />
+                                <Label Grid.Column="2" Text="&#x2713;" FontSize="9" TextColor="#FF9F0A" IsVisible="False" HorizontalTextAlignment="Center" VerticalTextAlignment="Center">
+                                    <Label.Triggers><DataTrigger TargetType="Label" Binding="{Binding SelectedTextColor}" Value="#36BDB7"><Setter Property="IsVisible" Value="True" /></DataTrigger></Label.Triggers>
+                                </Label>
+                                <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding ToolbarActionCommand}" CommandParameter="TextColor:#36BDB7" /></Grid.GestureRecognizers>
+                                <Grid.Triggers><DataTrigger TargetType="Grid" Binding="{Binding SelectedTextColor}" Value="#36BDB7"><Setter Property="BackgroundColor" Value="#F4F4F6" /></DataTrigger></Grid.Triggers>
+                            </Grid>
+                            <Grid HeightRequest="20" ColumnDefinitions="12,*,12" Padding="3,0" Style="{StaticResource PopupItemRowStyle}">
+                                <Ellipse WidthRequest="6" HeightRequest="6" Fill="#0A84FF" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="Blue" FontSize="10" TextColor="#45464D" VerticalTextAlignment="Center" />
+                                <Label Grid.Column="2" Text="&#x2713;" FontSize="9" TextColor="#FF9F0A" IsVisible="False" HorizontalTextAlignment="Center" VerticalTextAlignment="Center">
+                                    <Label.Triggers><DataTrigger TargetType="Label" Binding="{Binding SelectedTextColor}" Value="#0A84FF"><Setter Property="IsVisible" Value="True" /></DataTrigger></Label.Triggers>
+                                </Label>
+                                <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding ToolbarActionCommand}" CommandParameter="TextColor:#0A84FF" /></Grid.GestureRecognizers>
+                                <Grid.Triggers><DataTrigger TargetType="Grid" Binding="{Binding SelectedTextColor}" Value="#0A84FF"><Setter Property="BackgroundColor" Value="#F4F4F6" /></DataTrigger></Grid.Triggers>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+    </Grid>
+</ContentView>

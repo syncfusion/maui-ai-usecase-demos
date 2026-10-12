@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:custom="clr-namespace:CustomRichTextEditor;assembly=CustomRichTextEditor"
+             xmlns:controls="clr-namespace:MauiNotes.Controls"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:ai="clr-namespace:MauiNotes.Controls.AI"
+             xmlns:toolbars="clr-namespace:MauiNotes.Controls.Toolbars"
+             xmlns:popups="clr-namespace:MauiNotes.Controls.Popups"
+             xmlns:vm="clr-namespace:MauiNotes.ViewModels"
+             x:Class="MauiNotes.Controls.Editor.NoteEditorDesktopUI"
+             x:DataType="vm:NotesViewModel">
+    <!-- Editor section - Toolbar, search, timestamp, and rich text content -->
+    <Grid>
+                 <Grid RowDefinitions="48,Auto,*" BackgroundColor="White">
+                             <!-- Toolbar section - Create note, editor actions, and search -->
+                             <Grid x:Name="ToolbarGrid" Grid.Row="0" ColumnDefinitions="Auto,*,Auto"
+                                   BackgroundColor="#fdfdfd" Padding="12,0"
+                                   SizeChanged="OnToolbarSizeChanged">
+                        <Border x:Name="NewNoteBorder" Grid.Column="0" WidthRequest="36" HeightRequest="36" HorizontalOptions="Start"
+                                VerticalOptions="Center" Background="White" Stroke="#ECECEF"
+                            StrokeThickness="0.5" StrokeShape="RoundRectangle 18">
+                            <buttons:SfButton AutomationId="ToolbarNewNote" ToolTipProperties.Text="New note"
+                                         WidthRequest="32" HeightRequest="32" MinimumWidthRequest="0"
+                                         MinimumHeightRequest="0" HorizontalOptions="Center" VerticalOptions="Center"
+                                         Background="Transparent" Stroke="Transparent" StrokeThickness="0"
+                                         CornerRadius="16" Padding="8" ShowIcon="True" ImageSize="16"
+                                         ImageAlignment="Default"
+                                         controls:PopupHoverEffect.IsHoverEnabled="True"
+                                         Command="{Binding NewNoteCommand}">
+                                <buttons:SfButton.ImageSource>
+                                    <FontImageSource Glyph="&#xE756;" FontFamily="MauiMaterialAssets"
+                                                         Color="#1D1D1F" Size="16" />
+                                </buttons:SfButton.ImageSource>
+                            </buttons:SfButton>
+                        </Border>
+
+                        <toolbars:EditorToolbar x:Name="EditorToolbar" Grid.Column="1" HorizontalOptions="Center"
+                                                VerticalOptions="Center" />
+
+                        <Border x:Name="SearchBorder" Grid.Column="2" WidthRequest="190" HeightRequest="36"
+                            MinimumHeightRequest="36" MaximumHeightRequest="36" Padding="8,0"
+                                HorizontalOptions="End" VerticalOptions="Center"
+                            Background="White" Stroke="#ECECEF" StrokeThickness="0.5"
+                            StrokeShape="RoundRectangle 18">
+                            <Grid ColumnDefinitions="16,*,Auto" ColumnSpacing="5">
+                                <Label Grid.Column="0" Text="&#xE8B6;" FontFamily="MaterialIconRegular"
+                                       FontSize="18" TextColor="#1D1D1F"
+                                       HorizontalOptions="Fill" VerticalOptions="Fill"
+                                       HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                       SemanticProperties.Description="Search or close search"
+                                       AutomationId="SearchModeToggle">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnSearchGlyphTapped" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <controls:BorderlessEntry x:Name="SearchEntry" Grid.Column="1"
+                                                          Text="{Binding SearchText, Mode=TwoWay}" Placeholder="Search"
+                                                          PlaceholderColor="#85868E" TextColor="#29292D" FontSize="12"
+                                                          HeightRequest="30" MinimumHeightRequest="0"
+                                                          Background="Transparent" VerticalOptions="Center"
+                                                          VerticalTextAlignment="Center" ReturnType="Search"
+                                                          ClearButtonVisibility="WhileEditing" />
+                                <buttons:SfButton x:Name="CloseSearchButton" Grid.Column="2"
+                                                  WidthRequest="28" HeightRequest="28"
+                                                  MinimumWidthRequest="0" MinimumHeightRequest="0"
+                                                  IsVisible="False" Background="Transparent"
+                                                  Stroke="Transparent" StrokeThickness="0" Padding="4"
+                                                  ShowIcon="True" ImageSize="16"
+                                                  SemanticProperties.Description="Close search"
+                                                  ToolTipProperties.Text="Close search"
+                                                  Clicked="OnCloseSearchClicked">
+                                    <buttons:SfButton.ImageSource>
+                                        <FontImageSource Glyph="&#xe5cd;" FontFamily="MauiMaterialAssets"
+                                                         Color="#1D1D1F" Size="16" />
+                                    </buttons:SfButton.ImageSource>
+                                </buttons:SfButton>
+                            </Grid>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border"
+                                             Binding="{Binding Source={x:Reference SearchEntry}, Path=IsFocused}"
+                                             Value="True">
+                                    <Setter Property="Stroke" Value="#DCDDDF" />
+                                    <Setter Property="StrokeThickness" Value="0.5" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                        </Border>
+
+                        <Border x:Name="CompactSearchContainer" Grid.Column="2" WidthRequest="36" HeightRequest="36"
+                                IsVisible="False" HorizontalOptions="End" VerticalOptions="Center"
+                                Background="White" Stroke="#ECECEF" StrokeThickness="0.5"
+                                StrokeShape="RoundRectangle 18">
+                            <Label Text="&#xE8B6;" FontFamily="MaterialIconRegular"
+                                   FontSize="18" TextColor="#1D1D1F"
+                                   HorizontalOptions="Fill" VerticalOptions="Fill"
+                                   HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                   SemanticProperties.Description="Search"
+                                   AutomationId="ToolbarSearch">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnCompactSearchTapped" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Border>
+
+                        <BoxView Grid.ColumnSpan="3" Margin="-12,0" HeightRequest="1" Color="#E5E5E7"
+                                 VerticalOptions="End" InputTransparent="True" />
+                    </Grid>
+
+                    <!-- Editor section - Selected note timestamp -->
+                    <Label Grid.Row="1" Text="{Binding EditorTimestampText}" FontSize="12" TextColor="#8D8D95"
+                        HorizontalOptions="Center" HorizontalTextAlignment="Center"
+                        VerticalOptions="End" Margin="0,5,0,5" ZIndex="1" />
+
+                    <!-- Editor section - Rich text content -->
+                    <Grid Grid.Row="2" Margin="0,-30,0,0" Padding="12,0,12,30" ZIndex="-1">
+                        <custom:CustomRichTextEditor x:Name="RichTextEditor"
+                            Value="{Binding EditorHtml, Mode=TwoWay}" Placeholder="Select a note to start editing..."
+                            DefaultFontFamily="system-ui" EditorBackgroundColor="White"
+                            ReadOnly="{Binding IsEditorReadOnly}"
+                            VerticalOptions="Fill" HorizontalOptions="Fill" FormatChanged="OnEditorFormatChanged" />
+                    </Grid>
+
+                    <!-- Popup section - Formatting and AI tools -->
+                    <popups:FormatPopup x:Name="FormatPopup" />
+                    <popups:TextPalettePopup x:Name="TextPalettePopup" />
+                    <popups:HighlightPalettePopup x:Name="HighlightPalettePopup" />
+                    <ai:AiEditingPopup x:Name="AiEditingPopup" />
+        </Grid>
+    </Grid>
+</ContentView>
