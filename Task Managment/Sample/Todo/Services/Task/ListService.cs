@@ -3,7 +3,7 @@ using Todo.Models.DTOs;
 using Todo.Services.Interfaces;
 using Todo.Utilities;
 
-namespace Todo.Services.Task;
+namespace Todo.Services.TaskService;
 
 // ListService lives in the same Services/Task folder as TaskService because
 // lists and tasks are managed together.  This is purely a folder convention

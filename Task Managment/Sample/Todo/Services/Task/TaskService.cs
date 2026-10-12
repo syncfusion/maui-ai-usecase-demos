@@ -3,7 +3,7 @@ using Todo.Models.DTOs;
 using Todo.Services.Interfaces;
 using Todo.Utilities;
 
-namespace Todo.Services.Task;
+namespace Todo.Services.TaskService;
 
 /// <summary>
 /// Placeholder implementation of <see cref="ITaskService"/>.  The real
