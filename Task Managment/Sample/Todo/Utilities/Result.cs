@@ -59,3 +59,53 @@ public readonly record struct Result<T>
     public static Result<T> Failure(Exception error, string? errorMessage = null) =>
         new(false, default, error, errorMessage ?? error.Message);
 }
+
+/// <summary>
+/// Non-generic counterpart of <see cref="Result{T}"/> for operations that do
+/// not produce a value (sign-out, delete, persist, …).  Modelled as a
+/// separate struct so callers can <c>return Result.Success()</c> without
+/// inventing a placeholder value.
+/// </summary>
+public readonly record struct Result
+{
+    /// <summary>
+    /// Gets a value indicating whether the operation completed successfully.
+    /// </summary>
+    public bool IsSuccess { get; }
+
+    /// <summary>
+    /// Gets the captured exception when <see cref="IsSuccess"/> is
+    /// <see langword="false"/>; otherwise <see langword="null"/>.
+    /// </summary>
+    public Exception? Error { get; }
+
+    /// <summary>
+    /// Gets an optional, human-readable error message suitable for display in
+    /// the View layer (pop-ups, banners, validation labels, …).
+    /// </summary>
+    public string? ErrorMessage { get; }
+
+    private Result(bool isSuccess, Exception? error, string? errorMessage)
+    {
+        IsSuccess = isSuccess;
+        Error = error;
+        ErrorMessage = errorMessage;
+    }
+
+    /// <summary>
+    /// Creates a successful non-generic <see cref="Result"/>.
+    /// </summary>
+    /// <returns>A successful result.</returns>
+    public static Result Success() => new(true, null, null);
+
+    /// <summary>
+    /// Creates a failed non-generic <see cref="Result"/> that captures
+    /// <paramref name="error"/> and an optional <paramref name="errorMessage"/>
+    /// suitable for UI display.
+    /// </summary>
+    /// <param name="error">The exception that caused the failure.</param>
+    /// <param name="errorMessage">An optional UI-friendly error message.</param>
+    /// <returns>A failed result.</returns>
+    public static Result Failure(Exception error, string? errorMessage = null) =>
+        new(false, error, errorMessage ?? error.Message);
+}
