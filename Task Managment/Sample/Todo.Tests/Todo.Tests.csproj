@@ -13,6 +13,8 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="*" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="*" />
   </ItemGroup>
 
   <!--
@@ -26,6 +28,13 @@
     <Compile Include="..\Todo\Utilities\Constants.cs" Link="Utilities\Constants.cs" />
     <Compile Include="..\Todo\Utilities\Enums.cs" Link="Utilities\Enums.cs" />
     <Compile Include="..\Todo\Utilities\Helpers.cs" Link="Utilities\Helpers.cs" />
+    <Compile Include="..\Todo\Utilities\Result.cs" Link="Utilities\Result.cs" />
+    <Compile Include="..\Todo\Models\DTOs\UserDto.cs" Link="Models\DTOs\UserDto.cs" />
+    <Compile Include="..\Todo\Services\Interfaces\IAuthenticationService.cs" Link="Services\Interfaces\IAuthenticationService.cs" />
+    <Compile Include="..\Todo\Services\Infrastructure\INavigationService.cs" Link="Services\Infrastructure\INavigationService.cs" />
+    <Compile Include="..\Todo\ViewModels\ViewModelBase.cs" Link="ViewModels\ViewModelBase.cs" />
+    <Compile Include="..\Todo\ViewModels\AppShellViewModel.cs" Link="ViewModels\AppShellViewModel.cs" />
+    <Compile Include="..\Todo\ViewModels\SignInPageViewModel.cs" Link="ViewModels\SignInPageViewModel.cs" />
     <Compile Include="..\Todo\Converters\BoolToVisibilityConverter.cs" Link="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="..\Todo\Converters\InvertedBoolConverter.cs" Link="Converters\InvertedBoolConverter.cs" />
     <Compile Include="..\Todo\Converters\DateTimeToStringConverter.cs" Link="Converters\DateTimeToStringConverter.cs" />
