@@ -117,6 +117,7 @@ public static class MauiProgram
             .AddTransient<SplashPageViewModel>()
             .AddTransient<SignInPageViewModel>()
             .AddTransient<SignUpPageViewModel>()
+            .AddTransient<ForgotPasswordPageViewModel>()
             .AddTransient<TaskListPageViewModel>()
             .AddTransient<TaskDetailPageViewModel>();
 
@@ -140,6 +141,7 @@ public static class MauiProgram
             .AddTransient<SplashPage>()
             .AddTransient<SignInPage>()
             .AddTransient<SignUpPage>()
+            .AddTransient<ForgotPasswordPage>()
             .AddTransient<TaskListPage>()
             .AddTransient<TaskDetailPage>();
 
@@ -149,6 +151,7 @@ public static class MauiProgram
         Routing.RegisterRoute("splash", typeof(SplashPage));
         Routing.RegisterRoute("signin", typeof(SignInPage));
         Routing.RegisterRoute("signup", typeof(SignUpPage));
+        Routing.RegisterRoute("forgotpassword", typeof(ForgotPasswordPage));
         Routing.RegisterRoute("tasklist", typeof(TaskListPage));
         Routing.RegisterRoute("taskdetail", typeof(TaskDetailPage));
 
