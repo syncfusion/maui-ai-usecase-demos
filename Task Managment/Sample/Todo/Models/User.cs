@@ -87,4 +87,13 @@ public class User
     /// </summary>
     [Column("DeletedAt")]
     public DateTime? DeletedAt { get; set; }
+
+    /// <summary>
+    /// UTC timestamp of the most recent successful sign-in, or
+    /// <see langword="null"/> when the account has never signed in (for
+    /// example, immediately after sign-up the value is set to the
+    /// sign-up timestamp).  Used by the UI to render "last seen" labels.
+    /// </summary>
+    [Column("LastSignedInAt")]
+    public DateTimeOffset? LastSignedInAt { get; set; }
 }

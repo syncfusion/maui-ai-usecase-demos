@@ -81,6 +81,13 @@ public static class MauiProgram
         // --- Storage --------------------------------------------------------
         builder.Services.AddSingleton<ILocalStorageService, LocalStorageService>();
 
+        // --- Authentication helpers (Task 2-01) -----------------------------
+        // PasswordValidator and TokenManager are stateless (the token
+        // manager persists its signing key through SecureStorage) and are
+        // therefore safe to register as singletons.
+        builder.Services.AddSingleton<PasswordValidator>();
+        builder.Services.AddSingleton<TokenManager>();
+
         // --- Feature services (placeholders — implementations land in
         //     later modules) -----------------------------------------------
         builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
