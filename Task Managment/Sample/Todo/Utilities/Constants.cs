@@ -56,6 +56,9 @@ public static class Constants
     /// </summary>
     public static class Routes
     {
+        /// <summary>Startup / splash screen.</summary>
+        public const string Splash = "splash";
+
         /// <summary>Sign-in page.</summary>
         public const string SignIn = "signin";
 
@@ -70,6 +73,12 @@ public static class Constants
 
         /// <summary>Task detail / editor page.</summary>
         public const string TaskDetail = "taskdetail";
+
+        /// <summary>Task editor page (used when creating a new task).</summary>
+        public const string EditTask = "edittask";
+
+        /// <summary>Application settings page.</summary>
+        public const string Settings = "settings";
 
         /// <summary>User profile page.</summary>
         public const string Profile = "profile";

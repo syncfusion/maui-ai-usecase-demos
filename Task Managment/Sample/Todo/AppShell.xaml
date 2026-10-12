@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    AppShell.xaml — the application's primary navigation container
+    (Task 1-06: Navigation Setup).
+
+    The Shell exposes a single flyout-less "Home" item pointing at
+    SplashPage (the entry point of the application launch flow).  All
+    additional pages are registered as routes in AppShell.xaml.cs so
+    that they can be reached via the INavigationService / Shell.GoToAsync
+    from any ViewModel.
+-->
 <Shell
     x:Class="Todo.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:Todo"
-    Title="Todo">
+    xmlns:auth="clr-namespace:Todo.Views.Authentication"
+    xmlns:main="clr-namespace:Todo.Views.Main"
+    Title="Todo"
+    FlyoutBehavior="Disabled">
 
     <ShellContent
         Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+        ContentTemplate="{DataTemplate auth:SplashPage}"
+        Route="splash" />
 
 </Shell>
