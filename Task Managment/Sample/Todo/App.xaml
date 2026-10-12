@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    App.xaml - Application-level resource dictionary
+    Merges the design-system dictionaries (Task 1-04):
+        Resources/Styles/Colors.xaml  - colour tokens
+        Resources/Styles/Sizes.xaml   - spacing / dimensions / corner radius
+        Resources/Styles/Fonts.xaml   - typography tokens
+        Resources/Styles/Styles.xaml  - component styles (default + custom)
+    The syncTheme:SyncfusionThemeResourceDictionary provides the Syncfusion
+    MAUI theme variables (used by the Syncfusion controls installed in
+    Task 1-02) and is kept at the end of the merge list so it can override
+    any default values it needs to.
+-->
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Todo"
@@ -8,6 +20,8 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Sizes.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
                 <syncTheme:SyncfusionThemeResourceDictionary />
             </ResourceDictionary.MergedDictionaries>

@@ -372,4 +372,141 @@
         <Setter Property="Shell.TabBarUnselectedColor" Value="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
     </Style>
 
+    <!-- COMPONENT STYLES - Task 1-04
+         The styles below build on the design-system tokens defined in
+         Colors.xaml, Sizes.xaml and Fonts.xaml and provide a public,
+         reusable set of named styles. Use them with the named x:Key
+         values: ButtonPrimary, ButtonSecondary, ButtonDanger, EntryDefault,
+         EntrySearch, EditorDefault, LabelHeading1, LabelHeading2,
+         LabelTitle, LabelBody, LabelCaption, LabelSubtitle, LabelError,
+         CardStyle, DividerStyle. -->
+
+    <!-- Button Styles -->
+    <Style x:Key="ButtonPrimary" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="TextColor" Value="{StaticResource BackgroundColor}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilySemiBold}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="FontAttributes" Value="{StaticResource FontAttributesSemiBold}" />
+        <Setter Property="Padding" Value="{StaticResource PaddingM}" />
+        <Setter Property="CornerRadius" Value="24" />
+        <Setter Property="MinimumHeightRequest" Value="44" />
+        <Setter Property="BorderWidth" Value="0" />
+    </Style>
+
+    <Style x:Key="ButtonSecondary" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource SurfaceColor}" />
+        <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="BorderColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="BorderWidth" Value="{StaticResource StrokeThicknessThin}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilySemiBold}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="FontAttributes" Value="{StaticResource FontAttributesSemiBold}" />
+        <Setter Property="Padding" Value="{StaticResource PaddingM}" />
+        <Setter Property="CornerRadius" Value="24" />
+        <Setter Property="MinimumHeightRequest" Value="44" />
+    </Style>
+
+    <Style x:Key="ButtonDanger" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource ErrorColor}" />
+        <Setter Property="TextColor" Value="{StaticResource BackgroundColor}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilySemiBold}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="FontAttributes" Value="{StaticResource FontAttributesSemiBold}" />
+        <Setter Property="Padding" Value="{StaticResource PaddingM}" />
+        <Setter Property="CornerRadius" Value="24" />
+        <Setter Property="MinimumHeightRequest" Value="44" />
+        <Setter Property="BorderWidth" Value="0" />
+    </Style>
+
+    <!-- Entry Styles     -->
+    <Style x:Key="EntryDefault" TargetType="Entry">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+        <Setter Property="PlaceholderColor" Value="{StaticResource TextSecondaryColor}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource SurfaceColor}" />
+        <Setter Property="MinimumHeightRequest" Value="44" />
+    </Style>
+
+    <Style x:Key="EntrySearch" TargetType="Entry">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+        <Setter Property="PlaceholderColor" Value="{StaticResource TextSecondaryColor}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource SurfaceColor}" />
+        <Setter Property="MinimumHeightRequest" Value="40" />
+    </Style>
+
+    <!-- Editor Styles     -->
+    <Style x:Key="EditorDefault" TargetType="Editor">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+        <Setter Property="PlaceholderColor" Value="{StaticResource TextSecondaryColor}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource SurfaceColor}" />
+    </Style>
+
+    <!-- Label Styles     -->
+    <Style x:Key="LabelHeading1" TargetType="Label">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilySemiBold}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeHeading1}" />
+        <Setter Property="FontAttributes" Value="{StaticResource FontAttributesBold}" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+    </Style>
+
+    <Style x:Key="LabelHeading2" TargetType="Label">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilySemiBold}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeHeading2}" />
+        <Setter Property="FontAttributes" Value="{StaticResource FontAttributesSemiBold}" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+    </Style>
+
+    <Style x:Key="LabelTitle" TargetType="Label">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilySemiBold}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeTitle}" />
+        <Setter Property="FontAttributes" Value="{StaticResource FontAttributesSemiBold}" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+    </Style>
+
+    <Style x:Key="LabelBody" TargetType="Label">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+    </Style>
+
+    <Style x:Key="LabelCaption" TargetType="Label">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeCaption}" />
+        <Setter Property="TextColor" Value="{StaticResource TextSecondaryColor}" />
+    </Style>
+
+    <Style x:Key="LabelSubtitle" TargetType="Label">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSubtitle}" />
+        <Setter Property="TextColor" Value="{StaticResource TextSecondaryColor}" />
+    </Style>
+
+    <Style x:Key="LabelError" TargetType="Label">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeCaption}" />
+        <Setter Property="TextColor" Value="{StaticResource ErrorColor}" />
+    </Style>
+
+    <!-- Border / Card Styles     -->
+    <Style x:Key="CardStyle" TargetType="Border">
+        <Setter Property="Stroke" Value="{StaticResource DividerColor}" />
+        <Setter Property="StrokeThickness" Value="{StaticResource StrokeThicknessThin}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 8" />
+        <Setter Property="BackgroundColor" Value="{StaticResource BackgroundColor}" />
+        <Setter Property="Padding" Value="{StaticResource PaddingM}" />
+    </Style>
+
+    <!-- BoxView Divider     -->
+    <Style x:Key="DividerStyle" TargetType="BoxView">
+        <Setter Property="HeightRequest" Value="{StaticResource StrokeThicknessThin}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource DividerColor}" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
+    </Style>
+
 </ResourceDictionary>

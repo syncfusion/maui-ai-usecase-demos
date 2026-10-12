@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    Fonts.xaml - Task 1-04: Create Resource Dictionaries
+    Centralised typography tokens for the entire application.
+    FontFamily values are exposed as x:String resources (the value consumed
+    by the FontFamily property).  The platform-default fallback family is
+    included so cross-platform code that does not register a custom font
+    can still bind to FontFamilyDefault.
+    Font sizes are exposed as x:Double (the typed value consumed by
+    FontSize properties).
+-->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- Font Family (loose string tokens used by FontFamily setters) -->
+    <x:String x:Key="FontFamilyRegular">OpenSansRegular</x:String>
+    <x:String x:Key="FontFamilySemiBold">OpenSansSemibold</x:String>
+    <x:String x:Key="FontFamilyDefault">SegoeUI</x:String>
+
+    <!-- Font Family platform-specific values
+         On Windows the platform default is Segoe UI; on Android/iOS/Mac
+         Catalyst we fall back to the registered OpenSans family.  The
+         OnPlatform values are typed x:String resources so they bind to
+         FontFamily setters via {StaticResource}. -->
+    <OnPlatform x:Key="FontFamilyPlatformDefault" x:TypeArguments="x:String">
+        <On Platform="WinUI" Value="Segoe UI" />
+        <On Platform="Android" Value="OpenSansRegular" />
+        <On Platform="iOS" Value="OpenSansRegular" />
+        <On Platform="MacCatalyst" Value="OpenSansRegular" />
+    </OnPlatform>
+
+    <!-- Font Sizes -->
+    <x:Double x:Key="FontSizeSubtitle">11</x:Double>
+    <x:Double x:Key="FontSizeCaption">12</x:Double>
+    <x:Double x:Key="FontSizeBody">14</x:Double>
+    <x:Double x:Key="FontSizeTitle">16</x:Double>
+    <x:Double x:Key="FontSizeHeading2">20</x:Double>
+    <x:Double x:Key="FontSizeHeading1">24</x:Double>
+
+    <!-- Font Attributes -->
+    <FontAttributes x:Key="FontAttributesRegular">None</FontAttributes>
+    <FontAttributes x:Key="FontAttributesMedium">Bold</FontAttributes>
+    <FontAttributes x:Key="FontAttributesSemiBold">Bold</FontAttributes>
+    <FontAttributes x:Key="FontAttributesBold">Bold</FontAttributes>
+
+</ResourceDictionary>
