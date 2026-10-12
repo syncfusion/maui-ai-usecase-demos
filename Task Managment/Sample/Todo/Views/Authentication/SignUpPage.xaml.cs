@@ -1,14 +1,18 @@
 namespace Todo.Views.Authentication;
 
 /// <summary>
-/// Sign-up screen placeholder.  Created in Task 1-06 (Navigation Setup) so
-/// that the "signup" route can be registered with the Shell.  The full
-/// implementation lives in Task 2-04.
+/// XAML-loaded partial of <see cref="SignUpPage"/>.  The companion
+/// <c>SignUpPage.cs</c> file holds the dependency-injected constructor
+/// used by the .NET MAUI Shell — the two halves together form the same
+/// class so the XAML UI is inflated when the Shell constructs the page
+/// via DI.
 /// </summary>
-public partial class SignUpPage : ContentPage
+public partial class SignUpPage
 {
     /// <summary>
-    /// Initialises a new instance of the <see cref="SignUpPage"/> class.
+    /// Initialises a new instance of the <see cref="SignUpPage"/> class
+    /// and inflates the XAML UI.  This constructor is invoked implicitly
+    /// by <c>SignUpPage.cs</c>; the Shell never resolves it directly.
     /// </summary>
     public SignUpPage()
     {

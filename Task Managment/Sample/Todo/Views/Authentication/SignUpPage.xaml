@@ -1,27 +1,337 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
-    SignUpPage — placeholder.
+    SignUpPage — Task 2-04 (Create Sign Up Screen / SignUpPage).
 
-    Created in Task 1-06 (Navigation Setup) so that the Shell route
-    "signup" can be registered.  The full sign-up screen is implemented
-    in Task 2-04.
+    Layout matches the design in Task Managment/images/signup.png
+    (see also §8.3 of SPECIFICATION.md):
+
+        ┌─────────────────────────────────────┐
+        │            [todo logo]              │   <- visual identity from Splash
+        │             Sign up                 │   <- title
+        │   Create your account to get started│   <- subtitle
+        │                                     │
+        │   Email                  ← field    │
+        │   Please enter your …     ← error   │
+        │                                     │
+        │   Password               ← field 👁 │
+        │   ▌▌▌▌▌  Strong password   ← bar    │
+        │   Please enter your …     ← error   │
+        │                                     │
+        │   Confirm password    ← field 👁    │
+        │   Passwords do not …   ← error      │
+        │                                     │
+        │   [ Sign up ]                       │   <- primary, pill button
+        │                                     │
+        │   Already have an account? Sign in  │
+        └─────────────────────────────────────┘
+
+    The page hides the Shell navigation bar so the user lands on a
+    dedicated, distraction-free sign-up surface — mirroring the
+    splash and sign-in pages.  The XAML is fully data-bound to
+    <see cref="ViewModels.SignUpPageViewModel"/>; the code-behind
+    (<c>SignUpPage.xaml.cs</c> / <c>SignUpPage.cs</c>) is only
+    responsible for inflating the XAML and binding it to the injected
+    ViewModel.
 -->
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Todo.ViewModels"
              x:Class="Todo.Views.Authentication.SignUpPage"
-             Title="Sign Up">
-    <VerticalStackLayout
-        HorizontalOptions="Center"
-        VerticalOptions="Center"
-        Spacing="12">
-        <Label
-            Text="Sign Up"
-            FontSize="32"
-            HorizontalOptions="Center" />
-        <Label
-            Text="Placeholder — implemented in Task 2-04"
-            FontSize="14"
-            TextColor="Gray"
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             x:DataType="vm:SignUpPageViewModel"
+             Title="Sign up"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Shell.NavBarIsVisible="False">
+
+    <!-- Whole page scrolls when the keyboard is up so the form stays
+         usable on a phone-sized screen. -->
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="32,48,32,32"
+            Spacing="0"
+            VerticalOptions="Center"
+            HorizontalOptions="Fill"
+            MaximumWidthRequest="480">
+
+            <!-- ============================================================ -->
+            <!-- Brand mark — mirrors the splash and sign-in screens so the  -->
+            <!-- user has a consistent visual identity throughout the       -->
+            <!-- authentication flow.                                       -->
+            <!-- ============================================================ -->
+            <Grid
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                Margin="0,0,0,24"
+                WidthRequest="96"
+                HeightRequest="48"
+                ColumnSpacing="4"
+                RowSpacing="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <BoxView Grid.Row="0" Grid.Column="0"
+                         Color="{StaticResource PrimaryDarkColor}"
+                         CornerRadius="4" />
+                <BoxView Grid.Row="0" Grid.Column="1"
+                         Color="{StaticResource PrimaryColor}"
+                         CornerRadius="4" />
+                <BoxView Grid.Row="0" Grid.Column="2"
+                         Color="{StaticResource PrimaryLightColor}"
+                         CornerRadius="4" />
+                <BoxView Grid.Row="0" Grid.Column="3"
+                         Color="{StaticResource PrimaryDarkColor}"
+                         CornerRadius="4" />
+
+                <BoxView Grid.Row="1" Grid.Column="0"
+                         Color="{StaticResource PrimaryColor}"
+                         CornerRadius="4" />
+                <BoxView Grid.Row="1" Grid.Column="1"
+                         Color="{StaticResource PrimaryLightColor}"
+                         CornerRadius="4" />
+                <BoxView Grid.Row="1" Grid.Column="2"
+                         Color="{StaticResource PrimaryColor}"
+                         CornerRadius="4" />
+                <BoxView Grid.Row="1" Grid.Column="3"
+                         Color="{StaticResource PrimaryLightColor}"
+                         CornerRadius="4" />
+            </Grid>
+
+            <!-- Title. -->
+            <Label
+                Text="Sign up"
+                Style="{StaticResource LabelHeading1}"
+                HorizontalOptions="Center"
+                Margin="0,0,0,8" />
+
+            <!-- Subtitle. -->
+            <Label
+                Text="Create your account to get started"
+                Style="{StaticResource LabelSubtitle}"
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center"
+                Margin="0,0,0,32" />
+
+            <!-- ============================================================ -->
+            <!-- E-mail field.                                                -->
+            <!-- ============================================================ -->
+            <Label
+                Text="Email"
+                Style="{StaticResource LabelCaption}"
+                Margin="4,0,0,4" />
+
+            <Border
+                Stroke="{StaticResource DividerColor}"
+                StrokeThickness="{StaticResource StrokeThicknessThin}"
+                StrokeShape="RoundRectangle 8"
+                BackgroundColor="{StaticResource SurfaceColor}"
+                Padding="0">
+                <Entry
+                    x:Name="EmailEntry"
+                    Text="{Binding Email, Mode=TwoWay}"
+                    Placeholder="Email"
+                    Keyboard="Email"
+                    IsSpellCheckEnabled="False"
+                    IsTextPredictionEnabled="False"
+                    ReturnType="Next"
+                    BackgroundColor="Transparent" />
+            </Border>
+
+            <Label
+                Text="{Binding EmailError}"
+                Style="{StaticResource LabelError}"
+                Margin="4,4,0,0"
+                IsVisible="{Binding HasEmailError}" />
+
+            <!-- ============================================================ -->
+            <!-- Password field with the eye-toggle trailing icon.           -->
+            <!-- ============================================================ -->
+            <Label
+                Text="Password"
+                Style="{StaticResource LabelCaption}"
+                Margin="4,20,0,4" />
+
+            <Grid ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Border
+                    Grid.Column="0"
+                    Stroke="{StaticResource DividerColor}"
+                    StrokeThickness="{StaticResource StrokeThicknessThin}"
+                    StrokeShape="RoundRectangle 8"
+                    BackgroundColor="{StaticResource SurfaceColor}"
+                    Padding="0">
+                    <Entry
+                        x:Name="PasswordEntry"
+                        Text="{Binding Password, Mode=TwoWay}"
+                        Placeholder="Password"
+                        IsPassword="{Binding IsPasswordVisible, Converter={StaticResource InvertedBoolConverter}}"
+                        Keyboard="Text"
+                        ReturnType="Next"
+                        BackgroundColor="Transparent" />
+                </Border>
+
+                <Button
+                    Grid.Column="1"
+                    Text="{Binding PasswordVisibilityIcon}"
+                    Style="{StaticResource ButtonSecondary}"
+                    Padding="0"
+                    WidthRequest="48"
+                    HeightRequest="48"
+                    CornerRadius="24"
+                    MinimumHeightRequest="48"
+                    FontSize="16"
+                    Command="{Binding TogglePasswordVisibilityCommand}"
+                    AutomationId="TogglePasswordVisibility" />
+            </Grid>
+
+            <!-- Password-strength indicator (3 segmented bar + label).
+                 Hidden until the user has interacted with the field so the
+                 form opens with a clean look. -->
+            <Grid
+                Margin="4,8,0,4"
+                ColumnSpacing="4"
+                IsVisible="{Binding HasPasswordStrength}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <BoxView Grid.Column="0"
+                         HeightRequest="4"
+                         CornerRadius="2"
+                         IsVisible="{Binding PasswordStrengthSegment1Fill}"
+                         Color="{Binding PasswordStrengthSegment1Color}" />
+                <BoxView Grid.Column="1"
+                         HeightRequest="4"
+                         CornerRadius="2"
+                         IsVisible="{Binding PasswordStrengthSegment2Fill}"
+                         Color="{Binding PasswordStrengthSegment2Color}" />
+                <BoxView Grid.Column="2"
+                         HeightRequest="4"
+                         CornerRadius="2"
+                         IsVisible="{Binding PasswordStrengthSegment3Fill}"
+                         Color="{Binding PasswordStrengthSegment3Color}" />
+            </Grid>
+
+            <Label
+                Text="{Binding PasswordStrengthLabel}"
+                Style="{StaticResource LabelCaption}"
+                Margin="4,0,0,0"
+                IsVisible="{Binding HasPasswordStrength}" />
+
+            <Label
+                Text="{Binding PasswordError}"
+                Style="{StaticResource LabelError}"
+                Margin="4,4,0,0"
+                IsVisible="{Binding HasPasswordError}" />
+
+            <!-- ============================================================ -->
+            <!-- Confirm password field.                                     -->
+            <!-- ============================================================ -->
+            <Label
+                Text="Confirm password"
+                Style="{StaticResource LabelCaption}"
+                Margin="4,20,0,4" />
+
+            <Border
+                Stroke="{StaticResource DividerColor}"
+                StrokeThickness="{StaticResource StrokeThicknessThin}"
+                StrokeShape="RoundRectangle 8"
+                BackgroundColor="{StaticResource SurfaceColor}"
+                Padding="0">
+                <Entry
+                    x:Name="ConfirmPasswordEntry"
+                    Text="{Binding ConfirmPassword, Mode=TwoWay}"
+                    Placeholder="Confirm password"
+                    IsPassword="{Binding IsPasswordVisible, Converter={StaticResource InvertedBoolConverter}}"
+                    Keyboard="Text"
+                    ReturnType="Done"
+                    ReturnCommand="{Binding SignUpCommand}"
+                    BackgroundColor="Transparent" />
+            </Border>
+
+            <Label
+                Text="{Binding ConfirmPasswordError}"
+                Style="{StaticResource LabelError}"
+                Margin="4,4,0,0"
+                IsVisible="{Binding HasConfirmPasswordError}" />
+
+            <!-- ============================================================ -->
+            <!-- Sign-up button — full width, pill-shaped, shows a busy      -->
+            <!-- spinner inline while IsLoading is true.                     -->
+            <!-- ============================================================ -->
+            <Grid Margin="0,24,0,0">
+                <Button
+                    Text="Sign up"
+                    Style="{StaticResource ButtonPrimary}"
+                    Command="{Binding SignUpCommand}"
+                    HorizontalOptions="Fill" />
+
+                <ActivityIndicator
+                    IsRunning="{Binding IsLoading}"
+                    IsVisible="{Binding IsLoading}"
+                    Color="{StaticResource BackgroundColor}"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    WidthRequest="24"
+                    HeightRequest="24" />
+            </Grid>
+
+            <!-- Form-level error banner.  Shown for service-level failures
+                 that aren't tied to a single field (network error, generic
+                 unexpected exception).  Duplicate-e-mail errors are
+                 surfaced under the e-mail field instead — see
+                 SignUpPageViewModel.SignUpAsync. -->
+            <Label
+                Text="{Binding ErrorMessage}"
+                Style="{StaticResource LabelError}"
+                Margin="4,12,4,0"
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center"
+                IsVisible="{Binding HasError}" />
+
+            <!-- ============================================================ -->
+            <!-- Sign-in navigation footer.                                   -->
+            <!-- ============================================================ -->
+            <Grid
+                Margin="0,32,0,0"
+                ColumnSpacing="4"
+                HorizontalOptions="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Text="Already have an account?"
+                    Style="{StaticResource LabelBody}"
+                    VerticalOptions="Center" />
+
+                <Button
+                    Grid.Column="1"
+                    Text="Sign in"
+                    Command="{Binding NavigateToSignInCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource PrimaryColor}"
+                    FontSize="14"
+                    MinimumHeightRequest="44"
+                    Padding="0"
+                    BorderWidth="0"
+                    CornerRadius="0" />
+            </Grid>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
