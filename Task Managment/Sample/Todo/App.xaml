@@ -20,7 +20,6 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Todo"
-             xmlns:converters="clr-namespace:Todo.Converters"
              xmlns:syncTheme="clr-namespace:Syncfusion.Maui.Themes;assembly=Syncfusion.Maui.Core"
              x:Class="Todo.App">
     <Application.Resources>
@@ -30,16 +29,9 @@
                 <ResourceDictionary Source="Resources/Styles/Sizes.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Converters.xaml" />
                 <syncTheme:SyncfusionThemeResourceDictionary />
             </ResourceDictionary.MergedDictionaries>
-
-            <!-- ============================================================ -->
-            <!-- Value Converters (Task 1-08: Create Utility Classes)         -->
-            <!-- ============================================================ -->
-            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
-            <converters:DateTimeToStringConverter x:Key="DateTimeToStringConverter" />
-            <converters:EnumToStringConverter x:Key="EnumToStringConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

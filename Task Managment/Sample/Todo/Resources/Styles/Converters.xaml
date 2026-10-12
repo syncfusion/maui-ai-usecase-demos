@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    Converters.xaml — Module 3 helper converters (Tasks 3-01, 3-05, 3-06).
+
+    Resource dictionary that exposes the value converters required by the
+    task-list page templates as static resources so they can be referenced
+    from XAML with the usual {StaticResource …} syntax.  Adding the
+    converters here (rather than instantiating them in each XAML file)
+    keeps the markup lean and ensures a single instance is shared across
+    every binding.
+-->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:conv="clr-namespace:Todo.Converters">
+
+    <!-- Boolean → IsVisible.  Pass ConverterParameter="invert" to flip
+         the mapping. -->
+    <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+    <!-- Boolean → inverted boolean.  Useful for IsEnabled bindings on the
+         opposite of a busy / loading flag. -->
+    <conv:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+
+    <!-- Hex string (e.g. "#5C4EAE") → MAUI Color. -->
+    <conv:HexToColorConverter x:Key="HexToColorConverter" />
+
+    <!-- Boolean → TextDecorations (Strikethrough when true). -->
+    <conv:StrikethroughConverter x:Key="StrikethroughConverter" />
+
+    <!-- Non-null check.  Returns true for any non-null value; for strings
+         empty/whitespace also resolves to false. -->
+    <conv:NotNullConverter x:Key="NotNullConverter" />
+
+    <!-- DateTimeOffset / DateTime → localised short date (or short time
+         with ConverterParameter="time"). -->
+    <conv:DateToShortConverter x:Key="DateToShortConverter" />
+
+    <!-- Existing converters from Task 1-08 — kept here for completeness so
+         every converter the application ships lives in one dictionary. -->
+    <conv:DateTimeToStringConverter x:Key="DateTimeToStringConverter" />
+    <conv:EnumToStringConverter x:Key="EnumToStringConverter" />
+
+</ResourceDictionary>

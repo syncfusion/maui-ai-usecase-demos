@@ -1,27 +1,605 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
-    TaskListPage — placeholder.
+    TaskListPage — Module 3, Task 3-01.
 
-    Created in Task 1-06 (Navigation Setup) so that the Shell route
-    "tasklist" can be registered.  The full task list screen is
-    implemented in Module 3 (My Notes) and Module 4 (Task CRUD).
+    Two-pane responsive shell that matches the layout described in
+    Task Managment/images/mynotes.png and Task Managment/images/reviewtodayevents.png:
+
+        ┌────────────────────────────────────────────────────────────┐
+        │ Sidebar (fixed on tablet / drawer on phone) │ Header bar  │
+        │  • 230dp on tablet / desktop                │ (56dp)      │
+        │  • 280dp drawer overlay on phone            ├─────────────┤
+        │   ┌────────────────────────────────────────┐│ Task cards  │
+        │   │ 🔍 Search box                         ││ (SfListView) │
+        │   ├────────────────────────────────────────┤│ + empty state│
+        │   │ 📝 My notes  [12]                      ││              │
+        │   │ ⭐ Important [3]                       ││              │
+        │   │ 🔔 Reminder [2]                       ││              │
+        │   │ 🗑 Bin                                 ││              │
+        │   ├────────────────────────────────────────┤│              │
+        │   │ ➕ Create new list                     ││              │
+        │   └────────────────────────────────────────┘│              │
+        │                                            │              │
+        │                                            │              │
+        │                                            ├──────────────┤
+        │                                            │ Bottom bar   │
+        │                                            │ (64dp)       │
+        └────────────────────────────────────────────────────────────┘
+
+    The page is data-bound to <see cref="Todo.ViewModels.TaskListPageViewModel"/>.
+    The code-behind (TaskListPage.xaml.cs / TaskListPage.cs) is responsible
+    for inflating the XAML and binding it to the injected ViewModel.
+
+    Responsive behaviour:
+      • Width  >= 600  → sidebar permanently visible (IsSidebarVisible = true)
+      • Width  <  600  → sidebar hidden behind a hamburger drawer
+      • Drawer can be dismissed by tapping the scrim or by selecting an entry
 -->
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Todo.ViewModels"
+             xmlns:m="clr-namespace:Todo.Models"
              x:Class="Todo.Views.Main.TaskListPage"
-             Title="Tasks">
-    <VerticalStackLayout
-        HorizontalOptions="Center"
-        VerticalOptions="Center"
-        Spacing="12">
-        <Label
-            Text="Tasks"
-            FontSize="32"
-            HorizontalOptions="Center" />
-        <Label
-            Text="Placeholder — implemented in Module 3 / 4"
-            FontSize="14"
-            TextColor="Gray"
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             x:DataType="vm:TaskListPageViewModel"
+             Title="My notes"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Shell.NavBarIsVisible="False">
+
+    <ContentPage.Resources>
+        <!-- Glyph fall-back: when no raster icon is shipped, render a
+             Unicode glyph from the Segoe MDL2 / Material icon set. -->
+        <Style x:Key="SidebarIconStyle" TargetType="Label">
+            <Setter Property="FontFamily" Value="OpenSansSemibold" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="HorizontalOptions" Value="Center" />
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="WidthRequest" Value="24" />
+            <Setter Property="HeightRequest" Value="24" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Setter Property="VerticalTextAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="SidebarItemRowStyle" TargetType="Grid">
+            <Setter Property="HeightRequest" Value="44" />
+            <Setter Property="ColumnSpacing" Value="12" />
+            <Setter Property="Padding" Value="16,0,12,0" />
+        </Style>
+
+        <Style x:Key="HeaderIconButtonStyle" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+            <Setter Property="FontFamily" Value="OpenSansSemibold" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="BorderWidth" Value="0" />
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="WidthRequest" Value="40" />
+            <Setter Property="HeightRequest" Value="40" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="MinimumWidthRequest" Value="40" />
+            <Setter Property="MinimumHeightRequest" Value="40" />
+        </Style>
+    </ContentPage.Resources>
+
+    <!-- Outer grid: row 0 = content, row 1 = bottom input bar (always 64dp).
+         The bottom input bar stays pinned regardless of breakpoint. -->
+    <Grid RowDefinitions="*,64">
+
+        <!-- ============================================================== -->
+        <!-- Row 0 — content (sidebar + main area).                          -->
+        <!-- ============================================================== -->
+        <Grid ColumnDefinitions="Auto,*"
+              ColumnSpacing="0"
+              Grid.Row="0">
+
+            <!-- =================== SIDEBAR ==================== -->
+            <!-- When IsSidebarVisible is true the column is permanently shown.
+                 When false (phone) the column is collapsed (Width=0) and the
+                 sidebar becomes a drawer overlay rendered separately below. -->
+            <Grid Grid.Column="0"
+                  WidthRequest="{StaticResource SidebarWidth}"
+                  BackgroundColor="{StaticResource SurfaceColor}"
+                  RowDefinitions="Auto,Auto,*"
+                  Padding="0,12,0,12"
+                  IsVisible="{Binding IsSidebarVisible}">
+
+                <!-- Search box at the top of the sidebar. -->
+                <Border Grid.Row="0"
+                        Margin="12,0,12,12"
+                        Stroke="{StaticResource DividerColor}"
+                        StrokeThickness="{StaticResource StrokeThicknessThin}"
+                        StrokeShape="RoundRectangle 20"
+                        BackgroundColor="{StaticResource BackgroundColor}"
+                        Padding="12,0">
+                    <Grid ColumnDefinitions="20,*" ColumnSpacing="8">
+                        <Label Grid.Column="0"
+                               Text="&#xE721;"
+                               Style="{StaticResource SidebarIconStyle}"
+                               TextColor="{StaticResource TextSecondaryColor}" />
+                        <Entry Grid.Column="1"
+                               Placeholder="Search"
+                               Style="{StaticResource EntrySearch}"
+                               BackgroundColor="Transparent"
+                               IsSpellCheckEnabled="False"
+                               IsTextPredictionEnabled="False" />
+                    </Grid>
+                </Border>
+
+                <!-- Static section header (optional, kept for clarity). -->
+                <Label Grid.Row="1"
+                       Margin="16,4,16,4"
+                       Text="LISTS"
+                       Style="{StaticResource LabelCaption}" />
+
+                <!-- Navigation list of categories. -->
+                <CollectionView Grid.Row="2"
+                                ItemsSource="{Binding SidebarItems}"
+                                SelectionMode="None"
+                                BackgroundColor="Transparent">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="0" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="m:SidebarNavigationItem">
+                            <Grid Style="{StaticResource SidebarItemRowStyle}"
+                                  BackgroundColor="{StaticResource SurfaceColor}">
+                                <Grid.Triggers>
+                                    <DataTrigger TargetType="Grid"
+                                                 Binding="{Binding IsSelected}"
+                                                 Value="True">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource MyNotesColor}" />
+                                    </DataTrigger>
+                                </Grid.Triggers>
+
+                                <!-- Left accent strip shown when the row is selected. -->
+                                <BoxView WidthRequest="3"
+                                         Color="{StaticResource PrimaryColor}"
+                                         HorizontalOptions="Start"
+                                         IsVisible="{Binding IsSelected}" />
+
+                                <Label Grid.Column="0"
+                                       Text="{Binding IconGlyph}"
+                                       Style="{StaticResource SidebarIconStyle}"
+                                       TextColor="{Binding IconColorHex, Converter={StaticResource HexToColorConverter}}" />
+
+                                <Label Grid.Column="1"
+                                       Text="{Binding Title}"
+                                       VerticalOptions="Center"
+                                       Style="{StaticResource LabelBody}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label"
+                                                     Binding="{Binding IsSelected}"
+                                                     Value="True">
+                                            <Setter Property="FontFamily" Value="OpenSansSemibold" />
+                                            <Setter Property="FontAttributes" Value="Bold" />
+                                            <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+
+                                <Border Grid.Column="2"
+                                        BackgroundColor="{StaticResource PrimaryColor}"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 10"
+                                        Padding="8,2"
+                                        MinimumWidthRequest="24"
+                                        HeightRequest="20"
+                                        VerticalOptions="Center"
+                                        HorizontalOptions="End"
+                                        IsVisible="{Binding IsBadgeAccent}">
+                                    <Label Text="{Binding TaskCount}"
+                                           FontSize="12"
+                                           TextColor="{StaticResource BackgroundColor}"
+                                           FontFamily="OpenSansSemibold"
+                                           FontAttributes="Bold"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalTextAlignment="Center" />
+                                </Border>
+
+                                <Button Grid.ColumnSpan="3"
+                                        BackgroundColor="Transparent"
+                                        BorderWidth="0"
+                                        CornerRadius="0"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TaskListPageViewModel}}, Path=SelectSidebarItemCommand}"
+                                        CommandParameter="{Binding .}"
+                                        HeightRequest="44" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+
+            <!-- =================== MAIN AREA ==================== -->
+            <!-- A second Grid is used here so the header can be docked at the top
+                 of the content column and the SfListView / empty state can fill
+                 the remainder. -->
+            <Grid Grid.Column="1"
+                  RowDefinitions="56,*"
+                  RowSpacing="0">
+
+                <!-- Header bar (Task 3-04). -->
+                <Grid Grid.Row="0"
+                      BackgroundColor="{StaticResource BackgroundColor}"
+                      ColumnDefinitions="Auto,*,Auto,Auto"
+                      ColumnSpacing="4"
+                      Padding="8,0">
+
+                    <!-- Hamburger button — visible on phone only. -->
+                    <Button Grid.Column="0"
+                            Text="&#xE700;"
+                            Style="{StaticResource HeaderIconButtonStyle}"
+                            IsVisible="{Binding IsHamburgerVisible}"
+                            Command="{Binding ToggleDrawerCommand}" />
+
+                    <!-- Centred page title. -->
+                    <Label Grid.Column="1"
+                           Text="{Binding HeaderTitle}"
+                           Style="{StaticResource LabelHeading2}"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center" />
+
+                    <!-- Search button. -->
+                    <Button Grid.Column="2"
+                            Text="&#xE721;"
+                            Style="{StaticResource HeaderIconButtonStyle}"
+                            Command="{Binding OpenSearchCommand}" />
+
+                    <!-- Profile / avatar placeholder. -->
+                    <Border Grid.Column="3"
+                            Margin="8,0,8,0"
+                            WidthRequest="40"
+                            HeightRequest="40"
+                            Stroke="{StaticResource DividerColor}"
+                            StrokeThickness="{StaticResource StrokeThicknessThin}"
+                            StrokeShape="RoundRectangle 20"
+                            BackgroundColor="{StaticResource PrimaryColor}"
+                            VerticalOptions="Center">
+                        <Label Text="U"
+                               TextColor="{StaticResource BackgroundColor}"
+                               FontFamily="OpenSansSemibold"
+                               FontAttributes="Bold"
+                               FontSize="16"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenProfileCommand}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                </Grid>
+
+                <!-- Divider line under the header. -->
+                <BoxView Grid.Row="0"
+                         HeightRequest="1"
+                         VerticalOptions="End"
+                         BackgroundColor="{StaticResource DividerColor}" />
+
+                <!-- Content body. Hosts both the task list and the empty state. -->
+                <Grid Grid.Row="1"
+                      BackgroundColor="{StaticResource BackgroundColor}">
+
+                    <!-- Task list header (icon + title + overflow). -->
+                    <Grid RowDefinitions="Auto,*"
+                          Padding="16,12,16,0">
+
+                        <!-- List-header row -->
+                        <Grid Grid.Row="0"
+                              ColumnDefinitions="Auto,*,Auto"
+                              ColumnSpacing="8"
+                              Padding="0,0,0,8">
+
+                            <Label Grid.Column="0"
+                                   Text="{Binding SelectedSidebarItem.IconGlyph}"
+                                   Style="{StaticResource SidebarIconStyle}"
+                                   TextColor="{Binding SelectedSidebarItem.IconColorHex, Converter={StaticResource HexToColorConverter}}"
+                                   WidthRequest="28"
+                                   HeightRequest="28" />
+
+                            <Label Grid.Column="1"
+                                   Text="{Binding SelectedSidebarItem.Title}"
+                                   Style="{StaticResource LabelHeading2}"
+                                   VerticalOptions="Center" />
+
+                            <Button Grid.Column="2"
+                                    Text="&#xE712;"
+                                    Style="{StaticResource HeaderIconButtonStyle}"
+                                    Command="{Binding OpenListOverflowCommand}" />
+                        </Grid>
+
+                        <!-- Scrollable list.  A standard ListView is used in place
+                             of the Syncfusion SfListView until Task 3-06 wires the
+                             real control — the data-binding shape is identical so
+                             swapping the control is a single-element change. -->
+                        <ListView Grid.Row="1"
+                                  ItemsSource="{Binding Tasks}"
+                                  HasUnevenRows="True"
+                                  SelectionMode="None"
+                                  BackgroundColor="Transparent"
+                                  SeparatorVisibility="None"
+                                  IsVisible="{Binding IsEmpty, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=invert}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="vm:TaskItemViewModel">
+                                    <ViewCell>
+                                        <Border Margin="0,4"
+                                                Padding="12,10"
+                                                Stroke="{StaticResource DividerColor}"
+                                                StrokeThickness="{StaticResource StrokeThicknessThin}"
+                                                StrokeShape="RoundRectangle 8"
+                                                BackgroundColor="{StaticResource BackgroundColor}">
+                                            <Grid ColumnDefinitions="Auto,*,Auto,Auto"
+                                                  ColumnSpacing="12"
+                                                  RowDefinitions="Auto,Auto"
+                                                  RowSpacing="4">
+
+                                                <!-- Checkbox -->
+                                                <CheckBox Grid.Column="0"
+                                                          Grid.RowSpan="2"
+                                                          IsChecked="{Binding IsCompleted, Mode=TwoWay}"
+                                                          VerticalOptions="Center"
+                                                          Color="{StaticResource PrimaryColor}" />
+
+                                                <!-- Title row with star + menu -->
+                                                <Label Grid.Column="1"
+                                                       Grid.Row="0"
+                                                       Text="{Binding Title}"
+                                                       Style="{StaticResource LabelBody}"
+                                                       VerticalOptions="Center"
+                                                       MaxLines="2"
+                                                       LineBreakMode="TailTruncation"
+                                                       TextDecorations="{Binding IsTitleStrikethrough, Converter={StaticResource StrikethroughConverter}}" />
+
+                                                <Button Grid.Column="2"
+                                                        Grid.Row="0"
+                                                        Text="&#xE735;"
+                                                        Style="{StaticResource HeaderIconButtonStyle}"
+                                                        Command="{Binding ToggleImportantCommand}"
+                                                        TextColor="{StaticResource WarningColor}"
+                                                        WidthRequest="32"
+                                                        HeightRequest="32" />
+
+                                                <Button Grid.Column="3"
+                                                        Grid.Row="0"
+                                                        Text="&#xE712;"
+                                                        Style="{StaticResource HeaderIconButtonStyle}"
+                                                        Command="{Binding OpenContextMenuCommand}"
+                                                        WidthRequest="32"
+                                                        HeightRequest="32" />
+
+                                                <!-- Optional metadata row -->
+                                                <HorizontalStackLayout Grid.Column="1"
+                                                                       Grid.ColumnSpan="3"
+                                                                       Grid.Row="1"
+                                                                       Spacing="12"
+                                                                       IsVisible="{Binding HasMetadata}">
+                                                    <HorizontalStackLayout Spacing="4"
+                                                                           IsVisible="{Binding DueAt, Converter={StaticResource NotNullConverter}}">
+                                                        <Label Text="&#xE787;"
+                                                               Style="{StaticResource SidebarIconStyle}"
+                                                               WidthRequest="14"
+                                                               HeightRequest="14"
+                                                               TextColor="{StaticResource TextSecondaryColor}" />
+                                                        <Label Text="{Binding DueAt, Converter={StaticResource DateToShortConverter}}"
+                                                               Style="{StaticResource LabelCaption}"
+                                                               VerticalOptions="Center" />
+                                                    </HorizontalStackLayout>
+                                                    <HorizontalStackLayout Spacing="4"
+                                                                           IsVisible="{Binding ReminderAt, Converter={StaticResource NotNullConverter}}">
+                                                        <Label Text="&#xEA8F;"
+                                                               Style="{StaticResource SidebarIconStyle}"
+                                                               WidthRequest="14"
+                                                               HeightRequest="14"
+                                                               TextColor="{StaticResource ReminderColor}" />
+                                                        <Label Text="{Binding ReminderAt, Converter={StaticResource DateToShortConverter}}"
+                                                               Style="{StaticResource LabelCaption}"
+                                                               VerticalOptions="Center" />
+                                                    </HorizontalStackLayout>
+                                                    <Label Text="{Binding RecurrenceGlyph}"
+                                                           TextColor="{StaticResource PrimaryColor}"
+                                                           FontSize="14"
+                                                           VerticalOptions="Center"
+                                                           IsVisible="{Binding IsRecurring}" />
+                                                </HorizontalStackLayout>
+                                            </Grid>
+                                        </Border>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+
+                        <!-- Empty state overlay (Task 3-08). -->
+                        <VerticalStackLayout Grid.Row="1"
+                                             HorizontalOptions="Center"
+                                             VerticalOptions="Center"
+                                             Spacing="12"
+                                             IsVisible="{Binding IsEmpty}">
+                            <Label Text="&#xE7C3;"
+                                   FontSize="64"
+                                   TextColor="{StaticResource DividerColor}"
+                                   HorizontalOptions="Center" />
+                            <Label Text="{Binding EmptyStateTitle}"
+                                   Style="{StaticResource LabelTitle}"
+                                   FontFamily="OpenSansSemibold"
+                                   FontAttributes="Bold"
+                                   HorizontalOptions="Center" />
+                            <Label Text="{Binding EmptyStateMessage}"
+                                   Style="{StaticResource LabelBody}"
+                                   TextColor="{StaticResource TextSecondaryColor}"
+                                   HorizontalTextAlignment="Center"
+                                   HorizontalOptions="Center"
+                                   MaximumWidthRequest="280" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+
+        <!-- ============================================================== -->
+        <!-- Bottom input bar (Task 3-07).  Always 64dp high.                 -->
+        <!-- ============================================================== -->
+        <Grid Grid.Row="1"
+              BackgroundColor="{StaticResource BackgroundColor}"
+              ColumnDefinitions="*,Auto"
+              Padding="12,8">
+
+            <BoxView Grid.ColumnSpan="2"
+                     HeightRequest="1"
+                     VerticalOptions="Start"
+                     BackgroundColor="{StaticResource DividerColor}" />
+
+            <Border Grid.Column="0"
+                    Margin="0,4,8,4"
+                    Stroke="{StaticResource DividerColor}"
+                    StrokeThickness="{StaticResource StrokeThicknessThin}"
+                    StrokeShape="RoundRectangle 24"
+                    BackgroundColor="{StaticResource SurfaceColor}"
+                    Padding="16,0">
+                <Entry Text="{Binding NewTaskTitle, Mode=TwoWay}"
+                       Placeholder="Add a note…"
+                       BackgroundColor="Transparent"
+                       IsSpellCheckEnabled="False"
+                       IsTextPredictionEnabled="True"
+                       ReturnType="Done"
+                       ReturnCommand="{Binding AddTaskCommand}"
+                       VerticalOptions="Center" />
+            </Border>
+
+            <Button Grid.Column="1"
+                    Text="&#xE73E;"
+                    WidthRequest="48"
+                    HeightRequest="48"
+                    CornerRadius="24"
+                    FontFamily="OpenSansSemibold"
+                    FontSize="20"
+                    BackgroundColor="{StaticResource PrimaryColor}"
+                    TextColor="{StaticResource BackgroundColor}"
+                    BorderWidth="0"
+                    Command="{Binding AddTaskCommand}" />
+        </Grid>
+
+        <!-- ============================================================== -->
+        <!-- Drawer overlay for phone layout.                                -->
+        <!-- ============================================================== -->
+        <!-- A semi-transparent scrim and a sliding sidebar live above the
+             main content but below the input bar. The scrim closes the
+             drawer when tapped. The sidebar is shown only when the
+             responsive flags dictate "drawer mode" (IsSidebarVisible=false)
+             AND the drawer is currently open. -->
+        <Grid Grid.Row="0"
+              IsVisible="{Binding IsDrawerOverlayVisible}">
+
+            <!-- Scrim (full-bleed, translucent). -->
+            <BoxView BackgroundColor="#80000000">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CloseDrawerCommand}" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+
+            <!-- Drawer surface. -->
+            <Grid WidthRequest="280"
+                  BackgroundColor="{StaticResource SurfaceColor}"
+                  HorizontalOptions="Start"
+                  RowDefinitions="Auto,Auto,*"
+                  Padding="0,12,0,12">
+
+                <!-- Search box at the top of the drawer. -->
+                <Border Grid.Row="0"
+                        Margin="12,0,12,12"
+                        Stroke="{StaticResource DividerColor}"
+                        StrokeThickness="{StaticResource StrokeThicknessThin}"
+                        StrokeShape="RoundRectangle 20"
+                        BackgroundColor="{StaticResource BackgroundColor}"
+                        Padding="12,0">
+                    <Grid ColumnDefinitions="20,*" ColumnSpacing="8">
+                        <Label Grid.Column="0"
+                               Text="&#xE721;"
+                               Style="{StaticResource SidebarIconStyle}"
+                               TextColor="{StaticResource TextSecondaryColor}" />
+                        <Entry Grid.Column="1"
+                               Placeholder="Search"
+                               Style="{StaticResource EntrySearch}"
+                               BackgroundColor="Transparent"
+                               IsSpellCheckEnabled="False"
+                               IsTextPredictionEnabled="False" />
+                    </Grid>
+                </Border>
+
+                <Label Grid.Row="1"
+                       Margin="16,4,16,4"
+                       Text="LISTS"
+                       Style="{StaticResource LabelCaption}" />
+
+                <CollectionView Grid.Row="2"
+                                ItemsSource="{Binding SidebarItems}"
+                                SelectionMode="None"
+                                BackgroundColor="Transparent">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="0" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="m:SidebarNavigationItem">
+                            <Grid Style="{StaticResource SidebarItemRowStyle}"
+                                  BackgroundColor="{StaticResource SurfaceColor}">
+                                <Grid.Triggers>
+                                    <DataTrigger TargetType="Grid"
+                                                 Binding="{Binding IsSelected}"
+                                                 Value="True">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource MyNotesColor}" />
+                                    </DataTrigger>
+                                </Grid.Triggers>
+
+                                <BoxView WidthRequest="3"
+                                         Color="{StaticResource PrimaryColor}"
+                                         HorizontalOptions="Start"
+                                         IsVisible="{Binding IsSelected}" />
+
+                                <Label Grid.Column="0"
+                                       Text="{Binding IconGlyph}"
+                                       Style="{StaticResource SidebarIconStyle}"
+                                       TextColor="{Binding IconColorHex, Converter={StaticResource HexToColorConverter}}" />
+
+                                <Label Grid.Column="1"
+                                       Text="{Binding Title}"
+                                       VerticalOptions="Center"
+                                       Style="{StaticResource LabelBody}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label"
+                                                     Binding="{Binding IsSelected}"
+                                                     Value="True">
+                                            <Setter Property="FontFamily" Value="OpenSansSemibold" />
+                                            <Setter Property="FontAttributes" Value="Bold" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+
+                                <Border Grid.Column="2"
+                                        BackgroundColor="{StaticResource PrimaryColor}"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 10"
+                                        Padding="8,2"
+                                        MinimumWidthRequest="24"
+                                        HeightRequest="20"
+                                        VerticalOptions="Center"
+                                        HorizontalOptions="End"
+                                        IsVisible="{Binding IsBadgeAccent}">
+                                    <Label Text="{Binding TaskCount}"
+                                           FontSize="12"
+                                           TextColor="{StaticResource BackgroundColor}"
+                                           FontFamily="OpenSansSemibold"
+                                           FontAttributes="Bold"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalTextAlignment="Center" />
+                                </Border>
+
+                                <Button Grid.ColumnSpan="3"
+                                        BackgroundColor="Transparent"
+                                        BorderWidth="0"
+                                        CornerRadius="0"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TaskListPageViewModel}}, Path=SelectSidebarItemCommand}"
+                                        CommandParameter="{Binding .}"
+                                        HeightRequest="44" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+        </Grid>
+    </Grid>
 </ContentPage>
