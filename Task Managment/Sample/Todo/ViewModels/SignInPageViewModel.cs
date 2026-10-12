@@ -63,8 +63,31 @@ public sealed partial class SignInPageViewModel : ViewModelBase
     /// "stay signed in" behaviour — the task specification calls out that
     /// remember-me is opt-in.
     /// </summary>
+    /// <remarks>
+    /// When the user opens the sign-in page after a previous "remember me"
+    /// sign-in, the bound XAML <see cref="CheckBox"/> is pre-checked and
+    /// the <see cref="Email"/> field is pre-populated with the persisted
+    /// e-mail address by <see cref="LoadRememberedStateAsync"/>.  The
+    /// password is never persisted.
+    /// </remarks>
     [ObservableProperty]
     private bool rememberMe;
+
+    /// <summary>
+    /// Indicates whether <see cref="LoadRememberedStateAsync"/> has finished
+    /// hydrating the form from <c>SecureStorage</c>.  The View can bind a
+    /// spinner to this property if it wants to mask the brief window during
+    /// which the e-mail field is empty because the secure storage call has
+    /// not yet returned.
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsBusyLoadingRememberedState))]
+    private bool isRememberedStateLoaded;
+
+    /// <summary>
+    /// Convenience accessor used by the View to bind a busy indicator.
+    /// </summary>
+    public bool IsBusyLoadingRememberedState => !IsRememberedStateLoaded;
 
     /// <summary>
     /// Inline e-mail validation error.  Bound by the View to the label
@@ -317,7 +340,7 @@ public sealed partial class SignInPageViewModel : ViewModelBase
         try
         {
             result = await _authenticationService
-                .SignInAsync(emailSnapshot, passwordSnapshot)
+                .SignInAsync(emailSnapshot, passwordSnapshot, RememberMe)
                 .ConfigureAwait(true);
         }
         catch (OperationCanceledException)
@@ -348,6 +371,13 @@ public sealed partial class SignInPageViewModel : ViewModelBase
 
         Logger.LogInformation("Sign-in successful for {UserId}", result.Value!.Id);
         _shellViewModel.MarkAuthenticated();
+
+        // Clear the password from memory now that the credentials have
+        // been verified.  The view-model already binds the password
+        // through a TwoWay binding so the XAML entry will update too;
+        // this guarantees the secret does not linger in process memory
+        // while the navigation animation runs.
+        Password = string.Empty;
 
         // clearStack=true: the back gesture must not return the user to
         // the sign-in screen once they are authenticated.
@@ -389,4 +419,65 @@ public sealed partial class SignInPageViewModel : ViewModelBase
     /// <see cref="PropertyChanged"/> subscription in the constructor
     /// because <see cref="IsLoading"/> is declared on the base class.
     /// </summary>
+
+    /// <summary>
+    /// Hydrates the <see cref="Email"/> field and the
+    /// <see cref="RememberMe"/> check-box from the value persisted in
+    /// <c>SecureStorage</c> by the previous "remember me" sign-in.
+    /// Called by the page from <see cref="Page.OnAppearing"/> so the form
+    /// is already populated before the user taps the e-mail field.
+    /// </summary>
+    /// <remarks>
+    /// The method is intentionally idempotent (subsequent calls are
+    /// no-ops once <see cref="IsRememberedStateLoaded"/> is
+    /// <see langword="true"/>) and exception-safe: a missing or
+    /// unreadable <c>SecureStorage</c> entry is treated as "no remembered
+    /// state" so the page still loads.
+    /// </remarks>
+    public async Task LoadRememberedStateAsync()
+    {
+        if (IsRememberedStateLoaded)
+        {
+            Logger.LogDebug("Remembered state already loaded; skipping duplicate call");
+            return;
+        }
+
+        try
+        {
+            string? remembered = await _authenticationService
+                .GetRememberedEmailAsync()
+                .ConfigureAwait(true);
+            if (!string.IsNullOrWhiteSpace(remembered))
+            {
+                Email = remembered;
+                RememberMe = true;
+                Logger.LogInformation("Pre-populated sign-in form from remembered e-mail");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Secure storage failures must never prevent the sign-in page
+            // from opening.  Log and fall through with an empty form.
+            Logger.LogWarning(ex, "Failed to load remembered e-mail from SecureStorage");
+        }
+        finally
+        {
+            IsRememberedStateLoaded = true;
+        }
+    }
+
+    /// <summary>
+    /// Clears the in-memory password.  Invoked from <c>SignInPage</c>'s
+    /// <c>OnDisappearing</c> so the secret is scrubbed when the user
+    /// leaves the page (e.g. by successfully signing in or by tapping
+    /// "Forgot password").  The implementation is a no-op when the field
+    /// is already empty.
+    /// </summary>
+    public void ClearPassword()
+    {
+        if (!string.IsNullOrEmpty(Password))
+        {
+            Password = string.Empty;
+        }
+    }
 }

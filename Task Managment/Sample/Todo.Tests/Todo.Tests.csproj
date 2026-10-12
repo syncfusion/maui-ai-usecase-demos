@@ -30,6 +30,7 @@
     <Compile Include="..\Todo\Utilities\Helpers.cs" Link="Utilities\Helpers.cs" />
     <Compile Include="..\Todo\Utilities\Result.cs" Link="Utilities\Result.cs" />
     <Compile Include="..\Todo\Models\DTOs\UserDto.cs" Link="Models\DTOs\UserDto.cs" />
+    <Compile Include="..\Todo\Models\AuthToken.cs" Link="Models\AuthToken.cs" />
     <Compile Include="..\Todo\Services\Interfaces\IAuthenticationService.cs" Link="Services\Interfaces\IAuthenticationService.cs" />
     <Compile Include="..\Todo\Services\Infrastructure\INavigationService.cs" Link="Services\Infrastructure\INavigationService.cs" />
     <Compile Include="..\Todo\ViewModels\ViewModelBase.cs" Link="ViewModels\ViewModelBase.cs" />

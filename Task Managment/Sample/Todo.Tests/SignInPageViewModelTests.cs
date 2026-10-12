@@ -36,7 +36,8 @@ public class SignInPageViewModelTests
     {
         shellViewModel = new AppShellViewModel(
             NullLogger<AppShellViewModel>.Instance,
-            navigationService);
+            navigationService,
+            authService);
 
         return new SignInPageViewModel(
             authService,
@@ -69,7 +70,7 @@ public class SignInPageViewModelTests
     {
         var navigation = new StubNavigationService();
         var auth = new StubAuthenticationService();
-        var shell = new AppShellViewModel(NullLogger<AppShellViewModel>.Instance, navigation);
+        var shell = new AppShellViewModel(NullLogger<AppShellViewModel>.Instance, navigation, auth);
 
         Assert.Throws<ArgumentNullException>(() =>
             new SignInPageViewModel(null!, navigation, shell, NullLogger<SignInPageViewModel>.Instance));
@@ -402,6 +403,213 @@ public class SignInPageViewModelTests
 
         Assert.False(viewModel.IsLoading);
     }
+
+    [Fact]
+    public async Task SignIn_forwards_rememberMe_flag_to_authentication_service()
+    {
+        var auth = new StubAuthenticationService();
+        SignInPageViewModel viewModel = CreateViewModel(
+            auth,
+            new StubNavigationService(),
+            out _);
+
+        viewModel.Email = "user@example.com";
+        viewModel.Password = new string('p', Constants.Validation.PasswordMinLength + 1);
+        viewModel.RememberMe = true;
+
+        await ((System.Windows.Input.ICommand)viewModel.SignInCommand)
+            .ExecuteAsyncWithResult(null);
+
+        SignInAsyncCall call = Assert.Single(auth.SignInCalls);
+        Assert.True(call.RememberMe, "RememberMe must be propagated to the auth service");
+    }
+
+    [Fact]
+    public async Task SignIn_clears_password_after_successful_sign_in()
+    {
+        var auth = new StubAuthenticationService
+        {
+            SignInResult = Result<UserDto>.Success(new UserDto
+            {
+                Id = "u-1",
+                Email = "user@example.com",
+            }),
+        };
+        SignInPageViewModel viewModel = CreateViewModel(
+            auth,
+            new StubNavigationService(),
+            out _);
+
+        viewModel.Email = "user@example.com";
+        viewModel.Password = new string('p', Constants.Validation.PasswordMinLength + 1);
+
+        await ((System.Windows.Input.ICommand)viewModel.SignInCommand)
+            .ExecuteAsyncWithResult(null);
+
+        Assert.Equal(string.Empty, viewModel.Password);
+    }
+
+    [Fact]
+    public async Task LoadRememberedStateAsync_populates_email_and_rememberMe_when_available()
+    {
+        var auth = new StubAuthenticationService
+        {
+            RememberedEmail = "remembered@example.com",
+        };
+        SignInPageViewModel viewModel = CreateViewModel(
+            auth,
+            new StubNavigationService(),
+            out _);
+
+        Assert.False(viewModel.IsRememberedStateLoaded);
+        Assert.False(viewModel.RememberMe);
+        Assert.Equal(string.Empty, viewModel.Email);
+
+        await viewModel.LoadRememberedStateAsync();
+
+        Assert.True(viewModel.IsRememberedStateLoaded);
+        Assert.True(viewModel.RememberMe);
+        Assert.Equal("remembered@example.com", viewModel.Email);
+    }
+
+    [Fact]
+    public async Task LoadRememberedStateAsync_is_noop_when_no_remembered_email()
+    {
+        var auth = new StubAuthenticationService
+        {
+            RememberedEmail = null,
+        };
+        SignInPageViewModel viewModel = CreateViewModel(
+            auth,
+            new StubNavigationService(),
+            out _);
+
+        await viewModel.LoadRememberedStateAsync();
+
+        Assert.True(viewModel.IsRememberedStateLoaded);
+        Assert.False(viewModel.RememberMe);
+        Assert.Equal(string.Empty, viewModel.Email);
+    }
+
+    [Fact]
+    public async Task LoadRememberedStateAsync_is_idempotent()
+    {
+        var auth = new StubAuthenticationService
+        {
+            RememberedEmail = "remembered@example.com",
+        };
+        SignInPageViewModel viewModel = CreateViewModel(
+            auth,
+            new StubNavigationService(),
+            out _);
+
+        await viewModel.LoadRememberedStateAsync();
+        viewModel.Email = "changed@example.com";
+        viewModel.RememberMe = false;
+
+        // Second call should NOT overwrite the user-modified values.
+        await viewModel.LoadRememberedStateAsync();
+
+        Assert.Equal("changed@example.com", viewModel.Email);
+        Assert.False(viewModel.RememberMe);
+    }
+
+    [Fact]
+    public async Task LoadRememberedStateAsync_swallows_exceptions_from_auth_service()
+    {
+        var auth = new ThrowingRememberedEmailAuthenticationService();
+        SignInPageViewModel viewModel = CreateViewModel(
+            auth,
+            new StubNavigationService(),
+            out _);
+
+        await viewModel.LoadRememberedStateAsync();
+
+        Assert.True(viewModel.IsRememberedStateLoaded);
+        Assert.False(viewModel.RememberMe);
+        Assert.Equal(string.Empty, viewModel.Email);
+    }
+
+    [Fact]
+    public void ClearPassword_resets_password_to_empty_string()
+    {
+        SignInPageViewModel viewModel = CreateViewModel(
+            new StubAuthenticationService(),
+            new StubNavigationService(),
+            out _);
+
+        viewModel.Password = "supersecret";
+        viewModel.ClearPassword();
+        Assert.Equal(string.Empty, viewModel.Password);
+    }
+
+    [Fact]
+    public void ClearPassword_is_noop_when_password_already_empty()
+    {
+        SignInPageViewModel viewModel = CreateViewModel(
+            new StubAuthenticationService(),
+            new StubNavigationService(),
+            out _);
+
+        viewModel.Password = string.Empty;
+        viewModel.ClearPassword();
+        Assert.Equal(string.Empty, viewModel.Password);
+    }
+
+    [Fact]
+    public void AppShellViewModel_synchronises_IsAuthenticated_with_SignedInChanged_event()
+    {
+        var auth = new StubAuthenticationService();
+        var nav = new StubNavigationService();
+        AppShellViewModel shell = new(
+            NullLogger<AppShellViewModel>.Instance,
+            nav,
+            auth);
+
+        // Seeded from the stub's IsSignedIn (false at construction).
+        Assert.False(shell.IsAuthenticated);
+
+        auth.RaiseSignedInChanged(new UserDto { Id = "u-1", Email = "u@example.com" });
+        Assert.True(shell.IsAuthenticated);
+    }
+
+    [Fact]
+    public void AppShellViewModel_routes_to_sign_in_when_SignedInChanged_fires_with_null()
+    {
+        var auth = new StubAuthenticationService();
+        var nav = new StubNavigationService();
+        AppShellViewModel shell = new(
+            NullLogger<AppShellViewModel>.Instance,
+            nav,
+            auth);
+
+        auth.RaiseSignedInChanged(new UserDto { Id = "u-1", Email = "u@example.com" });
+        Assert.True(shell.IsAuthenticated);
+        nav.NavigateCalls.Clear();
+
+        auth.RaiseSignedInChanged(null);
+        Assert.False(shell.IsAuthenticated);
+
+        NavigationCall call = Assert.Single(nav.NavigateCalls);
+        Assert.Equal(Enums.NavigationTarget.SignIn, call.Target);
+        Assert.True(call.ClearStack);
+    }
+
+    [Fact]
+    public void AppShellViewModel_without_auth_service_starts_unauthenticated_and_can_be_marked_manually()
+    {
+        var nav = new StubNavigationService();
+        AppShellViewModel shell = new(
+            NullLogger<AppShellViewModel>.Instance,
+            nav,
+            authenticationService: null);
+
+        Assert.False(shell.IsAuthenticated);
+        shell.MarkAuthenticated();
+        Assert.True(shell.IsAuthenticated);
+        shell.MarkUnauthenticated();
+        Assert.False(shell.IsAuthenticated);
+    }
 }
 
 /// <summary>
@@ -420,29 +628,49 @@ internal sealed class StubAuthenticationService : IAuthenticationService
 
     public TimeSpan SignInDelay { get; set; } = TimeSpan.Zero;
 
-    public UserDto? CurrentUser => throw new NotSupportedException();
+    /// <summary>
+    /// E-mail address returned by <see cref="GetRememberedEmailAsync"/>.
+    /// Tests that want to drive the "remember me" pre-population logic
+    /// set this value before invoking
+    /// <see cref="SignInPageViewModel.LoadRememberedStateAsync"/>.
+    /// </summary>
+    public string? RememberedEmail { get; set; }
 
-    public bool IsSignedIn => false;
+    public UserDto? CurrentUser => _currentUser;
 
-#pragma warning disable CS0067 // Event never used in the stub
+    public bool IsSignedIn => _currentUser is not null;
+
+    /// <summary>
+    /// Raised by tests through <see cref="RaiseSignedInChangedAsync"/> to
+    /// exercise the <see cref="AppShellViewModel"/> event subscription.
+    /// </summary>
     public event EventHandler<UserDto?>? SignedInChanged;
-#pragma warning restore CS0067
+
+    private UserDto? _currentUser;
 
     public Task<Result<UserDto>> SignInAsync(
         string email,
         string password,
+        bool rememberMe = false,
         CancellationToken cancellationToken = default)
     {
-        SignInCalls.Add(new SignInAsyncCall(email, password));
+        SignInCalls.Add(new SignInAsyncCall(email, password, rememberMe));
         if (SignInDelay > TimeSpan.Zero)
         {
             return DelayedAsync(SignInDelay, SignInResult, SignInException, cancellationToken);
         }
 
-        return FromConfigImmediate(SignInResult, SignInException);
+        Result<UserDto> result = FromConfigImmediate(SignInResult, SignInException);
+        if (result.IsSuccess)
+        {
+            _currentUser = result.Value;
+            SignedInChanged?.Invoke(this, _currentUser);
+        }
+
+        return Task.FromResult(result);
     }
 
-    private static Task<Result<UserDto>> FromConfigImmediate(
+    private static Result<UserDto> FromConfigImmediate(
         Result<UserDto>? result,
         Exception? exception)
     {
@@ -451,8 +679,8 @@ internal sealed class StubAuthenticationService : IAuthenticationService
             throw exception;
         }
 
-        return Task.FromResult(result
-            ?? Result<UserDto>.Failure(new InvalidOperationException("Stub returned no result.")));
+        return result
+            ?? Result<UserDto>.Failure(new InvalidOperationException("Stub returned no result."));
     }
 
     public Task<Result<UserDto>> SignUpAsync(
@@ -473,6 +701,31 @@ internal sealed class StubAuthenticationService : IAuthenticationService
     public Task<Result<UserDto>> RestoreSessionAsync(CancellationToken cancellationToken = default) =>
         throw new NotSupportedException();
 
+    public Task<Result<AuthToken>> RefreshTokenAsync(CancellationToken cancellationToken = default) =>
+        throw new NotSupportedException();
+
+    public Task<string?> GetRememberedEmailAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult(RememberedEmail);
+
+    /// <summary>
+    /// Raises <see cref="SignedInChanged"/> with the supplied payload so
+    /// tests can exercise the <see cref="AppShellViewModel"/> event
+    /// subscription without going through the real auth service.
+    /// </summary>
+    public void RaiseSignedInChanged(UserDto? user)
+    {
+        if (user is null)
+        {
+            _currentUser = null;
+        }
+        else
+        {
+            _currentUser = user;
+        }
+
+        SignedInChanged?.Invoke(this, user);
+    }
+
     private static async Task<Result<UserDto>> DelayedAsync(
         TimeSpan delay,
         Result<UserDto>? result,
@@ -480,15 +733,15 @@ internal sealed class StubAuthenticationService : IAuthenticationService
         CancellationToken cancellationToken)
     {
         await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
-        return await FromConfigImmediate(result, exception).ConfigureAwait(false);
+        return FromConfigImmediate(result, exception);
     }
 }
 
 /// <summary>
-/// Captures the (email, password) pair passed to
+/// Captures the (email, password, rememberMe) tuple passed to
 /// <see cref="IAuthenticationService.SignInAsync"/>.
 /// </summary>
-internal sealed record SignInAsyncCall(string Email, string Password);
+internal sealed record SignInAsyncCall(string Email, string Password, bool RememberMe);
 
 /// <summary>
 /// In-process stub of <see cref="INavigationService"/>.  Records the
@@ -579,4 +832,52 @@ internal static class CommandTestExtensions
                 return;
         }
     }
+}
+
+/// <summary>
+/// Authentication service stub that throws when
+/// <see cref="IAuthenticationService.GetRememberedEmailAsync"/> is invoked.
+/// Used to verify that <see cref="SignInPageViewModel.LoadRememberedStateAsync"/>
+/// never lets a misbehaving SecureStorage break the sign-in page.
+/// </summary>
+internal sealed class ThrowingRememberedEmailAuthenticationService : IAuthenticationService
+{
+    public UserDto? CurrentUser => null;
+
+    public bool IsSignedIn => false;
+
+#pragma warning disable CS0067
+    public event EventHandler<UserDto?>? SignedInChanged;
+#pragma warning restore CS0067
+
+    public Task<string?> GetRememberedEmailAsync(CancellationToken cancellationToken = default) =>
+        throw new InvalidOperationException("Simulated SecureStorage failure");
+
+    public Task<Result<UserDto>> SignInAsync(
+        string email,
+        string password,
+        bool rememberMe = false,
+        CancellationToken cancellationToken = default) =>
+        Task.FromResult(Result<UserDto>.Failure(new InvalidOperationException("Not used")));
+
+    public Task<Result<UserDto>> SignUpAsync(
+        string email,
+        string password,
+        string? displayName = null,
+        CancellationToken cancellationToken = default) =>
+        throw new NotSupportedException();
+
+    public Task<Result> SignOutAsync(CancellationToken cancellationToken = default) =>
+        throw new NotSupportedException();
+
+    public Task<Result> RequestPasswordResetAsync(
+        string email,
+        CancellationToken cancellationToken = default) =>
+        throw new NotSupportedException();
+
+    public Task<Result<UserDto>> RestoreSessionAsync(CancellationToken cancellationToken = default) =>
+        throw new NotSupportedException();
+
+    public Task<Result<AuthToken>> RefreshTokenAsync(CancellationToken cancellationToken = default) =>
+        throw new NotSupportedException();
 }

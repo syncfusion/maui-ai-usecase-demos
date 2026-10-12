@@ -32,6 +32,12 @@ public interface IAuthenticationService
     /// </summary>
     /// <param name="email">The e-mail address used as the user identifier.</param>
     /// <param name="password">The user-supplied password.</param>
+    /// <param name="rememberMe">
+    /// When <see langword="true"/>, the e-mail address is persisted in
+    /// <c>SecureStorage</c> so the next launch can pre-populate the sign-in
+    /// form.  The password is <b>never</b> persisted — only the
+    /// (non-sensitive) identifier.  Defaults to <see langword="false"/>.
+    /// </param>
     /// <param name="cancellationToken">Token used to cancel the operation.</param>
     /// <returns>
     /// A <see cref="Result{T}"/> describing the outcome.  On success the
@@ -41,6 +47,7 @@ public interface IAuthenticationService
     Task<Result<UserDto>> SignInAsync(
         string email,
         string password,
+        bool rememberMe = false,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -62,7 +69,8 @@ public interface IAuthenticationService
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Signs the current user out and clears any cached credentials.
+    /// Signs the current user out and clears any cached credentials (including
+    /// the remembered e-mail address from <c>SecureStorage</c>).
     /// </summary>
     /// <param name="cancellationToken">Token used to cancel the operation.</param>
     /// <returns>A <see cref="Result"/> describing the outcome.</returns>
@@ -84,6 +92,12 @@ public interface IAuthenticationService
     /// page on application start-up to honour the "Authentication state
     /// persists on app restart" acceptance criterion.
     /// </summary>
+    /// <remarks>
+    /// Implementations are expected to perform a <b>proactive</b> refresh of
+    /// the access token when the persisted token is within the refresh
+    /// window (see <see cref="RefreshTokenAsync"/>) so the auto-login flow
+    /// never has to surface an "expired token" error to the user.
+    /// </remarks>
     /// <param name="cancellationToken">Token used to cancel the operation.</param>
     /// <returns>
     /// A successful <see cref="Result{T}"/> when a valid token is present,
@@ -91,4 +105,33 @@ public interface IAuthenticationService
     /// <see cref="Result{T}.ErrorMessage"/> otherwise.
     /// </returns>
     Task<Result<UserDto>> RestoreSessionAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Refreshes the in-memory access token using the currently-stored
+    /// refresh token.  Returns a failed <see cref="Result{T}"/> when no
+    /// refresh token is available or it has expired.  On failure the
+    /// persisted tokens are cleared and <see cref="SignedInChanged"/> is
+    /// raised with a <see langword="null"/> payload so the rest of the app
+    /// can react to the sign-out.
+    /// </summary>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>
+    /// A <see cref="Result{T}"/> describing the outcome.  On success the
+    /// <see cref="Result{T}.Value"/> is the freshly-issued
+    /// <see cref="Models.AuthToken"/>.
+    /// </returns>
+    Task<Result<AuthToken>> RefreshTokenAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns the e-mail address that was last signed-in with the
+    /// "Remember me" checkbox enabled, or <see langword="null"/> when no
+    /// address is remembered.  The value is read from
+    /// <c>SecureStorage</c> and is used by the sign-in page to pre-populate
+    /// the e-mail field.
+    /// </summary>
+    /// <returns>
+    /// The remembered e-mail address, or <see langword="null"/> when no
+    /// address is remembered or the secure store is unavailable.
+    /// </returns>
+    Task<string?> GetRememberedEmailAsync(CancellationToken cancellationToken = default);
 }

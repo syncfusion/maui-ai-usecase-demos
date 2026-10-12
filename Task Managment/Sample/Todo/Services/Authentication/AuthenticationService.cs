@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Storage;
 using SQLite;
 using Todo.Data.Repositories;
 using Todo.Models;
@@ -44,6 +45,26 @@ namespace Todo.Services.Authentication;
 /// </remarks>
 public sealed class AuthenticationService : IAuthenticationService
 {
+    /// <summary>
+    /// SecureStorage key under which the e-mail address of the most recent
+    /// "Remember me" sign-in is persisted.  Used by the sign-in page to
+    /// pre-populate the e-mail field on the next launch.  The key is
+    /// deliberately kept separate from the token storage keys so the
+    /// remember-me flow can be cleared without touching the active session
+    /// and vice versa.
+    /// </summary>
+    public const string RememberedEmailStorageKey = "auth.remembered-email";
+
+    /// <summary>
+    /// When the access token has less than this much time left on its
+    /// lifetime, <see cref="RestoreSessionAsync"/> transparently refreshes
+    /// it from the refresh token before returning success.  The window is
+    /// deliberately larger than typical network round-trip times so an
+    /// immediate call from the splash page is very unlikely to race with
+    /// the expiry.
+    /// </summary>
+    public static readonly TimeSpan ProactiveRefreshWindow = TimeSpan.FromMinutes(5);
+
     private readonly IRepository<User> _userRepository;
     private readonly PasswordValidator _passwordValidator;
     private readonly TokenManager _tokenManager;
@@ -94,6 +115,7 @@ public sealed class AuthenticationService : IAuthenticationService
     public async Task<Result<UserDto>> SignInAsync(
         string email,
         string password,
+        bool rememberMe = false,
         CancellationToken cancellationToken = default)
     {
         if (!Helpers.IsValidEmail(email))
@@ -139,10 +161,11 @@ public sealed class AuthenticationService : IAuthenticationService
             await _userRepository.UpdateAsync(user).ConfigureAwait(false);
 
             await _tokenManager.StoreAsync(token).ConfigureAwait(false);
+            await PersistRememberedEmailAsync(normalisedEmail, rememberMe).ConfigureAwait(false);
             await UpdateCurrentUserAsync(ToDto(user, DateTimeOffset.UtcNow), token, cancellationToken)
                 .ConfigureAwait(false);
 
-            _logger.LogInformation("User {UserId} signed in", user.Id);
+            _logger.LogInformation("User {UserId} signed in (rememberMe={RememberMe})", user.Id, rememberMe);
             return Result<UserDto>.Success(_currentUser!);
         }
         catch (Exception ex)
@@ -246,6 +269,7 @@ public sealed class AuthenticationService : IAuthenticationService
         try
         {
             _tokenManager.Clear();
+            ClearRememberedEmail();
             await UpdateCurrentUserAsync(null, null, cancellationToken).ConfigureAwait(false);
             _logger.LogInformation("User signed out");
             return Result.Success();
@@ -287,6 +311,16 @@ public sealed class AuthenticationService : IAuthenticationService
     /// Called by the splash page on application start-up to honour the
     /// "Authentication state persists on app restart" acceptance criterion.
     /// </summary>
+    /// <remarks>
+    /// When the access token is valid but about to expire (within
+    /// <see cref="ProactiveRefreshWindow"/>) the method transparently
+    /// rotates both tokens from the refresh token so the user does not
+    /// have to sign in again the moment the splash page transitions to the
+    /// task list.  If the access token has already expired, a refresh is
+    /// also attempted; the operation only fails when the refresh token
+    /// itself is missing, invalid or expired, in which case the persisted
+    /// session is cleared so the user is forwarded to the sign-in screen.
+    /// </remarks>
     /// <returns>
     /// A successful <see cref="Result{T}"/> when a valid token is present,
     /// or a failed <see cref="Result{T}"/> with a human-readable
@@ -307,22 +341,92 @@ public sealed class AuthenticationService : IAuthenticationService
 
             TokenValidationResult<TokenManager.TokenPayload> validation =
                 await _tokenManager.ValidateAsync(token.AccessToken, "access").ConfigureAwait(false);
+
             if (!validation.IsSuccess)
             {
-                _logger.LogInformation("Discarding persisted session: {Reason}", validation.ErrorMessage);
+                if (validation.ErrorMessage == "Token has expired.")
+                {
+                    // The access token has already expired — try to refresh
+                    // silently from the refresh token before giving up.
+                    _logger.LogInformation("Access token expired; attempting silent refresh");
+                    Result<AuthToken> refreshed = await TryRefreshAsync(token.RefreshToken, cancellationToken)
+                        .ConfigureAwait(false);
+                    if (refreshed.IsSuccess)
+                    {
+                        token = refreshed.Value!;
+                    }
+                    else
+                    {
+                        // Refresh failed (or refresh token itself is invalid):
+                        // clear the session and surface a "sign in again"
+                        // message to the user.
+                        _tokenManager.Clear();
+                        await UpdateCurrentUserAsync(null, null, cancellationToken).ConfigureAwait(false);
+                        return Result<UserDto>.Failure(
+                            new InvalidOperationException(refreshed.ErrorMessage ?? validation.ErrorMessage!),
+                            "Session expired. Please sign in again.");
+                    }
+                }
+                else
+                {
+                    // Token is malformed, signature invalid, etc. — not
+                    // something a refresh can rescue.  Discard the session
+                    // and require the user to sign in again.
+                    _logger.LogInformation("Discarding persisted session: {Reason}", validation.ErrorMessage);
+                    _tokenManager.Clear();
+                    await UpdateCurrentUserAsync(null, null, cancellationToken).ConfigureAwait(false);
+                    return Result<UserDto>.Failure(
+                        new InvalidOperationException(validation.ErrorMessage!),
+                        "Session expired. Please sign in again.");
+                }
+            }
+            else
+            {
+                // Access token is still valid but about to expire.  Refresh
+                // proactively so subsequent API calls (which will run from
+                // background pages, not the splash) do not hit a stale
+                // token.
+                long secondsRemaining = validation.Value!.Exp - DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                if (secondsRemaining <= (long)ProactiveRefreshWindow.TotalSeconds)
+                {
+                    _logger.LogInformation(
+                        "Access token expires in {Seconds}s; refreshing proactively",
+                        secondsRemaining);
+                    Result<AuthToken> refreshed = await TryRefreshAsync(token.RefreshToken, cancellationToken)
+                        .ConfigureAwait(false);
+                    if (refreshed.IsSuccess)
+                    {
+                        token = refreshed.Value!;
+                    }
+                    else
+                    {
+                        _logger.LogInformation(
+                            "Proactive refresh failed ({Reason}); keeping existing token",
+                            refreshed.ErrorMessage);
+                    }
+                }
+            }
+
+            // After any refresh that may have happened, the token is
+            // guaranteed to be valid against the user table.
+            TokenValidationResult<TokenManager.TokenPayload> finalValidation =
+                await _tokenManager.ValidateAsync(token.AccessToken, "access").ConfigureAwait(false);
+            if (!finalValidation.IsSuccess)
+            {
+                _logger.LogInformation("Discarding persisted session: {Reason}", finalValidation.ErrorMessage);
                 _tokenManager.Clear();
                 await UpdateCurrentUserAsync(null, null, cancellationToken).ConfigureAwait(false);
                 return Result<UserDto>.Failure(
-                    new InvalidOperationException(validation.ErrorMessage!),
+                    new InvalidOperationException(finalValidation.ErrorMessage!),
                     "Session expired. Please sign in again.");
             }
 
             User? user = await _userRepository
-                .GetByIdAsync(validation.Value!.Sub, includeSoftDeleted: false)
+                .GetByIdAsync(finalValidation.Value!.Sub, includeSoftDeleted: false)
                 .ConfigureAwait(false);
             if (user is null)
             {
-                _logger.LogWarning("Persisted token refers to missing user {UserId}", validation.Value!.Sub);
+                _logger.LogWarning("Persisted token refers to missing user {UserId}", finalValidation.Value!.Sub);
                 _tokenManager.Clear();
                 await UpdateCurrentUserAsync(null, null, cancellationToken).ConfigureAwait(false);
                 return Result<UserDto>.Failure(
@@ -349,7 +453,9 @@ public sealed class AuthenticationService : IAuthenticationService
     /// <summary>
     /// Refreshes the in-memory access token using the currently-stored
     /// refresh token.  Returns a failed <see cref="Result{T}"/> when no
-    /// refresh token is available or it has expired.
+    /// refresh token is available or it has expired.  On failure the
+    /// persisted session is cleared and <see cref="SignedInChanged"/> is
+    /// raised with a <see langword="null"/> payload.
     /// </summary>
     public async Task<Result<AuthToken>> RefreshTokenAsync(CancellationToken cancellationToken = default)
     {
@@ -364,8 +470,8 @@ public sealed class AuthenticationService : IAuthenticationService
                     "Not signed in.");
             }
 
-            TokenValidationResult<AuthToken> refreshed =
-                await _tokenManager.RefreshAsync(current.RefreshToken).ConfigureAwait(false);
+            Result<AuthToken> refreshed = await TryRefreshAsync(current.RefreshToken, cancellationToken)
+                .ConfigureAwait(false);
             if (!refreshed.IsSuccess)
             {
                 _logger.LogInformation("Refresh failed: {Reason}", refreshed.ErrorMessage);
@@ -376,10 +482,9 @@ public sealed class AuthenticationService : IAuthenticationService
                     "Session expired. Please sign in again.");
             }
 
-            await _tokenManager.StoreAsync(refreshed.Value!).ConfigureAwait(false);
             _currentToken = refreshed.Value;
             _logger.LogDebug("Refreshed access token for user {UserId}", _currentUser?.Id);
-            return Result<AuthToken>.Success(refreshed.Value!);
+            return refreshed;
         }
         catch (Exception ex)
         {
@@ -389,6 +494,114 @@ public sealed class AuthenticationService : IAuthenticationService
         finally
         {
             _sessionLock.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<string?> GetRememberedEmailAsync(CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        try
+        {
+            string? remembered = await SecureStorage
+                .GetAsync(RememberedEmailStorageKey)
+                .ConfigureAwait(false);
+            return string.IsNullOrWhiteSpace(remembered) ? null : remembered;
+        }
+        catch (Exception ex)
+        {
+            // SecureStorage is platform-specific (Android Keystore, iOS Keychain,
+            // Windows Credential Locker, ...).  Any exception that is not a
+            // genuine "no entry" should be logged and treated as "no
+            // remembered email" so the sign-in page does not block on
+            // misbehaving storage.
+            _logger.LogDebug(ex, "GetRememberedEmailAsync swallowed a non-fatal exception");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Performs a token refresh against the supplied
+    /// <paramref name="refreshToken"/> and, on success, persists the
+    /// resulting <see cref="AuthToken"/> in <see cref="SecureStorage"/>.
+    /// Does <b>not</b> touch the in-memory <see cref="_currentToken"/> or
+    /// clear the session on failure — callers that want either side effect
+    /// (e.g. <see cref="RefreshTokenAsync"/>) must perform it themselves.
+    /// </summary>
+    /// <param name="refreshToken">The refresh token to validate and rotate.</param>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    private async Task<Result<AuthToken>> TryRefreshAsync(
+        string refreshToken,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        TokenValidationResult<AuthToken> refreshed = await _tokenManager
+            .RefreshAsync(refreshToken)
+            .ConfigureAwait(false);
+        if (!refreshed.IsSuccess)
+        {
+            return Result<AuthToken>.Failure(
+                new InvalidOperationException(refreshed.ErrorMessage!),
+                refreshed.ErrorMessage!);
+        }
+
+        await _tokenManager.StoreAsync(refreshed.Value!).ConfigureAwait(false);
+        return Result<AuthToken>.Success(refreshed.Value!);
+    }
+
+    /// <summary>
+    /// Persists <paramref name="email"/> in <see cref="SecureStorage"/> when
+    /// <paramref name="rememberMe"/> is <see langword="true"/>, otherwise
+    /// removes any previously-persisted value.  The e-mail is the only
+    /// piece of state the remember-me flow is allowed to keep — the
+    /// password is never written to disk.
+    /// </summary>
+    /// <param name="email">Normalised e-mail address (already trimmed / lower-cased).</param>
+    /// <param name="rememberMe">
+    /// <see langword="true"/> to store, <see langword="false"/> to clear.
+    /// </param>
+    private async Task PersistRememberedEmailAsync(string email, bool rememberMe)
+    {
+        try
+        {
+            if (rememberMe)
+            {
+                await SecureStorage.SetAsync(RememberedEmailStorageKey, email).ConfigureAwait(false);
+                _logger.LogDebug("Persisted remembered e-mail {Email}", email);
+            }
+            else
+            {
+                SecureStorage.Remove(RememberedEmailStorageKey);
+                _logger.LogDebug("Cleared remembered e-mail");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Non-fatal: remember-me is a UX nicety, it must never prevent
+            // sign-in from completing.
+            _logger.LogWarning(ex, "Failed to update remembered e-mail in SecureStorage");
+        }
+    }
+
+    /// <summary>
+    /// Removes the persisted "remember me" e-mail from
+    /// <see cref="SecureStorage"/>.  Called by <see cref="SignOutAsync"/> so
+    /// the user is not silently re-authenticated the next time they reopen
+    /// the app after explicitly signing out.
+    /// </summary>
+    private void ClearRememberedEmail()
+    {
+        try
+        {
+            SecureStorage.Remove(RememberedEmailStorageKey);
+        }
+        catch (Exception ex)
+        {
+            // SecureStorage.Remove can throw on platforms where the entry
+            // does not exist; that is not a real failure.
+            _logger.LogDebug(ex, "ClearRememberedEmail swallowed a non-fatal exception");
         }
     }
 

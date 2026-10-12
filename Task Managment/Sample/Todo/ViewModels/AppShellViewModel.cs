@@ -1,7 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using Todo.Models.DTOs;
 using Todo.Services.Infrastructure;
+using Todo.Services.Interfaces;
 using Enums = Todo.Utilities.Enums;
 
 namespace Todo.ViewModels;
@@ -22,6 +24,7 @@ namespace Todo.ViewModels;
 public partial class AppShellViewModel : ViewModelBase
 {
     private readonly INavigationService _navigationService;
+    private readonly IAuthenticationService? _authenticationService;
 
     /// <summary>
     /// Indicates whether the back gesture / button should be available.
@@ -34,6 +37,12 @@ public partial class AppShellViewModel : ViewModelBase
     /// Indicates whether the user is currently authenticated.  Bound by
     /// future tabs / flyout items to show or hide authenticated-only entries.
     /// </summary>
+    /// <remarks>
+    /// The property is kept in sync with the
+    /// <see cref="IAuthenticationService.SignedInChanged"/> event so the
+    /// Shell reflects token refresh / expiry / sign-out transitions
+    /// without the page-level code having to nudge it manually.
+    /// </remarks>
     [ObservableProperty]
     private bool isAuthenticated;
 
@@ -45,13 +54,73 @@ public partial class AppShellViewModel : ViewModelBase
     /// <param name="navigationService">
     /// Navigation service injected by the DI container.
     /// </param>
+    /// <param name="authenticationService">
+    /// Authentication service used to subscribe to the
+    /// <see cref="IAuthenticationService.SignedInChanged"/> event so the
+    /// Shell stays in sync with the auth state.  When <see langword="null"/>
+    /// (for example in unit tests that do not need an auth service) the
+    /// subscription is skipped and <see cref="IsAuthenticated"/> must be
+    /// driven manually through <see cref="MarkAuthenticated"/> /
+    /// <see cref="MarkUnauthenticated"/>.
+    /// </param>
     public AppShellViewModel(
         ILogger<AppShellViewModel> logger,
-        INavigationService navigationService)
+        INavigationService navigationService,
+        IAuthenticationService? authenticationService = null)
         : base(logger)
     {
         ArgumentNullException.ThrowIfNull(navigationService);
         _navigationService = navigationService;
+        _authenticationService = authenticationService!;
+
+        // Seed the cached flag with the current auth state so the Shell
+        // does not flash the "unauthenticated" chrome between launch and
+        // the first call to <see cref="InitializeAsync"/>.
+        if (_authenticationService is not null)
+        {
+            IsAuthenticated = _authenticationService.IsSignedIn;
+
+            // Keep the flag in sync with every auth state transition
+            // (sign-in, sign-out, transparent token refresh, refresh
+            // failure → forced sign-out, etc.).  Task 2-06 made this
+            // subscription mandatory: the splash page no longer calls
+            // <see cref="MarkAuthenticated"/> manually because it cannot
+            // know whether a silent token refresh succeeded.
+            _authenticationService.SignedInChanged += OnAuthenticationServiceSignedInChanged;
+        }
+    }
+
+    /// <summary>
+    /// Handler for <see cref="IAuthenticationService.SignedInChanged"/>.
+    /// Updates <see cref="IsAuthenticated"/> and routes the user back to
+    /// the sign-in page when the transition is a sign-out (or a forced
+    /// sign-out triggered by a failed refresh).
+    /// </summary>
+    private void OnAuthenticationServiceSignedInChanged(object? sender, UserDto? user)
+    {
+        bool nowAuthenticated = user is not null;
+        if (nowAuthenticated == IsAuthenticated)
+        {
+            // No-op: the only thing that can change in this branch is the
+            // UserDto identity (after a sign-in of a *different* user
+            // through the same auth service instance), and we do not
+            // expose that detail at the Shell level today.
+            return;
+        }
+
+        IsAuthenticated = nowAuthenticated;
+
+        if (!nowAuthenticated)
+        {
+            Logger.LogInformation("SignedInChanged fired with null user; routing to sign-in");
+            // Best-effort navigation.  We deliberately swallow any
+            // navigation failure because the page-level code that handled
+            // the original sign-out is responsible for the redirect; we
+            // only handle the case where the auth service alone initiated
+            // the sign-out (e.g. a failed token refresh from a background
+            // page).
+            _ = _navigationService.NavigateToAsync(Enums.NavigationTarget.SignIn, clearStack: true);
+        }
     }
 
     /// <summary>
@@ -114,11 +183,24 @@ public partial class AppShellViewModel : ViewModelBase
 
     /// <summary>
     /// Marks the current user as authenticated.  Called by the sign-in
-    /// command on successful authentication (Module 2).
+    /// command on successful authentication (Module 2).  The flag is also
+    /// driven automatically through the <see cref="IAuthenticationService.SignedInChanged"/>
+    /// subscription — the manual call is kept for callers that want to
+    /// short-circuit the wait for the event to be raised.
     /// </summary>
     public void MarkAuthenticated()
     {
         IsAuthenticated = true;
+    }
+
+    /// <summary>
+    /// Marks the current user as not authenticated.  Inverse of
+    /// <see cref="MarkAuthenticated"/>; primarily useful in unit tests
+    /// where the auth service subscription has not been wired up.
+    /// </summary>
+    public void MarkUnauthenticated()
+    {
+        IsAuthenticated = false;
     }
 
     /// <inheritdoc />
