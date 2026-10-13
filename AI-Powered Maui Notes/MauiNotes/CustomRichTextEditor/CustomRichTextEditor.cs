@@ -60,9 +60,6 @@ public class CustomRichTextEditor : ContentView
             Debug.WriteLine("[CustomRichTextEditor] innerEditor.Loaded fired; kicking off EnsureReadyAsync.");
             _ = EnsureReadyAsync();
         };
-        innerEditor.HandlerChanged += (_, args) =>
-            Debug.WriteLine(
-                $"[CustomRichTextEditor] innerEditor.HandlerChanged; newHandler={(args.NewHandler is null ? "null" : args.NewHandler.GetType().FullName)}; oldHandler={(args.OldHandler is null ? "null" : args.OldHandler.GetType().FullName)}.");
 
         // Forward the inner editor's FormatChanged so consumers can keep
         // toolbar formatting state synchronized (same contract as the RTE).
