@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using MauiNotes.Models;
 using MauiNotes.Services.Persistence;
@@ -61,6 +62,8 @@ public partial class NotesViewModel
         if (isLoadingData || !isPersistenceAvailable)
             return;
 
+        Debug.WriteLine(
+            $"[NotesViewModel] ScheduleAutosave:start; selectedNoteId={(SelectedNote?.Id.ToString() ?? "<none>")}; previousCancellation={(autosaveCancellation is null ? "null" : "cancelled")}.");
         autosaveCancellation?.Cancel();
         autosaveCancellation?.Dispose();
         var cancellation = new CancellationTokenSource();
@@ -72,11 +75,14 @@ public partial class NotesViewModel
     {
         try
         {
+            Debug.WriteLine("[NotesViewModel] SaveAfterDelayAsync:start; awaiting 400ms debounce.");
             await Task.Delay(TimeSpan.FromMilliseconds(400), cancellation.Token);
+            Debug.WriteLine("[NotesViewModel] SaveAfterDelayAsync: debounce elapsed; running SaveAsync.");
             LogHtmlBoundary("persistence.autosave.selected-note", SelectedNote?.Content, SelectedNote?.Id);
             await notePersistenceService.SaveAsync(
                 CreateStoreDocument(),
                 cancellation.Token);
+            Debug.WriteLine("[NotesViewModel] SaveAfterDelayAsync: SaveAsync completed.");
             if (ReferenceEquals(autosaveCancellation, cancellation))
                 SetPersistenceStatus("Saved", false);
         }

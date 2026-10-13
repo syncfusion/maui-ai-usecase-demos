@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using MauiNotes.Models;
 using MauiNotes.Controls.Popups;
 using MauiNotes.ViewModels;
@@ -11,7 +12,9 @@ public partial class NotesPageMobileUI : ContentPage
 {
     public NotesPageMobileUI(NotesViewModel viewModel)
     {
+        Debug.WriteLine("[NotesPageMobileUI] ctor:start; inflating XAML tree.");
         InitializeComponent();
+        Debug.WriteLine("[NotesPageMobileUI] ctor:done; XAML inflated; binding to provided NotesViewModel.");
         BindingContext = viewModel;
         NodeActionPopups.IsMobilePresentation = true;
         viewModel.NoteSelected += OnNoteSelected;
@@ -36,7 +39,10 @@ public partial class NotesPageMobileUI : ContentPage
 
     private async void OnNoteSelected(object? sender, EventArgs e)
     {
+        Debug.WriteLine(
+            $"[NotesPageMobileUI] OnNoteSelected:start; selectedNoteId={(BindingContext is NotesViewModel vm && vm.SelectedNote is not null ? vm.SelectedNote.Id.ToString() : "<none>")}.");
         await Shell.Current.GoToAsync(nameof(EditorPageMobileUI));
+        Debug.WriteLine("[NotesPageMobileUI] OnNoteSelected: navigation returned.");
     }
 
     private void OnNodeMenuClicked(object? sender, EventArgs e)

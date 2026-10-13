@@ -161,6 +161,8 @@ public partial class NotesViewModel : ViewModelBase
             NoteModel? previousNote = selectedNote;
             if (previousNote is not null)
                 LogHtmlBoundary("note.navigation.previous-model", previousNote.Content, previousNote.Id);
+            Debug.WriteLine(
+                $"[NotesViewModel] SelectedNote:set:start; previousNoteId={(previousNote?.Id.ToString() ?? "<none>")}; newNoteId={(value?.Id.ToString() ?? "<none>")}.");
             if (!SetProperty(ref selectedNote, value))
                 return;
 
@@ -199,6 +201,8 @@ public partial class NotesViewModel : ViewModelBase
 
             editorHtml = selectedHtml;
             LogHtmlBoundary("note.navigation.editor-value-assignment", editorHtml, value?.Id);
+            Debug.WriteLine(
+                $"[NotesViewModel] SelectedNote:set: raising EditorHtml PropertyChanged; htmlLength={editorHtml.Length}; isApplyingProgrammaticContent={isApplyingProgrammaticContent}.");
             OnPropertyChanged(nameof(EditorHtml));
             ClearProgrammaticContentFlagAfterDispatch();
             OnPropertyChanged(nameof(SelectedHeaderText));
@@ -209,6 +213,7 @@ public partial class NotesViewModel : ViewModelBase
             OnPropertyChanged(nameof(IsAiActionEnabled));
             OnPropertyChanged(nameof(CanRunCustomAi));
             ScheduleAutosave();
+            Debug.WriteLine("[NotesViewModel] SelectedNote:set:done.");
         }
     }
 

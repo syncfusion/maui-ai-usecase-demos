@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using MauiNotes.ViewModels;
 
 namespace MauiNotes.Controls.Toolbars;
@@ -12,7 +13,9 @@ public partial class EditorToolbar : ContentView
 
     public EditorToolbar()
     {
+        Debug.WriteLine("[EditorToolbar] ctor:start; inflating XAML tree.");
         InitializeComponent();
+        Debug.WriteLine("[EditorToolbar] ctor:done; XAML inflated.");
     }
 
     private void OnFormatClicked(object? sender, TappedEventArgs e)

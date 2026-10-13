@@ -11,7 +11,7 @@ public partial class FormatPopup : ContentView
         new("Heading", "Heading", string.Empty, 9),
         new("Subheading", "Subheading", string.Empty, 9),
         new("Body", "Body", string.Empty, 9),
-        new("Monostyled", "Monostyled", string.Empty, 9, "Courier New"),
+        new("Monostyled", "Monostyled", string.Empty, 9, NotesViewModel.MonospacedFontFamily),
         new("BulletedList", "Bulleted List", "\u2022", 12),
         new("NumberedList", "Numbered List", "1.", 9)
     ];

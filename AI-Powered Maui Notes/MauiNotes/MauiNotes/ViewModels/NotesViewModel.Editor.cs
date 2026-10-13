@@ -1,4 +1,4 @@
-﻿using Syncfusion.Maui.RichTextEditor;
+using Syncfusion.Maui.RichTextEditor;
 using CustomRichTextEditor;
 
 namespace MauiNotes.ViewModels;
@@ -12,6 +12,18 @@ public partial class NotesViewModel
 
         IsEditorFocused = isFocused;
     }
+    /// <summary>
+    /// Android-safe monospace family alias. The RTE engine's font picker
+    /// asks the platform to load the family it is given; platform-specific
+    /// names that do not exist as an asset (e.g. "Courier New") throw
+    /// <c>java.lang.RuntimeException: Font asset not found</c> on every
+    /// touch interaction, which is a primary contributor to the ANR stalls
+    /// observed when entering the editor page. We compare and apply
+    /// <c>"monospace"</c> instead, which the Android font manager resolves
+    /// to a built-in typeface without doing asset I/O on the UI thread.
+    /// </summary>
+    internal const string MonospacedFontFamily = "monospace";
+
     public void UpdateFormatState(RichTextEditorFormatChangedEventArgs args)
     {
         IsBoldActive = args.NewFormat.IsBold;
@@ -22,7 +34,9 @@ public partial class NotesViewModel
         Color? editorBackgroundColor = ActiveEditor?.EditorBackgroundColor;
         IsHighlightActive = highlightColor is { Alpha: > 0 } &&
             (editorBackgroundColor is null || !highlightColor.Equals(editorBackgroundColor));
-        IsMonostyledActive = string.Equals(args.NewFormat.FontFamily, "Courier New", StringComparison.OrdinalIgnoreCase);
+        IsMonostyledActive = string.Equals(args.NewFormat.FontFamily, MonospacedFontFamily, StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(args.NewFormat.FontFamily, "Courier New", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(args.NewFormat.FontFamily, "Courier", StringComparison.OrdinalIgnoreCase);
         IsBulletListActive = args.NewFormat.IsBulletList;
         IsNumberedListActive = args.NewFormat.IsNumberedList;
         CurrentParagraphFormat = args.NewFormat.ParagraphFormat.ToString();
@@ -121,7 +135,13 @@ public partial class NotesViewModel
             case "Subheading": editor.ApplyParagraphFormat(RichTextEditorParagraphFormat.Heading3); break;
             case "Body": editor.ApplyParagraphFormat(RichTextEditorParagraphFormat.Paragraph); break;
             case "Monostyled":
-                editor.ApplyFontFamily(IsMonostyledActive ? editor.DefaultFontFamily : "Courier New");
+                // Use the Android-resolvable monospace alias rather than a
+                // platform-specific name like "Courier New". Syncfusion's RTE
+                // engine asks Android to load the family it is given on every
+                // interaction, and an unsupported family throws
+                // Font asset not found on the main thread, which is a major
+                // contributor to the editor page ANR.
+                editor.ApplyFontFamily(IsMonostyledActive ? editor.DefaultFontFamily : MonospacedFontFamily);
                 break;
             case "BulletedList": editor.ToggleBulletList(); break;
             case "NumberedList": editor.ToggleNumberedList(); break;

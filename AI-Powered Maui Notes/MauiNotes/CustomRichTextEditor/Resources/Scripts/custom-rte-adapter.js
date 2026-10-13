@@ -15,6 +15,30 @@
 //    the editor schema tag map before any node is created.
 //  - Stale detection: revision must match AND text at the range must equal the
 //    captured selected text.
+
+// ---------- Syncfusion engine compatibility shims ----------
+// On Android, the bundled sf-richtexteditor.js is requested from the
+// engine WebView via a file:// URL that the platform's CORS policy blocks.
+// When the script is blocked, every reference to the engine helper
+// loadFontToDocument() throws an Uncaught ReferenceError on the engine's
+// hot path. Defining a no-op shim here ensures the engine never throws
+// while the underlying asset is being lazily fetched, and matches the
+// behaviour of the missing function (the engine retries font loading
+// asynchronously on its own).
+(function ensureShims() {
+    try {
+        if (typeof window.loadFontToDocument !== 'function') {
+            window.loadFontToDocument = function () {
+                // Intentionally empty. The real implementation lives in
+                // sf-richtexteditor.js. The shim prevents repeated
+                // ReferenceError noise while the engine script (if
+                // blocked by CORS) never resolves.
+                return;
+            };
+        }
+    } catch (e) { /* engine may be hostile to global writes; ignore */ }
+})();
+
 (function () {
     'use strict';
 
