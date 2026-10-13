@@ -1,0 +1,263 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DataForm_FormGenerator"
+             xmlns:sf="clr-namespace:Syncfusion.Maui.DataForm;assembly=Syncfusion.Maui.DataForm"
+             xmlns:inputs="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             x:Class="DataForm_FormGenerator.MainPage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
+            <local:BoolInverseConverter x:Key="BoolInverseConverter" />
+
+            <Style x:Key="SectionCard" TargetType="Border">
+                <Setter Property="HorizontalOptions" Value="Fill"/>
+                <Setter Property="VerticalOptions" Value="Fill"/>
+                <Setter Property="StrokeThickness" Value="1.5" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 20" />
+                <Setter Property="Padding" Value="28,18" />
+            </Style>
+
+            <Style x:Key="SectionTitle" TargetType="Label">
+                <Setter Property="FontFamily" Value="Roboto" />
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="#0F172A" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+
+            <Style x:Key="FieldLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="#334155" />
+                <Setter Property="Margin" Value="0,6,0,6" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*,Auto" ColumnDefinitions="*">
+        <ScrollView Grid.Row="0">
+            <Grid RowDefinitions="Auto"
+                  HorizontalOptions="Center"
+                  Padding="{OnIdiom Phone='20,12,20,12', Default='40,18,40,40'}">
+                <Border StrokeThickness="0"
+                        Padding="0"
+                        MaximumWidthRequest="{OnIdiom Phone=560, Tablet=720, Desktop=960}"
+                        HorizontalOptions="Fill"
+                        VerticalOptions="Start">
+                    <VerticalStackLayout Spacing="18" HorizontalOptions="Fill">
+
+                        <!-- ==================== Title ============================ -->
+                        <Grid ColumnDefinitions="Auto,*" Padding="4,2">
+                            <Label Grid.Column="0"
+                                   Text="&#xe72d;"
+                                   FontFamily="MaterialAssets"
+                                   FontSize="28"
+                                   TextColor="#0F172A"
+                                   VerticalTextAlignment="Center" />
+                            <Label Grid.Column="1"
+                                   Text="Education Form Generator"
+                                   FontSize="28"
+                                   FontAttributes="Bold"
+                                   TextColor="#0F172A"
+                                   VerticalTextAlignment="Center"
+                                   Margin="14,0,0,0" />
+                        </Grid>
+
+                        <!-- ==================== Student Information ============ -->
+                        <Border Style="{StaticResource SectionCard}">
+                            <VerticalStackLayout Spacing="14" HorizontalOptions="Fill" VerticalOptions="Fill">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                    <Label Grid.Column="0"
+                                           Text="&#xe756;"
+                                           TextColor="#005EA8"
+                                           FontFamily="MaterialAssets"
+                                           FontSize="22"
+                                           VerticalTextAlignment="Center" />
+                                    <Label Grid.Column="1"
+                                           Text="Student Information"
+                                           Style="{StaticResource SectionTitle}" />
+                                    <Border Grid.Column="2"
+                                            BackgroundColor="#DDEBFB"
+                                            StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 12"
+                                            Padding="10,4"
+                                            VerticalOptions="Center">
+                                        <Label Text="Personal Details"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               TextColor="#005EA8" />
+                                    </Border>
+                                </Grid>
+                                <sf:SfDataForm x:Name="StudentDataForm"
+               HeightRequest="315"
+               DataObject="{Binding StudentInformation}"
+               ValidationMode="PropertyChanged"
+               AutoGenerateItems="True"
+               ColumnCount="1">
+                                    <sf:SfDataForm.DefaultLayoutSettings>
+                                        <sf:DataFormDefaultLayoutSettings LabelPosition="Left" />
+                                    </sf:SfDataForm.DefaultLayoutSettings>
+                                </sf:SfDataForm>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- ==================== Generated Education Cards ===== -->
+                        <VerticalStackLayout x:Name="EducationCardsHost"
+                                             Spacing="10"
+                                             BindableLayout.ItemsSource="{Binding EducationEntries}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource SectionCard}">
+                                        <VerticalStackLayout Spacing="14">
+                                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+
+                                                <Button Grid.Column="0"
+                                                        Text="&#xe705;"
+                                                        FontFamily="MaterialAssets"
+                                                        FontSize="18"
+                                                        FontAttributes="Bold"
+                                                        BackgroundColor="#DDEBFB"
+                                                        TextColor="#005EA8"
+                                                        Padding="0"
+                                                        WidthRequest="18"
+                                                        HeightRequest="18"
+                                                        CornerRadius="40"
+                                                        Command="{Binding ToggleExpandedCommand}"
+                                                        VerticalOptions="Center"
+                                                        AutomationProperties.Name="Expand or collapse education section">
+                                                    <Button.Triggers>
+                                                        <DataTrigger TargetType="Button"
+                                                                     Binding="{Binding IsChevronExpanded}"
+                                                                     Value="False">
+                                                            <Setter Property="Rotation" Value="-90" />
+                                                        </DataTrigger>
+                                                    </Button.Triggers>
+                                                </Button>
+
+                                                <Label Grid.Column="1"
+                                                       Text="{Binding Header}"
+                                                       Style="{StaticResource SectionTitle}"
+                                                       VerticalTextAlignment="Center" />
+
+                                                <Button Grid.Column="2"
+                                                        Text="&#xe70f;"
+                                                        FontFamily="MaterialAssets"
+                                                        FontSize="18"
+                                                        BackgroundColor="Transparent"
+                                                        TextColor="#94A3B8"
+                                                        Padding="6"
+                                                        WidthRequest="44"
+                                                        HeightRequest="44"
+                                                        CornerRadius="22"
+                                                        Command="{Binding DeleteCommand}" />
+                                            </Grid>
+
+                                            <Label Text="Generating Education fields..."
+                                                   TextColor="#64748B"
+                                                   FontSize="14"
+                                                   IsVisible="{Binding IsFormNotGenerated}" />
+
+                                            <VerticalStackLayout Spacing="10"
+                                                                 HorizontalOptions="Fill"
+                                                                 IsVisible="{Binding IsBodyVisible}">
+                                                <sf:SfDataForm x:Name="EducationDataForm"
+                                                               DataObject="{Binding Entry}"
+                                                               HeightRequest="370"
+                                                               HorizontalOptions="Fill"
+                                                               ValidationMode="PropertyChanged"
+                                                               CommitMode="PropertyChanged"
+                                                               LayoutType="TextInputLayout"
+                                                               ColumnCount="1">
+                                                    <sf:SfDataForm.DefaultLayoutSettings>
+                                                        <sf:DataFormDefaultLayoutSettings>
+                                                            <sf:DataFormDefaultLayoutSettings.LabelPosition>
+                                                                <sf:DataFormLabelPosition>Left</sf:DataFormLabelPosition>
+                                                            </sf:DataFormDefaultLayoutSettings.LabelPosition>
+                                                        </sf:DataFormDefaultLayoutSettings>
+                                                    </sf:SfDataForm.DefaultLayoutSettings>
+                                                </sf:SfDataForm>
+
+                                                <Button Text="&#x2713;  Done"
+                                                        BackgroundColor="#14823C"
+                                                        TextColor="White"
+                                                        FontSize="14"
+                                                        HeightRequest="44"
+                                                        CornerRadius="10"
+                                                        Margin="0,8,0,0"
+                                                        HorizontalOptions="End"
+                                                        Command="{Binding MarkDoneCommand}"
+                                                        IsVisible="{Binding IsDoneButtonVisible}" />
+                                                <Label Text="{Binding ErrorMessage}"
+                                                       TextColor="#B91C1C"
+                                                       FontSize="14"
+                                                       IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}" />
+
+                                                <Border BackgroundColor="#FDECEC"
+                                                        Stroke="#F8C9C9"
+                                                        StrokeThickness="1"
+                                                        StrokeShape="RoundRectangle 10"
+                                                        Padding="12,10"
+                                                        IsVisible="{Binding HasValidationError}">
+                                                    <VerticalStackLayout Spacing="4">
+                                                        <HorizontalStackLayout Spacing="8">
+                                                            <Label Text="&#x26A0;"
+                                                                   TextColor="#B91C1C"
+                                                                   FontSize="16"
+                                                                   FontAttributes="Bold"
+                                                                   VerticalTextAlignment="Center" />
+                                                            <Label Text="{Binding ValidationTitle}"
+                                                                   TextColor="#7F1D1D"
+                                                                   FontSize="14"
+                                                                   FontAttributes="Bold"
+                                                                   VerticalTextAlignment="Center" />
+                                                        </HorizontalStackLayout>
+                                                        <Label Text="{Binding ValidationMessage}"
+                                                               TextColor="#7F1D1D"
+                                                               FontSize="13" />
+                                                    </VerticalStackLayout>
+                                                </Border>
+                                            </VerticalStackLayout>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                        <!-- ==================== Add Education (below form) ============ -->
+                        <Border Style="{StaticResource SectionCard}">
+                            <VerticalStackLayout Spacing="14" HorizontalOptions="Fill">
+
+                                <inputs:SfComboBox x:Name="EducationLevelComboBox"
+                                                      ItemsSource="{Binding EducationOptions}"
+                                                      SelectedItem="{Binding PendingEducationType, Mode=TwoWay}"
+                                                      Placeholder="Add an Education level"
+                                                      PlaceholderColor="#9CA3AF"
+                                                      TextColor="#111827"
+                                                      FontSize="15"
+                                                      BackgroundColor="Transparent"
+                                                      HorizontalOptions="Start"
+                                                      WidthRequest="320"
+                                                      HeightRequest="52"
+                                                      MaxDropDownHeight="240" />
+
+                                <Border BackgroundColor="#FDECEC"
+                                            Stroke="#F8C9C9"
+                                            StrokeThickness="1"
+                                            StrokeShape="RoundRectangle 12"
+                                            Padding="14,12"
+                                            IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}">
+                                        <HorizontalStackLayout Spacing="10">
+                                            <Label Text="&#x26A0;" TextColor="#B91C1C" FontSize="18" />
+                                            <Label Text="{Binding ErrorMessage}" FontSize="15" TextColor="#7F1D1D" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+        </ScrollView>
+    </Grid>
+</ContentPage>
