@@ -8,7 +8,7 @@
              xmlns:conv="clr-namespace:Todo.Converters"
              xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              x:Class="Todo.Features.Notes.Views.NotesPage"
-             x:Name="NotesPage"
+             x:Name="Notes"
              x:DataType="vm:NotesListViewModel"
              Padding="0">
 
@@ -44,7 +44,7 @@
                         Margin="12,8,12,12"
                         Padding="12,0"
                         BackgroundColor="{StaticResource SurfaceColor}"
-                        StrokeColor="{StaticResource BorderColor}"
+                        Stroke="{StaticResource BorderColor}"
                         StrokeThickness="1"
                         StrokeShape="RoundRectangle 8"
                         HeightRequest="40">
@@ -211,7 +211,7 @@
                                             HeightRequest="40"
                                             Padding="0"
                                             CornerRadius="20"
-                                            Command="{Binding Source={x:Reference NotesPage}, Path=BindingContext.ToggleImportantCommand}"
+                                            Command="{Binding Source={x:Reference Notes}, Path=BindingContext.ToggleImportantCommand}"
                                             CommandParameter="{Binding .}" />
 
                                     <Button Grid.Column="3"
@@ -224,7 +224,7 @@
                                             HeightRequest="40"
                                             Padding="0"
                                             CornerRadius="20"
-                                            Command="{Binding Source={x:Reference NotesPage}, Path=BindingContext.DeleteCommand}"
+                                            Command="{Binding Source={x:Reference Notes}, Path=BindingContext.DeleteCommand}"
                                             CommandParameter="{Binding .}" />
                                 </Grid>
                             </Border>

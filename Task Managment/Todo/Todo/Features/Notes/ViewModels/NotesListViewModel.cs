@@ -18,6 +18,7 @@ namespace Todo.Features.Notes.ViewModels;
 public partial class NotesListViewModel : ViewModelBase
 {
     private readonly INoteService _noteService;
+    private readonly NotesListCategory _selectedCategory;
 
     /// <summary>
     /// The currently-displayed list of notes after applying the active
