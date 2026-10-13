@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using MauiNotes.Controls.AI;
 using MauiNotes.Controls.Toolbars;
 using MauiNotes.Controls.Popups;
@@ -22,6 +23,7 @@ public partial class EditorPageMobileUI : ContentPage
     private double observedWindowWidth;
     private double observedWindowHeight;
     private bool isPopupRepositionQueued;
+    private readonly Stopwatch pageStopwatch = Stopwatch.StartNew();
 
     public EditorPageMobileUI()
     {
@@ -35,6 +37,10 @@ public partial class EditorPageMobileUI : ContentPage
     private void OnEditorLoaded(object? sender, EventArgs e)
     {
         isEditorHostLoaded = true;
+        Debug.WriteLine(
+            $"[EditorPage] editor.Loaded; elapsedMs={pageStopwatch.ElapsedMilliseconds}; " +
+            $"isEditorHostLoaded={isEditorHostLoaded}; isPageVisible={isPageVisible}; " +
+            $"isInitialized={isInitialized}.");
         InitializeInteractions();
     }
 
@@ -43,6 +49,8 @@ public partial class EditorPageMobileUI : ContentPage
         if (isInitialized || !isPageVisible || !isEditorHostLoaded)
             return;
 
+        Debug.WriteLine(
+            $"[EditorPage] InitializeInteractions started; elapsedMs={pageStopwatch.ElapsedMilliseconds}.");
         EditorToolbar.AiRequested += OnAiRequested;
         EditorToolbar.FormatRequested += OnFormatRequested;
         FormatPopup.TextPaletteRequested += (sender, _) =>
@@ -75,12 +83,22 @@ public partial class EditorPageMobileUI : ContentPage
         EditorToolbar.TableRequested += OnTableRequested;
 
         isInitialized = true;
+        Debug.WriteLine(
+            $"[EditorPage] InitializeInteractions finished; elapsedMs={pageStopwatch.ElapsedMilliseconds}.");
     }
 
     protected override void OnAppearing()
     {
+        // Shell reuses ContentPage instances across navigations. Reset the
+        // stopwatch so each appearance produces a fresh timeline that lines
+        // up with the navigation event the user just triggered.
+        pageStopwatch.Restart();
+        var sw = Stopwatch.StartNew();
         base.OnAppearing();
         isPageVisible = true;
+        Debug.WriteLine(
+            $"[EditorPage] OnAppearing started; elapsedMs={pageStopwatch.ElapsedMilliseconds}; " +
+            $"isEditorHostLoaded={isEditorHostLoaded}; isInitialized={isInitialized}.");
 
         if (!ReferenceEquals(observedWindow, Window))
         {
@@ -109,6 +127,10 @@ public partial class EditorPageMobileUI : ContentPage
         {
             viewModel.CloseAiAssistantCommand.Execute(null);
         }
+        sw.Stop();
+        Debug.WriteLine(
+            $"[EditorPage] OnAppearing finished; elapsedMs={pageStopwatch.ElapsedMilliseconds}; " +
+            $"onAppearingDurationMs={sw.ElapsedMilliseconds}.");
     }
 
     private async void OnAiRequested(object? sender, EventArgs e)
@@ -247,8 +269,12 @@ public partial class EditorPageMobileUI : ContentPage
 
     protected override void OnDisappearing()
     {
+        var sw = Stopwatch.StartNew();
         isPageVisible = false;
         isNavigatingBack = false;
+        Debug.WriteLine(
+            $"[EditorPage] OnDisappearing started; elapsedMs={pageStopwatch.ElapsedMilliseconds}; " +
+            $"isInitialized={isInitialized}; isEditorHostLoaded={isEditorHostLoaded}.");
         if (observedWindow is not null)
         {
             observedWindow.PropertyChanged -= OnWindowPropertyChanged;
@@ -269,5 +295,9 @@ public partial class EditorPageMobileUI : ContentPage
         AiEditingPopup.Dismiss();
 
         base.OnDisappearing();
+        sw.Stop();
+        Debug.WriteLine(
+            $"[EditorPage] OnDisappearing finished; elapsedMs={pageStopwatch.ElapsedMilliseconds}; " +
+            $"onDisappearingDurationMs={sw.ElapsedMilliseconds}.");
     }
 }

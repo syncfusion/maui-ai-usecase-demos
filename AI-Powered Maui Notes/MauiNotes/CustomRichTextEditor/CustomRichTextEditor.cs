@@ -55,7 +55,11 @@ public class CustomRichTextEditor : ContentView
             DefaultFontFamily = "system-ui"
         };
         Content = innerEditor;
-        innerEditor.Loaded += (_, _) => _ = EnsureReadyAsync();
+        innerEditor.Loaded += (_, _) =>
+        {
+            Debug.WriteLine("[CustomRichTextEditor] inner-editor.Loaded; scheduling adapter readiness.");
+            _ = EnsureReadyAsync();
+        };
 
         // Forward the inner editor's FormatChanged so consumers can keep
         // toolbar formatting state synchronized (same contract as the RTE).
@@ -154,11 +158,25 @@ public class CustomRichTextEditor : ContentView
     {
         var wrapper = (CustomRichTextEditor)bindable;
         if (wrapper.syncingInnerValue) { return; }
+        // Defensively coerce anything non-string (e.g. Int32) to a safe
+        // string. On Android the Syncfusion RTE's internal Value-notification
+        // pipeline occasionally surfaces a numeric placeholder (commonly 1)
+        // during the first measure/arrange pass right after navigation;
+        // letting that hit the native value setter would log a
+        // "BindableObject: Warning: Cannot convert 1 to type 'System.Int32'"
+        // every frame and re-enter the inner editor's value-notification
+        // path - both contribute to the editor page ANR.
+        string html = newValue switch
+        {
+            null => string.Empty,
+            string s => s,
+            _ => newValue.ToString() ?? string.Empty
+        };
         // Wrapper -> inner (programmatic content updates from the VM).
-        LogHtmlBoundary("value.assigned-to-inner-editor", (string?)newValue);
+        LogHtmlBoundary("value.assigned-to-inner-editor", html);
         wrapper.innerEditor.SetValue(
             Syncfusion.Maui.RichTextEditor.SfRichTextEditor.ValueProperty,
-            (string?)newValue ?? string.Empty);
+            html);
     }
 
     /// <summary>Identifies the <see cref="ReadOnly"/> bindable property.</summary>
@@ -245,8 +263,20 @@ public class CustomRichTextEditor : ContentView
 
     private async Task<bool> EnsureReadyCoreAsync()
     {
+        var swTotal = System.Diagnostics.Stopwatch.StartNew();
         try
         {
+            // The inner editor's Loaded callback fires while the page is still
+            // mid-layout. Starting the WebView probe loop here would block
+            // the navigation transition on Android's heavy WebView cold start
+            // (Chromium native library load + AssetManager warmup), which is
+            // the root cause of the editor page's 8s+ Davey frames and the
+            // "Long monitor contention" ANR warnings. Yield once so the
+            // editor's first measure/arrange cycle completes before we touch
+            // the engine WebView; subsequent probes then run without holding
+            // the UI thread.
+            await Task.Yield();
+
             const int maximumAttempts = 15;
             for (int attempt = 0; attempt < maximumAttempts; attempt++)
             {
@@ -255,17 +285,28 @@ public class CustomRichTextEditor : ContentView
                 {
                     try
                     {
+                        var swProbe = System.Diagnostics.Stopwatch.StartNew();
                         string? probe = UnwrapWebViewResult(await wv.EvaluateJavaScriptAsync(
                             "typeof window.RichTextEditorInstance !== 'undefined' && " +
                             "!!window.RichTextEditorInstance.headlessEditor ? 'ok' : 'no'"));
+                        swProbe.Stop();
+                        Debug.WriteLine(
+                            $"[CustomRichTextEditor] adapter-probe attempt={attempt + 1}; " +
+                            $"probeDurationMs={swProbe.ElapsedMilliseconds}; probeResult={probe ?? "(null)"}.");
                         if (probe == "ok")
                         {
+                            var swInject = System.Diagnostics.Stopwatch.StartNew();
                             await wv.EvaluateJavaScriptAsync(GetAdapterScript());
+                            swInject.Stop();
 
                             string? ready = UnwrapWebViewResult(await wv.EvaluateJavaScriptAsync(
                                 "typeof window.__customRte !== 'undefined' ? 'ok' : 'no'"));
                             lock (readinessLock)
                                 adapterInjected = ready == "ok";
+                            Debug.WriteLine(
+                                $"[CustomRichTextEditor] adapter-injected attempt={attempt + 1}; " +
+                                $"injectDurationMs={swInject.ElapsedMilliseconds}; " +
+                                $"adapterReady={adapterInjected}; totalDurationMs={swTotal.ElapsedMilliseconds}.");
                             if (adapterInjected)
                                 return true;
                         }
@@ -277,10 +318,18 @@ public class CustomRichTextEditor : ContentView
                 }
 
                 if (attempt + 1 < maximumAttempts)
+                {
+                    // Task.Yield keeps the dispatcher responsive between
+                    // probes; pairing it with a short Delay still paces
+                    // attempts but no longer parks the UI thread.
                     await Task.Delay(TimeSpan.FromMilliseconds(100));
+                    await Task.Yield();
+                }
             }
 
-            Debug.WriteLine("[CustomRichTextEditor] WebView adapter did not become ready within the retry window.");
+            Debug.WriteLine(
+                $"[CustomRichTextEditor] WebView adapter did not become ready within the retry window; " +
+                $"totalDurationMs={swTotal.ElapsedMilliseconds}; attempts={maximumAttempts}.");
             return false;
         }
         finally
@@ -290,6 +339,10 @@ public class CustomRichTextEditor : ContentView
                 lock (readinessLock)
                     readinessTask = null;
             }
+            swTotal.Stop();
+            Debug.WriteLine(
+                $"[CustomRichTextEditor] adapter-readiness-finished; injected={adapterInjected}; " +
+                $"totalDurationMs={swTotal.ElapsedMilliseconds}.");
         }
     }
 

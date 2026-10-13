@@ -105,9 +105,16 @@ public partial class NotesViewModel : ViewModelBase
 
             if (value.Note is not null)
             {
+                var sw = System.Diagnostics.Stopwatch.StartNew();
+                Debug.WriteLine(
+                    $"[NoteNavigation] SelectedTreeNode->note; noteId={value.Note.Id}; " +
+                    $"title='{value.Note.Title}'; htmlLength={value.Note.Content?.Length ?? 0}.");
                 SelectedFolderNode = value.Parent;
                 SelectedNote = value.Note;
                 NoteSelected?.Invoke(this, EventArgs.Empty);
+                sw.Stop();
+                Debug.WriteLine(
+                    $"[NoteNavigation] SelectedTreeNode->note done; selectionDurationMs={sw.ElapsedMilliseconds}.");
             }
             else
             {
