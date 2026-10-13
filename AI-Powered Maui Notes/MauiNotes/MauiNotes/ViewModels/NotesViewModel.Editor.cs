@@ -1,5 +1,8 @@
 ﻿using Syncfusion.Maui.RichTextEditor;
 using CustomRichTextEditor;
+// Pull the cross-project font constant into scope without forcing every
+// reference site to spell the parent namespace.
+using MauiNotesConstants = MauiNotes.MauiNotesConstants;
 
 namespace MauiNotes.ViewModels;
 
@@ -22,7 +25,7 @@ public partial class NotesViewModel
         Color? editorBackgroundColor = ActiveEditor?.EditorBackgroundColor;
         IsHighlightActive = highlightColor is { Alpha: > 0 } &&
             (editorBackgroundColor is null || !highlightColor.Equals(editorBackgroundColor));
-        IsMonostyledActive = string.Equals(args.NewFormat.FontFamily, "Courier New", StringComparison.OrdinalIgnoreCase);
+        IsMonostyledActive = string.Equals(args.NewFormat.FontFamily, MauiNotesConstants.MonospaceFontFamilyMatcher, StringComparison.OrdinalIgnoreCase);
         IsBulletListActive = args.NewFormat.IsBulletList;
         IsNumberedListActive = args.NewFormat.IsNumberedList;
         CurrentParagraphFormat = args.NewFormat.ParagraphFormat.ToString();
@@ -121,7 +124,7 @@ public partial class NotesViewModel
             case "Subheading": editor.ApplyParagraphFormat(RichTextEditorParagraphFormat.Heading3); break;
             case "Body": editor.ApplyParagraphFormat(RichTextEditorParagraphFormat.Paragraph); break;
             case "Monostyled":
-                editor.ApplyFontFamily(IsMonostyledActive ? editor.DefaultFontFamily : "Courier New");
+                editor.ApplyFontFamily(IsMonostyledActive ? editor.DefaultFontFamily : MauiNotesConstants.MonospaceFontFamily);
                 break;
             case "BulletedList": editor.ToggleBulletList(); break;
             case "NumberedList": editor.ToggleNumberedList(); break;

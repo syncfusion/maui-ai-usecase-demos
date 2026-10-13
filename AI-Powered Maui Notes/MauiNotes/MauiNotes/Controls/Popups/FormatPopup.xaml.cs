@@ -1,5 +1,8 @@
 using MauiNotes.ViewModels;
 using System.ComponentModel;
+// Pull the cross-project font constant into scope without forcing every
+// reference site to spell the parent namespace.
+using MauiNotesConstants = MauiNotes.MauiNotesConstants;
 
 namespace MauiNotes.Controls.Popups;
 
@@ -11,7 +14,15 @@ public partial class FormatPopup : ContentView
         new("Heading", "Heading", string.Empty, 9),
         new("Subheading", "Subheading", string.Empty, 9),
         new("Body", "Body", string.Empty, 9),
-        new("Monostyled", "Monostyled", string.Empty, 9, "Courier New"),
+        // The Monostyled option used to apply the literal "Courier New" font
+        // family. On Android that string is not a bundled font asset, which
+        // made Microsoft.Maui.FontManager throw a Java.Lang.RuntimeException
+        // ("Font asset not found Courier New") every time the user tapped
+        // inside the editor - one of the main contributors to the editor
+        // page ANR. The CSS-standard "monospace" keyword is honoured by every
+        // WebView and never triggers an asset lookup, so the editor and the
+        // monostyled state machine both stay in sync.
+        new("Monostyled", "Monostyled", string.Empty, 9, MauiNotesConstants.MonospaceFontFamily),
         new("BulletedList", "Bulleted List", "\u2022", 12),
         new("NumberedList", "Numbered List", "1.", 9)
     ];
