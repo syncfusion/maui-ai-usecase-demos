@@ -18,7 +18,6 @@ namespace Todo.Features.Notes.ViewModels;
 public partial class NotesListViewModel : ViewModelBase
 {
     private readonly INoteService _noteService;
-    private readonly NotesListCategory _selectedCategory;
 
     /// <summary>
     /// The currently-displayed list of notes after applying the active
@@ -34,7 +33,6 @@ public partial class NotesListViewModel : ViewModelBase
     public NotesListViewModel(INoteService noteService)
     {
         _noteService = noteService;
-        _selectedCategory = NotesListCategory.MyNotes;
 
         // Listen to the underlying store and refresh the visible list.
         if (_noteService.Notes is INotifyCollectionChanged notifying)
@@ -57,6 +55,22 @@ public partial class NotesListViewModel : ViewModelBase
 
     [ObservableProperty]
     private string headerTitle = NotesListCategory.MyNotes.ToDisplayName();
+
+    /// <summary>
+    /// Initials displayed inside the circular profile avatar in the
+    /// shared header. Real product would source this from a user
+    /// profile; for the sample we use a friendly placeholder.
+    /// </summary>
+    [ObservableProperty]
+    private string profileInitials = "JB";
+
+    /// <summary>
+    /// Whether the sidebar is currently expanded (visible). On narrow
+    /// viewports the hamburger icon toggles this flag; the page binds
+    /// the sidebar's <c>IsVisible</c> to it.
+    /// </summary>
+    [ObservableProperty]
+    private bool isSidebarVisible = true;
 
     /// <summary>
     /// Available sidebar entries. Static for Module-04; later modules
@@ -149,6 +163,31 @@ public partial class NotesListViewModel : ViewModelBase
             SelectedCategory = parsed;
     }
 
+    /// <summary>
+    /// Toggles the sidebar's visibility. Triggered by the hamburger
+    /// icon in the shared <c>HeaderTemplate</c>.
+    /// </summary>
+    [RelayCommand]
+    private void ToggleSidebar()
+    {
+        IsSidebarVisible = !IsSidebarVisible;
+    }
+
+    /// <summary>
+    /// Focuses the search input in the sidebar. For Module-01 the
+    /// sample simply toggles sidebar visibility so the search box
+    /// receives focus; Module-06 will replace this with a full
+    /// search experience.
+    /// </summary>
+    [RelayCommand]
+    private void FocusSearch()
+    {
+        // On desktop the search field lives in the sidebar, so make
+        // sure the sidebar is visible before "focusing".
+        if (!IsSidebarVisible)
+            IsSidebarVisible = true;
+    }
+
     // ---------------------------------------------------------------
     //  Item-template commands (check / star / delete / restore)
     // ---------------------------------------------------------------
@@ -171,6 +210,24 @@ public partial class NotesListViewModel : ViewModelBase
     {
         if (note is null) return;
         _noteService.SoftDeleteAsync(note.Id);
+    }
+
+    /// <summary>
+    /// Action invoked by the "more" button on a note card. Behaviour
+    /// depends on the active filter:
+    ///   * Bin    → restore the note
+    ///   * Others → soft-delete the note
+    /// This keeps the card UI simple (one button) and routes all
+    /// state changes through the central ViewModel.
+    /// </summary>
+    [RelayCommand]
+    private void MoreMenu(Note? note)
+    {
+        if (note is null) return;
+        if (SelectedCategory == NotesListCategory.Bin)
+            _noteService.RestoreAsync(note.Id);
+        else
+            _noteService.SoftDeleteAsync(note.Id);
     }
 
     [RelayCommand]
@@ -221,6 +278,7 @@ public partial class NotesListViewModel : ViewModelBase
                               or nameof(Note.DisplayOrder))
         {
             ApplyFilter();
+            OnPropertyChanged(nameof(IsEmpty));
         }
     }
 }

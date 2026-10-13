@@ -1,33 +1,55 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    SidebarItemTemplate
+    ===================
+    Reusable DataTemplate for a single sidebar entry. The template
+    supports the four built-in categories (My Notes, Important, Reminder,
+    Bin) plus any custom list.
+
+    Visual states (matched to the design references):
+        * 3 dp left accent bar in the category colour.
+        * Category-coloured leading glyph (person / star / bell / bin).
+        * Selected state: #E8E8E8 background highlight.
+        * Default state: transparent.
+-->
 <DataTemplate x:Class="Todo.Features.Notes.Views.Templates.SidebarItemTemplate"
               xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
               xmlns:common="clr-namespace:Todo.Common"
-              xmlns:conv="clr-namespace:Todo.Converters">
+              xmlns:conv="clr-namespace:Todo.Converters"
+              x:DataType="common:NotesListCategory">
 
-    <!--
-        Sidebar item template — supports the four built-in categories.
-        The accent bar and glyph tint switch according to the active
-        category so the visual matches every reference image.
-    -->
     <Grid Padding="0"
-          ColumnDefinitions="4,*"
+          ColumnDefinitions="3,*"
           BackgroundColor="Transparent"
           HeightRequest="48">
 
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="Selected">
+                    <VisualState.Setters>
+                        <Setter Property="BackgroundColor" Value="{StaticResource SidebarSelectionColor}" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <!-- 1. Accent bar (3 dp, category-tinted) -->
         <BoxView Grid.Column="0"
                  WidthRequest="3"
                  HorizontalOptions="Start"
                  VerticalOptions="Fill"
                  Color="{Binding ., Converter={StaticResource CategoryToColorConverter}}" />
 
+        <!-- 2. Glyph + label row -->
         <Grid Grid.Column="1"
               Padding="16,0,16,0"
               ColumnDefinitions="Auto,*"
               ColumnSpacing="14"
               VerticalOptions="Center">
 
-            <!-- Glyph -->
+            <!-- Glyph: switches by category -->
             <Label Grid.Column="0"
                    FontSize="20"
                    VerticalOptions="Center"

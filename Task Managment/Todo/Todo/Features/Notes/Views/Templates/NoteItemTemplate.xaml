@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    NoteItemTemplate
+    ================
+    Card layout for a single note in the My Notes / Important / Reminder
+    list views. Reused across the four built-in categories (and any
+    future custom list) so card behaviour is consistent everywhere.
+
+    Anatomy (matches the design references, e.g. reviewtodayevents.png):
+        [ 20dp ] [   flex          ] [ 24 ] [ 24 ]
+        [ chk  ] [ Title (16sp)    ] [ ⭐ ] [ ⋮  ]
+        [       ] [ date / time row ] [    ] [    ]
+-->
+<DataTemplate x:Class="Todo.Features.Notes.Views.Templates.NoteItemTemplate"
+              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+              xmlns:models="clr-namespace:Todo.Features.Notes.Models"
+              x:DataType="models:Note">
+
+    <Border Margin="12,3"
+            Padding="14,10"
+            BackgroundColor="{StaticResource SurfaceColor}"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 8">
+        <Border.Shadow>
+            <Shadow Brush="#22000000" Radius="4" Offset="0,1" Opacity="0.18" />
+        </Border.Shadow>
+
+        <Grid ColumnDefinitions="Auto,*,Auto,Auto"
+              ColumnSpacing="10"
+              VerticalOptions="Center">
+
+            <!-- 1. Checkbox (toggle complete) -->
+            <CheckBox Grid.Column="0"
+                      VerticalOptions="Center"
+                      IsChecked="{Binding IsCompleted, Mode=TwoWay}"
+                      Color="{StaticResource PrimaryColor}" />
+
+            <!-- 2. Title + metadata column -->
+            <VerticalStackLayout Grid.Column="1"
+                                 Spacing="4"
+                                 HorizontalOptions="Fill">
+
+                <Label Text="{Binding Title}"
+                       Style="{StaticResource NoteTitleStyle}"
+                       TextDecorations="{Binding IsCompleted, Converter={StaticResource BoolToTextDecorationConverter}}" />
+
+                <HorizontalStackLayout Spacing="10"
+                                       IsVisible="{Binding DueDate, Converter={StaticResource NotNullToBoolConverter}}">
+                    <Label Text="&#128197;"
+                           FontSize="12"
+                           TextColor="{StaticResource TextSecondaryColor}"
+                           VerticalOptions="Center" />
+                    <Label Text="{Binding DueDate, Converter={StaticResource DateTimeFormatConverter}}"
+                           Style="{StaticResource NoteMetaStyle}"
+                           VerticalOptions="Center" />
+                    <Label Text="&#128338;"
+                           FontSize="12"
+                           TextColor="{StaticResource ReminderColor}"
+                           IsVisible="{Binding ReminderDate, Converter={StaticResource NotNullToBoolConverter}}"
+                           VerticalOptions="Center" />
+                    <Label Text="{Binding ReminderDate, Converter={StaticResource DateTimeFormatConverter}}"
+                           Style="{StaticResource NoteMetaStyle}"
+                           IsVisible="{Binding ReminderDate, Converter={StaticResource NotNullToBoolConverter}}"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <!-- 3. Star (toggle important) -->
+            <Button Grid.Column="2"
+                    Text="{Binding IsImportant, Converter={StaticResource BoolToStarGlyphConverter}}"
+                    TextColor="{Binding IsImportant, Converter={StaticResource BoolToStarColorConverter}}"
+                    BackgroundColor="Transparent"
+                    FontSize="20"
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    Padding="0"
+                    CornerRadius="20"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ToggleImportantCommand}"
+                    CommandParameter="{Binding .}" />
+
+            <!-- 4. More menu (three-dot vertical) — soft-delete in the active list, restore in Bin -->
+            <Button Grid.Column="3"
+                    Text="&#8943;"
+                    TextColor="{StaticResource TextSecondaryColor}"
+                    BackgroundColor="Transparent"
+                    FontSize="20"
+                    FontAttributes="Bold"
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    Padding="0"
+                    CornerRadius="20"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.MoreMenuCommand}"
+                    CommandParameter="{Binding .}" />
+        </Grid>
+    </Border>
+
+</DataTemplate>

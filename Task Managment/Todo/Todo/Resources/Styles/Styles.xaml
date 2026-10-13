@@ -505,6 +505,16 @@
         <Setter Property="HorizontalTextAlignment" Value="Center" />
     </Style>
 
+    <!-- Empty-state title (the leading line, slightly heavier) -->
+    <Style x:Key="EmptyStateTitleStyle" TargetType="Label">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilySemibold}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="TextColor" Value="{StaticResource TextOnDarkColor}" />
+        <Setter Property="Opacity" Value="0.85" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+    </Style>
+
     <!-- Bottom input entry (pill text input) -->
     <Style x:Key="InputPillEntryStyle" TargetType="Entry">
         <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}" />

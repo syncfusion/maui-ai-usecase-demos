@@ -20,7 +20,10 @@
     <!-- (tinted sidebar icons + cards)                               -->
     <!-- ============================================================ -->
     <Color x:Key="MyNotesColor">#757575</Color>
-    <Color x:Key="ImportantColor">#FFC107</Color>
+    <!-- Sidebar accent for the "Important" entry is purple (matches the design
+         references; the gold #FFC107 below is reserved for the in-card filled
+         star glyph and is mapped via the BoolToStarColorConverter). -->
+    <Color x:Key="ImportantColor">#9C27B0</Color>
     <Color x:Key="ImportantSoftColor">#9C27B0</Color>
     <Color x:Key="ReminderColor">#2196F3</Color>
     <Color x:Key="BinColor">#F44336</Color>
@@ -42,6 +45,10 @@
 
     <Color x:Key="BottomBarBackgroundColor">#FFFFFF</Color>
     <Color x:Key="InputPillBackgroundColor">#F5F5F5</Color>
+
+    <!-- Header bar tokens (shared across all pages) -->
+    <Color x:Key="HeaderBackgroundColor">#FFFFFF</Color>
+    <Color x:Key="HeaderIconColor">#212121</Color>
 
     <!-- ============================================================ -->
     <!-- Text                                                         -->

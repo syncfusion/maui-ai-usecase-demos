@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    HeaderTemplate
+    ==============
+    Reusable, shared header row used across all four built-in list views
+    (My Notes, Important, Reminder, Bin) and any future custom-list page.
+
+    Layout (matches the design reference images, e.g. mynotes.png):
+        [Hamburger]   [Page title]   [Search icon]   [Profile avatar]
+
+    The template exposes a small, stable surface of bindable properties so
+    consuming pages can drive the title, search query, profile initials,
+    hamburger / search / profile commands, etc., without re-implementing
+    the chrome.
+
+    Authored as a ContentView so it can be dropped into any Grid row with
+    a single x:Reference and inherits its BindingContext from the host.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Todo.Features.Notes.ViewModels"
+             x:Class="Todo.Features.Notes.Views.Templates.HeaderTemplate"
+             x:DataType="vm:NotesListViewModel">
+
+    <Grid HeightRequest="{StaticResource HeaderHeight}"
+          BackgroundColor="{StaticResource HeaderBackgroundColor}"
+          ColumnDefinitions="Auto,*,Auto,Auto"
+          ColumnSpacing="0"
+          Padding="0"
+          VerticalOptions="Fill">
+
+        <Grid.Shadow>
+            <Shadow Brush="#10000000" Radius="4" Offset="0,1" Opacity="0.10" />
+        </Grid.Shadow>
+
+        <!-- 1. Hamburger / menu icon (left) -->
+        <Button Grid.Column="0"
+                Text="&#9776;"
+                FontSize="22"
+                FontFamily="{StaticResource FontFamilyRegular}"
+                BackgroundColor="Transparent"
+                TextColor="{StaticResource HeaderIconColor}"
+                WidthRequest="48"
+                HeightRequest="48"
+                CornerRadius="0"
+                Padding="0"
+                HorizontalOptions="Start"
+                VerticalOptions="Center"
+                Command="{Binding ToggleSidebarCommand}" />
+
+        <!-- 2. Page title (center, semibold) -->
+        <Label Grid.Column="1"
+               Text="{Binding HeaderTitle}"
+               Style="{StaticResource HeaderTitleStyle}"
+               HorizontalOptions="Center"
+               VerticalOptions="Center" />
+
+        <!-- 3. Search icon (right of center) -->
+        <Button Grid.Column="2"
+                Text="&#128269;"
+                FontSize="18"
+                FontFamily="{StaticResource FontFamilyRegular}"
+                BackgroundColor="Transparent"
+                TextColor="{StaticResource HeaderIconColor}"
+                WidthRequest="48"
+                HeightRequest="48"
+                CornerRadius="0"
+                Padding="0"
+                HorizontalOptions="End"
+                VerticalOptions="Center"
+                Command="{Binding FocusSearchCommand}" />
+
+        <!-- 4. Profile avatar / initials (right) -->
+        <Border Grid.Column="3"
+                WidthRequest="40"
+                HeightRequest="40"
+                Margin="0,0,12,0"
+                StrokeThickness="0"
+                BackgroundColor="{StaticResource PrimaryColor}"
+                StrokeShape="RoundRectangle 20"
+                HorizontalOptions="End"
+                VerticalOptions="Center">
+            <Label Text="{Binding ProfileInitials}"
+                   FontFamily="{StaticResource FontFamilySemibold}"
+                   FontSize="14"
+                   TextColor="{StaticResource OnPrimaryColor}"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+        </Border>
+    </Grid>
+
+</ContentView>

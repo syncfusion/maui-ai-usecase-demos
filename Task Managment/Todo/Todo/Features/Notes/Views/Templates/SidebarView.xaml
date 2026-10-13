@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    SidebarView
+    ===========
+    Reusable navigation sidebar used by every list page. The view is
+    intentionally kept free of any business logic; navigation and the
+    "New list" placeholder command are bound to the shared
+    NotesListViewModel so the same state is reused across all four
+    built-in categories.
+
+    Anatomy (matches the design references, e.g. mynotes.png):
+        Row 0  : Search box (placeholder for Module-06)
+        Row 1  : CollectionView of built-in categories
+        Row 2  : "+ New list" footer (placeholder for Module-05)
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Todo.Features.Notes.ViewModels"
+             x:Class="Todo.Features.Notes.Views.Templates.SidebarView"
+             x:DataType="vm:NotesListViewModel">
+
+    <Border BackgroundColor="{StaticResource SidebarBackgroundColor}"
+            StrokeThickness="0">
+
+        <Grid RowDefinitions="Auto,*,Auto"
+              Padding="0,8">
+
+            <!-- ============================================ -->
+            <!-- Sidebar search box (placeholder for Module-06) -->
+            <!-- ============================================ -->
+            <Border Grid.Row="0"
+                    Margin="12,8,12,12"
+                    Padding="12,0"
+                    BackgroundColor="{StaticResource SurfaceColor}"
+                    Stroke="{StaticResource BorderColor}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 8"
+                    HeightRequest="40">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Label Grid.Column="0"
+                           Text="&#128269;"
+                           FontSize="14"
+                           TextColor="{StaticResource TextSecondaryColor}"
+                           VerticalOptions="Center" />
+                    <Entry x:Name="SidebarSearchEntry"
+                           Grid.Column="1"
+                           Placeholder="Search"
+                           BackgroundColor="Transparent"
+                           FontSize="14"
+                           TextColor="{StaticResource TextPrimaryColor}"
+                           PlaceholderColor="{StaticResource TextSecondaryColor}" />
+                </Grid>
+            </Border>
+
+            <!-- ============================================ -->
+            <!-- Sidebar categories list (My Notes, ...)      -->
+            <!-- ============================================ -->
+            <CollectionView Grid.Row="1"
+                            ItemsSource="{Binding AvailableCategories}"
+                            ItemTemplate="{StaticResource SidebarItemTemplate}"
+                            SelectionMode="Single"
+                            SelectedItem="{Binding SelectedCategory, Mode=TwoWay, Converter={StaticResource ObjectToCategoryConverter}}"
+                            BackgroundColor="Transparent" />
+
+            <!-- ============================================ -->
+            <!-- "+ New list" footer (placeholder for Module-05) -->
+            <!-- ============================================ -->
+            <HorizontalStackLayout Grid.Row="2"
+                                   Padding="16,12"
+                                   Spacing="12">
+                <Label Text="&#65291;"
+                       FontSize="18"
+                       TextColor="{StaticResource PrimaryColor}"
+                       VerticalOptions="Center" />
+                <Label Text="New list"
+                       Style="{StaticResource SidebarItemLabelStyle}"
+                       VerticalOptions="Center"
+                       TextColor="{StaticResource PrimaryColor}" />
+            </HorizontalStackLayout>
+        </Grid>
+    </Border>
+
+</ContentView>
