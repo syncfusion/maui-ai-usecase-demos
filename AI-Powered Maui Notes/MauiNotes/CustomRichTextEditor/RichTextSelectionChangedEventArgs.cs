@@ -1,8 +1,8 @@
 namespace CustomRichTextEditor;
 
 /// <summary>
-/// Provides data for the
-/// <see cref="global::CustomRichTextEditor.CustomRichTextEditor.SelectionChanged"/> event.
+/// Provides data for selection-change notifications raised by the wrapped
+/// editor's <c>SelectionChanged</c> event.
 /// </summary>
 public sealed class RichTextSelectionChangedEventArgs : EventArgs
 {

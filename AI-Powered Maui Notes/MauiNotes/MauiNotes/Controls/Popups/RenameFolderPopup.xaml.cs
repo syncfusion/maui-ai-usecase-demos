@@ -1,3 +1,4 @@
+using MauiNotes.Controls;
 using MauiNotes.Models;
 using MauiNotes.ViewModels;
 using Syncfusion.Maui.Popup;
@@ -37,8 +38,16 @@ public partial class RenameFolderPopup : ContentView
         RenamePopup.StaysOpen = true;
         RenamePopup.Show();
 
-        Dispatcher.Dispatch(() => RenameInput.Focus());
+        // The rename entry lives inside SfPopup.ContentTemplate (a DataTemplate),
+        // so its x:Name is not promoted to a partial-class field. Resolve it via
+        // the popup's inflated visual tree after Show() has materialized it.
+        Dispatcher.Dispatch(() => FindRenameInput()?.Focus());
     }
+
+    private BorderlessEntry? FindRenameInput() =>
+        RenamePopup.GetVisualTreeDescendants()
+            .OfType<BorderlessEntry>()
+            .FirstOrDefault();
 
     private void OnRenameSaveTapped(object? sender, EventArgs e)
     {
