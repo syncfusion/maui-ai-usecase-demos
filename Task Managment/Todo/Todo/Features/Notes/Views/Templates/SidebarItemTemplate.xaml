@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<DataTemplate x:Class="Todo.Features.Notes.Views.Templates.SidebarItemTemplate"
+              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+              xmlns:common="clr-namespace:Todo.Common"
+              xmlns:conv="clr-namespace:Todo.Converters">
+
+    <!--
+        Sidebar item template — supports the four built-in categories.
+        The accent bar and glyph tint switch according to the active
+        category so the visual matches every reference image.
+    -->
+    <Grid Padding="0"
+          ColumnDefinitions="4,*"
+          BackgroundColor="Transparent"
+          HeightRequest="48">
+
+        <BoxView Grid.Column="0"
+                 WidthRequest="3"
+                 HorizontalOptions="Start"
+                 VerticalOptions="Fill"
+                 Color="{Binding ., Converter={StaticResource CategoryToColorConverter}}" />
+
+        <Grid Grid.Column="1"
+              Padding="16,0,16,0"
+              ColumnDefinitions="Auto,*"
+              ColumnSpacing="14"
+              VerticalOptions="Center">
+
+            <!-- Glyph -->
+            <Label Grid.Column="0"
+                   FontSize="20"
+                   VerticalOptions="Center"
+                   TextColor="{Binding ., Converter={StaticResource CategoryToColorConverter}}">
+                <Label.Triggers>
+                    <DataTrigger TargetType="Label" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.MyNotes}">
+                        <Setter Property="Text" Value="&#128221;" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Label" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Important}">
+                        <Setter Property="Text" Value="&#9733;" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Label" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Reminder}">
+                        <Setter Property="Text" Value="&#128276;" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Label" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Bin}">
+                        <Setter Property="Text" Value="&#128465;" />
+                    </DataTrigger>
+                </Label.Triggers>
+            </Label>
+
+            <Label Grid.Column="1"
+                   Text="{Binding ., Converter={StaticResource EnumDisplayNameConverter}, FallbackValue=''}"
+                   Style="{StaticResource SidebarItemLabelStyle}" />
+        </Grid>
+    </Grid>
+
+</DataTemplate>
