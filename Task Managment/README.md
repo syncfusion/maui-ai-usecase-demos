@@ -1,513 +1,211 @@
-# Syncfusion To Do List - MAUI Application
+# Syncfusion To Do List - MAUI Sample Application
 
-**Status:** 📋 Documentation Complete - Ready for Implementation  
-**Framework:** .NET MAUI 8.0+  
-**Target Platforms:** iOS, Android, Windows, macOS  
+**Status:** Documentation aligned to in-scope features and customer-ready sample architecture
+**Framework:** .NET MAUI 8.0+
+**Target Platforms:** iOS, Android, Windows, macOS
 **Syncfusion Version:** 24.1.x
 
 ---
 
-## 📚 DOCUMENTATION
+## What This Sample Is
 
-This project includes comprehensive documentation for specification-driven development:
+A **lightweight, customer-focused MAUI sample application** that demonstrates how to build a real-world To Do List with **Syncfusion controls** following **MVVM strictly**. It is designed to be:
 
-### 1. **SPECIFICATION.md** (Technical Blueprint)
-Complete technical specification covering:
-- Application architecture and structure
-- 14 detailed sections with requirements
-- Screen-by-screen UI specifications
-- Data models and service layer design
-- Design tokens (colors, typography, spacing)
-- MVVM architecture pattern
-- Accessibility requirements (WCAG 2.1 AA)
-- Responsive design specifications
+- Easy to clone, run, and explore in minutes
+- Free of authentication, user accounts, cloud sync, or production infrastructure
+- Driven by local in-memory or local-file data so the app starts immediately
+- Built one small, independent task at a time using a **Gate-Based Harness Approach**
 
-**When to read:** Before starting development, to understand ALL requirements
+The reference designs in the `images/` folder are the **source of truth** for layout, spacing, colors, typography, and visual hierarchy. Screens that are not represented in the design set (sign in, sign up, forgot password, splash, profile, settings) are **out of scope** and are not implemented.
 
-### 2. **HARNESS.md** (Development Roadmap)
-Structured development plan with:
-- 10 independent vertical slice modules
-- Complete task breakdown for each module
-- User stories and acceptance criteria
-- Testing strategy per module
-- Definition of done
-- Cross-cutting concerns
-- Validation checklist
+### In-Scope Screens (from `images/`)
+| Screen | File | Notes |
+|--------|------|-------|
+| Task list (My Notes) | `mynotes.png` | Default list, empty state, full visual fidelity target |
+| Important | `important.png` | Filtered view of starred tasks |
+| Reminder | `remainder.png` | Filtered view of tasks with reminders |
+| Bin | `bin.png` | Soft-deleted tasks |
+| Permanent delete | `deletepermently.png` | Confirmation flow for hard delete |
+| Drag and drop | `draganddrop.png` | Reorder / move behavior |
+| Create new list | `createnewlist.png` | Dialog for new list |
+| Rename list | `renamelist.png` | Dialog for renaming list |
+| Search | `search.png` | Empty / results state |
+| Review today | `reviewtodayevents.png` | Today's tasks view |
+| Collapsed sidebar | `collapsed.png` | Compressed navigation state |
+| Load more icon | `loadmoreicon.png` | Pagination affordance |
 
-**When to read:** At start of each phase, to understand tasks and deliverables
-
-### 3. **QUICK_REFERENCE.md** (Developer Handbook)
-Quick lookup guide including:
-- Module checklist
-- Design tokens
-- Project structure
-- NuGet packages
-- Development patterns
-- Testing checklist
-- Security checklist
-- Performance targets
-- Common debugging issues
-
-**When to read:** During development, for quick answers
-
-### 4. **IMPLEMENTATION_SUMMARY.md** (Executive Overview)
-High-level summary with:
-- Key design decisions and rationale
-- Technology stack
-- Quick start guide
-- Resource dictionary structure
-- MVVM patterns
-- Data models overview
-- Estimated timeline
-- Success criteria
-
-**When to read:** For understanding big picture and approval
-
-### 5. **images/** (Design Reference)
-18 reference images showing:
-- Splash screen
-- Sign in/up/forgot password flows
-- Task lists (My Notes, Important, Reminder, Bin)
-- Task management (search, rename, profile)
-- Screen layouts and visual design
-
-**When to view:** For UI/UX specifications and layout guidance
+### Out of Scope (intentionally excluded)
+- Sign in, sign up, forgot password, splash, profile, user accounts, settings
+- Any authentication flow, token handling, or user state
+- Remote APIs, cloud sync, push notifications
+- Navigation Shell infrastructure beyond what the sample screens require
 
 ---
 
-## 🎯 PROJECT GOALS
+## Documentation Map
 
-Build a production-quality, cross-platform To Do List application with:
+This sample ships with the following documents in the `Task Managment/` folder:
 
-✅ **Responsive Design** - Works on phone, tablet, desktop  
-✅ **Offline-First** - Full functionality without server  
-✅ **Accessible** - WCAG 2.1 AA compliant  
-✅ **Performant** - 60 FPS scrolling, < 2 sec launch  
-✅ **Secure** - Token-based auth, encrypted storage  
-✅ **Maintainable** - MVVM pattern, DI, testable  
+| Document | Purpose | Audience |
+|----------|---------|----------|
+| **README.md** (this file) | Project overview, quick start, scope | Everyone |
+| **StartHere.md** | Customer onboarding, what to read first | Newcomers |
+| **Specification.md** | UI + behavior contract for the in-scope screens | Developers, designers |
+| **Harness.md** | Gate-Based development plan with task independence rules | Implementers, reviewers |
+| **QuickReference.md** | Lookups: tokens, structure, patterns, debugging | Developers (during coding) |
+| **ImplementationSummary.md** | Executive overview, key decisions, success criteria | Decision makers |
+| **Deliverables.md** | What is delivered, coverage matrix, reading order | Reviewers, leads |
+| **Tasks/** | Per-task instructions grouped by module | Implementers |
+
+### Recommended Reading Order
+1. **README.md** (5 min) – scope, design fidelity goal, sample rules
+2. **StartHere.md** (5 min) – orientation and reading paths
+3. **Specification.md** (20 min) – UI + behavior contract
+4. **Harness.md** (15 min) – gate-based plan, what to build first
+5. **QuickReference.md** (bookmark) – keep open while implementing
+6. Individual `Tasks/Module-XX-*/Task-X-XX-*.md` files for the specific task you are working on
 
 ---
 
-## 🚀 QUICK START
+## Goals and Non-Goals
+
+### Goals
+- Showcase Syncfusion controls in realistic, customer-style UI patterns
+- Keep every code path understandable to a customer within a few minutes
+- Match the in-scope reference screens as closely as possible (My Notes and similar screens are near-100% fidelity targets)
+- Demonstrate a strict MVVM pattern with no logic in code-behind
+- Allow the sample to run immediately after cloning — no external services required
+
+### Non-Goals (out of scope by design)
+- Authentication, user accounts, registration, password reset
+- Splash screens, onboarding flows, settings pages
+- Profile pages, account management, sign-out
+- Backend APIs, cloud sync, remote databases, push notifications
+- Production-scale infrastructure, DI containers beyond what is required
+- Enterprise application architecture or shared application-wide state
+
+---
+
+## Architecture at a Glance
+
+### MVVM Strictly
+- **Views (XAML)** contain only layout, bindings, and styles
+- **ViewModels** own all UI state, commands, and business logic
+- **Models** are plain data types scoped to the feature they belong to
+- **Services** hold reusable logic for a single feature; not shared application-wide
+
+### Scoped by Feature
+Each feature folder (e.g. `Features/Notes`, `Features/Important`, `Features/Bin`) contains its own `Views/`, `ViewModels/`, `Models/`, and `Services/`. There is no global state container and no enterprise event bus.
+
+### Data
+- Default: **in-memory `ObservableCollection<T>`** seeded at startup
+- If persistence is required for a single task: **local JSON file** under the app's data directory
+- SQLite is allowed **only** when a single task truly needs it; it is **not** required for the sample to run
+- No backend, no remote API, no internet dependency
+
+### Syncfusion
+- Used **prominently and naturally** for the screens that call for it (e.g. `SfListView` for the main task list, calendar/date pickers for due dates)
+- No custom controls where Syncfusion already provides a working control
+- Each task documents the Syncfusion control it uses, why it was chosen, and the customer scenario it demonstrates
+
+---
+
+## Quick Start
 
 ### Prerequisites
-- Visual Studio 2022 with .NET MAUI workload
-- .NET 8 SDK or later
+- Visual Studio 2022 (17.8+) with the **.NET MAUI** workload, or JetBrains Rider
+- .NET 8 SDK
 - Git
 
-### Setup
-```bash
-# Clone repository
-git clone <repo-url>
-cd Todo
+### Run the Sample
+1. Clone the repository
+2. Open the solution in your IDE
+3. Restore NuGet packages
+4. Set the desired target (Android emulator, iOS simulator, Windows, macOS)
+5. Run
 
-# Restore NuGet packages
-dotnet restore
+The sample should start directly on the **My Notes** list screen with no sign-in, no splash, and no setup.
 
-# Build project
-dotnet build
-
-# Run on default platform
-dotnet run
+### Project Layout (lightweight)
 ```
-
-### Project Structure
-See **QUICK_REFERENCE.md** for complete folder structure
-
-### Key Files
-- `MauiProgram.cs` - App initialization and DI setup
-- `AppShell.xaml` - Navigation routes
-- `App.xaml` - Resource dictionaries
-- `Models/Task.cs`, `TaskList.cs`, `User.cs` - Data models
-- `Services/` - Business logic and data access
-
----
-
-## 📋 DEVELOPMENT PHASES
-
-### Phase 1: Foundation & Setup (2-3 days)
-- Project structure, NuGet packages, MVVM framework
-- Resource dictionaries (colors, fonts, styles)
-- Navigation infrastructure
-- Database setup
-
-**Completion Criteria:** Project builds, all resources available
-
-### Phase 2: Authentication (3-4 days)
-- Splash, Sign In, Sign Up, Forgot Password
-- Token management, auto-login
-- Sign out flow
-
-**Completion Criteria:** Users can authenticate and sign out
-
-### Phase 3: Core Task Management (5-6 days)
-- My Notes list with SfListView
-- Create, edit, delete, complete operations
-- Bottom input bar, empty states
-
-**Completion Criteria:** Full task CRUD working
-
-### Phase 4: Task Organization (4-5 days)
-- Important, Reminder, Bin filters
-- Custom list creation
-- Restore/permanent delete
-
-**Completion Criteria:** All filters and categories working
-
-### Phase 5: Advanced Features (3-4 days)
-- Search, due dates, reminders
-- Move between lists
-- Drag & drop (optional)
-
-**Completion Criteria:** Advanced features complete
-
-### Phase 6: Profile & Settings (1-2 days)
-- Profile menu, account management
-- Settings page, theme support
-
-**Completion Criteria:** User profile management working
-
-### Phase 7: Polish & Testing (2-3 days)
-- Responsive design testing
-- Accessibility audit
-- Performance optimization
-- Bug fixes
-
-**Completion Criteria:** Launch-ready product
-
----
-
-## 🛠️ TECHNOLOGY STACK
-
-### Framework
-- **.NET MAUI 8.0+** - Cross-platform framework
-- **C# 12** - Language
-- **XAML** - UI markup
-
-### Syncfusion Components
-```
-SfListView       - Task list display with virtualization
-SfDateRangePicker - Date selection for due dates
-SfCalendar       - Calendar integration (optional)
-SfButton         - Enhanced buttons (future)
-```
-
-### Libraries
-```
-CommunityToolkit.MVVM 8.4.x - MVVM framework
-sqlite-net-pcl 1.8.x         - SQLite database
-SQLitePCLRaw 2.1.x           - SQLite native bindings
-```
-
-### Development
-```
-Visual Studio 2022      - IDE
-NuGet Package Manager   - Dependency management
-Git                     - Version control
+src/
+├── App.xaml(.cs)
+├── MauiProgram.cs
+├── Features/
+│   ├── Notes/                # Default list (My Notes)
+│   │   ├── Views/
+│   │   ├── ViewModels/
+│   │   ├── Models/
+│   │   └── Services/         # In-memory note store, seed data
+│   ├── Important/            # Filter view
+│   ├── Reminder/             # Filter view
+│   ├── Bin/                  # Soft delete + restore + permanent delete
+│   ├── CustomLists/          # Create / rename / delete lists
+│   ├── Search/               # Search across notes
+│   ├── DragAndDrop/          # Reorder / move
+│   └── EditNote/             # Create / edit a note
+├── Resources/
+│   ├── Styles/               # Colors, Sizes, Fonts, Styles
+│   └── Images/               # Icons + background images
+└── Common/                   # Small shared helpers only (no app state)
 ```
 
 ---
 
-## 🏗️ ARCHITECTURE
+## Design Fidelity Rules
 
-### MVVM Pattern
-- **Views** - XAML UI pages and controls
-- **ViewModels** - Bindable logic with ObservableProperty
-- **Models** - Data entities
-- **Services** - Business logic and data access
-
-### Dependency Injection
-All services registered in `MauiProgram.cs`:
-```csharp
-builder.Services
-    .AddScoped<ITaskService, TaskService>()
-    .AddScoped<IAuthenticationService, AuthenticationService>()
-    // ... more services
-```
-
-### Result Pattern
-No exceptions; all operations return `Result<T>`:
-```csharp
-var result = await taskService.CreateTaskAsync(task);
-if (result.IsSuccess) { /* handle success */ }
-else { /* handle result.Error */ }
-```
-
-### Local-First Data
-- Primary storage in SQLite
-- Sync with server when online
-- Full offline functionality
+- The `images/` folder is the **primary UI design reference**
+- Layout, spacing, colors, typography, cards, lists, sections, visual hierarchy, and interactions are taken from the images
+- Deviation from the design is allowed **only** for a documented technical limitation, which is recorded in the task's notes
+- Screens such as `mynotes.png` are near-100% fidelity targets
+- For the list view, the reference background image (full-bleed) is part of the design and should be replicated
 
 ---
 
-## 📱 RESPONSIVE DESIGN
+## Gate-Based Harness Approach
 
-App adapts to screen size:
+This sample uses a **Gate-Based Harness**: every task is a small, self-contained unit that is:
 
-| Device | Width | Layout | Sidebar | Navigation |
-|--------|-------|--------|---------|------------|
-| **Phone** | 320-480px | Single | Drawer | Hamburger |
-| **Phablet** | 481-599px | Single | Drawer | Hamburger |
-| **Tablet** | 600-1024px | 2-col | Visible | Sidebar |
-| **Desktop** | 1025px+ | 3-col | Visible | Sidebar |
+- **Independently implementable** – does not require changes outside the task
+- **Independently testable** – has its own acceptance criteria
+- **Independently reviewable** – reviewers do not need to know future tasks
+- **Independently mergeable** – a small, single concern, low risk to merge
 
----
+Tasks expose **explicit gates** (`G1`, `G2`, …) so progress is visible without needing later tasks to validate earlier ones. A task is considered complete only when its own gate criteria are met.
 
-## ♿ ACCESSIBILITY
+The full set of gates, ordering rules, and the dependency graph live in `Harness.md`.
 
-WCAG 2.1 AA compliance:
-- ✅ 4.5:1 color contrast for text
-- ✅ 12sp minimum font size
-- ✅ 48x48 dp minimum touch targets
-- ✅ Full keyboard navigation
-- ✅ Screen reader support
-- ✅ Visible focus indicators
-- ✅ High contrast mode support
+### Task Independence Rules
+- Keep tasks self-contained; do not assume future tasks will be merged first
+- Document any unavoidable dependency explicitly in the task file
+- Prefer adding or changing one feature/folder per task
+- A reviewer can understand a task in isolation
+- Tasks can be developed in parallel where they have no shared dependencies
 
 ---
 
-## 🧪 TESTING STRATEGY
+## What Customers Will Learn
 
-### Unit Tests
-- Validation logic, converters
-- Service methods
-- ViewModel commands
-
-### Integration Tests
-- Database CRUD operations
-- Service layer interactions
-- Sync logic
-
-### UI Tests
-- Navigation flows
-- Form submission
-- List interactions
-
-### Performance Tests
-- Launch time (< 2 sec)
-- Scroll FPS (60 FPS)
-- Search latency (< 500ms)
-
-### Accessibility Tests
-- Keyboard navigation
-- Screen reader
-- Color contrast
-- Touch targets
+- How to wire Syncfusion controls in a real MAUI layout with a near-pixel match to a design
+- How to follow strict MVVM with `CommunityToolkit.MVVM` (`[ObservableProperty]`, `[RelayCommand]`)
+- How to keep a sample lightweight: no auth, no cloud, no enterprise plumbing
+- How to design tasks so they are reviewable, mergeable, and testable on their own
+- How to use the design images as the source of truth for UI
 
 ---
 
-## 📊 PERFORMANCE TARGETS
+## Status
 
-| Metric | Target |
-|--------|--------|
-| App Launch Time | < 2 seconds |
-| List Scroll FPS | 60 FPS |
-| Search Response | < 500ms |
-| Memory Usage | < 150 MB |
-| Database Query | < 100ms |
-
----
-
-## 🔐 SECURITY
-
-- ✅ Tokens stored in SecureStorage
-- ✅ No sensitive data in logs
-- ✅ HTTPS for API calls
-- ✅ Input validation on all forms
-- ✅ SQL injection prevention
-- ✅ Logout clears all data
-- ✅ Expired token handling
+| Area | Status |
+|------|--------|
+| Documentation (in-scope) | Complete and aligned to design images |
+| Documentation (out-of-scope sections) | Removed (auth, profile, splash, settings) |
+| Design reference | Available in `images/` |
+| Architecture | Lightweight, MVVM-strict, customer-focused |
+| Implementation | Ready to begin via `Tasks/` |
 
 ---
 
-## 📖 FEATURE LIST
+## License
 
-### Core Features
-- ✅ User authentication (Sign in, Sign up, Forgot password)
-- ✅ Create, read, update, delete tasks
-- ✅ Mark tasks complete
-- ✅ Mark tasks important (star)
-- ✅ Organize tasks by custom lists
-- ✅ Soft delete (Bin) with restore
-- ✅ Search across all tasks
-- ✅ Filter by Important, Reminder
-
-### Advanced Features
-- ✅ Set due dates on tasks
-- ✅ Set reminders for tasks
-- ✅ Recurring tasks (daily, weekly, monthly)
-- ✅ Move tasks between lists
-- ✅ Drag & drop to reorder (optional)
-- ✅ Profile management
-- ✅ Settings and preferences
-- ✅ Theme support (light/dark)
-
----
-
-## 🎨 DESIGN SYSTEM
-
-### Colors
-- **Primary:** #5C4EAE (Purple)
-- **Important:** #9C27B0 (Purple)
-- **Reminder:** #2196F3 (Blue)
-- **Bin:** #F44336 (Red)
-
-### Typography
-- **Caption:** 11sp
-- **Small:** 12sp
-- **Label:** 14sp
-- **Body:** 16sp
-- **Title:** 18sp
-- **Heading:** 20sp
-- **Large:** 24sp
-
-### Spacing
-- **XS:** 4dp, 8dp
-- **Small:** 12dp
-- **Medium:** 16dp
-- **Large:** 24dp, 32dp
-
----
-
-## 📋 CHECKLIST
-
-### Before Starting Development
-- [ ] Read SPECIFICATION.md completely
-- [ ] Review HARNESS.md for module tasks
-- [ ] Check /images/ folder for design reference
-- [ ] Understand MVVM and DI patterns
-- [ ] Setup development environment
-
-### Before Each Phase
-- [ ] Review phase requirements in HARNESS.md
-- [ ] Create necessary files and folders
-- [ ] Setup unit tests
-- [ ] Implement feature
-- [ ] Run all tests
-- [ ] Code review
-
-### Before Launch
-- [ ] All tests passing
-- [ ] No compiler warnings
-- [ ] Responsive design verified
-- [ ] Accessibility audit complete
-- [ ] Performance targets met
-- [ ] Security audit passed
-- [ ] Documentation complete
-
----
-
-## 🤝 DEVELOPMENT WORKFLOW
-
-1. **Read Requirements** - SPECIFICATION.md and HARNESS.md
-2. **Plan Tasks** - Break down work in current phase
-3. **Implement** - Write code following MVVM pattern
-4. **Test** - Unit tests + manual testing
-5. **Review** - Code review and QA
-6. **Iterate** - Fix issues, optimize
-7. **Document** - Update README, add comments
-
----
-
-## 📚 DOCUMENTATION REFERENCES
-
-### In This Repository
-- `SPECIFICATION.md` - Complete requirements
-- `HARNESS.md` - Development roadmap
-- `QUICK_REFERENCE.md` - Quick lookup
-- `IMPLEMENTATION_SUMMARY.md` - Executive overview
-- `images/` - Design reference (18 screens)
-
-### External References
-- [MAUI Documentation](https://learn.microsoft.com/en-us/dotnet/maui/)
-- [Syncfusion MAUI](https://help.syncfusion.com/maui/introduction/overview)
-- [MVVM Toolkit](https://learn.microsoft.com/en-us/windows/communitytoolkit/mvvm/)
-- [WCAG 2.1](https://www.w3.org/WAI/WCAG21/quickref/)
-
----
-
-## 🚦 STATUS
-
-| Component | Status |
-|-----------|--------|
-| Specification | ✅ Complete |
-| Harness | ✅ Complete |
-| Design Reference | ✅ Available |
-| Architecture | ✅ Designed |
-| Implementation | 🚀 Ready to Start |
-
----
-
-## 📞 NEXT STEPS
-
-1. **Review Documentation**
-   - Start with SPECIFICATION.md
-   - Review HARNESS.md for structure
-   - Check QUICK_REFERENCE.md for details
-
-2. **Setup Environment**
-   - Install dependencies
-   - Create project structure
-   - Setup DI and MVVM framework
-
-3. **Begin Phase 1**
-   - Follow tasks in HARNESS.md Module 1
-   - Create resource dictionaries
-   - Setup database
-
-4. **Track Progress**
-   - Check off completed tasks
-   - Report blockers
-   - Update team on status
-
----
-
-## 📝 VERSION HISTORY
-
-| Version | Date | Status |
-|---------|------|--------|
-| 1.0 | Oct 2026 | Documentation Complete |
-| 0.1 | Oct 2026 | Initial Design |
-
----
-
-## 📄 LICENSE
-
-[Add your license information here]
-
----
-
-## 👥 TEAM
-
-**Specification & Design:** AI Assistant  
-**Implementation:** Development Team  
-**Testing:** QA Team  
-
----
-
-## ❓ FAQ
-
-**Q: Where do I start?**  
-A: Read SPECIFICATION.md first, then HARNESS.md, then start Phase 1 tasks.
-
-**Q: How long will this take?**  
-A: 20-27 days for full-time development across all 7 phases.
-
-**Q: Can I work on multiple phases in parallel?**  
-A: Recommended to complete each phase sequentially; dependencies are documented in HARNESS.md.
-
-**Q: What if I find an issue with the design?**  
-A: Document it, propose a fix with rationale, and get approval before implementing.
-
-**Q: How do I debug issues?**  
-A: See QUICK_REFERENCE.md for common debugging issues and patterns.
-
----
-
-**Last Updated:** October 2026  
-**Documentation Version:** 1.0  
-**Project Status:** ✅ Ready for Implementation
-
----
-
-For detailed information on any topic, refer to the specific documentation files listed above.
+Add license information here as appropriate for your repository.
