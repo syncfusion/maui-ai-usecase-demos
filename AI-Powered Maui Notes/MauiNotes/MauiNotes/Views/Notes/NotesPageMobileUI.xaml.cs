@@ -16,6 +16,7 @@ public partial class NotesPageMobileUI : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
         NodeActionPopups.IsMobilePresentation = true;
+        NodeActionPopups.FolderRenameRequested += OnFolderRenameRequested;
     }
 
     protected override void OnAppearing()
@@ -37,6 +38,14 @@ public partial class NotesPageMobileUI : ContentPage
         }
 
         base.OnDisappearing();
+    }
+
+    private void OnFolderRenameRequested(object? sender, NoteTreeNode folder)
+    {
+        if (folder is null)
+            return;
+
+        RenameFolderPopups.ShowFor(folder);
     }
 
     private void OnTreeNodesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

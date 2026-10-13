@@ -503,6 +503,92 @@ public partial class NotesViewModel
         folder.IsRenaming = false;
         activeFolderRenameNode = null;
     }
+
+    // Mobile-only rename popup state. Lives on the ViewModel (not on
+    // NoteTreeNode) so the Syncfusion SfPopup ContentTemplate can two-way
+    // bind through x:DataType="vm:NotesViewModel". The desktop inline-rename
+    // pipeline above is untouched.
+    private string activeRenameText = string.Empty;
+    private string activeRenameValidationMessage = string.Empty;
+    private bool isActiveRenameInvalid;
+
+    public string ActiveRenameText
+    {
+        get => activeRenameText;
+        set
+        {
+            if (SetProperty(ref activeRenameText, value) && isActiveRenameInvalid)
+            {
+                isActiveRenameInvalid = false;
+                OnPropertyChanged(nameof(IsActiveRenameInvalid));
+            }
+        }
+    }
+
+    public string ActiveRenameValidationMessage
+    {
+        get => activeRenameValidationMessage;
+        private set
+        {
+            if (SetProperty(ref activeRenameValidationMessage, value))
+                OnPropertyChanged(nameof(IsActiveRenameInvalid));
+        }
+    }
+
+    public bool IsActiveRenameInvalid => isActiveRenameInvalid;
+
+    public void PrepareFolderRenameFromPopup(NoteTreeNode folder)
+    {
+        if (folder is null)
+            return;
+
+        activeRenameText = folder.Title;
+        isActiveRenameInvalid = false;
+        activeRenameValidationMessage = string.Empty;
+        OnPropertyChanged(nameof(ActiveRenameText));
+        OnPropertyChanged(nameof(ActiveRenameValidationMessage));
+        OnPropertyChanged(nameof(IsActiveRenameInvalid));
+    }
+
+    public bool CommitFolderRenameFromPopup(NoteTreeNode folder)
+    {
+        if (folder is null)
+            return false;
+
+        string newTitle = activeRenameText?.Trim() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(newTitle))
+        {
+            activeRenameValidationMessage = "Folder name cannot be empty.";
+            isActiveRenameInvalid = true;
+            OnPropertyChanged(nameof(ActiveRenameValidationMessage));
+            OnPropertyChanged(nameof(IsActiveRenameInvalid));
+            return false;
+        }
+
+        if (!string.Equals(newTitle, folder.Title, StringComparison.Ordinal))
+            folder.Title = newTitle;
+
+        activeRenameValidationMessage = string.Empty;
+        isActiveRenameInvalid = false;
+        OnPropertyChanged(nameof(ActiveRenameValidationMessage));
+        OnPropertyChanged(nameof(IsActiveRenameInvalid));
+        OnPropertyChanged(nameof(SelectedHeaderText));
+        ScheduleAutosave();
+        return true;
+    }
+
+    public void CancelFolderRenameFromPopup()
+    {
+        if (string.IsNullOrEmpty(activeRenameText) && !isActiveRenameInvalid)
+            return;
+
+        activeRenameText = string.Empty;
+        activeRenameValidationMessage = string.Empty;
+        isActiveRenameInvalid = false;
+        OnPropertyChanged(nameof(ActiveRenameText));
+        OnPropertyChanged(nameof(ActiveRenameValidationMessage));
+        OnPropertyChanged(nameof(IsActiveRenameInvalid));
+    }
     private void DeleteSelectedItem()
     {
         if (menuTarget is NoteModel note)

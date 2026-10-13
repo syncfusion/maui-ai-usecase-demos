@@ -87,10 +87,21 @@ public partial class NodeActionPopups : ContentView
         }
     }
 
+    public event EventHandler<NoteTreeNode>? FolderRenameRequested;
+
     private void OnRenameMenuOptionTapped(object? sender, TappedEventArgs e)
     {
         if (BindingContext is NotesViewModel viewModel)
+        {
+            if (IsMobilePresentation && activeMenuNode is { IsFolder: true } folder)
+            {
+                NodeActionsPopup.Dismiss();
+                FolderRenameRequested?.Invoke(this, folder);
+                return;
+            }
+
             viewModel.BeginRenameCommand.Execute(null);
+        }
 
         NodeActionsPopup.Dismiss();
     }

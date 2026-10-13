@@ -102,6 +102,7 @@
                          Grid.Row="3"
                          ItemsSource="{Binding TreeNodes}"
                          ChildPropertyName="Children"
+                         NotificationSubscriptionMode="CollectionChange"
                          SelectionMode="Single"
                          SelectedItem="{Binding SelectedTreeNode, Mode=TwoWay}"
                          AutoExpandMode="None"
@@ -259,5 +260,6 @@
             </tree:SfTreeView.ItemTemplate>
         </tree:SfTreeView>
         <popups:NodeActionPopups x:Name="NodeActionPopups" Grid.RowSpan="4" />
+        <popups:RenameFolderPopup x:Name="RenameFolderPopups" Grid.RowSpan="4" />
     </Grid>
 </ContentPage>

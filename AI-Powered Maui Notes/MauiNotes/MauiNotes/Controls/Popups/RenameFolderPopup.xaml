@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:controls="clr-namespace:MauiNotes.Controls"
+             xmlns:vm="clr-namespace:MauiNotes.ViewModels"
+             xmlns:popups="clr-namespace:MauiNotes.Controls.Popups"
+             x:Class="MauiNotes.Controls.Popups.RenameFolderPopup"
+             x:Name="RenamePopupHost"
+             x:DataType="vm:NotesViewModel"
+             WidthRequest="0"
+             HeightRequest="0">
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <Style x:Key="RenameButtonStyle" TargetType="Button">
+                <Setter Property="HeightRequest" Value="40" />
+                <Setter Property="MinimumHeightRequest" Value="0" />
+                <Setter Property="Padding" Value="12,0" />
+                <Setter Property="Background" Value="White" />
+                <Setter Property="TextColor" Value="#45464D" />
+                <Setter Property="BorderColor" Value="#DADADD" />
+                <Setter Property="BorderWidth" Value="1" />
+                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="FontSize" Value="13" />
+                <Setter Property="controls:PopupHoverEffect.IsHoverEnabled" Value="True" />
+            </Style>
+        </ResourceDictionary>
+    </ContentView.Resources>
+    <Grid>
+        <popup:SfPopup x:Name="RenameFolderDialog"
+                       WidthRequest="360"
+                       AutoSizeMode="Height"
+                       ShowHeader="False"
+                       ShowFooter="False"
+                       ShowOverlayAlways="True"
+                       StaysOpen="True"
+                       Closed="OnRenameFolderPopupClosed">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle Stroke="#DADADD"
+                                  StrokeThickness="0.5"
+                                  CornerRadius="10" />
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:NotesViewModel">
+                    <Border Stroke="Transparent"
+                            StrokeThickness="0"
+                            BackgroundColor="White"
+                            StrokeShape="RoundRectangle 10">
+                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="0">
+                            <Grid Grid.Row="0" Padding="20,18,20,12">
+                                <Label Text="Rename"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       TextColor="#29292D"
+                                       VerticalTextAlignment="Center" />
+                            </Grid>
+                            <Grid Grid.Row="1" Padding="20,0,20,16" RowDefinitions="Auto,Auto,Auto" RowSpacing="6">
+                                <Label Grid.Row="0"
+                                       Text="Folder name"
+                                       FontSize="12"
+                                       TextColor="#6E6E73" />
+                                <Border Grid.Row="1"
+                                        BackgroundColor="White"
+                                        Stroke="#D2D2D7"
+                                        StrokeThickness="0.5"
+                                        StrokeShape="RoundRectangle 6"
+                                        Padding="10,0">
+                                    <controls:BorderlessEntry x:Name="RenameEntry"
+                                                              Text="{Binding ActiveRenameText, Mode=TwoWay}"
+                                                              Placeholder="Folder name"
+                                                              PlaceholderColor="#85868E"
+                                                              TextColor="#29292D"
+                                                              FontSize="14"
+                                                              HeightRequest="40"
+                                                              MinimumHeightRequest="0"
+                                                              Margin="0"
+                                                              Background="Transparent"
+                                                              HorizontalOptions="Fill"
+                                                              VerticalOptions="Fill"
+                                                              HorizontalTextAlignment="Start"
+                                                              VerticalTextAlignment="Center"
+                                                              ReturnType="Done"
+                                                              Completed="OnRenameEntryCompleted" />
+                                </Border>
+                                <Label Grid.Row="2"
+                                       Text="{Binding ActiveRenameValidationMessage}"
+                                       FontSize="11"
+                                       TextColor="#B3261E"
+                                       IsVisible="{Binding IsActiveRenameInvalid}" />
+                            </Grid>
+                            <Border Grid.Row="2"
+                                    Padding="20"
+                                    Background="#F8F8F9"
+                                    Stroke="#E5E5E7"
+                                    StrokeThickness="0.5"
+                                    StrokeShape="RoundRectangle 0,0,10,10">
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                    <Button Grid.Column="0"
+                                            Text="Save"
+                                            TextColor="#1F1F24"
+                                            BackgroundColor="White"
+                                            Style="{StaticResource RenameButtonStyle}"
+                                            Clicked="OnConfirmRenameTapped" />
+                                    <Button Grid.Column="1"
+                                            Text="Cancel"
+                                            Style="{StaticResource RenameButtonStyle}"
+                                            Clicked="OnCancelRenameTapped" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+    </Grid>
+</ContentView>
