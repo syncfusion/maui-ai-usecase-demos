@@ -102,6 +102,7 @@
                          Grid.Row="3"
                          ItemsSource="{Binding TreeNodes}"
                          ChildPropertyName="Children"
+                         NotificationSubscriptionMode="CollectionChange"
                          SelectionMode="Single"
                          SelectedItem="{Binding SelectedTreeNode, Mode=TwoWay}"
                          AutoExpandMode="None"
