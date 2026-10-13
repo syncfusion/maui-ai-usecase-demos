@@ -89,6 +89,25 @@ public partial class NodeActionPopups : ContentView
 
     private void OnRenameMenuOptionTapped(object? sender, TappedEventArgs e)
     {
+        // On mobile, the inline-rename path that the desktop uses (which
+        // toggles NoteTreeNode.IsRenaming and lets the TreeView template
+        // swap in an Entry) does not work, so the desktop flow is replaced
+        // by a dedicated popup that captures the new title.
+        if (IsMobilePresentation)
+        {
+            if (activeMenuNode is null)
+            {
+                NodeActionsPopup.Dismiss();
+                return;
+            }
+
+            preserveNodeMenuAfterClose = true;
+            NodeActionsPopup.Dismiss();
+            NodeActionsPopup.StaysOpen = false;
+            RenameFolderPopupHost.ShowFor(activeMenuNode);
+            return;
+        }
+
         if (BindingContext is NotesViewModel viewModel)
             viewModel.BeginRenameCommand.Execute(null);
 

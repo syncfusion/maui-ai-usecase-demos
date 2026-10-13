@@ -503,6 +503,48 @@ public partial class NotesViewModel
         folder.IsRenaming = false;
         activeFolderRenameNode = null;
     }
+
+    /// <summary>
+    /// Mobile-only: commits a rename started from the rename popup. The
+    /// popup's <c>Text</c> is two-way bound to <see cref="RenamePopupText"/>,
+    /// so the new title arrives via that property and the popup does not need
+    /// to pass it explicitly.
+    /// </summary>
+    public void CommitFolderRenameFromPopup(NoteTreeNode folder)
+    {
+        if (folder is null || !folder.IsFolder)
+            return;
+
+        string newTitle = (RenamePopupText ?? string.Empty).Trim();
+        if (string.IsNullOrWhiteSpace(newTitle))
+        {
+            RenamePopupValidationMessage = "Folder name cannot be empty.";
+            RenamePopupIsInvalid = true;
+            return;
+        }
+
+        if (!string.Equals(newTitle, folder.Title, StringComparison.Ordinal))
+            folder.Title = newTitle;
+
+        RenamePopupValidationMessage = string.Empty;
+        RenamePopupIsInvalid = false;
+        RenamePopupIsOpen = false;
+        RenamePopupText = string.Empty;
+        OnPropertyChanged(nameof(SelectedHeaderText));
+        ScheduleAutosave();
+    }
+
+    /// <summary>
+    /// Mobile-only: cancels the rename popup. Discards any pending edit
+    /// without touching the underlying folder.
+    /// </summary>
+    public void CancelFolderRenameFromPopup()
+    {
+        RenamePopupValidationMessage = string.Empty;
+        RenamePopupIsInvalid = false;
+        RenamePopupIsOpen = false;
+        RenamePopupText = string.Empty;
+    }
     private void DeleteSelectedItem()
     {
         if (menuTarget is NoteModel note)

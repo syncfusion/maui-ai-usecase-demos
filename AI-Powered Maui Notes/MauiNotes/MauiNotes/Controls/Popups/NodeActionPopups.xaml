@@ -281,5 +281,7 @@
                 </DataTemplate>
             </popup:SfPopup.ContentTemplate>
         </popup:SfPopup>
+
+        <popups:RenameFolderPopup x:Name="RenameFolderPopupHost" />
     </Grid>
 </ContentView>

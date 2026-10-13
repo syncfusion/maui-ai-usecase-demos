@@ -48,6 +48,10 @@ public partial class NotesViewModel : ViewModelBase
     private string selectedHighlightColor = "#FFFF00";
     private object? menuTarget;
     private NoteTreeNode? activeFolderRenameNode;
+    private string renamePopupText = string.Empty;
+    private string renamePopupValidationMessage = string.Empty;
+    private bool renamePopupIsInvalid;
+    private bool renamePopupIsOpen;
     private readonly IAiEditingService aiEditingService;
     private readonly INotePersistenceService notePersistenceService;
     private CancellationTokenSource? aiCancellation;
@@ -461,6 +465,35 @@ public partial class NotesViewModel : ViewModelBase
     {
         get => isNodeMenuOpen;
         set => SetProperty(ref isNodeMenuOpen, value);
+    }
+
+    /// <summary>
+    /// Editable text used by the mobile-only rename popup. Two-way bound to
+    /// the entry inside the popup; the popup calls <see cref="CommitFolderRenameFromPopup"/>
+    /// on Save and <see cref="CancelFolderRenameFromPopup"/> on Cancel/Back.
+    /// </summary>
+    public string RenamePopupText
+    {
+        get => renamePopupText;
+        set => SetProperty(ref renamePopupText, value);
+    }
+
+    public string RenamePopupValidationMessage
+    {
+        get => renamePopupValidationMessage;
+        set => SetProperty(ref renamePopupValidationMessage, value);
+    }
+
+    public bool RenamePopupIsInvalid
+    {
+        get => renamePopupIsInvalid;
+        set => SetProperty(ref renamePopupIsInvalid, value);
+    }
+
+    public bool RenamePopupIsOpen
+    {
+        get => renamePopupIsOpen;
+        set => SetProperty(ref renamePopupIsOpen, value);
     }
 
     public string MenuTargetTitle => menuTarget switch
