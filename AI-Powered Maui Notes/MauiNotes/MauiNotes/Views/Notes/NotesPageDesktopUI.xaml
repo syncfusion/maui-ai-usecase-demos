@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:notes="clr-namespace:MauiNotes.Controls.Notes"
+    xmlns:editor="clr-namespace:MauiNotes.Controls.Editor"
+    xmlns:vm="clr-namespace:MauiNotes.ViewModels"
+    x:Class="MauiNotes.Views.Notes.NotesPageDesktopUI" x:DataType="vm:NotesViewModel"
+    BackgroundColor="#F2F2F4" Title="">
+
+    <!-- Desktop layout section - Compose notes tree and editor columns -->
+    <Grid BackgroundColor="White">
+        <Border Margin="0" BackgroundColor="White" Stroke="#E5E5E7" StrokeThickness="0.5" StrokeShape="RoundRectangle 8">
+            <Grid ColumnDefinitions="256,*" ColumnSpacing="0">
+                <!-- Notes section - Folder tree column -->
+                <notes:NotesTreeDesktopUI Grid.Column="0" />
+
+                <BoxView Grid.Column="0" WidthRequest="1" HorizontalOptions="End"
+                    VerticalOptions="Fill" Color="#E5E5E7" InputTransparent="True" />
+
+                <!-- Editor section - Selected note editing column -->
+                <editor:NoteEditorDesktopUI Grid.Column="1" />
+            </Grid>
+        </Border>
+    </Grid>
+</ContentPage>
