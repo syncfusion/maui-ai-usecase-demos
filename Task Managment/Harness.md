@@ -150,7 +150,7 @@ Each module below is described as a **group of independent tasks**. The full per
 - **1-6 Seed Data** – Provide an in-memory `ObservableCollection<Note>` with a few example notes. *Files in:* `Common/SampleData.cs`. *Files out:* none.
 - **1-7 Notes List Page Shell** – Create the page layout that matches the empty `mynotes.png` (sidebar + main + bottom bar) with no items yet. *Files in:* `Features/Notes/Views/NotesPage.xaml(.cs)`, `Features/Notes/ViewModels/NotesViewModel.cs`. *Files out:* all other feature folders.
 
-> **No task in this module** creates sign-in, sign-up, forgot-password, splash, profile, settings, or account code.
+> **No task in this module** creates sign-in, sign-up, forgot-password.
 
 ---
 
