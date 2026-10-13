@@ -39,11 +39,13 @@ public class CustomRichTextEditor : ContentView
     private Microsoft.Maui.Controls.WebView? engineWebView;
     private bool adapterInjected;
     private bool syncingInnerValue;
+    private string? pendingInnerValue;
     private static string? cachedAdapterScript;
 
     /// <summary>Creates the wrapper and its inner editor.</summary>
     public CustomRichTextEditor()
     {
+        Debug.WriteLine("[CustomRichTextEditor] ctor:start; instantiating inner SfRichTextEditor.");
         innerEditor = new Syncfusion.Maui.RichTextEditor.SfRichTextEditor
         {
             ShowToolbar = false,
@@ -53,7 +55,14 @@ public class CustomRichTextEditor : ContentView
             DefaultFontFamily = "system-ui"
         };
         Content = innerEditor;
-        innerEditor.Loaded += (_, _) => _ = EnsureReadyAsync();
+        innerEditor.Loaded += (_, _) =>
+        {
+            Debug.WriteLine("[CustomRichTextEditor] innerEditor.Loaded fired; kicking off EnsureReadyAsync.");
+            _ = EnsureReadyAsync();
+        };
+        innerEditor.HandlerChanged += (_, args) =>
+            Debug.WriteLine(
+                $"[CustomRichTextEditor] innerEditor.HandlerChanged; newHandler={(args.NewHandler is null ? "null" : args.NewHandler.GetType().FullName)}; oldHandler={(args.OldHandler is null ? "null" : args.OldHandler.GetType().FullName)}.");
 
         // Forward the inner editor's FormatChanged so consumers can keep
         // toolbar formatting state synchronized (same contract as the RTE).
@@ -79,6 +88,7 @@ public class CustomRichTextEditor : ContentView
                 finally { syncingInnerValue = false; }
             }
         };
+        Debug.WriteLine("[CustomRichTextEditor] ctor:done; inner editor created and event handlers attached.");
     }
 
     /// <summary>The wrapped Syncfusion editor (for property configuration).</summary>
@@ -150,9 +160,27 @@ public class CustomRichTextEditor : ContentView
         if (wrapper.syncingInnerValue) { return; }
         // Wrapper -> inner (programmatic content updates from the VM).
         LogHtmlBoundary("value.assigned-to-inner-editor", (string?)newValue);
+
+        string html = (string?)newValue ?? string.Empty;
+        // Pushing HTML into the inner editor while the WebView is still
+        // initialising makes the engine spin on a not-yet-ready view tree
+        // and is a primary contributor to the editor page ANR (long
+        // PerformTraversals / Davey! / Skipped frames in logcat). Defer
+        // the assignment until the engine instance is available and the
+        // adapter script is injected. We re-apply on the next ready
+        // event by storing the latest value as the pending target.
+        if (!wrapper.adapterInjected || wrapper.FindEngineWebView() is null)
+        {
+            Debug.WriteLine(
+                $"[CustomRichTextEditor] Deferring inner Value assignment; adapterInjected={wrapper.adapterInjected}; engineWebView={(wrapper.FindEngineWebView() is null ? "null" : "ready")}; pendingLength={html.Length}.");
+            wrapper.pendingInnerValue = html;
+            return;
+        }
+
+        wrapper.pendingInnerValue = null;
         wrapper.innerEditor.SetValue(
             Syncfusion.Maui.RichTextEditor.SfRichTextEditor.ValueProperty,
-            (string?)newValue ?? string.Empty);
+            html);
     }
 
     /// <summary>Identifies the <see cref="ReadOnly"/> bindable property.</summary>
@@ -227,7 +255,11 @@ public class CustomRichTextEditor : ContentView
     /// <summary>Injects the adapter script once the engine instance is available.</summary>
     private async Task<bool> EnsureReadyAsync()
     {
-        if (adapterInjected) { return true; }
+        if (adapterInjected)
+        {
+            ApplyPendingInnerValue();
+            return true;
+        }
 
         const int maximumAttempts = 15;
         for (int attempt = 0; attempt < maximumAttempts; attempt++)
@@ -248,7 +280,12 @@ public class CustomRichTextEditor : ContentView
                             "typeof window.__customRte !== 'undefined' ? 'ok' : 'no'"));
                         adapterInjected = ready == "ok";
                         if (adapterInjected)
+                        {
+                            Debug.WriteLine(
+                                $"[CustomRichTextEditor] WebView adapter ready after {attempt + 1} attempt(s); applying pending inner value if any.");
+                            ApplyPendingInnerValue();
                             return true;
+                        }
                     }
                 }
                 catch (InvalidOperationException ex)
@@ -263,6 +300,24 @@ public class CustomRichTextEditor : ContentView
 
         Debug.WriteLine("[CustomRichTextEditor] WebView adapter did not become ready within the retry window.");
         return false;
+    }
+
+    /// <summary>
+    /// Pushes the most recent Value binding payload (if any) into the inner
+    /// editor. Used to recover the assignment that was deferred because the
+    /// engine WebView was not yet ready when the binding first fired.
+    /// </summary>
+    private void ApplyPendingInnerValue()
+    {
+        string? pending = pendingInnerValue;
+        if (pending is null) { return; }
+        pendingInnerValue = null;
+        Debug.WriteLine(
+            $"[CustomRichTextEditor] ApplyPendingInnerValue: applying deferred HTML; length={pending.Length}.");
+        LogHtmlBoundary("pending.inner-editor.applied", pending);
+        innerEditor.SetValue(
+            Syncfusion.Maui.RichTextEditor.SfRichTextEditor.ValueProperty,
+            pending);
     }
 
     private static string EncodeJsString(string value) =>

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Net;
 using System.Text.RegularExpressions;
 
@@ -150,6 +150,19 @@ public partial class NotesViewModel
             content,
             @"^\s*\\+u003[cC]/?(?:h[1-6]|p|div|ul|ol|li|table|thead|tbody|tr|th|td)\b",
             RegexOptions.IgnoreCase);
+
+        // Always rewrite desktop-only font families (e.g. "Courier New") to
+        // a family that the Android font manager can resolve without doing
+        // asset I/O on the UI thread. The RTE engine asks Android to load
+        // whatever family is in the document and throws on every tap if
+        // the family is not a built-in alias, which is one of the primary
+        // contributors to the editor page ANR.
+        content = Regex.Replace(
+            content,
+            "Courier New",
+            "monospace",
+            RegexOptions.IgnoreCase);
+
         if (escapedTags.Count < 2 || !hasPairedEscapedTags || !startsWithEscapedTag)
             return content;
 
