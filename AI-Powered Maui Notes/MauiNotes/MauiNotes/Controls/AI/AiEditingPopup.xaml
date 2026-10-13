@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:vm="clr-namespace:MauiNotes.ViewModels"
+             xmlns:ai="clr-namespace:MauiNotes.Models.AI"
+             xmlns:controls="clr-namespace:EssentialMAUIUIKit.Controls"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             x:Class="MauiNotes.Controls.AI.AiEditingPopup"
+             WidthRequest="0"
+             HeightRequest="0">
+    <Grid>
+        <popup:SfPopup x:Name="WritingToolsPopup"
+                       WidthRequest="300"
+                       AutoSizeMode="Height"
+                       MaximumHeightRequest="500"
+                       ShowHeader="False"
+                       ShowFooter="False"
+                       ShowOverlayAlways="False"
+                       StaysOpen="False"
+                       Opened="OnWritingToolsOpened"
+                       Closed="OnWritingToolsClosed">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle Stroke="Transparent" StrokeThickness="0" CornerRadius="14" />
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:NotesViewModel">
+                    <Border Padding="10"
+                            Stroke="#E6E6EA"
+                            StrokeThickness="0.5"
+                            StrokeShape="RoundRectangle 14"
+                            BackgroundColor="White">
+                        <Border.Shadow>
+                            <Shadow Brush="#202027" Opacity="0.2" Radius="18" Offset="0,8" />
+                        </Border.Shadow>
+                        <Grid RowDefinitions="Auto,Auto" RowSpacing="0">
+                            <Border Grid.Row="0"
+                                    Padding="9,3,4,3"
+                                    Stroke="#E2E2E7"
+                                    StrokeThickness="0.8"
+                                    StrokeShape="RoundRectangle 13"
+                                    BackgroundColor="#F5F5F7">
+                                <Grid ColumnDefinitions="25,*,34">
+                                    <Label Text="&#xE7D7;"
+                                           FontFamily="MauiMaterialAssets"
+                                           FontSize="17"
+                                           TextColor="#73747B"
+                                           VerticalTextAlignment="Start"
+                                           HorizontalTextAlignment="Center"
+                                           Margin="0,7,0,0" />
+                                    <controls:BorderlessEditor Grid.Column="1"
+                                                               Text="{Binding AiCustomInstruction, Mode=TwoWay}"
+                                                               Placeholder="Describe your change"
+                                                               AutoSize="TextChanges"
+                                                               MinimumHeightRequest="34"
+                                                               MaximumHeightRequest="108"
+                                                               Completed="OnCustomInstructionCompleted"
+                                                               Margin="4,0,0,0"
+                                                               BackgroundColor="Transparent"
+                                                               TextColor="#36373D"
+                                                               PlaceholderColor="#8C8D94"
+                                                               FontSize="14"
+                                                               VerticalOptions="Fill"
+                                                               VerticalTextAlignment="Start" />
+                                    <Button Grid.Column="2"
+                                            Text="&#xE784;"
+                                            FontFamily="MauiMaterialAssets"
+                                            FontSize="15"
+                                            TextColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                            WidthRequest="30"
+                                            HeightRequest="30"
+                                            MinimumWidthRequest="30"
+                                            MinimumHeightRequest="30"
+                                            Padding="0"
+                                            CornerRadius="15"
+                                            BorderWidth="0"
+                                            VerticalOptions="Center"
+                                            HorizontalOptions="Center"
+                                            Margin="0,0,1,0"
+                                            IsEnabled="{Binding CanRunCustomAi}"
+                                            Command="{Binding AiCustomCommand}"
+                                            SemanticProperties.Description="Send custom writing instruction">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button"
+                                                         Binding="{Binding CanRunCustomAi}"
+                                                         Value="False">
+                                                <Setter Property="BackgroundColor"
+                                                        Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" />
+                                                <Setter Property="TextColor"
+                                                        Value="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                </Grid>
+                            </Border>
+
+                            <ScrollView Grid.Row="1"
+                                        Margin="0,6,0,0"
+                                        HeightRequest="340"
+                                        IsEnabled="{Binding IsAiActionEnabled}"
+                                        VerticalScrollBarVisibility="Never">
+                                <VerticalStackLayout BindableLayout.ItemsSource="{Binding AiActionItems}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="ai:AiActionListItem">
+                                            <Grid RowDefinitions="Auto,Auto,34">
+                                                <BoxView Grid.Row="0"
+                                                         HeightRequest="1"
+                                                         Color="#DEDEE3"
+                                                         Margin="0,1,0,5"
+                                                         IsVisible="{Binding ShowDividerBefore}" />
+                                                <Border Grid.Row="2"
+                                                        Padding="0"
+                                                        StrokeThickness="0"
+                                                        StrokeShape="RoundRectangle 8"
+                                                        BackgroundColor="Transparent">
+                                                    <Border.GestureRecognizers>
+                                                        <TapGestureRecognizer Tapped="OnAiActionItemTapped" />
+                                                    </Border.GestureRecognizers>
+                                                    <Grid ColumnDefinitions="30,*">
+                                                        <Label Text="{Binding Icon}"
+                                                               FontFamily="MauiMaterialAssets"
+                                                               FontSize="16"
+                                                               TextColor="#4E4F56"
+                                                               HorizontalTextAlignment="Center"
+                                                               VerticalTextAlignment="Center" />
+                                                        <Label Grid.Column="1"
+                                                               Text="{Binding Title}"
+                                                               FontSize="14"
+                                                               TextColor="#37383E"
+                                                               VerticalTextAlignment="Center" />
+                                                    </Grid>
+                                                </Border>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+                            </ScrollView>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+
+        <popup:SfPopup x:Name="AiReviewPopup"
+                       WidthRequest="368"
+                       AutoSizeMode="Height"
+                       ShowHeader="False"
+                       ShowFooter="False"
+                       ShowOverlayAlways="False"
+                       StaysOpen="False"
+                       Opened="OnAiReviewOpened"
+                       Closed="OnAiReviewClosed">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle Stroke="Transparent" StrokeThickness="0" CornerRadius="14" />
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:NotesViewModel">
+                    <Border Padding="10"
+                            Stroke="#E6E6EA"
+                            StrokeThickness="0.5"
+                            StrokeShape="RoundRectangle 14"
+                            BackgroundColor="White">
+                        <Border.Resources>
+                            <Style x:Key="AiReviewToolbarButtonStyle" TargetType="buttons:SfButton">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="StrokeThickness" Value="0" />
+                                <Setter Property="Padding" Value="0" />
+                                <Setter Property="CornerRadius" Value="6" />
+                                <Setter Property="VerticalOptions" Value="Center" />
+                                <Setter Property="VisualStateManager.VisualStateGroups">
+                                    <VisualStateGroupList>
+                                        <VisualStateGroup x:Name="CommonStates">
+                                            <VisualState x:Name="Normal">
+                                                <VisualState.Setters>
+                                                    <Setter Property="Background" Value="Transparent" />
+                                                    <Setter Property="Opacity" Value="1" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="Hovered">
+                                                <VisualState.Setters>
+                                                    <Setter Property="Background"
+                                                            Value="{AppThemeBinding Light=#F0F0F2, Dark=#35353B}" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="Pressed">
+                                                <VisualState.Setters>
+                                                    <Setter Property="Background"
+                                                            Value="{AppThemeBinding Light=#E6E6E9, Dark=#414147}" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="Disabled">
+                                                <VisualState.Setters>
+                                                    <Setter Property="Background" Value="Transparent" />
+                                                    <Setter Property="Opacity" Value="0.45" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateGroupList>
+                                </Setter>
+                            </Style>
+                        </Border.Resources>
+                        <Border.Shadow>
+                            <Shadow Brush="#202027" Opacity="0.2" Radius="18" Offset="0,8" />
+                        </Border.Shadow>
+                        <Grid RowDefinitions="40">
+                            <HorizontalStackLayout Grid.Row="0"
+                                                   HorizontalOptions="Start"
+                                                   VerticalOptions="Center"
+                                                   Spacing="4">
+                                <Border WidthRequest="46"
+                                        HeightRequest="32"
+                                        Stroke="#D9D9DF"
+                                        StrokeThickness="1"
+                                        StrokeShape="RoundRectangle 8"
+                                        Padding="0">
+                                    <buttons:SfButton AutomationId="AiRevert"
+                                                      Text="Revert"
+                                                      Command="{Binding RevertAiCommand}"
+                                                      IsEnabled="{Binding CanUseAiReviewActions}"
+                                                      SemanticProperties.Description="Revert AI result"
+                                                      Style="{StaticResource AiReviewToolbarButtonStyle}"
+                                                      FontSize="12"
+                                                      TextColor="#484950"
+                                                      MinimumWidthRequest="0"
+                                                      WidthRequest="44"
+                                                      HeightRequest="32"
+                                                      CornerRadius="7"
+                                                      HorizontalOptions="Center"
+                                                      VerticalOptions="Center" />
+                                </Border>
+                                <Border WidthRequest="32" HeightRequest="32"
+                                        Stroke="#D9D9DF" StrokeThickness="1"
+                                        StrokeShape="Ellipse" Padding="0">
+                                    <Grid WidthRequest="30" HeightRequest="30"
+                                          HorizontalOptions="Center"
+                                          VerticalOptions="Center">
+                                        <buttons:SfButton AutomationId="AiRetry"
+                                                          Style="{StaticResource AiReviewToolbarButtonStyle}"
+                                                          ShowIcon="True" ImageSize="16"
+                                                          ImageAlignment="Default"
+                                                          WidthRequest="30" MinimumWidthRequest="0"
+                                                          HeightRequest="30" CornerRadius="15"
+                                                          IsEnabled="{Binding CanRetryAiRequest}"
+                                                          Command="{Binding RetryAiCommand}"
+                                                          SemanticProperties.Description="Retry AI request"
+                                                          HorizontalOptions="Center"
+                                                          VerticalOptions="Center"
+                                                          HorizontalTextAlignment="Center"
+                                                          VerticalTextAlignment="Center">
+                                            <buttons:SfButton.ImageSource>
+                                                <FontImageSource Glyph="&#xe5d5;"
+                                                         FontFamily="MaterialIconRegular"
+                                                         Size="16" Color="#484950" />
+                                            </buttons:SfButton.ImageSource>
+                                        </buttons:SfButton>
+                                    </Grid>
+                                </Border>
+                                <Border WidthRequest="32" HeightRequest="32"
+                                        Stroke="#D9D9DF" StrokeThickness="1"
+                                        StrokeShape="Ellipse" Padding="0">
+                                    <Grid WidthRequest="30" HeightRequest="30"
+                                          HorizontalOptions="Center"
+                                          VerticalOptions="Center">
+                                        <buttons:SfButton AutomationId="AiUndo"
+                                                          Style="{StaticResource AiReviewToolbarButtonStyle}"
+                                                          ShowIcon="True" ImageSize="16"
+                                                          ImageAlignment="Default"
+                                                          WidthRequest="30" MinimumWidthRequest="0"
+                                                          HeightRequest="30" CornerRadius="15"
+                                                          IsEnabled="{Binding CanUseAiReviewActions}"
+                                                          Command="{Binding UndoAiCommand}"
+                                                          SemanticProperties.Description="Undo in editor"
+                                                          HorizontalOptions="Center"
+                                                          VerticalOptions="Center"
+                                                          HorizontalTextAlignment="Center"
+                                                          VerticalTextAlignment="Center">
+                                            <buttons:SfButton.ImageSource>
+                                                <FontImageSource Glyph="&#xE744;"
+                                                         FontFamily="MauiMaterialAssets"
+                                                         Size="16" Color="#484950" />
+                                            </buttons:SfButton.ImageSource>
+                                        </buttons:SfButton>
+                                    </Grid>
+                                </Border>
+                                <Border WidthRequest="32" HeightRequest="32"
+                                        Stroke="#D9D9DF" StrokeThickness="1"
+                                        StrokeShape="Ellipse" Padding="0">
+                                    <Grid WidthRequest="30" HeightRequest="30"
+                                          HorizontalOptions="Center"
+                                          VerticalOptions="Center">
+                                        <buttons:SfButton AutomationId="AiRedo"
+                                                          Style="{StaticResource AiReviewToolbarButtonStyle}"
+                                                          ShowIcon="True" ImageSize="16"
+                                                          ImageAlignment="Default"
+                                                          WidthRequest="30" MinimumWidthRequest="0"
+                                                          HeightRequest="30" CornerRadius="15"
+                                                          IsEnabled="{Binding CanUseAiReviewActions}"
+                                                          Command="{Binding RedoAiCommand}"
+                                                          SemanticProperties.Description="Redo in editor"
+                                                          HorizontalOptions="Center"
+                                                          VerticalOptions="Center"
+                                                          HorizontalTextAlignment="Center"
+                                                          VerticalTextAlignment="Center">
+                                            <buttons:SfButton.ImageSource>
+                                                <FontImageSource Glyph="&#xE745;"
+                                                         FontFamily="MauiMaterialAssets"
+                                                         Size="16" Color="#484950" />
+                                            </buttons:SfButton.ImageSource>
+                                        </buttons:SfButton>
+                                    </Grid>
+                                </Border>
+                                <Border WidthRequest="42" HeightRequest="32"
+                                        Stroke="#D9D9DF" StrokeThickness="1"
+                                        StrokeShape="RoundRectangle 8" Padding="0">
+                                    <buttons:SfButton AutomationId="AiDone"
+                                                      Style="{StaticResource AiReviewToolbarButtonStyle}"
+                                                      Text="Done" Command="{Binding DoneAiCommand}"
+                                                      IsEnabled="{Binding CanFinishAiReview}"
+                                                      SemanticProperties.Description="Finish AI review"
+                                                      FontSize="12" TextColor="#484950"
+                                                      MinimumWidthRequest="0" WidthRequest="40"
+                                                      HeightRequest="32" CornerRadius="7"
+                                                      HorizontalOptions="Center"
+                                                      VerticalOptions="Center" />
+                                </Border>
+                                <Border WidthRequest="50" HeightRequest="32"
+                                        Stroke="#D9D9DF" StrokeThickness="1"
+                                        StrokeShape="RoundRectangle 8" Padding="0">
+                                    <buttons:SfButton AutomationId="AiCancel"
+                                                      Style="{StaticResource AiReviewToolbarButtonStyle}"
+                                                      Text="Cancel"
+                                                      Command="{Binding CancelAiProcessingCommand}"
+                                                      SemanticProperties.Description="Cancel AI review"
+                                                      FontSize="12" TextColor="#484950"
+                                                      MinimumWidthRequest="0" WidthRequest="48"
+                                                      HeightRequest="32" CornerRadius="7"
+                                                      HorizontalOptions="Center"
+                                                      VerticalOptions="Center" />
+                                </Border>
+                                <ActivityIndicator AutomationId="AiReviewLoadingIndicator"
+                                                   WidthRequest="24"
+                                                   HeightRequest="24"
+                                                   Color="#484950"
+                                                   IsRunning="{Binding IsAiReviewLoading}"
+                                                   IsVisible="{Binding IsAiReviewLoading}"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+    </Grid>
+</ContentView>
