@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Core.Hosting;
-using Todo.Common;
 using Todo.Features.Notes.Services;
 using Todo.Features.Notes.ViewModels;
 
@@ -20,17 +19,19 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        // Seed in-memory note store at app startup
-        SampleData.EnsureSeeded();
+        // Note store is empty on startup by design (Module-02 spec).
 
         // Services
         builder.Services.AddSingleton<INoteService, InMemoryNoteService>();
 
-        // ViewModels
+        // ViewModels — shared singleton across all four filter pages.
         builder.Services.AddSingleton<NotesListViewModel>();
 
-        // Pages
-        builder.Services.AddTransient<Features.Notes.Views.NotesPage>();
+        // Pages (separate routes for My Notes, Important, Reminder, Bin)
+        builder.Services.AddTransient<Features.Notes.Views.MyNotesPage>();
+        builder.Services.AddTransient<Features.Important.ImportantPage>();
+        builder.Services.AddTransient<Features.Reminder.ReminderPage>();
+        builder.Services.AddTransient<Features.Bin.BinPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

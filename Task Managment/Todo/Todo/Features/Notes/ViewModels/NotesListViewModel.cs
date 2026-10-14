@@ -18,7 +18,6 @@ namespace Todo.Features.Notes.ViewModels;
 public partial class NotesListViewModel : ViewModelBase
 {
     private readonly INoteService _noteService;
-    private readonly NotesListCategory _selectedCategory;
 
     /// <summary>
     /// The currently-displayed list of notes after applying the active
@@ -34,7 +33,6 @@ public partial class NotesListViewModel : ViewModelBase
     public NotesListViewModel(INoteService noteService)
     {
         _noteService = noteService;
-        _selectedCategory = NotesListCategory.MyNotes;
 
         // Listen to the underlying store and refresh the visible list.
         if (_noteService.Notes is INotifyCollectionChanged notifying)
@@ -59,7 +57,7 @@ public partial class NotesListViewModel : ViewModelBase
     private string headerTitle = NotesListCategory.MyNotes.ToDisplayName();
 
     /// <summary>
-    /// Available sidebar entries. Static for Module-04; later modules
+    /// Available sidebar entries. Static for Module-02; later modules
     /// can append user-defined lists here.
     /// </summary>
     public IReadOnlyList<NotesListCategory> AvailableCategories { get; } =
@@ -116,6 +114,42 @@ public partial class NotesListViewModel : ViewModelBase
     public bool IsEmpty => FilteredNotes.Count == 0;
 
     // ---------------------------------------------------------------
+    //  Sidebar expand / collapse state
+    // ---------------------------------------------------------------
+    [ObservableProperty]
+    private bool isSidebarCollapsed;
+
+    /// <summary>
+    /// Expanded sidebar width (used by the responsive grid column
+    /// defined in <c>MainLayoutView.xaml</c>).
+    /// </summary>
+    public const double SidebarExpandedWidth = 220;
+
+    [RelayCommand]
+    private void ToggleSidebar() => IsSidebarCollapsed = !IsSidebarCollapsed;
+
+    // ---------------------------------------------------------------
+    //  Navigation between the four built-in pages
+    // ---------------------------------------------------------------
+    /// <summary>
+    /// Raised when the user selects a sidebar entry. The host page
+    /// listens for this to perform Shell navigation between the four
+    /// built-in pages while reusing the same ViewModel state.
+    /// </summary>
+    public event EventHandler<NotesListCategory>? NavigationRequested;
+
+    [RelayCommand]
+    private void NavigateToCategory(NotesListCategory? category)
+    {
+        if (category is null) return;
+        // The active category is always kept in sync, even if the host
+        // doesn't navigate (so the sidebar selection / header text
+        // remain consistent with the destination page).
+        SelectedCategory = category.Value;
+        NavigationRequested?.Invoke(this, category.Value);
+    }
+
+    // ---------------------------------------------------------------
     //  Bottom-input bar state
     // ---------------------------------------------------------------
     [ObservableProperty]
@@ -138,16 +172,6 @@ public partial class NotesListViewModel : ViewModelBase
     }
 
     private bool CanAddNote() => !string.IsNullOrWhiteSpace(NewNoteTitle);
-
-    // ---------------------------------------------------------------
-    //  Sidebar commands
-    // ---------------------------------------------------------------
-    [RelayCommand]
-    private void SelectCategory(string? categoryName)
-    {
-        if (Enum.TryParse<NotesListCategory>(categoryName, out var parsed))
-            SelectedCategory = parsed;
-    }
 
     // ---------------------------------------------------------------
     //  Item-template commands (check / star / delete / restore)

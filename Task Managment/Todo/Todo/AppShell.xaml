@@ -4,13 +4,35 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:notes="clr-namespace:Todo.Features.Notes.Views"
+    xmlns:important="clr-namespace:Todo.Features.Important"
+    xmlns:reminder="clr-namespace:Todo.Features.Reminder"
+    xmlns:bin="clr-namespace:Todo.Features.Bin"
     Shell.FlyoutBehavior="Disabled"
     Shell.NavBarIsVisible="False"
     Title="Todo">
 
+    <!-- My Notes (default landing page) -->
     <ShellContent
         Title="My Notes"
-        ContentTemplate="{DataTemplate notes:NotesPage}"
-        Route="notes" />
+        ContentTemplate="{DataTemplate notes:MyNotesPage}"
+        Route="mynotes" />
+
+    <!-- Important filter view -->
+    <ShellContent
+        Title="Important"
+        ContentTemplate="{DataTemplate important:ImportantPage}"
+        Route="important" />
+
+    <!-- Reminder filter view -->
+    <ShellContent
+        Title="Reminder"
+        ContentTemplate="{DataTemplate reminder:ReminderPage}"
+        Route="reminder" />
+
+    <!-- Bin filter view -->
+    <ShellContent
+        Title="Bin"
+        ContentTemplate="{DataTemplate bin:BinPage}"
+        Route="bin" />
 
 </Shell>

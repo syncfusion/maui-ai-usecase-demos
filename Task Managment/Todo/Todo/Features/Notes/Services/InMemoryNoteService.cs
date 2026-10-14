@@ -15,8 +15,10 @@ public sealed class InMemoryNoteService : INoteService
 
     public InMemoryNoteService()
     {
-        _notes = new ObservableCollection<Note>(
-            SampleData.SeedNotes().Select(Clone));
+        // My Notes must be empty on initial application load (Module-02).
+        // No sample / mock / placeholder notes are seeded; the user creates
+        // every note via the bottom input bar.
+        _notes = new ObservableCollection<Note>();
         Notes = new ReadOnlyObservableCollection<Note>(_notes);
     }
 
@@ -117,19 +119,4 @@ public sealed class InMemoryNoteService : INoteService
             .ThenBy(n => n.DisplayOrder)
             .ToList();
     }
-
-    private static Note Clone(Note source) => new()
-    {
-        Id = source.Id,
-        Title = source.Title,
-        DueDate = source.DueDate,
-        ReminderDate = source.ReminderDate,
-        ListId = source.ListId,
-        IsImportant = source.IsImportant,
-        IsCompleted = source.IsCompleted,
-        DeletedAt = source.DeletedAt,
-        DisplayOrder = source.DisplayOrder,
-        CreatedAt = source.CreatedAt,
-        UpdatedAt = source.UpdatedAt
-    };
 }
