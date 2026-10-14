@@ -10,8 +10,11 @@ namespace Todo.Common;
 public static class ServiceLocator
 {
     private static INoteService? _noteService;
+    private static INavigationService? _navigation;
 
     public static INoteService Current => _noteService ??= new InMemoryNoteService();
+    public static INavigationService CurrentNavigation => _navigation ??= new MauiNavigationService();
 
     public static void Register(INoteService noteService) => _noteService = noteService;
+    public static void RegisterNavigation(INavigationService navigation) => _navigation = navigation;
 }

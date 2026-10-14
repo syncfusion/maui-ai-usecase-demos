@@ -67,7 +67,8 @@
                         Padding="0" Rotation="90"
                         BackgroundColor="Transparent"
                         TextColor="{StaticResource OnPrimaryColor}"
-                        SemanticProperties.Description="More notes options" />
+                        Command="{Binding OpenCreateNoteCommand}"
+                        SemanticProperties.Description="Create new note" />
             </Grid>
 
             <!-- Notes list / empty state -->
@@ -105,6 +106,17 @@
                                     BackgroundColor="{StaticResource SurfaceColor}"
                                     StrokeThickness="0"
                                     StrokeShape="RoundRectangle 10">
+                                <Border.GestureRecognizers>
+                                    <!-- Tap on the card body opens the
+                                         EditNote dialog. The inner
+                                         CheckBox / Star / more button
+                                         handle their own gestures and
+                                         don't bubble up. -->
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={x:Reference NotesContentRoot}, Path=BindingContext.EditNoteCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+
                                 <Grid ColumnDefinitions="Auto,*,Auto,Auto"
                                       ColumnSpacing="10"
                                       VerticalOptions="Center">
@@ -122,9 +134,22 @@
                                         <Label Text="{Binding Title}"
                                                Style="{StaticResource NoteTitleStyle}"
                                                TextDecorations="{Binding IsCompleted, Converter={StaticResource BoolToTextDecorationConverter}}" />
-                                        <Label Text="{Binding DueDate, Converter={StaticResource DateTimeFormatConverter}}"
-                                               Style="{StaticResource NoteMetaStyle}"
-                                               IsVisible="{Binding DueDate, Converter={StaticResource NotNullToBoolConverter}}" />
+                                        <HorizontalStackLayout Spacing="6">
+                                            <Label Text="&#128197;"
+                                                   FontSize="12"
+                                                   TextColor="{StaticResource TextSecondaryColor}"
+                                                   IsVisible="{Binding DueDate, Converter={StaticResource NotNullToBoolConverter}}" />
+                                            <Label Text="{Binding DueDate, Converter={StaticResource DateTimeFormatConverter}}"
+                                                   Style="{StaticResource NoteMetaStyle}"
+                                                   IsVisible="{Binding DueDate, Converter={StaticResource NotNullToBoolConverter}}" />
+                                            <Label Text="&#128276;"
+                                                   FontSize="12"
+                                                   TextColor="{StaticResource TextSecondaryColor}"
+                                                   IsVisible="{Binding ReminderDate, Converter={StaticResource NotNullToBoolConverter}}" />
+                                            <Label Text="{Binding ReminderDate, Converter={StaticResource DateTimeFormatConverter}}"
+                                                   Style="{StaticResource NoteMetaStyle}"
+                                                   IsVisible="{Binding ReminderDate, Converter={StaticResource NotNullToBoolConverter}}" />
+                                        </HorizontalStackLayout>
                                     </VerticalStackLayout>
 
                                     <!-- Star (Important) -->
@@ -140,7 +165,7 @@
                                             CommandParameter="{Binding .}"
                                             SemanticProperties.Description="Toggle important" />
 
-                                    <!-- More menu -->
+                                    <!-- More menu (three-dot) -->
                                     <Button Grid.Column="3"
                                             Text="&#8943;"
                                             FontSize="22"
@@ -150,6 +175,8 @@
                                             WidthRequest="40"
                                             HeightRequest="40"
                                             Padding="0"
+                                            Command="{Binding Source={x:Reference NotesContentRoot}, Path=BindingContext.ShowNoteMenuCommand}"
+                                            CommandParameter="{Binding .}"
                                             SemanticProperties.Description="More note options" />
                                 </Grid>
                             </Border>

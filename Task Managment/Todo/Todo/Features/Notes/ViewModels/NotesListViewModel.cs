@@ -4,6 +4,10 @@ using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Todo.Common;
+using Todo.Features.Dialogs.ViewModels;
+using Todo.Features.Dialogs.Views;
+using Todo.Features.EditNote.ViewModels;
+using Todo.Features.EditNote.Views;
 using Todo.Features.Notes.Models;
 using Todo.Features.Notes.Services;
 
@@ -14,10 +18,18 @@ namespace Todo.Features.Notes.ViewModels;
 /// Bin filter views. A single instance is registered as a singleton so
 /// all four views share the same state, command surface, and notes
 /// collection — eliminating duplicate ViewModels and business logic.
+///
+/// <para>
+/// Module-03 adds Create / Edit / Soft-delete / Restore / Permanent-delete
+/// flows on top of the Module-02 list-and-filter shell. All dialogs are
+/// pushed through <see cref="INavigationService"/>; the ViewModel itself
+/// stays UI-framework agnostic.
+/// </para>
 /// </summary>
 public partial class NotesListViewModel : ViewModelBase
 {
     private readonly INoteService _noteService;
+    private readonly INavigationService _navigation;
 
     /// <summary>
     /// The currently-displayed list of notes after applying the active
@@ -26,13 +38,14 @@ public partial class NotesListViewModel : ViewModelBase
     public ObservableCollection<Note> FilteredNotes { get; } = new();
 
     public NotesListViewModel()
-        : this(ServiceLocator.Current)
+        : this(ServiceLocator.Current, new MauiNavigationService())
     {
     }
 
-    public NotesListViewModel(INoteService noteService)
+    public NotesListViewModel(INoteService noteService, INavigationService navigation)
     {
         _noteService = noteService;
+        _navigation = navigation;
 
         // Listen to the underlying store and refresh the visible list.
         if (_noteService.Notes is INotifyCollectionChanged notifying)
@@ -209,6 +222,105 @@ public partial class NotesListViewModel : ViewModelBase
     {
         if (note is null) return;
         _noteService.DeletePermanentlyAsync(note.Id);
+    }
+
+    // ---------------------------------------------------------------
+    //  Dialog / action sheet commands (Module-03)
+    // ---------------------------------------------------------------
+
+    /// <summary>
+    /// Opens the EditNote dialog (matches the centered
+    /// <c>createnewlist.png</c> / <c>renamelist.png</c> chrome) to
+    /// create a brand new note. Falls back to inline create when the
+    /// navigation service is unavailable (e.g. design-time).
+    /// </summary>
+    [RelayCommand]
+    private async Task OpenCreateNoteAsync()
+    {
+        var page = new EditNotePage(new EditNoteViewModel(_noteService, _navigation));
+        await _navigation.PushModalAsync(page);
+    }
+
+    /// <summary>
+    /// Tapping a note card opens the EditNote dialog pre-filled with
+    /// that note's values.
+    /// </summary>
+    [RelayCommand]
+    private async Task EditNoteAsync(Note? note)
+    {
+        if (note is null) return;
+        var page = new EditNotePage(new EditNoteViewModel(_noteService, _navigation, note));
+        await _navigation.PushModalAsync(page);
+    }
+
+    /// <summary>
+    /// Three-dot "more" menu on a note card. Opens a native action
+    /// sheet whose items depend on the active filter (active notes
+    /// show "Edit note" / "Delete"; bin shows "Restore" /
+    /// "Delete permanently").
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowNoteMenuAsync(Note? note)
+    {
+        if (note is null) return;
+
+        string choice;
+        if (SelectedCategory == NotesListCategory.Bin)
+        {
+            choice = await _navigation.ShowActionSheetAsync(
+                title: note.Title ?? "Note",
+                message: null,
+                destruction: "Delete permanently",
+                "Restore note", "Delete permanently") ?? string.Empty;
+        }
+        else
+        {
+            choice = await _navigation.ShowActionSheetAsync(
+                title: note.Title ?? "Note",
+                message: null,
+                destruction: "Delete",
+                "Edit note", "Delete") ?? string.Empty;
+        }
+
+        switch (choice)
+        {
+            case "Edit note":
+                await EditNoteAsync(note);
+                break;
+            case "Delete":
+                await DeleteAsync(note);
+                break;
+            case "Restore note":
+                await RestoreAsync(note);
+                break;
+            case "Delete permanently":
+                await ConfirmDeletePermanentlyAsync(note);
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Shows the destructive confirmation dialog (matches
+    /// <c>deletepermently.png</c>) and permanently deletes the note
+    /// on confirm.
+    /// </summary>
+    [RelayCommand]
+    private async Task ConfirmDeletePermanentlyAsync(Note? note)
+    {
+        if (note is null) return;
+        var vm = new ConfirmDialogViewModel(_navigation)
+        {
+            Title = "Delete permanently?",
+            Message = "This note will be permanently deleted and cannot be recovered.",
+            ConfirmText = "Delete",
+            IsDestructive = true
+        };
+        var page = new ConfirmDialogPage(vm);
+        var result = await _navigation.PushModalAsync(page);
+        if (result is true)
+        {
+            await _noteService.DeletePermanentlyAsync(note.Id);
+        }
     }
 
     // ---------------------------------------------------------------
