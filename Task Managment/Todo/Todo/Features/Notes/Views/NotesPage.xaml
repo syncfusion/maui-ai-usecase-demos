@@ -7,6 +7,7 @@
              xmlns:common="clr-namespace:Todo.Common"
              xmlns:conv="clr-namespace:Todo.Converters"
              xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+             xmlns:syncfusionCore="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
              x:Class="Todo.Features.Notes.Views.NotesPage"
              x:Name="Notes"
              x:DataType="vm:NotesListViewModel"
@@ -19,115 +20,134 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <!--
-        Root layout: 2-column responsive grid (sidebar + content).
-        On narrow widths (< 600) the sidebar column collapses to 0
-        (collapsed.png reference).
-    -->
-    <Grid x:Name="RootGrid"
-          ColumnDefinitions="{OnIdiom Phone='0,*', Default='230,*'}"
-          RowDefinitions="*"
+    <Grid x:Name="RootGrid" Margin="0,10,0,0"
+          ColumnDefinitions="{OnIdiom Phone='0,*', Default='190,*'}"
+          RowDefinitions="48,*"
           BackgroundColor="{StaticResource BackgroundColor}">
 
-        <!-- ====================================================== -->
-        <!-- SIDEBAR (built-in categories: My Notes, Important, ...)  -->
-        <!-- ====================================================== -->
+        <!-- Shared application header -->
+        <Grid Grid.Row="0"
+              Grid.ColumnSpan="2"
+              HeightRequest="{StaticResource HeaderHeight}"
+              Padding="8,0,16,0"
+              ColumnDefinitions="Auto,*,Auto"
+              BackgroundColor="{StaticResource SurfaceColor}">
+            <Grid.Shadow>
+                <Shadow Brush="#10000000" Radius="4" Offset="0,1" Opacity="0.10" />
+            </Grid.Shadow>
+
+            <HorizontalStackLayout Grid.Column="0"
+                                   Spacing="4"
+                                   VerticalOptions="Center">
+                <Button Text="&#9776;"
+                        FontSize="19"
+                        WidthRequest="40"
+                        HeightRequest="40"
+                        Padding="0"
+                        BackgroundColor="Transparent"
+                        TextColor="{StaticResource TextSecondaryColor}"
+                        SemanticProperties.Description="Navigation menu" />
+                <Label Text="To Do List"
+                       FontSize="17"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource TextPrimaryColor}"
+                       VerticalOptions="Center" />
+            </HorizontalStackLayout>
+
+            <Border Grid.Column="1"
+                    WidthRequest="{OnIdiom Phone=180, Default=360}"
+                    HeightRequest="36"
+                    Padding="12,0"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    BackgroundColor="{StaticResource InputPillBackgroundColor}"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 18">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Entry Placeholder="Search"
+                           FontSize="14"
+                           TextColor="{StaticResource TextPrimaryColor}"
+                           PlaceholderColor="{StaticResource TextSecondaryColor}"
+                           VerticalOptions="Center" />
+                    <Button Grid.Column="1"
+                           ImageSource="search.png"
+                           FontSize="15" Background="Transparent"
+                           TextColor="{StaticResource TextSecondaryColor}"
+                           VerticalOptions="Center" />
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2"
+                    WidthRequest="34"
+                    HeightRequest="34"
+                    Padding="0"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 17"
+                    VerticalOptions="Center">
+                <Image Source="profile.png"
+                       Aspect="AspectFill"
+                       SemanticProperties.Description="Profile" />
+            </Border>
+        </Grid>
+
+        <!-- Sidebar navigation and empty state -->
         <Border x:Name="Sidebar"
+                Grid.Row="1"
                 Grid.Column="0"
                 BackgroundColor="{StaticResource SidebarBackgroundColor}"
                 StrokeThickness="0">
-            <Grid RowDefinitions="Auto,*,Auto"
-                  Padding="0,8">
-
-                <!-- Sidebar search box -->
-                <Border Grid.Row="0"
-                        Margin="12,8,12,12"
-                        Padding="12,0"
-                        BackgroundColor="{StaticResource SurfaceColor}"
-                        Stroke="{StaticResource BorderColor}"
-                        StrokeThickness="1"
-                        StrokeShape="RoundRectangle 8"
-                        HeightRequest="40">
-                    <Grid ColumnDefinitions="Auto,*">
-                        <Label Grid.Column="0"
-                               Text="&#128269;"
-                               FontSize="14"
-                               TextColor="{StaticResource TextSecondaryColor}"
-                               VerticalOptions="Center" />
-                        <Entry Grid.Column="1"
-                               Placeholder="Search"
-                               BackgroundColor="Transparent"
-                               FontSize="14"
-                               TextColor="{StaticResource TextPrimaryColor}"
-                               PlaceholderColor="{StaticResource TextSecondaryColor}" />
-                    </Grid>
-                </Border>
-
-                <!-- Sidebar categories list -->
-                <CollectionView Grid.Row="1"
+            <Grid RowDefinitions="Auto,Auto,*,Auto"
+                  Padding="0,12,0,16">
+                <CollectionView Grid.Row="0"
                                 ItemsSource="{Binding AvailableCategories}"
                                 ItemTemplate="{StaticResource SidebarItemTemplate}"
                                 SelectionMode="Single"
                                 SelectedItem="{Binding SelectedCategory, Mode=TwoWay, Converter={StaticResource ObjectToCategoryConverter}}"
                                 BackgroundColor="Transparent" />
 
-                <!-- "New list" footer (placeholder for Module-05) -->
-                <HorizontalStackLayout Grid.Row="2"
-                                       Padding="16,12"
-                                       Spacing="12">
-                    <Label Text="&#65291;"
-                           FontSize="18"
-                           TextColor="{StaticResource PrimaryColor}"
-                           VerticalOptions="Center" />
-                    <Label Text="New list"
-                           Style="{StaticResource SidebarItemLabelStyle}"
-                           VerticalOptions="Center"
-                           TextColor="{StaticResource PrimaryColor}" />
-                </HorizontalStackLayout>
+                <BoxView Grid.Row="1"
+                         Margin="16,8"
+                         HeightRequest="1"
+                         Color="{StaticResource DividerColor}" />
+
+                <VerticalStackLayout Grid.Row="2"
+                                     Padding="16"
+                                     HorizontalOptions="Center"
+                                     VerticalOptions="Center"
+                                     Spacing="10">
+                    <Button ImageSource="notesicon.png" FontSize="32" Background="Transparent"
+                            HorizontalOptions="Center"/>
+                    <Label Text="No list was found. Please create a to-do list."
+                           FontSize="12"  
+                           TextColor="{StaticResource TextSecondaryColor}"
+                           HorizontalTextAlignment="Center" /> 
+                </VerticalStackLayout>
+
+                <Button Grid.Row="3"
+                        Text="&#65291;"
+                        FontSize="26"
+                        WidthRequest="52"
+                        HeightRequest="52"
+                        CornerRadius="26"
+                        Padding="0"
+                        Margin="16,12,0,0"
+                        HorizontalOptions="End"
+                        BackgroundColor="{StaticResource PrimaryColor}"
+                        TextColor="{StaticResource OnPrimaryColor}"
+                        SemanticProperties.Description="Create a to-do list" />
             </Grid>
         </Border>
 
-        <!-- ====================================================== -->
-        <!-- MAIN CONTENT (header + background + list + bottom bar)  -->
-        <!-- ====================================================== -->
-        <Grid Grid.Column="1"
-              RowDefinitions="Auto,*,Auto"
-              BackgroundColor="{StaticResource BackgroundColor}">
-
-            <!-- HEADER BAR (title + search icon) -->
-            <Grid Grid.Row="0"
-                  HeightRequest="{StaticResource HeaderHeight}"
-                  BackgroundColor="{StaticResource SurfaceColor}"
-                  ColumnDefinitions="Auto,*,Auto"
-                  Padding="16,0">
-                <Grid.Shadow>
-                    <Shadow Brush="#10000000" Radius="4" Offset="0,1" Opacity="0.10" />
-                </Grid.Shadow>
-
-                <Label Grid.Column="0"
-                       Text=""
-                       WidthRequest="0" />
-
-                <Label Grid.Column="1"
-                       Text="{Binding HeaderTitle}"
-                       Style="{StaticResource HeaderTitleStyle}"
-                       HorizontalOptions="Center" />
-
-                <Button Grid.Column="2"
-                        Text="&#128269;"
-                        FontSize="18"
-                        BackgroundColor="Transparent"
-                        TextColor="{StaticResource TextSecondaryColor}"
-                        WidthRequest="44"
-                        HeightRequest="44"
-                        Padding="0" />
-            </Grid>
-
-            <!-- CONTENT AREA (background image + SfListView + empty state) -->
-            <Grid Grid.Row="1">
-
-                <!-- 1. Full-bleed background image (matches design) -->
-                <Image Aspect="AspectFill"
+        <!-- Image-backed notes card -->
+        <Border Grid.Row="1"
+                Grid.Column="1"
+                Margin="16"
+                BackgroundColor="{StaticResource BackgroundColor}"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 14">
+            <Grid RowDefinitions="Auto,*,Auto">
+                <Image Grid.RowSpan="3"
+                       Aspect="AspectFill"
                        HorizontalOptions="Fill"
                        VerticalOptions="Fill">
                     <Image.Triggers>
@@ -145,193 +165,124 @@
                         </DataTrigger>
                     </Image.Triggers>
                 </Image>
+                <BoxView Grid.RowSpan="3" Color="#66000000" />
 
-                <!-- 2. List of note cards (SfListView with the card template) -->
-                <syncfusion:SfListView x:Name="NotesList"
-                                       ItemsSource="{Binding FilteredNotes}"
-                                       ItemSize="76"
-                                       SelectionMode="Single"
-                                       ItemSpacing="6"
-                                       BackgroundColor="Transparent"
-                                       IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}">
-                    <syncfusion:SfListView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Note">
-                            <Border Margin="12,3"
-                                    Padding="14,10"
-                                    BackgroundColor="{StaticResource SurfaceColor}"
-                                    StrokeThickness="0"
-                                    StrokeShape="RoundRectangle 8">
-                                <Border.Shadow>
-                                    <Shadow Brush="#22000000" Radius="4" Offset="0,1" Opacity="0.18" />
-                                </Border.Shadow>
-                                <Grid ColumnDefinitions="Auto,*,Auto,Auto"
-                                      ColumnSpacing="10"
-                                      VerticalOptions="Center">
-
-                                    <CheckBox Grid.Column="0"
-                                              VerticalOptions="Center"
-                                              IsChecked="{Binding IsCompleted, Mode=TwoWay}"
-                                              Color="{StaticResource PrimaryColor}" />
-
-                                    <VerticalStackLayout Grid.Column="1"
-                                                         Spacing="4"
-                                                         HorizontalOptions="Fill">
-
-                                        <Label Text="{Binding Title}"
-                                               Style="{StaticResource NoteTitleStyle}"
-                                               TextDecorations="{Binding IsCompleted, Converter={StaticResource BoolToTextDecorationConverter}}" />
-
-                                        <HorizontalStackLayout Spacing="10"
-                                                               IsVisible="{Binding DueDate, Converter={StaticResource NotNullToBoolConverter}}">
-                                            <Label Text="&#128197;"
-                                                   FontSize="12"
-                                                   TextColor="{StaticResource TextSecondaryColor}"
-                                                   VerticalOptions="Center" />
-                                            <Label Text="{Binding DueDate, Converter={StaticResource DateTimeFormatConverter}}"
-                                                   Style="{StaticResource NoteMetaStyle}"
-                                                   VerticalOptions="Center" />
-                                            <Label Text="&#128338;"
-                                                   FontSize="12"
-                                                   TextColor="{StaticResource ReminderColor}"
-                                                   IsVisible="{Binding ReminderDate, Converter={StaticResource NotNullToBoolConverter}}"
-                                                   VerticalOptions="Center" />
-                                            <Label Text="{Binding ReminderDate, Converter={StaticResource DateTimeFormatConverter}}"
-                                                   Style="{StaticResource NoteMetaStyle}"
-                                                   IsVisible="{Binding ReminderDate, Converter={StaticResource NotNullToBoolConverter}}"
-                                                   VerticalOptions="Center" />
-                                        </HorizontalStackLayout>
-                                    </VerticalStackLayout>
-
-                                    <Button Grid.Column="2"
-                                            Text="{Binding IsImportant, Converter={StaticResource BoolToStarGlyphConverter}}"
-                                            TextColor="{Binding IsImportant, Converter={StaticResource BoolToStarColorConverter}}"
-                                            BackgroundColor="Transparent"
-                                            FontSize="20"
-                                            WidthRequest="40"
-                                            HeightRequest="40"
-                                            Padding="0"
-                                            CornerRadius="20"
-                                            Command="{Binding Source={x:Reference Notes}, Path=BindingContext.ToggleImportantCommand}"
-                                            CommandParameter="{Binding .}" />
-
-                                    <Button Grid.Column="3"
-                                            Text="&#8943;"
-                                            TextColor="{StaticResource TextSecondaryColor}"
-                                            BackgroundColor="Transparent"
-                                            FontSize="20"
-                                            FontAttributes="Bold"
-                                            WidthRequest="40"
-                                            HeightRequest="40"
-                                            Padding="0"
-                                            CornerRadius="20"
-                                            Command="{Binding Source={x:Reference Notes}, Path=BindingContext.DeleteCommand}"
-                                            CommandParameter="{Binding .}" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </syncfusion:SfListView.ItemTemplate>
-                </syncfusion:SfListView>
-
-                <!-- 3. Empty state (visible when FilteredNotes is empty) -->
-                <VerticalStackLayout IsVisible="{Binding IsEmpty}"
-                                     HorizontalOptions="Center"
-                                     VerticalOptions="Center"
-                                     Spacing="12">
-                    <Label Text="&#128203;"
-                           FontSize="64"
-                           TextColor="{StaticResource TextTertiaryColor}"
-                           HorizontalOptions="Center" />
-                    <Label Text="{Binding EmptyStateTitle}"
-                           Style="{StaticResource EmptyStateMessageStyle}" />
-                    <Label Text="{Binding EmptyStateMessage}"
-                           Style="{StaticResource EmptyStateMessageStyle}" />
-                </VerticalStackLayout>
-
-                <!-- 4. FAB (floating + to add a task quickly when empty) -->
-                <Button Text="&#65291;"
-                        FontSize="28"
-                        WidthRequest="56"
-                        HeightRequest="56"
-                        CornerRadius="28"
-                        BackgroundColor="{StaticResource PrimaryColor}"
-                        TextColor="{StaticResource OnPrimaryColor}"
-                        HorizontalOptions="End"
-                        VerticalOptions="End"
-                        Margin="0,0,24,24"
-                        IsVisible="{Binding IsEmpty}" />
-            </Grid>
-
-            <!-- BOTTOM INPUT BAR (pill input + submit) -->
-            <Grid Grid.Row="2"
-                  HeightRequest="{StaticResource BottomInputHeight}"
-                  BackgroundColor="{StaticResource BottomBarBackgroundColor}"
-                  Padding="16,8"
-                  ColumnDefinitions="*,Auto"
-                  ColumnSpacing="8">
-
-                <Grid.Shadow>
-                    <Shadow Brush="#15000000" Radius="6" Offset="0,-1" Opacity="0.10" />
-                </Grid.Shadow>
-
-                <!-- Pill-shaped input -->
-                <Border Grid.Column="0"
-                        BackgroundColor="{StaticResource InputPillBackgroundColor}"
-                        StrokeThickness="0"
-                        StrokeShape="RoundRectangle 24"
-                        Padding="14,0">
-                    <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto"
-                          ColumnSpacing="6"
-                          VerticalOptions="Center">
-                        <Label Grid.Column="0"
-                               Text="&#65291;"
-                               FontSize="14"
-                               TextColor="{StaticResource TextSecondaryColor}"
+                <Grid Grid.Row="0"
+                      Padding="20,14"
+                      ColumnDefinitions="Auto,*,Auto">
+                    <HorizontalStackLayout Grid.Column="0"
+                                           Spacing="10"
+                                           VerticalOptions="Center">
+                        <Button ImageSource="profileiconmain.png" FontSize="20" VerticalOptions="Center" Background="Transparent"/>
+                        <Label Text="{Binding HeaderTitle}"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource OnPrimaryColor}"
                                VerticalOptions="Center" />
-                        <Entry Grid.Column="1"
-                               Text="{Binding NewNoteTitle, Mode=TwoWay}"
-                               Placeholder="Add a note"
-                               Style="{StaticResource InputPillEntryStyle}"
-                               ReturnCommand="{Binding AddNoteCommand}" />
+                    </HorizontalStackLayout>
+                    <Button Grid.Column="2"
+                            Text="&#8943;"
+                            FontSize="22"
+                            WidthRequest="40"
+                            HeightRequest="40"
+                            Padding="0" Rotation="90"
+                            BackgroundColor="Transparent"
+                            TextColor="{StaticResource OnPrimaryColor}"
+                            SemanticProperties.Description="More notes options" />
+                </Grid>
+
+                <Grid Grid.Row="1"> 
+
+                    <VerticalStackLayout IsVisible="{Binding IsEmpty}"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="Center"
+                                         Spacing="12">
+                        <Label Text="&#128203;"
+                               FontSize="56"
+                               TextColor="{StaticResource OnPrimaryColor}"
+                               HorizontalOptions="Center" />
+                        <Label Text="{Binding EmptyStateTitle}"
+                               Style="{StaticResource EmptyStateMessageStyle}"
+                               TextColor="{StaticResource OnPrimaryColor}"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="{Binding EmptyStateMessage}"
+                               Style="{StaticResource EmptyStateMessageStyle}"
+                               TextColor="{StaticResource OnPrimaryColor}"
+                               HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <Border Grid.Row="2"
+                        Margin="16,12,16,16"
+                        Padding="10,4"
+                        BackgroundColor="{StaticResource SurfaceColor}"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 12">
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto"
+                          ColumnSpacing="2"
+                          VerticalOptions="Center">
+                           <syncfusionCore:SfTextInputLayout Grid.Column="0"
+                                             Hint="Add a note"
+                                             ContainerType="None"
+                                             ShowHint="True"
+                                             ReserveSpaceForAssistiveLabels="False"
+                                             InputViewPadding="0"
+                                             VerticalOptions="Center">
+                            <Entry Text="{Binding NewNoteTitle, Mode=TwoWay}"
+                                Style="{StaticResource InputPillEntryStyle}"
+                                ReturnCommand="{Binding AddNoteCommand}" />
+                           </syncfusionCore:SfTextInputLayout>
+                        <Button Grid.Column="1"
+                                ImageSource="calendaricon.png"
+                                FontSize="16"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                Padding="0"
+                                BackgroundColor="Transparent"
+                                TextColor="{StaticResource TextSecondaryColor}"
+                                SemanticProperties.Description="Add image" />
                         <Button Grid.Column="2"
-                                Text="&#128197;"
-                                FontSize="14"
+                                ImageSource="dateicon.png"
+                                FontSize="16"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                Padding="0"
                                 BackgroundColor="Transparent"
                                 TextColor="{StaticResource TextSecondaryColor}"
-                                WidthRequest="32"
-                                HeightRequest="32"
-                                Padding="0" />
+                                SemanticProperties.Description="Archive note" />
                         <Button Grid.Column="3"
-                                Text="&#128276;"
-                                FontSize="14"
+                                ImageSource="bellicon.png"
+                                FontSize="16"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                Padding="0"
                                 BackgroundColor="Transparent"
                                 TextColor="{StaticResource TextSecondaryColor}"
-                                WidthRequest="32"
-                                HeightRequest="32"
-                                Padding="0" />
+                                SemanticProperties.Description="Set reminder" />
                         <Button Grid.Column="4"
-                                Text="&#127991;"
-                                FontSize="14"
+                                Text="|"
+                                FontSize="18"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                Padding="0"
                                 BackgroundColor="Transparent"
                                 TextColor="{StaticResource TextSecondaryColor}"
-                                WidthRequest="32"
-                                HeightRequest="32"
-                                Padding="0" />
+                                SemanticProperties.Description="More note options" />
+                        <Button Grid.Column="5"
+                                ImageSource="tickicon.png"
+                                FontSize="18"
+                                FontAttributes="Bold"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                CornerRadius="20"
+                                Padding="0"
+                                BackgroundColor="{StaticResource PrimaryColor}"
+                                TextColor="{StaticResource OnPrimaryColor}"
+                                Command="{Binding AddNoteCommand}"
+                                SemanticProperties.Description="Save note" />
                     </Grid>
                 </Border>
-
-                <!-- Submit button (purple circle) -->
-                <Button Grid.Column="1"
-                        Text="&#10003;"
-                        FontSize="20"
-                        FontAttributes="Bold"
-                        WidthRequest="44"
-                        HeightRequest="44"
-                        CornerRadius="22"
-                        Padding="0"
-                        BackgroundColor="{StaticResource PrimaryColor}"
-                        TextColor="{StaticResource OnPrimaryColor}"
-                        Command="{Binding AddNoteCommand}" />
             </Grid>
-        </Grid>
+        </Border>
     </Grid>
 </ContentPage>

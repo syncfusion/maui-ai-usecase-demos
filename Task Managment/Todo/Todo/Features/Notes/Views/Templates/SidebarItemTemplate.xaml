@@ -10,48 +10,52 @@
         The accent bar and glyph tint switch according to the active
         category so the visual matches every reference image.
     -->
-    <Grid Padding="0"
-          ColumnDefinitions="4,*"
-          BackgroundColor="Transparent"
-          HeightRequest="48">
+    <Border Margin="10,2"
+            Padding="14,0"
+            BackgroundColor="Transparent"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 8"
+            HeightRequest="44">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="Selected">
+                    <VisualState.Setters>
+                        <Setter Property="BackgroundColor" Value="{StaticResource SidebarSelectionColor}" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
 
-        <BoxView Grid.Column="0"
-                 WidthRequest="3"
-                 HorizontalOptions="Start"
-                 VerticalOptions="Fill"
-                 Color="{Binding ., Converter={StaticResource CategoryToColorConverter}}" />
-
-        <Grid Grid.Column="1"
-              Padding="16,0,16,0"
-              ColumnDefinitions="Auto,*"
+        <Grid ColumnDefinitions="Auto,*"
               ColumnSpacing="14"
               VerticalOptions="Center">
 
             <!-- Glyph -->
-            <Label Grid.Column="0"
-                   FontSize="20"
+            <Button Grid.Column="0"
+                   FontSize="20" Background="Transparent"
                    VerticalOptions="Center"
                    TextColor="{Binding ., Converter={StaticResource CategoryToColorConverter}}">
-                <Label.Triggers>
-                    <DataTrigger TargetType="Label" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.MyNotes}">
-                        <Setter Property="Text" Value="&#128221;" />
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.MyNotes}">
+                        <Setter Property="ImageSource" Value="profileicon.png" />
                     </DataTrigger>
-                    <DataTrigger TargetType="Label" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Important}">
-                        <Setter Property="Text" Value="&#9733;" />
+                    <DataTrigger TargetType="Button" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Important}">
+                        <Setter Property="ImageSource" Value="importanticon.png" />
                     </DataTrigger>
-                    <DataTrigger TargetType="Label" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Reminder}">
-                        <Setter Property="Text" Value="&#128276;" />
+                    <DataTrigger TargetType="Button" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Reminder}">
+                        <Setter Property="ImageSource" Value="belliconsidebar.png" />
                     </DataTrigger>
-                    <DataTrigger TargetType="Label" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Bin}">
-                        <Setter Property="Text" Value="&#128465;" />
+                    <DataTrigger TargetType="Button" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Bin}">
+                        <Setter Property="ImageSource" Value="binicon.png" />
                     </DataTrigger>
-                </Label.Triggers>
-            </Label>
+                </Button.Triggers>
+            </Button>
 
             <Label Grid.Column="1"
                    Text="{Binding ., Converter={StaticResource EnumDisplayNameConverter}, FallbackValue=''}"
                    Style="{StaticResource SidebarItemLabelStyle}" />
         </Grid>
-    </Grid>
+    </Border>
 
 </DataTemplate>
