@@ -71,4 +71,23 @@ public interface INoteService
     /// (Module-05).
     /// </summary>
     IReadOnlyList<Note> GetForList(string listId);
+
+    /// <summary>
+    /// Reorders the note at <paramref name="oldIndex"/> to the new
+    /// position <paramref name="newIndex"/> within the active filter
+    /// (built-in category or user-defined list) identified by
+    /// <paramref name="targetListId"/>. Module-07 task 7-1 drag-reorder.
+    /// The <see cref="Note.DisplayOrder"/> of every affected note is
+    /// rewritten so the new ordering persists across re-filtering.
+    /// </summary>
+    Task ReorderAsync(string targetListId, int oldIndex, int newIndex);
+
+    /// <summary>
+    /// Moves the note identified by <paramref name="noteId"/> to the
+    /// target list (<paramref name="targetListId"/>) and appends it
+    /// to the bottom of that list. Module-07 task 7-2 sidebar drop.
+    /// A <c>null</c> <paramref name="targetListId"/> moves the note
+    /// back to My Notes.
+    /// </summary>
+    Task MoveToListAsync(string noteId, string? targetListId);
 }

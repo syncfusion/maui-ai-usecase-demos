@@ -165,4 +165,65 @@ public sealed class InMemoryNoteService : INoteService
             .ThenBy(n => n.DisplayOrder)
             .ToList();
     }
+
+    public Task ReorderAsync(string targetListId, int oldIndex, int newIndex)
+    {
+        // Reorder only the notes that match the active filter so that
+        // a drop in the My Notes view does not collide with Important
+        // or Bin notes. `GetForCategory` / `GetForList` are the same
+        // ordering the user sees on screen, so the index from the
+        // view maps directly onto the source list.
+        var ordered = !string.IsNullOrEmpty(targetListId)
+            ? _notes
+                .Where(n => n.DeletedAt is null && n.ListId == targetListId)
+                .OrderBy(n => n.IsCompleted)
+                .ThenBy(n => n.DisplayOrder)
+                .ToList()
+            : _notes
+                .Where(n => n.DeletedAt is null)
+                .OrderBy(n => n.IsCompleted)
+                .ThenBy(n => n.DisplayOrder)
+                .ToList();
+
+        if (oldIndex < 0 || oldIndex >= ordered.Count) return Task.CompletedTask;
+        // Clamp newIndex to the last valid insertion point.
+        newIndex = Math.Clamp(newIndex, 0, ordered.Count - 1);
+        if (oldIndex == newIndex) return Task.CompletedTask;
+
+        var moved = ordered[oldIndex];
+        ordered.RemoveAt(oldIndex);
+        ordered.Insert(newIndex, moved);
+
+        // Rewrite DisplayOrder so the new ordering is durable across
+        // every subsequent re-filter / restart.
+        for (var i = 0; i < ordered.Count; i++)
+        {
+            ordered[i].DisplayOrder = i;
+            ordered[i].UpdatedAt = DateTime.Now;
+        }
+        return Task.CompletedTask;
+    }
+
+    public Task MoveToListAsync(string noteId, string? targetListId)
+    {
+        var existing = _notes.FirstOrDefault(n => n.Id == noteId);
+        if (existing is null) return Task.CompletedTask;
+
+        existing.ListId = targetListId;
+        existing.UpdatedAt = DateTime.Now;
+
+        // Append the moved note to the end of its new list so the user
+        // can find it in the destination sidebar entry.
+        if (existing.DeletedAt is null)
+        {
+            var sameScope = _notes
+                .Where(n => n.DeletedAt is null && n.ListId == targetListId && n.Id != existing.Id)
+                .OrderBy(n => n.IsCompleted)
+                .ThenBy(n => n.DisplayOrder)
+                .ToList();
+            var nextOrder = sameScope.Count == 0 ? 0 : sameScope.Max(n => n.DisplayOrder) + 1;
+            existing.DisplayOrder = nextOrder;
+        }
+        return Task.CompletedTask;
+    }
 }

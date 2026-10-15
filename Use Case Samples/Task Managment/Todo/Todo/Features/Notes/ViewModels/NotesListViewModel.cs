@@ -409,6 +409,165 @@ public partial class NotesListViewModel : ViewModelBase
     }
 
     // ---------------------------------------------------------------
+    //  Drag-and-drop commands (Module-07: matches draganddrop.png)
+    // ---------------------------------------------------------------
+
+    /// <summary>
+    /// Identifier of the note currently being dragged, if any. The view
+    /// uses this to apply a stronger shadow / lifted-card visual that
+    /// matches <c>draganddrop.png</c>.
+    /// </summary>
+    [ObservableProperty]
+    private string? draggingNoteId;
+
+    /// <summary>
+    /// Identifies the sidebar entry that is currently the drop target.
+    /// Encoded as <c>"cat:MyNotes"</c> / <c>"cat:Bin"</c> for built-in
+    /// categories and <c>"list:&lt;id&gt;"</c> for user-defined lists.
+    /// The sidebar uses this to highlight the destination.
+    /// </summary>
+    [ObservableProperty]
+    private string? dropTargetKey;
+
+    /// <summary>
+    /// True while the user is mid-drag. The view binds to this to apply
+    /// the gap highlight shown in <c>draganddrop.png</c>.
+    /// </summary>
+    public bool IsDragging => DraggingNoteId is not null;
+
+    /// <summary>
+    /// Index in the rendered list at which a gap should be drawn while
+    /// a drag is in progress. The view binds to this to position the
+    /// highlight bar shown in <c>draganddrop.png</c>. <c>-1</c> means
+    /// no gap highlight is visible.
+    /// </summary>
+    [ObservableProperty]
+    private int dropGapIndex = -1;
+
+    partial void OnDraggingNoteIdChanged(string? value)
+    {
+        // IsDragging is a computed property that depends on
+        // DraggingNoteId; raise the change notification so any
+        // bindings refresh (e.g. the gap-highlight bar and the
+        // drag-mode hint banner).
+        OnPropertyChanged(nameof(IsDragging));
+    }
+
+    /// <summary>
+    /// Persists a within-list reorder triggered by the Syncfusion
+    /// <c>SfListView</c> drag-and-drop. Module-07 task 7-1.
+    /// </summary>
+    [RelayCommand]
+    private void ReorderNote(DragReorderRequest? request)
+    {
+        if (request is null) return;
+        var scope = !string.IsNullOrEmpty(SelectedListId) ? SelectedListId : string.Empty;
+        _noteService.ReorderAsync(scope ?? string.Empty, request.OldIndex, request.NewIndex);
+    }
+
+    /// <summary>
+    /// Moves a note to a different list (built-in category or
+    /// user-defined list) when dropped on the matching sidebar entry.
+    /// Module-07 task 7-2.
+    /// </summary>
+    [RelayCommand]
+    private async Task MoveNoteToTargetAsync(DropTargetRequest? request)
+    {
+        if (request is null || string.IsNullOrEmpty(request.NoteId)) return;
+        var target = DecodeDropTargetKey(request.TargetKey);
+        if (target is null) return;
+
+        // No-op when the note is already in the destination list.
+        var note = _noteService.Notes.FirstOrDefault(n => n.Id == request.NoteId);
+        if (note is null) return;
+        if (note.ListId == target) return;
+
+        await _noteService.MoveToListAsync(request.NoteId, target);
+
+        // Snap the active filter to the destination so the user
+        // immediately sees the note land in the new list. (If the
+        // source and destination are the Bin, leave the current view
+        // untouched to keep the in-Bin experience consistent.)
+        if (target is null && SelectedCategory == NotesListCategory.MyNotes) return;
+        if (target is not null && SelectedListId == target) return;
+        // The user is "moving to list" — switch to the destination.
+        SelectedListId = target;
+    }
+
+    /// <summary>
+    /// Encodes a built-in category or list id into a drop-target key
+    /// that can travel through the MAUI <c>DataPackage</c>. Format:
+    /// <c>"cat:&lt;enum&gt;"</c> or <c>"list:&lt;id&gt;"</c> or
+    /// <c>"my"</c> for My Notes.
+    /// </summary>
+    public static string EncodeDropTarget(NotesListCategory category) => category switch
+    {
+        NotesListCategory.MyNotes => "my",
+        NotesListCategory.Important => "cat:Important",
+        NotesListCategory.Reminder => "cat:Reminder",
+        NotesListCategory.Bin => "cat:Bin",
+        _ => "my"
+    };
+
+    public static string EncodeDropTarget(string? listId) =>
+        string.IsNullOrEmpty(listId) ? "my" : $"list:{listId}";
+
+    /// <summary>
+    /// Decodes a drop-target key. Returns the target <c>ListId</c>
+    /// (or <c>null</c> for My Notes) and <c>true</c> for the category
+    /// string (when the key targets a built-in category other than
+    /// My Notes).
+    /// </summary>
+    private string? DecodeDropTargetKey(string? key)
+    {
+        if (string.IsNullOrEmpty(key) || key == "my") return null;
+        if (key.StartsWith("list:", StringComparison.Ordinal))
+            return key.Substring("list:".Length);
+        // Built-in category other than My Notes maps back to the
+        // matching enum value. We treat those as "no list" so the
+        // note lands in My Notes scope but is filtered by the user's
+        // new sidebar selection.
+        return null;
+    }
+
+    /// <summary>
+    /// Resolves a drop-target key to the matching <see cref="NotesListCategory"/>
+    /// (only valid for built-in categories other than My Notes).
+    /// </summary>
+    public static NotesListCategory? TryDecodeCategoryKey(string? key)
+    {
+        if (string.IsNullOrEmpty(key)) return null;
+        if (key.StartsWith("cat:", StringComparison.Ordinal))
+        {
+            var name = key.Substring("cat:".Length);
+            return Enum.TryParse<NotesListCategory>(name, out var parsed) ? parsed : (NotesListCategory?)null;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Key used by the cross-list drag to identify the dragged note
+    /// in the MAUI <c>DataPackage.Properties</c>.
+    /// </summary>
+    public const string DragPayloadNoteIdKey = "Todo.NoteId";
+
+    /// <summary>
+    /// Clears the in-flight drag state. Called when the MAUI drag
+    /// completes (drop or cancel) so the visuals reset. Exposed as
+    /// a command so XAML can wire it via a
+    /// <c>DropCompleted</c>-style trigger if needed; the View
+    /// currently calls it from the <c>OnNoteDropCompleted</c>
+    /// event handler.
+    /// </summary>
+    [RelayCommand]
+    private void NoteDragCompleted()
+    {
+        DraggingNoteId = null;
+        DropTargetKey = null;
+        DropGapIndex = -1;
+    }
+
+    // ---------------------------------------------------------------
     //  Dialog / action sheet commands (Module-03)
     // ---------------------------------------------------------------
 
@@ -616,3 +775,20 @@ public partial class NotesListViewModel : ViewModelBase
         }
     }
 }
+
+/// <summary>
+/// Payload passed from the <c>SfListView</c> drag-reorder event to
+/// the <see cref="NotesListViewModel.ReorderNoteCommand"/>. Carries
+/// the source and destination indices as observed on the rendered
+/// list so the service can re-author <c>DisplayOrder</c> values.
+/// </summary>
+public sealed record DragReorderRequest(int OldIndex, int NewIndex);
+
+/// <summary>
+/// Payload passed from the sidebar drop gesture to the
+/// <see cref="NotesListViewModel.MoveNoteToTargetCommand"/>. The
+/// <see cref="TargetKey"/> is encoded by
+/// <see cref="NotesListViewModel.EncodeDropTarget(string?)"/> /
+/// <see cref="NotesListViewModel.EncodeDropTarget(NotesListCategory)"/>.
+/// </summary>
+public sealed record DropTargetRequest(string NoteId, string TargetKey);
