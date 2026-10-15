@@ -48,11 +48,15 @@
                        FontSize="14"
                        TextColor="{StaticResource TextPrimaryColor}"
                        PlaceholderColor="{StaticResource TextSecondaryColor}"
+                       IsReadOnly="True"
+                       Focused="OnSearchEntryFocused"
                        VerticalOptions="Center" />
                 <Button Grid.Column="1"
                         ImageSource="search.png"
                         FontSize="15" Background="Transparent"
                         TextColor="{StaticResource TextSecondaryColor}"
+                        Command="{Binding OpenSearchCommand}"
+                        SemanticProperties.Description="Search notes"
                         VerticalOptions="Center" />
             </Grid>
         </Border>

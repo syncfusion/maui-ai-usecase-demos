@@ -43,6 +43,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ConfirmDialogViewModel>();
         builder.Services.AddTransient<CreateListDialogViewModel>();
         builder.Services.AddTransient<RenameListDialogViewModel>();
+        builder.Services.AddTransient<Features.Search.ViewModels.SearchResultsViewModel>();
 
         // Pages (separate routes for My Notes, Important, Reminder, Bin)
         builder.Services.AddTransient<Features.Notes.Views.MyNotesPage>();
@@ -50,11 +51,16 @@ public static class MauiProgram
         builder.Services.AddTransient<Features.Reminder.ReminderPage>();
         builder.Services.AddTransient<Features.Bin.BinPage>();
 
-        // Modal pages (Module-03 + Module-05)
+        // Modal pages (Module-03 + Module-05 + Module-06)
         builder.Services.AddTransient<EditNotePage>();
         builder.Services.AddTransient<ConfirmDialogPage>();
         builder.Services.AddTransient<CreateListDialogPage>();
         builder.Services.AddTransient<RenameListDialogPage>();
+        builder.Services.AddTransient<Features.Search.Views.SearchResultsPage>();
+        builder.Services.AddTransient<Features.Bin.Views.PermanentDeleteDialog>();
+
+        // Search service (Module-06 task 6-1)
+        builder.Services.AddSingleton<Features.Search.Services.INoteSearchService, Features.Search.Services.InMemoryNoteSearchService>();
 
 #if DEBUG
         builder.Logging.AddDebug();

@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Todo.Features.Search.ViewModels"
+             xmlns:models="clr-namespace:Todo.Features.Notes.Models"
+             xmlns:conv="clr-namespace:Todo.Converters"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+             x:Class="Todo.Features.Search.Views.SearchResultsPage"
+             x:Name="SearchRoot"
+             x:DataType="vm:SearchResultsViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Search">
+
+    <Grid Padding="0,10,0,0"
+          RowDefinitions="48,*"
+          BackgroundColor="{StaticResource BackgroundColor}">
+
+        <!-- Header with a back arrow + the search input (per search.png) -->
+        <Grid Grid.Row="0"
+              HeightRequest="{StaticResource HeaderHeight}"
+              Padding="8,0,16,0"
+              ColumnDefinitions="Auto,*,Auto"
+              BackgroundColor="{StaticResource SurfaceColor}">
+            <Grid.Shadow>
+                <Shadow Brush="#10000000" Radius="4" Offset="0,1" Opacity="0.10" />
+            </Grid.Shadow>
+
+            <Button Grid.Column="0"
+                    Text="&#8592;"
+                    FontSize="22"
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    Padding="0"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource TextSecondaryColor}"
+                    Clicked="OnBackClicked"
+                    SemanticProperties.Description="Go back" />
+
+            <!-- Search input pill with leading magnifier + trailing clear (×) -->
+            <Border Grid.Column="1"
+                    HeightRequest="36"
+                    Padding="12,0"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Center"
+                    BackgroundColor="{StaticResource InputPillBackgroundColor}"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 18">
+                <Grid ColumnDefinitions="Auto,*,Auto"
+                      ColumnSpacing="8"
+                      VerticalOptions="Center">
+                    <Image Grid.Column="0"
+                           Source="search.png"
+                           WidthRequest="16"
+                           HeightRequest="16"
+                           Aspect="AspectFit"
+                           VerticalOptions="Center" />
+                    <Entry Grid.Column="1"
+                           Text="{Binding Query, Mode=TwoWay}"
+                           Placeholder="Search"
+                           FontSize="14"
+                           TextColor="{StaticResource TextPrimaryColor}"
+                           PlaceholderColor="{StaticResource TextSecondaryColor}"
+                           BackgroundColor="Transparent"
+                           VerticalOptions="Center" />
+                    <Button Grid.Column="2"
+                            Text="&#10005;"
+                            FontSize="14"
+                            WidthRequest="28"
+                            HeightRequest="28"
+                            Padding="0"
+                            BackgroundColor="Transparent"
+                            TextColor="{StaticResource TextSecondaryColor}"
+                            Command="{Binding ClearQueryCommand}"
+                            IsVisible="{Binding Query, Converter={StaticResource StringNotEmptyToBoolConverter}}"
+                            SemanticProperties.Description="Clear search" />
+                </Grid>
+            </Border>
+
+            <!-- Right spacer to balance the back button visually -->
+            <BoxView Grid.Column="2"
+                     WidthRequest="40"
+                     HeightRequest="40"
+                     Color="Transparent" />
+        </Grid>
+
+        <!-- Main content: empty state OR list of matching notes -->
+        <Grid Grid.Row="1"
+              Padding="16">
+
+            <Border BackgroundColor="{StaticResource BackgroundColor}"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 14">
+                <Grid RowDefinitions="Auto,*,Auto">
+
+                    <!-- Background image (reuses mynotes_bg so the page
+                         still feels like the rest of the app when the
+                         user types a query). -->
+                    <Image Grid.RowSpan="3"
+                           Source="mynotes_bg.png"
+                           Aspect="AspectFill"
+                           HorizontalOptions="Fill"
+                           VerticalOptions="Fill" />
+                    <BoxView Grid.RowSpan="3" Color="#66000000" />
+
+                    <!-- Page title -->
+                    <Grid Grid.Row="0"
+                          Padding="20,14"
+                          ColumnDefinitions="Auto,*,Auto">
+                        <HorizontalStackLayout Grid.Column="0"
+                                               Spacing="10"
+                                               VerticalOptions="Center">
+                            <Button ImageSource="search.png"
+                                    FontSize="20"
+                                    Background="Transparent"
+                                    WidthRequest="32"
+                                    HeightRequest="32"
+                                    Padding="0"
+                                    IsEnabled="False" />
+                            <Label Text="Search notes"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource OnPrimaryColor}"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Grid>
+
+                    <!-- Result list + empty states -->
+                    <Grid Grid.Row="1">
+
+                        <!-- Initial empty state: "You can search the
+                             created notes here" (per search.png). -->
+                        <VerticalStackLayout IsVisible="{Binding IsQueryEmpty}"
+                                             HorizontalOptions="Center"
+                                             VerticalOptions="Center"
+                                             Spacing="12">
+                            <Label Text="&#128203;"
+                                   FontSize="56"
+                                   TextColor="{StaticResource OnPrimaryColor}"
+                                   HorizontalOptions="Center" />
+                            <Label Text="You can search the created notes here"
+                                   FontSize="16"
+                                   TextColor="{StaticResource OnPrimaryColor}"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+
+                        <!-- No matches state -->
+                        <VerticalStackLayout IsVisible="{Binding HasNoResults}"
+                                             HorizontalOptions="Center"
+                                             VerticalOptions="Center"
+                                             Spacing="8">
+                            <Label Text="&#128683;"
+                                   FontSize="48"
+                                   TextColor="{StaticResource OnPrimaryColor}"
+                                   HorizontalOptions="Center" />
+                            <Label Text="No notes match your search"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource OnPrimaryColor}"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Try a different keyword."
+                                   FontSize="14"
+                                   TextColor="{StaticResource OnPrimaryColor}"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+
+                        <!-- Results list (reuses the same note-card
+                             template shape as the main list). -->
+                        <syncfusion:SfListView ItemsSource="{Binding Results}"
+                                               IsVisible="{Binding HasNoResults, Converter={StaticResource InvertedBoolConverter}}"
+                                               ItemSpacing="0"
+                                               ItemSize="70"
+                                               BackgroundColor="Transparent"
+                                               SelectionMode="None">
+                            <syncfusion:SfListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Note">
+                                    <Border Margin="16,6"
+                                            Padding="14,12"
+                                            BackgroundColor="{StaticResource SurfaceColor}"
+                                            StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 10">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={x:Reference SearchRoot}, Path=BindingContext.OpenNoteCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto"
+                                              ColumnSpacing="10"
+                                              VerticalOptions="Center">
+
+                                            <CheckBox Grid.Column="0"
+                                                      IsChecked="{Binding IsCompleted, Mode=TwoWay}"
+                                                      Color="{StaticResource PrimaryColor}"
+                                                      VerticalOptions="Center" />
+
+                                            <VerticalStackLayout Grid.Column="1"
+                                                                 Spacing="2"
+                                                                 VerticalOptions="Center">
+                                                <Label Text="{Binding Title}"
+                                                       Style="{StaticResource NoteTitleStyle}"
+                                                       TextDecorations="{Binding IsCompleted, Converter={StaticResource BoolToTextDecorationConverter}}" />
+                                                <HorizontalStackLayout Spacing="6">
+                                                    <Label Text="&#128197;"
+                                                           FontSize="12"
+                                                           TextColor="{StaticResource TextSecondaryColor}"
+                                                           IsVisible="{Binding DueDate, Converter={StaticResource NotNullToBoolConverter}}" />
+                                                    <Label Text="{Binding DueDate, Converter={StaticResource DateTimeFormatConverter}}"
+                                                           Style="{StaticResource NoteMetaStyle}"
+                                                           IsVisible="{Binding DueDate, Converter={StaticResource NotNullToBoolConverter}}" />
+                                                    <Label Text="&#128276;"
+                                                           FontSize="12"
+                                                           TextColor="{StaticResource TextSecondaryColor}"
+                                                           IsVisible="{Binding ReminderDate, Converter={StaticResource NotNullToBoolConverter}}" />
+                                                    <Label Text="{Binding ReminderDate, Converter={StaticResource DateTimeFormatConverter}}"
+                                                           Style="{StaticResource NoteMetaStyle}"
+                                                           IsVisible="{Binding ReminderDate, Converter={StaticResource NotNullToBoolConverter}}" />
+                                                </HorizontalStackLayout>
+                                            </VerticalStackLayout>
+
+                                            <Button Grid.Column="2"
+                                                    Text="{Binding IsImportant, Converter={StaticResource BoolToStarGlyphConverter}}"
+                                                    TextColor="{Binding IsImportant, Converter={StaticResource BoolToStarColorConverter}}"
+                                                    FontSize="20"
+                                                    Background="Transparent"
+                                                    WidthRequest="40"
+                                                    HeightRequest="40"
+                                                    Padding="0"
+                                                    Command="{Binding Source={x:Reference SearchRoot}, Path=BindingContext.ToggleImportantCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    SemanticProperties.Description="Toggle important" />
+
+                                            <Button Grid.Column="3"
+                                                    Text="&#8943;"
+                                                    FontSize="22"
+                                                    Rotation="90"
+                                                    Background="Transparent"
+                                                    TextColor="{StaticResource TextSecondaryColor}"
+                                                    WidthRequest="40"
+                                                    HeightRequest="40"
+                                                    Padding="0"
+                                                    IsEnabled="False"
+                                                    SemanticProperties.Description="More note options" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </syncfusion:SfListView.ItemTemplate>
+                        </syncfusion:SfListView>
+                    </Grid>
+
+                    <!-- Empty spacer row at the bottom to keep visual
+                         rhythm with the main list. -->
+                    <BoxView Grid.Row="2"
+                             HeightRequest="16"
+                             Color="Transparent" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

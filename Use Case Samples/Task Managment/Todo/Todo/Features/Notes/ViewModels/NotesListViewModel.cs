@@ -11,6 +11,8 @@ using Todo.Features.EditNote.ViewModels;
 using Todo.Features.EditNote.Views;
 using Todo.Features.Notes.Models;
 using Todo.Features.Notes.Services;
+using Todo.Features.Search.ViewModels;
+using Todo.Features.Search.Views;
 
 namespace Todo.Features.Notes.ViewModels;
 
@@ -342,6 +344,23 @@ public partial class NotesListViewModel : ViewModelBase
                 await ConfirmDeleteListAsync(list);
                 break;
         }
+    }
+
+    // ---------------------------------------------------------------
+    //  Search (Module-06)
+    // ---------------------------------------------------------------
+
+    /// <summary>
+    /// Opens the Search results page (matches <c>search.png</c>) as a
+    /// modal. The page has its own ViewModel so the global notes
+    /// state is not polluted by the search query.
+    /// </summary>
+    [RelayCommand]
+    private async Task OpenSearchAsync()
+    {
+        var searchService = new Todo.Features.Search.Services.InMemoryNoteSearchService(_noteService);
+        var page = new SearchResultsPage(new SearchResultsViewModel(searchService, _noteService, _navigation));
+        await _navigation.PushModalAsync(page);
     }
 
     // ---------------------------------------------------------------
