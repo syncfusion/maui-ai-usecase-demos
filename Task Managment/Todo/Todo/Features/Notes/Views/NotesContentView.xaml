@@ -46,13 +46,27 @@
                 <HorizontalStackLayout Grid.Column="0"
                                        Spacing="10"
                                        VerticalOptions="Center">
-                    <Button ImageSource="profileiconmain.png"
-                            FontSize="20"
+                    <Button FontSize="20"
                             VerticalOptions="Center"
                             Background="Transparent"
                             WidthRequest="32"
                             HeightRequest="32"
-                            Padding="0" />
+                            Padding="0">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding SelectedCategory}" Value="{x:Static common:NotesListCategory.MyNotes}">
+                                <Setter Property="ImageSource" Value="profileiconmain.png" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button" Binding="{Binding SelectedCategory}" Value="{x:Static common:NotesListCategory.Important}">
+                                <Setter Property="ImageSource" Value="importanticon.png" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button" Binding="{Binding SelectedCategory}" Value="{x:Static common:NotesListCategory.Reminder}">
+                                <Setter Property="ImageSource" Value="belliconsidebar.png" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button" Binding="{Binding SelectedCategory}" Value="{x:Static common:NotesListCategory.Bin}">
+                                <Setter Property="ImageSource" Value="binicon.png" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
                     <Label Text="{Binding HeaderTitle}"
                            FontSize="20"
                            FontAttributes="Bold"

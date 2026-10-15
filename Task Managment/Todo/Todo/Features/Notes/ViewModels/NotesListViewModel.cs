@@ -288,10 +288,10 @@ public partial class NotesListViewModel : ViewModelBase
                 await EditNoteAsync(note);
                 break;
             case "Delete":
-                await DeleteAsync(note);
+                Delete(note);
                 break;
             case "Restore note":
-                await RestoreAsync(note);
+                Restore(note);
                 break;
             case "Delete permanently":
                 await ConfirmDeletePermanentlyAsync(note);
@@ -325,18 +325,6 @@ public partial class NotesListViewModel : ViewModelBase
 
     //  Context-menu actions (more button on each card)
     // ---------------------------------------------------------------
-
-    /// <summary>
-    /// Placeholder command for "Edit note". A full edit page is added in
-    /// Module 03 (TaskCRUD) – until then this is a no-op so the
-    /// action-sheet still has a visible, real action to select.
-    /// </summary>
-    [RelayCommand]
-    private void EditNote(Note? note)
-    {
-        // No-op for Module 04. Module 03 wires the actual edit page here.
-        _ = note;
-    }
 
     /// <summary>
     /// Shows the permanent-delete confirmation dialog (per

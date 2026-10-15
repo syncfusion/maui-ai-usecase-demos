@@ -31,7 +31,7 @@ public partial class NotesPage : ContentPage
     /// MAUI design surface. Resolves the shared ViewModel via the
     /// <see cref="ServiceLocator"/>.
     /// </summary>
-    public NotesPage() : this(new NotesListViewModel(ServiceLocator.Current))
+    public NotesPage() : this(new NotesListViewModel())
     {
     }
 
