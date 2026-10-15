@@ -126,36 +126,6 @@ public static class SampleData
                     DisplayOrder = 7,
                     CreatedAt = now.AddDays(-2),
                     UpdatedAt = now.AddDays(-1)
-                },
-                new()
-                {
-                    Title = "Buy groceries for the week",
-                    DueDate = new DateTime(2026, 2, 18),
-                    ReminderDate = new DateTime(2026, 2, 18, 10, 0, 0),
-                    IsImportant = true,
-                    DisplayOrder = 8,
-                    CreatedAt = now.AddDays(-1),
-                    UpdatedAt = now.AddDays(-1)
-                },
-                new()
-                {
-                    Title = "Read 20 pages of a book",
-                    DueDate = new DateTime(2026, 2, 18),
-                    ReminderDate = new DateTime(2026, 2, 18, 10, 0, 0),
-                    IsImportant = true,
-                    DisplayOrder = 9,
-                    CreatedAt = now.AddDays(-1),
-                    UpdatedAt = now.AddDays(-1)
-                },
-                new()
-                {
-                    Title = "Water indoor plants",
-                    DueDate = new DateTime(2026, 2, 18),
-                    ReminderDate = new DateTime(2026, 2, 18, 10, 0, 0),
-                    IsImportant = true,
-                    DisplayOrder = 10,
-                    CreatedAt = now.AddDays(-1),
-                    UpdatedAt = now.AddDays(-1)
                 }
             };
 

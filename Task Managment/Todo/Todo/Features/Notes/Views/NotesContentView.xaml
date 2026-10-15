@@ -110,13 +110,13 @@
                 <!-- Notes list (Syncfusion SfListView) -->
                 <syncfusion:SfListView ItemsSource="{Binding FilteredNotes}"
                                        IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}"
-                                       ItemSpacing="0"
+                                       ItemSpacing="0" ItemSize="70"
                                        BackgroundColor="Transparent"
                                        SelectionMode="None">
                     <syncfusion:SfListView.ItemTemplate>
                         <DataTemplate x:DataType="models:Note">
                             <Border Margin="16,6"
-                                    Padding="14,12"
+                                    Padding="14,12" 
                                     BackgroundColor="{StaticResource SurfaceColor}"
                                     StrokeThickness="0"
                                     StrokeShape="RoundRectangle 10">
