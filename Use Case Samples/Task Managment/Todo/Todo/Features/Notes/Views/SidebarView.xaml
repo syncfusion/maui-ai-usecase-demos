@@ -2,6 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Todo.Features.Notes.ViewModels"
+             xmlns:custmodels="clr-namespace:Todo.Features.CustomLists.Models"
              xmlns:common="clr-namespace:Todo.Common"
              xmlns:conv="clr-namespace:Todo.Converters"
              x:Class="Todo.Features.Notes.Views.SidebarView"
@@ -12,71 +13,148 @@
     <Grid RowDefinitions="*,Auto"
           Padding="0,12,0,16">
 
-        <!-- Sidebar entries (My Notes, Important, Reminder, Bin) -->
-        <CollectionView Grid.Row="0"
-                        ItemsSource="{Binding AvailableCategories}"
-                        SelectionMode="Single"
-                        SelectedItem="{Binding SelectedCategory, Mode=TwoWay, Converter={StaticResource ObjectToCategoryConverter}}"
-                        BackgroundColor="Transparent"
-                        VerticalOptions="Fill"
-                        SelectionChanged="OnSidebarSelectionChanged">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="common:NotesListCategory">
-                    <Border Margin="10,2"
-                            Padding="14,0"
-                            BackgroundColor="Transparent"
-                            StrokeThickness="0"
-                            StrokeShape="RoundRectangle 8"
-                            HeightRequest="44">
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="CommonStates">
-                                <VisualState x:Name="Normal" />
-                                <VisualState x:Name="Selected">
-                                    <VisualState.Setters>
-                                        <Setter Property="BackgroundColor" Value="{StaticResource SidebarSelectionColor}" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
+        <!-- Scrollable sidebar contents: built-in categories + custom lists -->
+        <ScrollView Grid.Row="0"
+                    VerticalOptions="Fill"
+                    VerticalScrollBarVisibility="Never">
+            <VerticalStackLayout Spacing="4">
 
-                        <Grid ColumnDefinitions="Auto,*"
-                              ColumnSpacing="14"
-                              VerticalOptions="Center">
-                            <Button Grid.Column="0"
-                                    FontSize="20" Background="Transparent"
-                                    VerticalOptions="Center"
-                                    WidthRequest="32"
-                                    HeightRequest="32"
-                                    Padding="0"
-                                    IsEnabled="False"
-                                    TextColor="{Binding ., Converter={StaticResource CategoryToColorConverter}}">
-                                <Button.Triggers>
-                                    <DataTrigger TargetType="Button" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.MyNotes}">
-                                        <Setter Property="ImageSource" Value="profileicon.png" />
-                                    </DataTrigger>
-                                    <DataTrigger TargetType="Button" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Important}">
-                                        <Setter Property="ImageSource" Value="importanticon.png" />
-                                    </DataTrigger>
-                                    <DataTrigger TargetType="Button" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Reminder}">
-                                        <Setter Property="ImageSource" Value="belliconsidebar.png" />
-                                    </DataTrigger>
-                                    <DataTrigger TargetType="Button" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Bin}">
-                                        <Setter Property="ImageSource" Value="binicon.png" />
-                                    </DataTrigger>
-                                </Button.Triggers>
-                            </Button>
+                <!-- Built-in entries (My Notes, Important, Reminder, Bin) -->
+                <CollectionView ItemsSource="{Binding AvailableCategories}"
+                                SelectionMode="Single"
+                                SelectedItem="{Binding SelectedCategory, Mode=TwoWay, Converter={StaticResource ObjectToCategoryConverter}}"
+                                BackgroundColor="Transparent"
+                                SelectionChanged="OnSidebarSelectionChanged">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="common:NotesListCategory">
+                            <Border Margin="10,2"
+                                    Padding="14,0"
+                                    BackgroundColor="Transparent"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 8"
+                                    HeightRequest="44">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource SidebarSelectionColor}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
 
-                            <Label Grid.Column="1"
-                                   Text="{Binding ., Converter={StaticResource EnumDisplayNameConverter}, FallbackValue=''}"
-                                   Style="{StaticResource SidebarItemLabelStyle}"
-                                   IsVisible="{Binding Source={x:Reference SidebarRoot}, Path=BindingContext.IsSidebarCollapsed, Converter={StaticResource InvertedBoolConverter}}" />
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="14"
+                                      VerticalOptions="Center">
+                                    <Button Grid.Column="0"
+                                            FontSize="20" Background="Transparent"
+                                            VerticalOptions="Center"
+                                            WidthRequest="32"
+                                            HeightRequest="32"
+                                            Padding="0"
+                                            IsEnabled="False"
+                                            TextColor="{Binding ., Converter={StaticResource CategoryToColorConverter}}">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.MyNotes}">
+                                                <Setter Property="ImageSource" Value="profileicon.png" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Button" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Important}">
+                                                <Setter Property="ImageSource" Value="importanticon.png" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Button" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Reminder}">
+                                                <Setter Property="ImageSource" Value="belliconsidebar.png" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Button" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Bin}">
+                                                <Setter Property="ImageSource" Value="binicon.png" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
 
-        <!-- "+" button to create a new list (placeholder for Module-05) -->
+                                    <Label Grid.Column="1"
+                                           Text="{Binding ., Converter={StaticResource EnumDisplayNameConverter}, FallbackValue=''}"
+                                           Style="{StaticResource SidebarItemLabelStyle}"
+                                           IsVisible="{Binding Source={x:Reference SidebarRoot}, Path=BindingContext.IsSidebarCollapsed, Converter={StaticResource InvertedBoolConverter}}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- "Lists" section header (only shown when there are
+                     custom lists AND the sidebar is expanded). -->
+                <Label Text="Lists"
+                       Style="{StaticResource SidebarSectionHeaderStyle}"
+                       IsVisible="{Binding Source={x:Reference SidebarRoot}, Path=BindingContext.CustomLists.Count, Converter={StaticResource CountToVisibilityConverter}}" />
+
+                <!-- Custom (user-defined) lists -->
+                <CollectionView x:Name="CustomListsView"
+                                ItemsSource="{Binding CustomLists}"
+                                SelectionMode="Single"
+                                BackgroundColor="Transparent"
+                                SelectionChanged="OnCustomListSelectionChanged">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="custmodels:NoteList">
+                            <Border Margin="10,2"
+                                    Padding="14,0"
+                                    BackgroundColor="Transparent"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 8"
+                                    HeightRequest="44">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource SidebarSelectionColor}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+
+                                <Grid ColumnDefinitions="Auto,*,Auto"
+                                      ColumnSpacing="8"
+                                      VerticalOptions="Center">
+                                    <!-- List icon (notesicon.png) -->
+                                    <Button Grid.Column="0"
+                                            ImageSource="notesicon.png"
+                                            FontSize="16"
+                                            Background="Transparent"
+                                            WidthRequest="32"
+                                            HeightRequest="32"
+                                            Padding="0"
+                                            IsEnabled="False" />
+
+                                    <!-- List name -->
+                                    <Label Grid.Column="1"
+                                           Text="{Binding Name}"
+                                           Style="{StaticResource SidebarItemLabelStyle}"
+                                           LineBreakMode="TailTruncation"
+                                           IsVisible="{Binding Source={x:Reference SidebarRoot}, Path=BindingContext.IsSidebarCollapsed, Converter={StaticResource InvertedBoolConverter}}" />
+
+                                    <!-- Per-list "more" menu (rename / delete) -->
+                                    <Button Grid.Column="2"
+                                            Text="&#8943;"
+                                            FontSize="18"
+                                            Rotation="90"
+                                            WidthRequest="32"
+                                            HeightRequest="32"
+                                            Padding="0"
+                                            Background="Transparent"
+                                            TextColor="{StaticResource TextSecondaryColor}"
+                                            Command="{Binding Source={x:Reference SidebarRoot}, Path=BindingContext.ShowListMenuCommand}"
+                                            CommandParameter="{Binding .}"
+                                            SemanticProperties.Description="More list options" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- "+" button to create a new list (Module-05 task 5-2) -->
         <Button Grid.Row="1"
                 Text="&#65291;"
                 FontSize="26"
@@ -88,6 +166,7 @@
                 HorizontalOptions="End"
                 BackgroundColor="{StaticResource PrimaryColor}"
                 TextColor="{StaticResource OnPrimaryColor}"
+                Command="{Binding OpenCreateListDialogCommand}"
                 SemanticProperties.Description="Create a to-do list" />
     </Grid>
 

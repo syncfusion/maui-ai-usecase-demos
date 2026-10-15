@@ -1,6 +1,9 @@
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Core.Hosting;
 using Todo.Common;
+using Todo.Features.CustomLists.Services;
+using Todo.Features.CustomLists.ViewModels;
+using Todo.Features.CustomLists.Views;
 using Todo.Features.Dialogs.ViewModels;
 using Todo.Features.Dialogs.Views;
 using Todo.Features.EditNote.ViewModels;
@@ -31,11 +34,15 @@ public static class MauiProgram
 
         // Services
         builder.Services.AddSingleton<INoteService, InMemoryNoteService>();
+        builder.Services.AddSingleton<IListService, InMemoryListService>();
 
         // ViewModels — shared singleton across all four filter pages.
         builder.Services.AddSingleton<NotesListViewModel>();
+        builder.Services.AddSingleton<CustomListsViewModel>();
         builder.Services.AddTransient<EditNoteViewModel>();
         builder.Services.AddTransient<ConfirmDialogViewModel>();
+        builder.Services.AddTransient<CreateListDialogViewModel>();
+        builder.Services.AddTransient<RenameListDialogViewModel>();
 
         // Pages (separate routes for My Notes, Important, Reminder, Bin)
         builder.Services.AddTransient<Features.Notes.Views.MyNotesPage>();
@@ -43,9 +50,11 @@ public static class MauiProgram
         builder.Services.AddTransient<Features.Reminder.ReminderPage>();
         builder.Services.AddTransient<Features.Bin.BinPage>();
 
-        // Modal pages (Module-03)
+        // Modal pages (Module-03 + Module-05)
         builder.Services.AddTransient<EditNotePage>();
         builder.Services.AddTransient<ConfirmDialogPage>();
+        builder.Services.AddTransient<CreateListDialogPage>();
+        builder.Services.AddTransient<RenameListDialogPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

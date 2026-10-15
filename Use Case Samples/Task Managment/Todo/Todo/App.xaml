@@ -23,6 +23,7 @@
             <conv:CategoryToColorConverter x:Key="CategoryToColorConverter" />
             <conv:EnumDisplayNameConverter x:Key="EnumDisplayNameConverter" />
             <conv:ObjectToCategoryConverter x:Key="ObjectToCategoryConverter" />
+            <conv:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

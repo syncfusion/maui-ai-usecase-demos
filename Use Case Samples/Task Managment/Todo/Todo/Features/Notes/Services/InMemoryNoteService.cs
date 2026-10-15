@@ -47,7 +47,7 @@ public sealed class InMemoryNoteService : INoteService
 
     public ReadOnlyObservableCollection<Note> Notes { get; }
 
-    public Task<Note> CreateAsync(string title, DateTime? dueDate = null, DateTime? reminderDate = null)
+    public Task<Note> CreateAsync(string title, DateTime? dueDate = null, DateTime? reminderDate = null, string? listId = null)
     {
         var now = DateTime.Now;
         var nextOrder = _notes.Count == 0 ? 0 : _notes.Max(n => n.DisplayOrder) + 1;
@@ -57,6 +57,7 @@ public sealed class InMemoryNoteService : INoteService
             Title = (title ?? string.Empty).Trim(),
             DueDate = dueDate,
             ReminderDate = reminderDate,
+            ListId = listId,
             DisplayOrder = nextOrder,
             CreatedAt = now,
             UpdatedAt = now
@@ -149,6 +150,17 @@ public sealed class InMemoryNoteService : INoteService
         };
 
         return query
+            .OrderBy(n => n.IsCompleted)
+            .ThenBy(n => n.DisplayOrder)
+            .ToList();
+    }
+
+    public IReadOnlyList<Note> GetForList(string listId)
+    {
+        // Only active (non-deleted) notes belong to a user-defined list.
+        // Soft-deleted notes are surfaced in the Bin regardless of list.
+        return _notes
+            .Where(n => n.DeletedAt is null && n.ListId == listId)
             .OrderBy(n => n.IsCompleted)
             .ThenBy(n => n.DisplayOrder)
             .ToList();

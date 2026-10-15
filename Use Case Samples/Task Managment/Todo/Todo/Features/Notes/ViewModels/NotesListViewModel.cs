@@ -4,6 +4,7 @@ using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Todo.Common;
+using Todo.Features.CustomLists.Services;
 using Todo.Features.Dialogs.ViewModels;
 using Todo.Features.Dialogs.Views;
 using Todo.Features.EditNote.ViewModels;
@@ -29,6 +30,7 @@ namespace Todo.Features.Notes.ViewModels;
 public partial class NotesListViewModel : ViewModelBase
 {
     private readonly INoteService _noteService;
+    private readonly IListService _listService;
     private readonly INavigationService _navigation;
 
     /// <summary>
@@ -38,13 +40,16 @@ public partial class NotesListViewModel : ViewModelBase
     public ObservableCollection<Note> FilteredNotes { get; } = new();
 
     public NotesListViewModel()
-        : this(ServiceLocator.Current, new MauiNavigationService())
+        : this(ServiceLocator.Current,
+               ServiceLocator.CurrentListService,
+               new MauiNavigationService())
     {
     }
 
-    public NotesListViewModel(INoteService noteService, INavigationService navigation)
+    public NotesListViewModel(INoteService noteService, IListService listService, INavigationService navigation)
     {
         _noteService = noteService;
+        _listService = listService;
         _navigation = navigation;
 
         // Listen to the underlying store and refresh the visible list.
@@ -55,6 +60,17 @@ public partial class NotesListViewModel : ViewModelBase
         foreach (var note in _noteService.Notes)
         {
             note.PropertyChanged += OnNotePropertyChanged;
+        }
+
+        // Re-filter when a user-defined list is renamed (header title
+        // changes) or removed (the user may have been viewing it).
+        if (_listService.Lists is INotifyCollectionChanged listNotifying)
+        {
+            listNotifying.CollectionChanged += OnListsCollectionChanged;
+        }
+        foreach (var list in _listService.Lists)
+        {
+            list.PropertyChanged += OnListPropertyChanged;
         }
 
         ApplyFilter();
@@ -70,14 +86,39 @@ public partial class NotesListViewModel : ViewModelBase
     private string headerTitle = NotesListCategory.MyNotes.ToDisplayName();
 
     /// <summary>
+    /// Identifier of the user-defined list currently being shown.
+    /// <c>null</c> means a built-in category is active (My Notes,
+    /// Important, Reminder, Bin). Set by the sidebar when the user
+    /// selects a custom list (Module-05).
+    /// </summary>
+    [ObservableProperty]
+    private string? selectedListId;
+
+    /// <summary>
     /// Available sidebar entries. Static for Module-02; later modules
     /// can append user-defined lists here.
     /// </summary>
     public IReadOnlyList<NotesListCategory> AvailableCategories { get; } =
         new[] { NotesListCategory.MyNotes, NotesListCategory.Important, NotesListCategory.Reminder, NotesListCategory.Bin };
 
+    /// <summary>
+    /// User-defined lists bound from the shared <see cref="IListService"/>.
+    /// The sidebar renders these below the four built-in entries
+    /// (Module-05).
+    /// </summary>
+    public ReadOnlyObservableCollection<Todo.Features.CustomLists.Models.NoteList> CustomLists => _listService.Lists;
+
+    /// <summary>
+    /// Indicates whether the active filter is a user-defined list
+    /// (rather than a built-in category). Drives header copy and
+    /// background image selection.
+    /// </summary>
+    public bool IsCustomListSelected => !string.IsNullOrEmpty(SelectedListId);
+
     partial void OnSelectedCategoryChanged(NotesListCategory value)
     {
+        // Selecting a built-in category clears any active custom list.
+        SelectedListId = null;
         HeaderTitle = value.ToDisplayName();
         ApplyFilter();
         OnPropertyChanged(nameof(IsEmpty));
@@ -85,6 +126,36 @@ public partial class NotesListViewModel : ViewModelBase
         OnPropertyChanged(nameof(EmptyStateMessage));
         OnPropertyChanged(nameof(AccentColorKey));
         OnPropertyChanged(nameof(BackgroundImage));
+    }
+
+    partial void OnSelectedListIdChanged(string? value)
+    {
+        // Selecting a custom list falls back to My Notes chrome (the
+        // four built-in backgrounds are the documented design tokens).
+        HeaderTitle = string.IsNullOrEmpty(value)
+            ? SelectedCategory.ToDisplayName()
+            : ResolveCustomListName(value) ?? "List";
+        ApplyFilter();
+        OnPropertyChanged(nameof(IsEmpty));
+        OnPropertyChanged(nameof(EmptyStateTitle));
+        OnPropertyChanged(nameof(EmptyStateMessage));
+        OnPropertyChanged(nameof(IsCustomListSelected));
+        OnPropertyChanged(nameof(AccentColorKey));
+        OnPropertyChanged(nameof(BackgroundImage));
+    }
+
+    private string? ResolveCustomListName(string listId)
+        => _listService.Lists.FirstOrDefault(l => l.Id == listId)?.Name;
+
+    /// <summary>
+    /// Resets <see cref="SelectedListId"/> back to <c>null</c> when the
+    /// currently-displayed list has just been deleted. Called by the
+    /// sidebar delete flow (Module-05).
+    /// </summary>
+    public void ClearSelectedListIfDeleted(string deletedListId)
+    {
+        if (SelectedListId == deletedListId)
+            SelectedListId = null;
     }
 
     /// <summary>
@@ -103,26 +174,45 @@ public partial class NotesListViewModel : ViewModelBase
     /// <summary>
     /// Empty-state title text (varies by filter)
     /// </summary>
-    public string EmptyStateTitle => SelectedCategory switch
+    public string EmptyStateTitle
     {
-        NotesListCategory.MyNotes => "No list was found.",
-        NotesListCategory.Important => "No important notes",
-        NotesListCategory.Reminder => "No reminders",
-        NotesListCategory.Bin => "Bin is empty",
-        _ => string.Empty
-    };
+        get
+        {
+            if (!string.IsNullOrEmpty(SelectedListId))
+            {
+                var name = ResolveCustomListName(SelectedListId!) ?? "this list";
+                return $"No notes in '{name}'";
+            }
+            return SelectedCategory switch
+            {
+                NotesListCategory.MyNotes => "No list was found.",
+                NotesListCategory.Important => "No important notes",
+                NotesListCategory.Reminder => "No reminders",
+                NotesListCategory.Bin => "Bin is empty",
+                _ => string.Empty
+            };
+        }
+    }
 
     /// <summary>
     /// Empty-state subtitle / supporting copy.
     /// </summary>
-    public string EmptyStateMessage => SelectedCategory switch
+    public string EmptyStateMessage
     {
-        NotesListCategory.MyNotes => "Please create a to-do list.",
-        NotesListCategory.Important => "Tap the star on a note to mark it important.",
-        NotesListCategory.Reminder => "Notes with a reminder date will appear here.",
-        NotesListCategory.Bin => "Soft-deleted notes can be restored from the Bin.",
-        _ => string.Empty
-    };
+        get
+        {
+            if (!string.IsNullOrEmpty(SelectedListId))
+                return "Add a note using the input below.";
+            return SelectedCategory switch
+            {
+                NotesListCategory.MyNotes => "Please create a to-do list.",
+                NotesListCategory.Important => "Tap the star on a note to mark it important.",
+                NotesListCategory.Reminder => "Notes with a reminder date will appear here.",
+                NotesListCategory.Bin => "Soft-deleted notes can be restored from the Bin.",
+                _ => string.Empty
+            };
+        }
+    }
 
     public bool IsEmpty => FilteredNotes.Count == 0;
 
@@ -162,6 +252,98 @@ public partial class NotesListViewModel : ViewModelBase
         NavigationRequested?.Invoke(this, category.Value);
     }
 
+    /// <summary>
+    /// Selects a user-defined list (Module-05). Custom lists reuse
+    /// the My Notes chrome — they don't have a separate route — so
+    /// this only updates <see cref="SelectedListId"/>.
+    /// </summary>
+    [RelayCommand]
+    private void NavigateToList(string? listId)
+    {
+        if (string.IsNullOrEmpty(listId)) return;
+        SelectedListId = listId;
+    }
+
+    // ---------------------------------------------------------------
+    //  Custom-list commands (Module-05: create / rename / delete)
+    // ---------------------------------------------------------------
+
+    /// <summary>
+    /// Opens the centered create-list dialog (matches
+    /// <c>createnewlist.png</c>) and adds the new list on confirm.
+    /// </summary>
+    [RelayCommand]
+    private async Task OpenCreateListDialogAsync()
+    {
+        var vm = new Todo.Features.CustomLists.ViewModels.CreateListDialogViewModel(_listService, _navigation);
+        var page = new Todo.Features.CustomLists.Views.CreateListDialogPage(vm);
+        await _navigation.PushModalAsync(page);
+    }
+
+    /// <summary>
+    /// Opens the centered rename-list dialog (matches
+    /// <c>renamelist.png</c>) pre-populated with the current name.
+    /// </summary>
+    [RelayCommand]
+    private async Task OpenRenameListDialogAsync(Todo.Features.CustomLists.Models.NoteList? list)
+    {
+        if (list is null) return;
+        var vm = new Todo.Features.CustomLists.ViewModels.RenameListDialogViewModel(_listService, _navigation, list);
+        var page = new Todo.Features.CustomLists.Views.RenameListDialogPage(vm);
+        await _navigation.PushModalAsync(page);
+    }
+
+    /// <summary>
+    /// Shows a confirmation dialog and removes the list on confirm.
+    /// Notes in the deleted list are returned to My Notes.
+    /// </summary>
+    [RelayCommand]
+    private async Task ConfirmDeleteListAsync(Todo.Features.CustomLists.Models.NoteList? list)
+    {
+        if (list is null) return;
+
+        var vm = new ConfirmDialogViewModel(_navigation)
+        {
+            Title = "Delete list?",
+            Message = $"The '{list.Name}' list will be removed. Notes in this list will move back to My Notes.",
+            ConfirmText = "Delete",
+            IsDestructive = true
+        };
+        var page = new ConfirmDialogPage(vm);
+        var result = await _navigation.PushModalAsync(page);
+        if (result is true)
+        {
+            await _listService.DeleteAsync(list.Id);
+            ClearSelectedListIfDeleted(list.Id);
+        }
+    }
+
+    /// <summary>
+    /// Three-dot "more" menu on a custom list entry. Opens a native
+    /// action sheet with Rename / Delete options.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowListMenuAsync(Todo.Features.CustomLists.Models.NoteList? list)
+    {
+        if (list is null) return;
+
+        var choice = await _navigation.ShowActionSheetAsync(
+            title: list.Name ?? "List",
+            message: null,
+            destruction: "Delete",
+            "Rename list", "Delete") ?? string.Empty;
+
+        switch (choice)
+        {
+            case "Rename list":
+                await OpenRenameListDialogAsync(list);
+                break;
+            case "Delete":
+                await ConfirmDeleteListAsync(list);
+                break;
+        }
+    }
+
     // ---------------------------------------------------------------
     //  Bottom-input bar state
     // ---------------------------------------------------------------
@@ -180,7 +362,9 @@ public partial class NotesListViewModel : ViewModelBase
         if (string.IsNullOrEmpty(title))
             return;
 
-        await _noteService.CreateAsync(title);
+        // Notes created from the bottom input are attached to the
+        // currently-active custom list, if any (Module-05).
+        await _noteService.CreateAsync(title, listId: SelectedListId);
         NewNoteTitle = string.Empty;
     }
 
@@ -361,7 +545,13 @@ public partial class NotesListViewModel : ViewModelBase
     private void ApplyFilter()
     {
         FilteredNotes.Clear();
-        foreach (var note in _noteService.GetForCategory(SelectedCategory))
+        // Module-05: a user-defined list takes priority over the
+        // built-in category so the user can scope My Notes style
+        // chrome to a specific list.
+        var source = !string.IsNullOrEmpty(SelectedListId)
+            ? _noteService.GetForList(SelectedListId!)
+            : (IEnumerable<Note>)_noteService.GetForCategory(SelectedCategory);
+        foreach (var note in source)
             FilteredNotes.Add(note);
     }
 
@@ -381,14 +571,48 @@ public partial class NotesListViewModel : ViewModelBase
     private void OnNotePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         // Re-evaluate the filter when the IsImportant / IsCompleted /
-        // DeletedAt / ReminderDate of any note changes.
+        // DeletedAt / ReminderDate / ListId of any note changes.
         if (e.PropertyName is nameof(Note.IsImportant)
                               or nameof(Note.IsCompleted)
                               or nameof(Note.DeletedAt)
                               or nameof(Note.ReminderDate)
+                              or nameof(Note.ListId)
                               or nameof(Note.DisplayOrder))
         {
             ApplyFilter();
+        }
+    }
+
+    private void OnListsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.NewItems is not null)
+            foreach (Todo.Features.CustomLists.Models.NoteList l in e.NewItems)
+                l.PropertyChanged += OnListPropertyChanged;
+        if (e.OldItems is not null)
+            foreach (Todo.Features.CustomLists.Models.NoteList l in e.OldItems)
+                l.PropertyChanged -= OnListPropertyChanged;
+
+        // If the currently-active list has been removed, snap back to
+        // the built-in My Notes view.
+        if (!string.IsNullOrEmpty(SelectedListId)
+            && _listService.Lists.All(l => l.Id != SelectedListId))
+        {
+            SelectedListId = null;
+        }
+        else
+        {
+            // Otherwise the header title may need a refresh.
+            OnPropertyChanged(nameof(HeaderTitle));
+            OnPropertyChanged(nameof(EmptyStateTitle));
+        }
+    }
+
+    private void OnListPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(Todo.Features.CustomLists.Models.NoteList.Name))
+        {
+            OnPropertyChanged(nameof(HeaderTitle));
+            OnPropertyChanged(nameof(EmptyStateTitle));
         }
     }
 }

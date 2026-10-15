@@ -20,9 +20,11 @@ public interface INoteService
 
     /// <summary>
     /// Adds a new note to the store. The supplied <paramref name="note"/>
-    /// receives a fresh <see cref="Note.Id"/> and timestamps.
+    /// receives a fresh <see cref="Note.Id"/> and timestamps. The
+    /// optional <paramref name="listId"/> attaches the note to a
+    /// user-defined list (Module-05).
     /// </summary>
-    Task<Note> CreateAsync(string title, DateTime? dueDate = null, DateTime? reminderDate = null);
+    Task<Note> CreateAsync(string title, DateTime? dueDate = null, DateTime? reminderDate = null, string? listId = null);
 
     /// <summary>
     /// Replaces the editable fields of an existing note.
@@ -62,4 +64,11 @@ public interface INoteService
     /// safe to bind from XAML.
     /// </summary>
     IReadOnlyList<Note> GetForCategory(NotesListCategory category);
+
+    /// <summary>
+    /// Returns the notes that belong to the supplied user-defined list
+    /// (<paramref name="listId"/>). Used by the sidebar's custom lists
+    /// (Module-05).
+    /// </summary>
+    IReadOnlyList<Note> GetForList(string listId);
 }
