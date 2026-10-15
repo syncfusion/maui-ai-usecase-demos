@@ -12,6 +12,14 @@
              x:DataType="vm:NotesListViewModel"
              Padding="16">
 
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <!-- Module-07 converters used by the drag-and-drop visuals. -->
+            <conv:MultiplyByConverter x:Key="MultiplyByConverter" />
+            <conv:DragStateColorConverter x:Key="DragStateColorConverter" />
+        </ResourceDictionary>
+    </ContentView.Resources>
+
     <Border BackgroundColor="{StaticResource BackgroundColor}"
             StrokeThickness="0"
             StrokeShape="RoundRectangle 14">
@@ -107,19 +115,80 @@
                            HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
 
+                <!-- Module-07 task 7-1: gap-highlight bar that appears
+                     at the in-list drop position while the user is
+                     dragging (draganddrop.png shows the gap below the
+                     lifted card). The bar is positioned via a
+                     TranslateY that follows DropGapIndex. -->
+                <BoxView IsVisible="{Binding IsDragging}"
+                         HeightRequest="3"
+                         Margin="16,0"
+                         Color="{StaticResource PrimaryColor}"
+                         VerticalOptions="Start"
+                         HorizontalOptions="Fill"
+                         TranslationY="{Binding DropGapIndex, Converter={StaticResource MultiplyByConverter}, ConverterParameter=70}">
+                    <BoxView.Triggers>
+                        <DataTrigger TargetType="BoxView"
+                                     Binding="{Binding DropGapIndex}"
+                                     Value="-1">
+                            <Setter Property="IsVisible" Value="False" />
+                        </DataTrigger>
+                    </BoxView.Triggers>
+                </BoxView>
+
+                <!-- Module-07 task 7-2: drag-mode hint banner that
+                     explains where the user can drop the card. -->
+                <Border IsVisible="{Binding IsDragging}"
+                        Margin="16,8"
+                        Padding="10,6"
+                        BackgroundColor="{StaticResource PrimaryColor}"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 8"
+                        HorizontalOptions="Fill"
+                        VerticalOptions="Start">
+                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                        <Label Text="&#9776;"
+                               FontSize="14"
+                               TextColor="{StaticResource OnPrimaryColor}"
+                               VerticalOptions="Center" />
+                        <Label Text="Dragging — drop on a list to move, or release here to reorder"
+                               FontSize="12"
+                               TextColor="{StaticResource OnPrimaryColor}"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </Border>
+
                 <!-- Notes list (Syncfusion SfListView) -->
                 <syncfusion:SfListView ItemsSource="{Binding FilteredNotes}"
                                        IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}"
                                        ItemSpacing="0" ItemSize="70"
                                        BackgroundColor="Transparent"
-                                       SelectionMode="None">
+                                       SelectionMode="SingleDeselect"
+                                       ItemDragging="OnItemDragging">
                     <syncfusion:SfListView.ItemTemplate>
                         <DataTemplate x:DataType="models:Note">
                             <Border Margin="16,6"
-                                    Padding="14,12" 
-                                    BackgroundColor="{StaticResource SurfaceColor}"
+                                    Padding="14,12"
                                     StrokeThickness="0"
                                     StrokeShape="RoundRectangle 10">
+                                <!-- Module-07 task 7-1 (draganddrop.png):
+                                     when this card is the one being
+                                     dragged, apply a stronger tint to
+                                     give the "lifted" affordance the
+                                     design shows. The MultiBinding
+                                     combines the note's Id with the
+                                     parent ViewModel's DraggingNoteId
+                                     and a DragStateColorConverter to
+                                     pick the right color. -->
+                                <Border.BackgroundColor>
+                                    <MultiBinding Converter="{StaticResource DragStateColorConverter}"
+                                                  ConverterParameter="#FFFFFF|#EEEAFB">
+                                        <Binding Path="Id" />
+                                        <Binding Source="{x:Reference NotesContentRoot}"
+                                                 Path="BindingContext.DraggingNoteId" />
+                                    </MultiBinding>
+                                </Border.BackgroundColor>
+
                                 <Border.GestureRecognizers>
                                     <!-- Tap on the card body opens the
                                          EditNote dialog. The inner
@@ -129,6 +198,14 @@
                                     <TapGestureRecognizer
                                         Command="{Binding Source={x:Reference NotesContentRoot}, Path=BindingContext.EditNoteCommand}"
                                         CommandParameter="{Binding .}" />
+                                    <!-- Module-07 task 7-2: a long-press
+                                         starts a MAUI drag so the card can
+                                         be dropped on a sidebar entry to
+                                         move it to another list. -->
+                                    <DragGestureRecognizer
+                                        CanDrag="True"
+                                        DragStarting="OnNoteDragStarting"
+                                        DropCompleted="OnNoteDropCompleted" />
                                 </Border.GestureRecognizers>
 
                                 <Grid ColumnDefinitions="Auto,*,Auto,Auto"

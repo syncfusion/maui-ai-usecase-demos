@@ -100,4 +100,13 @@
     <Color x:Key="Gray900">#212121</Color>
     <Color x:Key="Gray950">#141414</Color>
 
+    <!-- ============================================================ -->
+    <!-- Drag-and-drop tokens (Module-07)                              -->
+    <!-- Stronger shadow for the lifted card and the gap-highlight    -->
+    <!-- tint shown when a card is being dragged, per draganddrop.png. -->
+    <!-- ============================================================ -->
+    <Color x:Key="DragShadowColor">#33000000</Color>
+    <Color x:Key="DragGapTintColor">#335C4EAE</Color>
+    <Color x:Key="DropTargetHighlightColor">#5C4EAE</Color>
+
 </ResourceDictionary>

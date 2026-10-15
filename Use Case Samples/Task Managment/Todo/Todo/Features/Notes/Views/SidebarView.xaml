@@ -33,6 +33,19 @@
                                     StrokeThickness="0"
                                     StrokeShape="RoundRectangle 8"
                                     HeightRequest="44">
+                                <!-- Module-07 task 7-2: the sidebar entry
+                                     can receive a drop from the note list
+                                     to move the note into this category.
+                                     The drop visual (background + stroke)
+                                     is applied in code-behind so it can
+                                     also clear when the drag leaves. -->
+                                <Border.GestureRecognizers>
+                                    <DropGestureRecognizer
+                                        AllowDrop="True"
+                                        DragOver="OnSidebarDragOver"
+                                        DragLeave="OnSidebarDragLeave"
+                                        Drop="OnSidebarDrop" />
+                                </Border.GestureRecognizers>
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="CommonStates">
                                         <VisualState x:Name="Normal" />
@@ -101,6 +114,17 @@
                                     StrokeThickness="0"
                                     StrokeShape="RoundRectangle 8"
                                     HeightRequest="44">
+                                <!-- Module-07 task 7-2: same drop wiring
+                                     as the built-in entries, but the
+                                     payload encodes the list id so the
+                                     drop moves the note into THIS list. -->
+                                <Border.GestureRecognizers>
+                                    <DropGestureRecognizer
+                                        AllowDrop="True"
+                                        DragOver="OnCustomListDragOver"
+                                        DragLeave="OnCustomListDragLeave"
+                                        Drop="OnCustomListDrop" />
+                                </Border.GestureRecognizers>
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="CommonStates">
                                         <VisualState x:Name="Normal" />
