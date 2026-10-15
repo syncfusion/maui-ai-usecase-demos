@@ -17,6 +17,9 @@
         <ResourceDictionary>
             <!-- Sidebar entry template (custom DataTemplate subclass) -->
             <templates:SidebarItemTemplate x:Key="SidebarItemTemplate" />
+
+            <!-- Note card template (Module 02-4) -->
+            <templates:NoteItemTemplate x:Key="NoteItemTemplate" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -118,9 +121,9 @@
                     <Button ImageSource="notesicon.png" FontSize="32" Background="Transparent"
                             HorizontalOptions="Center"/>
                     <Label Text="No list was found. Please create a to-do list."
-                           FontSize="12"  
+                           FontSize="12"
                            TextColor="{StaticResource TextSecondaryColor}"
-                           HorizontalTextAlignment="Center" /> 
+                           HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
 
                 <Button Grid.Row="3"
@@ -191,8 +194,21 @@
                             SemanticProperties.Description="More notes options" />
                 </Grid>
 
-                <Grid Grid.Row="1"> 
+                <!-- Main content area: SfListView (when populated) OR empty state -->
+                <Grid Grid.Row="1">
 
+                    <!-- Populated list of notes (Module 02-4) -->
+                    <syncfusion:SfListView x:Name="NotesList"
+                                           IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}"
+                                           ItemsSource="{Binding FilteredNotes}"
+                                           ItemTemplate="{StaticResource NoteItemTemplate}"
+                                           ItemSpacing="6"
+                                           Padding="14,4,14,4"
+                                           BackgroundColor="Transparent"
+                                           SelectionMode="None">
+                    </syncfusion:SfListView>
+
+                    <!-- Empty state -->
                     <VerticalStackLayout IsVisible="{Binding IsEmpty}"
                                          HorizontalOptions="Center"
                                          VerticalOptions="Center"
