@@ -1,0 +1,288 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+             xmlns:vm="clr-namespace:ListView_IntentGrouping.ViewModels"
+             xmlns:model="clr-namespace:ListView_IntentGrouping.Models"
+             xmlns:conv="clr-namespace:ListView_IntentGrouping.Converters"
+             x:Class="ListView_IntentGrouping.MainPage"
+             
+             BackgroundColor="{AppThemeBinding Light=#F5F4FB, Dark=#0F0F12}"
+             Shell.NavBarIsVisible="False">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:StringNotEmptyConverter x:Key="StringNotEmpty" />
+            <conv:IntToBoolConverter x:Key="IntToBool" />
+            <conv:RatingToStarsConverter x:Key="RatingToStars" />
+            <conv:CountToLabelConverter x:Key="CountToLabel" />
+            <conv:PriorityToLabelConverter x:Key="PriorityToLabel" />
+            <conv:PriorityToColorConverter x:Key="PriorityToColor" />
+            <conv:GroupExpandGlyphConverter x:Key="GroupExpandGlyph" />
+            <conv:GroupExpandRotationConverter x:Key="GroupExpandRotation" />
+            <conv:GroupExpandBoolConverter x:Key="GroupExpandBool" />
+
+            <Color x:Key="CardSurface">#FFFFFF</Color>
+            <Color x:Key="CardSurfaceDark">#1C1B1F</Color>
+            <Color x:Key="SubtleText">#5F6368</Color>
+            <Color x:Key="SubtleTextDark">#B7B7BD</Color>
+            <Color x:Key="HeaderAccent">#6750A4</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*" Padding="16,12,16,0" RowSpacing="12">
+        <Border Grid.Row="0"
+                StrokeShape="RoundRectangle 20"
+                Stroke="Transparent"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardSurface}, Dark={StaticResource CardSurfaceDark}}"
+                Padding="18,16">
+            <VerticalStackLayout Spacing="12">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <VerticalStackLayout Grid.Column="0" Spacing="4" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="4" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="0">
+                    <Border Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            StrokeShape="RoundRectangle 14"
+                            Stroke="Transparent"
+                            BackgroundColor="{AppThemeBinding Light=#F8F8FF, Dark=#2A292E}"
+                            Padding="14,10,140,10">
+                        <Entry Text="{Binding Prompt, Mode=TwoWay}"
+                               x:Name="PromptEntry"
+                               Placeholder="Try: group by ratings, group by feedbacks, group by month, group by priority"
+                               FontSize="14"
+                               FontFamily="Roboto"
+                               BackgroundColor="Transparent"
+                               ReturnType="Go"
+                               ReturnCommand="{Binding GroupCommand}"
+                               Completed="OnPromptCompleted"
+                               VerticalOptions="Center" />
+                    </Border>
+
+                    <Border Grid.Column="1"
+                            Margin="0,0,8,0"
+                            StrokeShape="RoundRectangle 12"
+                            Stroke="Transparent"
+                            BackgroundColor="{StaticResource HeaderAccent}"
+                            Padding="22,10"
+                            VerticalOptions="Center"
+                            IsEnabled="{Binding IsNotBusy}">
+                        <Grid ColumnDefinitions="Auto,Auto"
+                              ColumnSpacing="8"
+                              HorizontalOptions="Center"
+                              VerticalOptions="Center">
+                            <ActivityIndicator Grid.Column="0"
+                                               IsRunning="{Binding IsBusy}"
+                                               IsVisible="{Binding IsBusy}"
+                                               Color="White"
+                                               WidthRequest="18"
+                                               HeightRequest="18"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center" />
+                            <Label Grid.Column="1"
+                                   Text="Group"
+                                   FontSize="14"
+                                   FontFamily="Roboto"
+                                   FontAttributes="Bold"
+                                   TextColor="White"
+                                   IsVisible="{Binding IsNotBusy}"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GroupCommand}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+
+        <syncfusion:SfListView Grid.Row="1"
+                               x:Name="IntentListView"
+                               ItemsSource="{Binding Items}"
+                               IsStickyHeader="{Binding IsGrouped}"
+                               SelectionMode="None"
+                               BackgroundColor="Transparent"
+                               SelectionBackground="Transparent"                       
+                               ItemSpacing="2"
+                               ItemSize="90"
+                               GroupHeaderSize="44"
+                               ScrollBarVisibility="Never"
+                               AllowGroupExpandCollapse="True">
+
+            <syncfusion:SfListView.GroupHeaderTemplate>
+                <DataTemplate>
+                    <Border Margin="12,6,12,6"
+                            StrokeShape="RoundRectangle 18"
+                            Stroke="{Binding Key.AccentColor}"
+                            StrokeThickness="1"
+                            BackgroundColor="{Binding Key.IconBackground}"
+                            Padding="10,4"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Start">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnGroupHeaderToggleTapped" />
+                        </Border.GestureRecognizers>
+                        <HorizontalStackLayout Spacing="8"
+                                               VerticalOptions="Center">
+
+                            <Label Text="{Binding IsExpand, Converter={StaticResource GroupExpandGlyph}}"
+                                   Rotation="{Binding IsExpand, Converter={StaticResource GroupExpandRotation}}"
+                                   FontFamily="MaterialAssets"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{Binding Key.AccentColor}"
+                                   VerticalOptions="Center" />
+
+                            <Label Text="{Binding Key.Title}"
+                                   FontFamily="Roboto"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   LineBreakMode="TailTruncation"
+                                   TextColor="{Binding Key.AccentColor}"
+                                   VerticalOptions="Center" />
+
+                            <Border StrokeShape="RoundRectangle 10"
+                                    Stroke="Transparent"
+                                    BackgroundColor="{Binding Key.AccentColor}"
+                                    Padding="8,2"
+                                    VerticalOptions="Center">
+                                <Label Text="{Binding Key.ItemCount}"
+                                       FontFamily="Roboto"
+                                       FontSize="11"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+                        </HorizontalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </syncfusion:SfListView.GroupHeaderTemplate>
+
+            <syncfusion:SfListView.ItemTemplate>
+                <DataTemplate x:DataType="model:FeedbackItem">
+                    <Border Margin="12,1,12,2"
+                            StrokeShape="RoundRectangle 14"
+                            Stroke="Transparent"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource CardSurface}, Dark={StaticResource CardSurfaceDark}}"
+                            Padding="12,8"
+                            VerticalOptions="Fill">
+
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal">
+                                    <VisualState.Setters>
+                                        <Setter Property="BackgroundColor"
+                                                Value="{AppThemeBinding Light=#FFFFFF, Dark=#1C1B1F}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                
+                                <VisualState x:Name="PointerOver">
+                                    <VisualState.Setters>
+                                        <Setter Property="Background"
+                                    Value="Transparent"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <VisualState.Setters>
+                                        <Setter Property="BackgroundColor"
+                                                Value="{AppThemeBinding Light=#FFFFFF, Dark=#1C1B1F}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid ColumnDefinitions="Auto,*,Auto"
+                              ColumnSpacing="10"
+                              VerticalOptions="Center">
+                            <Border Grid.Column="0"
+                                    StrokeShape="RoundRectangle 14"
+                                    Stroke="Transparent"
+                                    BackgroundColor="{AppThemeBinding Light=#EADDFF, Dark=#2E2640}"
+                                    WidthRequest="28"
+                                    HeightRequest="28"
+                                    VerticalOptions="Start">
+                                <Label Text="{Binding Initials}"
+                                       FontSize="11"
+                                       FontFamily="Roboto"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource HeaderAccent}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+
+                            <VerticalStackLayout Grid.Column="1"
+                                                 Spacing="2"
+                                                 VerticalOptions="Fill">
+                                <Label Text="{Binding TicketName}"
+                                       FontSize="13"
+                                       FontFamily="Roboto"
+                                       FontAttributes="Bold"
+                                       LineBreakMode="TailTruncation"
+                                       TextColor="{AppThemeBinding Light=#1C1B1F, Dark=#F2EFFE}" />
+                                <HorizontalStackLayout Spacing="6"
+                                                       VerticalOptions="Center">
+                                    <Label Text="{Binding SenderName}"
+                                           FontSize="11"
+                                           FontFamily="Roboto"
+                                           LineBreakMode="TailTruncation"
+                                           TextColor="{AppThemeBinding Light=#1C1B1F, Dark=#F2EFFE}"
+                                           VerticalOptions="Center" />
+                                    <Label Text="&#8226;"
+                                           FontSize="11"
+                                           TextColor="{StaticResource SubtleText}"
+                                           VerticalOptions="Center" />
+                                    <Label Text="{Binding Rating, Converter={StaticResource RatingToStars}}"
+                                           FontFamily="Roboto"
+                                           FontSize="11"
+                                           TextColor="#F4B400"
+                                           VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                                <Label Text="{Binding ShortDescription}"
+                                       FontSize="11"
+                                       FontFamily="Roboto"
+                                       LineBreakMode="TailTruncation"
+                                       MaxLines="2"
+                                       TextColor="{AppThemeBinding Light={StaticResource SubtleText}, Dark={StaticResource SubtleTextDark}}" />
+                            </VerticalStackLayout>
+
+                            <Border Grid.Column="2"
+                                    StrokeShape="RoundRectangle 10"
+                                    Stroke="Transparent"
+                                    BackgroundColor="{Binding Priority, Converter={StaticResource PriorityToColor}}"
+                                    Padding="8,2"
+                                    VerticalOptions="Start"
+                                    IsVisible="{Binding Priority, Converter={StaticResource IntToBool}}">
+                                <Label Text="{Binding Priority, Converter={StaticResource PriorityToLabel}}"
+                                       FontSize="10"
+                                       FontFamily="Roboto"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </syncfusion:SfListView.ItemTemplate>
+
+            <syncfusion:SfListView.EmptyView>
+                <Grid Padding="40" RowDefinitions="Auto,Auto" RowSpacing="8">
+                    <Label Grid.Row="0"
+                           Text="No tickets to show"
+                           HorizontalOptions="Center"
+                           FontFamily="MaterialAssets"
+                           FontSize="16"
+                           TextColor="{AppThemeBinding Light=#1C1B1F, Dark=#F2EFFE}" />
+                    <Label Grid.Row="1"
+                           Text="{Binding EmptyStateHint}"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"
+                           FontSize="12"
+                           TextColor="{StaticResource SubtleText}" />
+                </Grid>
+            </syncfusion:SfListView.EmptyView>
+        </syncfusion:SfListView>
+    </Grid>
+</ContentPage>
