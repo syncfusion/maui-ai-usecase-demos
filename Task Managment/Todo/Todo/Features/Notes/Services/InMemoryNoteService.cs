@@ -107,9 +107,20 @@ public sealed class InMemoryNoteService : INoteService
         IEnumerable<Note> query = _notes;
         query = category switch
         {
+            // Per the design (mynotes.png), My Notes is the active list
+            // and only shows notes that are not soft-deleted.
             NotesListCategory.MyNotes => query.Where(n => n.DeletedAt is null),
-            NotesListCategory.Important => query.Where(n => n.DeletedAt is null && n.IsImportant),
-            NotesListCategory.Reminder => query.Where(n => n.DeletedAt is null && n.ReminderDate.HasValue),
+
+            // Per the design (important.png), Important shows every note
+            // that has been starred – including ones that have since been
+            // moved to the Bin so users can still find them via the star.
+            NotesListCategory.Important => query.Where(n => n.IsImportant),
+
+            // Per the design (remainder.png), Reminder shows every note
+            // that has a reminder date set, regardless of soft-delete.
+            NotesListCategory.Reminder => query.Where(n => n.ReminderDate.HasValue),
+
+            // Per the design (bin.png), Bin shows every soft-deleted note.
             NotesListCategory.Bin => query.Where(n => n.DeletedAt is not null),
             _ => query
         };

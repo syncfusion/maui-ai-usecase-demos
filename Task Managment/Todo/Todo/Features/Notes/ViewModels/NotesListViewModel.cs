@@ -323,6 +323,50 @@ public partial class NotesListViewModel : ViewModelBase
         }
     }
 
+    //  Context-menu actions (more button on each card)
+    // ---------------------------------------------------------------
+
+    /// <summary>
+    /// Placeholder command for "Edit note". A full edit page is added in
+    /// Module 03 (TaskCRUD) – until then this is a no-op so the
+    /// action-sheet still has a visible, real action to select.
+    /// </summary>
+    [RelayCommand]
+    private void EditNote(Note? note)
+    {
+        // No-op for Module 04. Module 03 wires the actual edit page here.
+        _ = note;
+    }
+
+    /// <summary>
+    /// Shows the permanent-delete confirmation dialog (per
+    /// <c>deletepermently.png</c>). When the user confirms, the note is
+    /// removed from the in-memory store. When the user cancels, the note
+    /// is left untouched.
+    /// </summary>
+    [RelayCommand]
+    private async Task RequestDeletePermanentlyAsync(Note? note)
+    {
+        if (note is null) return;
+        if (ConfirmDeletePermanently is null)
+        {
+            // No dialog hook available – fall back to direct delete so
+            // the rest of the flow still works.
+            await _noteService.DeletePermanentlyAsync(note.Id);
+            return;
+        }
+
+        var confirmed = await ConfirmDeletePermanently.Invoke(note);
+        if (confirmed)
+            await _noteService.DeletePermanentlyAsync(note.Id);
+    }
+
+    /// <summary>
+    /// Hook used by the View to show the permanent-delete dialog.
+    /// Returns <c>true</c> if the user confirmed the deletion.
+    /// </summary>
+    public Func<Note, Task<bool>>? ConfirmDeletePermanently { get; set; }
+
     // ---------------------------------------------------------------
     //  Filtering
     // ---------------------------------------------------------------

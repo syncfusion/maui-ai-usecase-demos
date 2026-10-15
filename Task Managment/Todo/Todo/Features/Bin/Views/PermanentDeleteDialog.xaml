@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Todo.Features.Bin.Views.PermanentDeleteDialog"
+             BackgroundColor="#66000000">
+
+    <!--
+        Permanent-delete confirmation dialog.
+
+        Matches the design in images/deletepermently.png:
+        - Centered card, ~80% width (max 400 dp), 16 dp radius, 24 dp padding.
+        - Title: "Delete permanently?" (20 sp SemiBold)
+        - Body:  explanation that the action cannot be undone (14 sp gray)
+        - Buttons: Cancel (text) | Delete (primary purple)
+    -->
+    <Border Padding="24"
+            BackgroundColor="{StaticResource SurfaceColor}"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 16"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            WidthRequest="320"
+            MaximumWidthRequest="400">
+        <Border.Shadow>
+            <Shadow Brush="#44000000" Radius="8" Offset="0,4" Opacity="0.30" />
+        </Border.Shadow>
+
+        <VerticalStackLayout Spacing="14">
+            <Label Text="Delete permanently?"
+                   FontFamily="{StaticResource FontFamilySemibold}"
+                   FontSize="20"
+                   TextColor="{StaticResource TextPrimaryColor}" />
+
+            <Label Text="This note will be permanently deleted and cannot be recovered."
+                   FontFamily="{StaticResource FontFamilyRegular}"
+                   FontSize="14"
+                   TextColor="{StaticResource TextSecondaryColor}"
+                   LineBreakMode="WordWrap" />
+
+            <Grid ColumnDefinitions="*,Auto,Auto"
+                  ColumnSpacing="12"
+                  HorizontalOptions="End"
+                  Margin="0,8,0,0">
+                <Button Grid.Column="1"
+                        Text="Cancel"
+                        Style="{StaticResource TextButtonStyle}"
+                        Clicked="OnCancelClicked" />
+                <Button Grid.Column="2"
+                        Text="Delete"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Clicked="OnConfirmClicked" />
+            </Grid>
+        </VerticalStackLayout>
+    </Border>
+
+</ContentPage>
