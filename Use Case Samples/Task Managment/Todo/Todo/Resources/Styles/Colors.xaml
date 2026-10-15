@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- ============================================================ -->
+    <!-- Brand / Primary palette                                      -->
+    <!-- ============================================================ -->
+    <Color x:Key="PrimaryColor">#5C4EAE</Color>
+    <Color x:Key="PrimaryDarkColor">#453685</Color>
+    <Color x:Key="PrimaryLightColor">#8A7FD9</Color>
+    <Color x:Key="OnPrimaryColor">#FFFFFF</Color>
+
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}" />
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDarkColor}" />
+    <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLightColor}" />
+
+    <!-- ============================================================ -->
+    <!-- Category accent colors                                       -->
+    <!-- (tinted sidebar icons + cards)                               -->
+    <!-- ============================================================ -->
+    <Color x:Key="MyNotesColor">#757575</Color>
+    <Color x:Key="ImportantColor">#FFC107</Color>
+    <Color x:Key="ImportantSoftColor">#9C27B0</Color>
+    <Color x:Key="ReminderColor">#2196F3</Color>
+    <Color x:Key="BinColor">#F44336</Color>
+
+    <SolidColorBrush x:Key="ImportantBrush" Color="{StaticResource ImportantColor}" />
+    <SolidColorBrush x:Key="ReminderBrush" Color="{StaticResource ReminderColor}" />
+    <SolidColorBrush x:Key="BinBrush" Color="{StaticResource BinColor}" />
+    <SolidColorBrush x:Key="MyNotesBrush" Color="{StaticResource MyNotesColor}" />
+
+    <!-- ============================================================ -->
+    <!-- Semantic / surface tokens                                    -->
+    <!-- ============================================================ -->
+    <Color x:Key="BackgroundColor">#FAFAFA</Color>
+    <Color x:Key="SurfaceColor">#FFFFFF</Color>
+    <Color x:Key="SidebarBackgroundColor">#F5F5F5</Color>
+    <Color x:Key="SidebarSelectionColor">#EEEAFB</Color>
+    <Color x:Key="DividerColor">#E0E0E0</Color>
+    <Color x:Key="BorderColor">#E0E0E0</Color>
+
+    <Color x:Key="BottomBarBackgroundColor">#FFFFFF</Color>
+    <Color x:Key="InputPillBackgroundColor">#F5F5F5</Color>
+
+    <!-- ============================================================ -->
+    <!-- Text                                                         -->
+    <!-- ============================================================ -->
+    <Color x:Key="TextPrimaryColor">#212121</Color>
+    <Color x:Key="TextSecondaryColor">#757575</Color>
+    <Color x:Key="TextTertiaryColor">#9E9E9E</Color>
+    <Color x:Key="TextOnDarkColor">#FFFFFF</Color>
+    <Color x:Key="TextInverseColor">#FFFFFF</Color>
+
+    <!-- ============================================================ -->
+    <!-- Status                                                       -->
+    <!-- ============================================================ -->
+    <Color x:Key="ErrorColor">#D32F2F</Color>
+    <Color x:Key="SuccessColor">#388E3C</Color>
+    <Color x:Key="WarningColor">#F57C00</Color>
+
+    <!-- ============================================================ -->
+    <!-- Sidebar item tint helpers (left accent bar + glyph tint)      -->
+    <!-- ============================================================ -->
+    <Color x:Key="AccentTintMyNotesColor">#9E9E9E</Color>
+    <Color x:Key="AccentTintImportantColor">#FFC107</Color>
+    <Color x:Key="AccentTintReminderColor">#2196F3</Color>
+    <Color x:Key="AccentTintBinColor">#F44336</Color>
+
+    <!-- ============================================================ -->
+    <!-- Background image overlay tints (used per category)           -->
+    <!-- ============================================================ -->
+    <Color x:Key="OverlayMyNotesColor">#0F1822</Color>
+    <Color x:Key="OverlayImportantColor">#1F3A40</Color>
+    <Color x:Key="OverlayReminderColor">#0B2A3F</Color>
+    <Color x:Key="OverlayBinColor">#7A1F2B</Color>
+
+    <!-- ============================================================ -->
+    <!-- Legacy MAUI default palette (kept so the original            -->
+    <!-- AppThemeBinding keys used in the template's Styles.xaml      -->
+    <!-- continue to resolve)                                          -->
+    <!-- ============================================================ -->
+    <Color x:Key="Primary">#5C4EAE</Color>
+    <Color x:Key="PrimaryDark">#ac99ea</Color>
+    <Color x:Key="PrimaryDarkText">#242424</Color>
+    <Color x:Key="Secondary">#DFD8F7</Color>
+    <Color x:Key="SecondaryDarkText">#9880e5</Color>
+    <Color x:Key="Tertiary">#2B0B98</Color>
+    <Color x:Key="White">#FFFFFF</Color>
+    <Color x:Key="Black">#000000</Color>
+    <Color x:Key="Magenta">#D600AA</Color>
+    <Color x:Key="MidnightBlue">#190649</Color>
+    <Color x:Key="OffBlack">#1f1f1f</Color>
+    <Color x:Key="Gray100">#E1E1E1</Color>
+    <Color x:Key="Gray200">#C8C8C8</Color>
+    <Color x:Key="Gray300">#ACACAC</Color>
+    <Color x:Key="Gray400">#919191</Color>
+    <Color x:Key="Gray500">#6E6E6E</Color>
+    <Color x:Key="Gray600">#404040</Color>
+    <Color x:Key="Gray900">#212121</Color>
+    <Color x:Key="Gray950">#141414</Color>
+
+</ResourceDictionary>

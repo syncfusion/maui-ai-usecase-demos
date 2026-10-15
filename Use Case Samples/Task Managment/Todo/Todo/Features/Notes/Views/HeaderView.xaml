@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Todo.Features.Notes.ViewModels"
+             x:Class="Todo.Features.Notes.Views.HeaderView"
+             x:DataType="vm:NotesListViewModel">
+
+    <Grid HeightRequest="{StaticResource HeaderHeight}"
+          Padding="8,0,16,0"
+          ColumnDefinitions="Auto,*,Auto"
+          BackgroundColor="{StaticResource SurfaceColor}">
+        <Grid.Shadow>
+            <Shadow Brush="#10000000" Radius="4" Offset="0,1" Opacity="0.10" />
+        </Grid.Shadow>
+
+        <HorizontalStackLayout Grid.Column="0"
+                               Spacing="4"
+                               VerticalOptions="Center">
+            <!-- Hamburger menu: collapses / expands the sidebar -->
+            <Button ImageSource="humburger.png"
+                    FontSize="20"
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    Padding="0"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource TextSecondaryColor}"
+                    Command="{Binding ToggleSidebarCommand}"
+                    SemanticProperties.Description="Toggle navigation menu" />
+            <Label Text="To Do List"
+                   FontSize="17"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource TextPrimaryColor}"
+                   VerticalOptions="Center" />
+        </HorizontalStackLayout>
+
+        <!-- Search pill -->
+        <Border Grid.Column="1"
+                WidthRequest="{OnIdiom Phone=180, Default=360}"
+                HeightRequest="36"
+                Padding="12,0"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                BackgroundColor="{StaticResource InputPillBackgroundColor}"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 18">
+            <Grid ColumnDefinitions="*,Auto">
+                <Entry Placeholder="Search"
+                       FontSize="14"
+                       TextColor="{StaticResource TextPrimaryColor}"
+                       PlaceholderColor="{StaticResource TextSecondaryColor}"
+                       VerticalOptions="Center" />
+                <Button Grid.Column="1"
+                        ImageSource="search.png"
+                        FontSize="15" Background="Transparent"
+                        TextColor="{StaticResource TextSecondaryColor}"
+                        VerticalOptions="Center" />
+            </Grid>
+        </Border>
+
+        <Border Grid.Column="2"
+                WidthRequest="34"
+                HeightRequest="34"
+                Padding="0"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 17"
+                VerticalOptions="Center">
+            <Image Source="profile.png"
+                   Aspect="AspectFill"
+                   SemanticProperties.Description="Profile" />
+        </Border>
+    </Grid>
+
+</ContentView>
