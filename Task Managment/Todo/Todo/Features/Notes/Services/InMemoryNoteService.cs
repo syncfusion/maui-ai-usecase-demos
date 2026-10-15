@@ -15,10 +15,19 @@ public sealed class InMemoryNoteService : INoteService
 
     public InMemoryNoteService()
     {
-        // My Notes must be empty on initial application load (Module-02).
-        // No sample / mock / placeholder notes are seeded; the user creates
-        // every note via the bottom input bar.
-        _notes = new ObservableCollection<Note>();
+        // Per the design (mynotes.png vs important.png / remainder.png /
+        // bin.png), the My Notes list opens empty at first launch while the
+        // Important, Reminder and Bin filters still display the canonical
+        // tasks from the reference images.
+        //
+        // SampleData.SeedNotes() produces that exact set: every note is
+        // soft-deleted, flagged important and has a reminder date set — so
+        // it is hidden from My Notes yet visible in the other three views.
+        var backing = new ObservableCollection<Note>();
+        foreach (var seed in SampleData.SeedNotes())
+            backing.Add(seed);
+
+        _notes = backing;
         Notes = new ReadOnlyObservableCollection<Note>(_notes);
     }
 

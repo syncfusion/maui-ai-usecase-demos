@@ -24,7 +24,11 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        // Note store is empty on startup by design (Module-02 spec).
+        // Note store seeds the canonical tasks (per images/important.png,
+        // images/remainder.png and images/bin.png) so Important, Reminder
+        // and Bin show the design content on first launch, while My Notes
+        // stays empty (the seeded notes are soft-deleted). See SampleData
+        // and InMemoryNoteService for details.
 
         // Common infrastructure
         builder.Services.AddSingleton<INavigationService, MauiNavigationService>();
