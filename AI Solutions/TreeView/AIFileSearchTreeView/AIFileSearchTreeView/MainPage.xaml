@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:AIFileSearchTreeView"
+    xmlns:treeview="clr-namespace:Syncfusion.Maui.TreeView;assembly=Syncfusion.Maui.TreeView"
+    xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+    xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    x:Class="AIFileSearchTreeView.MainPage"
+    BackgroundColor="White"
+    Title="">
+
+    <ContentPage.Resources>
+
+        <local:BoolToBackgroundColorConverter x:Key="BoolToBackgroundColorConverter"/>
+        <local:BoolToTextColorConverter x:Key="BoolToTextColorConverter"/>
+        <local:BoolToFontAttributesConverter x:Key="BoolToFontAttributesConverter"/>
+        <local:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+
+    </ContentPage.Resources>
+
+    <Grid
+        Padding="18,12"
+        RowDefinitions="Auto,Auto,*"
+        RowSpacing="12">
+
+        <!-- Search Area -->
+        <Grid Grid.Row="0">
+
+            <core:SfTextInputLayout
+                ContainerType="Outlined"
+                OutlineCornerRadius="10"
+                Padding="15,0,15,0"
+                ShowHint="False"
+                Stroke="#D5DFEC"
+                VerticalOptions="Start">
+
+                <core:SfTextInputLayout.LeadingView>
+                    <Image
+                        WidthRequest="20"
+                        HeightRequest="20"
+                        VerticalOptions="Center">
+                        <Image.Source>
+                            <FontImageSource
+                                Glyph="{x:Static local:MaterialIcons.Search}"
+                                FontFamily="MaterialIcons"
+                                Size="20"
+                                Color="#8EA3C0" />
+                        </Image.Source>
+                    </Image>
+                </core:SfTextInputLayout.LeadingView>
+
+                <core:SfTextInputLayout.TrailingView>
+
+                    <Grid
+                        WidthRequest="84"
+                        ColumnDefinitions="24,32"
+                        ColumnSpacing="8"
+                        HorizontalOptions="End"
+                        VerticalOptions="Center">
+
+                        <ActivityIndicator
+                            x:Name="searchBusyIndicator"
+                            Grid.Column="0"
+                            IsRunning="False"
+                            IsVisible="False"
+                            Color="#4F7CAC"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            WidthRequest="20"
+                            HeightRequest="20" />
+
+                        <ImageButton
+                            Grid.Column="1"
+                            AutomationProperties.Name="Clear search"
+                            WidthRequest="32"
+                            HeightRequest="32"
+                            MinimumWidthRequest="0"
+                            MinimumHeightRequest="0"
+                            Padding="0"
+                            Margin="0,0,12,0"
+                            CornerRadius="16"
+                            BackgroundColor="Transparent"
+                            Clicked="OnClearSearch">
+                            <ImageButton.Source>
+                                <FontImageSource
+                                    Glyph="{x:Static local:MaterialIcons.Close}"
+                                    FontFamily="MaterialIcons"
+                                    Size="18"
+                                    Color="#8EA3C0" />
+                            </ImageButton.Source>
+                        </ImageButton>
+
+                    </Grid>
+
+                </core:SfTextInputLayout.TrailingView>
+
+                <Entry
+                    x:Name="searchEntry"
+                    ClearButtonVisibility="Never"
+                    Placeholder="Search files..." />
+
+            </core:SfTextInputLayout>
+
+        </Grid>
+
+        <!-- Search Result Badge -->
+        <Border
+            Grid.Row="1"
+            IsVisible="{Binding MatchCountLabel, Converter={StaticResource StringToVisibilityConverter}}"
+            BackgroundColor="#ECFFF5"
+            StrokeThickness="0"
+            Padding="12,8"
+            HorizontalOptions="Start"
+            StrokeShape="RoundRectangle 8">
+            <Label
+                Text="{Binding MatchCountLabel}"
+                TextColor="#16834B"
+                FontSize="13"
+                FontAttributes="Bold" />
+        </Border>
+
+        <!-- TreeView -->
+        <treeview:SfTreeView
+            x:Name="treeView"
+            Grid.Row="2"
+            ItemsSource="{Binding SalesFileNodes}"
+            ChildPropertyName="SubFiles"
+            ItemTemplateContextType="Node"
+            NotificationSubscriptionMode="CollectionChange"
+            AutoExpandMode="None"
+            ExpandActionTarget="Expander"
+            NodeSizeMode="Dynamic">
+
+            <treeview:SfTreeView.ItemTemplate>
+
+                <DataTemplate>
+
+                    <Grid
+                        Padding="4"
+                        ColumnSpacing="8">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="32"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- File Icon -->
+                        <Image
+                            Grid.Column="0"
+                            Source="{Binding Content.ImageIcon}"
+                            WidthRequest="20"
+                            HeightRequest="20"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Center" />
+
+                        <!-- File Name -->
+                        <Border
+                            Grid.Column="1"
+                            Padding="6"
+                            BackgroundColor="{Binding Content.IsMatched, Converter={StaticResource BoolToBackgroundColorConverter}}"
+                            StrokeThickness="0">
+
+                            <Label
+                                Text="{Binding Content.ItemName}"
+                                VerticalTextAlignment="Center"
+                                FontAttributes="{Binding Content.IsHighlighted, Converter={StaticResource BoolToFontAttributesConverter}}"
+                                TextColor="{Binding Content.IsHighlighted, Converter={StaticResource BoolToTextColorConverter}}"
+                                LineBreakMode="NoWrap" />
+
+                        </Border>
+
+                    </Grid>
+
+                </DataTemplate>
+
+            </treeview:SfTreeView.ItemTemplate>
+
+        </treeview:SfTreeView>
+
+    </Grid>
+
+</ContentPage>
