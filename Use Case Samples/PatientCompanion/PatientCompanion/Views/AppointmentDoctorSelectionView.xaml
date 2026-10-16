@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentView
+    x:Class="PatientCompanion.Views.AppointmentDoctorSelectionView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:PatientCompanion.Controls">
+
+    <VerticalStackLayout
+        Spacing="24">
+
+        <Label
+            FontSize="14"
+            Text="Available specialists"
+            TextColor="#3D4947" />
+
+        <CollectionView
+    ItemsSource="{Binding Doctors}"
+    SelectionMode="None">
+
+            <CollectionView.ItemTemplate>
+
+                <DataTemplate>
+
+                    <controls:DoctorsCardView />
+
+                </DataTemplate>
+
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+
+        <Label
+            FontSize="11"
+            HorizontalTextAlignment="Center"
+            Text="Sample data only — not medical advice"
+            TextColor="#6D7A77" />
+
+    </VerticalStackLayout>
+
+</ContentView>
