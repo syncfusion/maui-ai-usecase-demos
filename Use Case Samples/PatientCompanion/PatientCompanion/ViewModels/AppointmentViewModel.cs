@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using PatientCompanion.Models;
 using PatientCompanion.Services;
 using PatientCompanion.Views;
@@ -102,4 +103,34 @@ public partial class AppointmentViewModel : BaseViewModel
         CurrentStep >= 3
             ? Color.FromArgb("#00685F")
             : Color.FromArgb("#D9D9D9");
+
+    [RelayCommand]
+    private async Task GoBack()
+    {
+        // Step 1 - Select Specialty: exit the flow and go back to Visits Page
+        if (CurrentStep == 0)
+        {
+            await Shell.Current.GoToAsync("..");
+            return;
+        }
+
+        CurrentStep = CurrentStep switch
+        {
+            // Step 2 - Select Doctor
+            1 => 0,
+
+            // Step 3 - Date & Time
+            2 => 1,
+
+            // Step 4 - Review & Confirm
+            _ => 2
+        };
+
+        CurrentStepView = CurrentStep switch
+        {
+            0 => new AppointmentSpecialityView(this),
+            1 => new AppointmentDoctorSelectionView(this),
+            _ => new AppointmentDateTimeView(this)
+        };
+    }
 }
