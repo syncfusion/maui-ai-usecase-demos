@@ -1,0 +1,13 @@
+# Build outputs
+bin/
+obj/
+
+# IDE state
+*.csproj.user
+.vs/
+.idea/
+*.suo
+
+# OS
+.DS_Store
+Thumbs.db

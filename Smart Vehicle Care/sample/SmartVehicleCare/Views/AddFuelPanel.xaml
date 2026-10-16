@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:til="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:picker="clr-namespace:Syncfusion.Maui.Picker;assembly=Syncfusion.Maui.Picker"
+             xmlns:vm="clr-namespace:SmartVehicleCare.ViewModels"
+             xmlns:behaviors="clr-namespace:SmartVehicleCare.Behaviors"
+             x:Class="SmartVehicleCare.Views.AddFuelPanel"
+             x:DataType="vm:AddFuelViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SplashBgLight}, Dark={StaticResource BrandNavy}}">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- SfDatePicker must be first (lowest Z-order) -->
+        <picker:SfDatePicker x:Name="FuelDatePicker" Mode="Dialog"
+                             Grid.RowSpan="3"
+                             SelectedDate="{Binding FuelDate}"
+                             ColumnDividerColor="{AppThemeBinding Light=#E5E0D8, Dark=#3D2E24}"
+                             OkButtonClicked="OnFuelDateOkClicked">
+            <picker:SfDatePicker.SelectionView>
+                <picker:PickerSelectionView CornerRadius="20" Background="{AppThemeBinding Light=#B45309, Dark=#D97706}"/>
+            </picker:SfDatePicker.SelectionView>
+            <picker:SfDatePicker.SelectedTextStyle>
+                <picker:PickerTextStyle TextColor="White" FontAttributes="Bold"/>
+            </picker:SfDatePicker.SelectedTextStyle>
+            <picker:SfDatePicker.ColumnHeaderView>
+                <picker:DatePickerColumnHeaderView Height="50" Background="{AppThemeBinding Light=#FAF9F5, Dark=#2D2117}" DividerColor="{AppThemeBinding Light=#E5E0D8, Dark=#3D2E24}">
+                    <picker:DatePickerColumnHeaderView.TextStyle>
+                        <picker:PickerTextStyle TextColor="{AppThemeBinding Light=#6B5E55, Dark=#B0A39A}" FontAttributes="Bold"/>
+                    </picker:DatePickerColumnHeaderView.TextStyle>
+                </picker:DatePickerColumnHeaderView>
+            </picker:SfDatePicker.ColumnHeaderView>
+            <picker:SfDatePicker.HeaderView>
+                <picker:PickerHeaderView Text="Select fuel date" Height="40"/>
+            </picker:SfDatePicker.HeaderView>
+            <picker:SfDatePicker.FooterView>
+                <picker:PickerFooterView ShowOkButton="True" CancelButtonText="Cancel" Height="40"/>
+            </picker:SfDatePicker.FooterView>
+        </picker:SfDatePicker>
+
+        <!-- Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="24,16"
+              BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyLight}}">
+                 <StackLayout Spacing="2">
+                    <Label Text="Add fuel log" FontSize="18" FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"/>
+                <Border BackgroundColor="{AppThemeBinding Light=#FEF3C7, Dark=#152840}"
+                        StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light=#C7D2FE, Dark=#3D2E24}"
+                        StrokeShape="RoundRectangle 20"
+                        Padding="10,4" HorizontalOptions="Start" Margin="0,6,0,0">
+                    <Label Text="{Binding VehicleLabel}" FontSize="12" FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=#B45309, Dark=#8ED3FF}"/>
+                </Border>
+            </StackLayout>
+            <buttons:SfButton Grid.Column="1" WidthRequest="44" HeightRequest="44"
+                              Padding="0" CornerRadius="22"
+                              Background="Transparent" StrokeThickness="0"
+                              Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="18"
+                              TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"
+                              Command="{Binding CloseCommand}">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal"/>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Background" Value="{AppThemeBinding Light=#14000000, Dark=#26FFFFFF}"/>
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </VisualStateManager.VisualStateGroups>
+            </buttons:SfButton>
+        </Grid>
+
+        <!-- Scrollable Form -->
+        <ScrollView Grid.Row="1" Padding="24,20" BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+            <StackLayout Spacing="16">
+
+                <!-- Fuel Type chips (1�4) -->
+                <StackLayout Spacing="8">
+                    <Label Text="Fuel type *" FontSize="12" FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                    <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+
+                        <!-- Petrol -->
+                        <Border Grid.Column="0" Padding="6,10" StrokeThickness="1.5" StrokeShape="RoundRectangle 10">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding SelectFuelTypeCommand}" CommandParameter="Petrol"/></Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsPetrolSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="#FEE2E2"/>
+                                    <Setter Property="Stroke" Value="#DC2626"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsPetrolSelected}" Value="False">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F8FAFC, Dark=#2D2117}"/>
+                                    <Setter Property="Stroke" Value="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <StackLayout Spacing="4" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="Petrol" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsPetrolSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="#DC2626"/>
+                                            <Setter Property="FontAttributes" Value="Bold"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsPetrolSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light=#475569, Dark=#9DB7D2}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </StackLayout>
+                        </Border>
+
+                        <!-- Diesel -->
+                        <Border Grid.Column="1" Padding="6,10" StrokeThickness="1.5" StrokeShape="RoundRectangle 10">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding SelectFuelTypeCommand}" CommandParameter="Diesel"/></Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsDieselSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="#D1FAE5"/>
+                                    <Setter Property="Stroke" Value="#065F46"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsDieselSelected}" Value="False">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F8FAFC, Dark=#2D2117}"/>
+                                    <Setter Property="Stroke" Value="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <StackLayout Spacing="4" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="Diesel" FontSize="12"  FontAttributes="Bold" HorizontalOptions="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsDieselSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="#065F46"/>
+                                            <Setter Property="FontAttributes" Value="Bold"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsDieselSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light=#475569, Dark=#9DB7D2}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </StackLayout>
+                        </Border>
+
+                        <!-- CNG -->
+                        <Border Grid.Column="2" Padding="6,10" StrokeThickness="1.5" StrokeShape="RoundRectangle 10">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding SelectFuelTypeCommand}" CommandParameter="CNG"/></Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsCNGSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="#FEF3C7"/>
+                                    <Setter Property="Stroke" Value="#D97706"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsCNGSelected}" Value="False">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F8FAFC, Dark=#2D2117}"/>
+                                    <Setter Property="Stroke" Value="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <StackLayout Spacing="4" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="CNG" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsCNGSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="#D97706"/>
+                                            <Setter Property="FontAttributes" Value="Bold"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsCNGSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light=#475569, Dark=#9DB7D2}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </StackLayout>
+                        </Border>
+
+                    </Grid>
+                </StackLayout>
+
+                <!-- Date + Station (2 cols) -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <!-- Date -->
+                    <StackLayout Grid.Column="0" Spacing="6">
+                        <Label Text="DATE" FontSize="12" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                        <Grid>
+                            <til:SfTextInputLayout Hint="Select date">
+                                <til:SfTextInputLayout.HintLabelStyle>
+                                    <til:LabelStyle FontSize="14" TextColor="#94A3B8"/>
+                                </til:SfTextInputLayout.HintLabelStyle>
+                                <Entry Text="{Binding FuelDateDisplay}" IsReadOnly="True"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                       BackgroundColor="Transparent"/>
+                            </til:SfTextInputLayout>
+                            <Label Text="&#xE916;" FontFamily="MaterialIcons" FontSize="18"
+                                   VerticalOptions="Center" HorizontalOptions="End" Margin="0,6,14,0"
+                                   TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"
+                                   InputTransparent="True"/>
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnFuelDateFieldTapped"/>
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                    </StackLayout>
+                    <!-- Station -->
+                    <StackLayout Grid.Column="1" Spacing="6">
+                            <Label Text="Station" FontSize="12" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                        <til:SfTextInputLayout ContainerType="Outlined" OutlineCornerRadius="10"
+                                               EnableFloating="False"
+                                               FocusedStrokeThickness="1.5"
+                                               UnfocusedStrokeThickness="1.5"
+                                               Hint="HP Petrol Bunk" InputViewPadding="14,0"
+                                               ReserveSpaceForAssistiveLabels="False"
+                                               Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                               ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                            <til:SfTextInputLayout.HintLabelStyle>
+                                <til:LabelStyle FontSize="14" TextColor="#94A3B8"/>
+                            </til:SfTextInputLayout.HintLabelStyle>
+                            <Entry Text="{Binding Station}"
+                                   TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                   BackgroundColor="Transparent"/>
+                        </til:SfTextInputLayout>
+                    </StackLayout>
+                </Grid>
+
+                <!-- Litres Filled + Cost Per Litre (2 cols) -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <StackLayout Grid.Column="0" Spacing="6">
+                            <Label Text="Litres filled" FontSize="12" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                        <til:SfTextInputLayout ContainerType="Outlined" OutlineCornerRadius="10"
+                                               EnableFloating="False"
+                                               FocusedStrokeThickness="1.5"
+                                               UnfocusedStrokeThickness="1.5"
+                                               Hint="42.5" InputViewPadding="14,0"
+                                               ReserveSpaceForAssistiveLabels="False"
+                                               Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                               ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                            <til:SfTextInputLayout.HintLabelStyle>
+                                <til:LabelStyle FontSize="14" TextColor="#94A3B8"/>
+                            </til:SfTextInputLayout.HintLabelStyle>
+                            <Entry Text="{Binding LitresFilled}" Keyboard="Numeric"
+                                   TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                   BackgroundColor="Transparent">
+                                <Entry.Behaviors>
+                                    <behaviors:NumericOnlyBehavior/>
+                                </Entry.Behaviors>
+                            </Entry>
+                        </til:SfTextInputLayout>
+                    </StackLayout>
+                    <StackLayout Grid.Column="1" Spacing="6">
+                        <Label Text="₹ COST PER LITRE" FontSize="12" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                        <til:SfTextInputLayout ContainerType="Outlined" OutlineCornerRadius="10"
+                                               EnableFloating="False"
+                                               FocusedStrokeThickness="1.5"
+                                               UnfocusedStrokeThickness="1.5"
+                                               Hint="104.50" InputViewPadding="14,0"
+                                               ReserveSpaceForAssistiveLabels="False"
+                                               Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                               ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                            <til:SfTextInputLayout.HintLabelStyle>
+                                <til:LabelStyle FontSize="14" TextColor="#94A3B8"/>
+                            </til:SfTextInputLayout.HintLabelStyle>
+                            <Entry Text="{Binding CostPerLitre}" Keyboard="Numeric"
+                                   TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                   BackgroundColor="Transparent">
+                                <Entry.Behaviors>
+                                    <behaviors:NumericOnlyBehavior/>
+                                </Entry.Behaviors>
+                            </Entry>
+                        </til:SfTextInputLayout>
+                    </StackLayout>
+                </Grid>
+
+                <!-- Computed Total Cost card -->
+                <Border BackgroundColor="{AppThemeBinding Light=#F0F9FF, Dark=#0D2035}"
+                        StrokeThickness="1" Stroke="{AppThemeBinding Light=#BAE6FD, Dark=#3D2E24}"
+                        StrokeShape="RoundRectangle 12" Padding="16,14">
+                    <StackLayout Spacing="4" HorizontalOptions="Center">
+                        <Label Text="Total cost" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"
+                               TextColor="{AppThemeBinding Light=#0284C7, Dark=#7DD3FC}"/>
+                        <Label Text="{Binding TotalCostDisplay}" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center"
+                               TextColor="{AppThemeBinding Light=#0C4A6E, Dark=#EDF6FF}"/>
+                        <Label Text="{Binding TotalCostBreakdown}" FontSize="{OnPlatform Default=12, WinUI=11, MacCatalyst=11}" HorizontalOptions="Center"
+                               TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"/>
+                    </StackLayout>
+                </Border>
+
+                <!-- Odometer Reading -->
+                <StackLayout Spacing="6">
+                    <Label Text="Odometer reading (km) *" FontSize="12" FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                    <til:SfTextInputLayout ContainerType="Outlined" OutlineCornerRadius="10"
+                                           EnableFloating="False"
+                                           FocusedStrokeThickness="1.5"
+                                           UnfocusedStrokeThickness="1.5"
+                                           Hint="45,280" InputViewPadding="14,0"
+                                           ReserveSpaceForAssistiveLabels="False"
+                                           Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                           ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                        <til:SfTextInputLayout.HintLabelStyle>
+                            <til:LabelStyle FontSize="14" TextColor="#94A3B8"/>
+                        </til:SfTextInputLayout.HintLabelStyle>
+                        <Entry Text="{Binding OdometerReading}" Keyboard="Numeric"
+                               TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                               BackgroundColor="Transparent">
+                            <Entry.Behaviors>
+                                <behaviors:NumericOnlyBehavior/>
+                            </Entry.Behaviors>
+                        </Entry>
+                    </til:SfTextInputLayout>
+                </StackLayout>
+
+            </StackLayout>
+        </ScrollView>
+
+        <!-- Footer -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12" Padding="24,14,24,24"
+              BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyLight}}">
+            <BoxView Grid.ColumnSpan="2" HeightRequest="1" VerticalOptions="Start"
+                     BackgroundColor="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}" Margin="0,0,0,14"/>
+            <buttons:SfButton Grid.Column="0" Text="Cancel" HeightRequest="44"
+                              Background="{AppThemeBinding Light=#FAF9F5, Dark=#1A2D3D}"
+                              TextColor="{AppThemeBinding Light=#475569, Dark=#9DB7D2}"
+                              FontSize="14" FontAttributes="Bold" CornerRadius="10" StrokeThickness="0"
+                              Command="{Binding CancelCommand}"/>
+            <buttons:SfButton Grid.Column="1" Text="Save" HeightRequest="44"
+                              Background="{AppThemeBinding Light=#B45309, Dark=#D97706}"
+                              TextColor="White" FontSize="14" FontAttributes="Bold"
+                              CornerRadius="10" StrokeThickness="0"
+                              IsEnabled="{Binding CanSave}"
+                              Command="{Binding SaveCommand}"/>
+        </Grid>
+
+    </Grid>
+</ContentView>
