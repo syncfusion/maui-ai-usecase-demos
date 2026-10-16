@@ -1,7 +1,4 @@
-﻿using PatientCompanion.Views;
-
-// Windows-specific Shell customization is temporarily disabled while the
-// shared AppHeaderView is validated across platforms.
+using PatientCompanion.Views;
 
 namespace PatientCompanion;
 

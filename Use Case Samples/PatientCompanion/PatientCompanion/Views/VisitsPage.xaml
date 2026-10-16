@@ -156,7 +156,7 @@
 
             <Border.GestureRecognizers>
                 <TapGestureRecognizer
-            Tapped="OnBookAppointmentTapped" />
+            Command="{Binding BookAppointmentCommand}" />
             </Border.GestureRecognizers>
 
             <Label

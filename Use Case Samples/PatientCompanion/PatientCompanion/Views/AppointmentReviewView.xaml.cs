@@ -15,17 +15,9 @@ public partial class AppointmentReviewView : ContentView
     {
         InitializeComponent();
 
-        var appointmentService =
-            Application.Current!
-                .Handler!
-                .MauiContext!
-                .Services
-                .GetService<AppointmentService>();
-
         BindingContext =
             new AppointmentReviewViewModel(
                 appointmentViewModel,
-                appointmentService!);
+                App.Resolve<AppointmentService>());
     }
-
 }

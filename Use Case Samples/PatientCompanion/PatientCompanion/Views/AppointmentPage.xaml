@@ -5,6 +5,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:PatientCompanion.Controls"
+    xmlns:local="clr-namespace:PatientCompanion"
     BackgroundColor="{StaticResource PageBackgroundColor}"
     Shell.NavBarIsVisible="False"
     Title="">
@@ -16,14 +17,38 @@
                 RowDefinitions="Auto,*">
 
         <Grid Grid.Row="0" RowDefinitions="Auto,Auto">
-            <Grid ColumnDefinitions="Auto,*">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Border
+                    Grid.Column="0"
+                    WidthRequest="32"
+                    HeightRequest="32"
+                    BackgroundColor="#ECEEF0"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 16">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Command="{Binding GoBackCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label
+                        FontFamily="Material Icons"
+                        FontSize="20"
+                        Text="{x:Static local:MaterialIcons.ArrowBack}"
+                        TextColor="#191C1E"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        VerticalTextAlignment="Center" />
+                </Border>
                 <Label
+                    Grid.Column="1"
+                    Margin="16,0,0,0"
+                    VerticalOptions="Center"
                     Text="{Binding StepText}"
                     FontSize="10"
                     FontAttributes="Bold"
                     TextColor="#5C6773" />
                 <Label
-                    Grid.Column="1"
+                    Grid.Column="2"
+                    VerticalOptions="Center"
                     HorizontalOptions="End"
                     Text="{Binding StepTitle}"
                     FontSize="10"

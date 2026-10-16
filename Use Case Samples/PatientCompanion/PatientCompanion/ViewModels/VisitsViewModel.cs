@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PatientCompanion.Models;
 using PatientCompanion.Services;
@@ -91,6 +91,12 @@ public partial class VisitsViewModel : BaseViewModel
             return;
 
         appointmentService.RequestReschedule(appointment.AppointmentId);
+        await Shell.Current.GoToAsync(nameof(AppointmentPage));
+    }
+
+    [RelayCommand]
+    private async Task BookAppointment()
+    {
         await Shell.Current.GoToAsync(nameof(AppointmentPage));
     }
 

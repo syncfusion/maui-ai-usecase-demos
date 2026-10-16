@@ -1,0 +1,11 @@
+# Build results
+bin/
+obj/
+msbuild.binlog
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
