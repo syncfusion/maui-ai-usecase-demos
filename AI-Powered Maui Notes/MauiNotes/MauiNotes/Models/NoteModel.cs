@@ -14,8 +14,8 @@ public class NoteModel : INotifyPropertyChanged
     private string title = string.Empty;
     private string content = string.Empty;
     private string previewText = string.Empty;
-    private DateTime createdDate;
-    private DateTime modifiedDate;
+    private DateTimeOffset createdDate;
+    private DateTimeOffset modifiedDate;
     private string groupName = string.Empty;
     private bool isHovered;
     private bool isSelected;
@@ -51,9 +51,13 @@ public class NoteModel : INotifyPropertyChanged
 
     /// <summary>
     /// Timestamp assigned once when the note is created. Never changes when
-    /// the note is edited, renamed, or selected.
+    /// the note is edited, renamed, or selected. Stored as
+    /// <see cref="DateTimeOffset"/> so the value survives the JSON
+    /// round-trip with its local-kind intact (a plain local
+    /// <see cref="DateTime"/> deserializes back as Kind=Unspecified, which
+    /// breaks the Today/Yesterday calendar-day comparisons).
     /// </summary>
-    public DateTime CreatedDate
+    public DateTimeOffset CreatedDate
     {
         get => createdDate;
         set
@@ -71,7 +75,7 @@ public class NoteModel : INotifyPropertyChanged
     }
 
     /// <summary>Last-modified timestamp; used for grouping into Today / Yesterday.</summary>
-    public DateTime ModifiedDate
+    public DateTimeOffset ModifiedDate
     {
         get => modifiedDate;
         set
@@ -93,7 +97,7 @@ public class NoteModel : INotifyPropertyChanged
     /// time once the note has actually been modified, otherwise the
     /// creation time.
     /// </summary>
-    public DateTime EffectiveDate => ModifiedDate > CreatedDate ? ModifiedDate : CreatedDate;
+    public DateTimeOffset EffectiveDate => ModifiedDate > CreatedDate ? ModifiedDate : CreatedDate;
 
     /// <summary>
     /// History-style tree-view subtitle derived from <see cref="EffectiveDate"/>:
@@ -104,9 +108,9 @@ public class NoteModel : INotifyPropertyChanged
     {
         get
         {
-            DateTime effective = EffectiveDate;
-            DateTime effectiveDay = effective.Date;
-            DateTime today = DateTime.Today;
+            DateTimeOffset effective = EffectiveDate;
+            DateTimeOffset effectiveDay = new DateTimeOffset(effective.Date, TimeSpan.Zero);
+            DateTimeOffset today = new DateTimeOffset(DateTime.Today, TimeSpan.Zero);
 
             if (effectiveDay == today)
                 return effective.ToString("h:mm tt");

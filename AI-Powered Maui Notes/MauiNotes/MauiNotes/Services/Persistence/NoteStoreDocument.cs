@@ -21,7 +21,9 @@ public sealed class NoteData
     public Guid Id { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
-    public DateTime CreatedDate { get; set; }
-    public DateTime ModifiedDate { get; set; }
+    // DateTimeOffset so the local-kind information survives the JSON
+    // round-trip (a local DateTime deserializes back as Kind=Unspecified).
+    public DateTimeOffset CreatedDate { get; set; }
+    public DateTimeOffset ModifiedDate { get; set; }
     public bool IsLocked { get; set; }
 }

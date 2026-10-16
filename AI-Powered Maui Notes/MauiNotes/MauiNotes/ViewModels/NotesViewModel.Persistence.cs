@@ -13,13 +13,116 @@ public partial class NotesViewModel
         isLoadingData = true;
         try
         {
-            LoadSampleData();
+            NoteStoreDocument? document = null;
+            try
+            {
+                document = notePersistenceService.Load();
+            }
+            catch (IOException ex)
+            {
+                SetPersistenceStatus($"Could not load saved notes: {ex.Message}", true);
+            }
+            catch (InvalidDataException ex)
+            {
+                SetPersistenceStatus($"Saved notes are corrupt and could not be loaded: {ex.Message}", true);
+            }
+
+            if (document is not null)
+            {
+                LoadFromStoreDocument(document);
+            }
+            else
+            {
+                LoadSampleData();
+            }
         }
         finally
         {
             isLoadingData = false;
             ScheduleAutosave();
         }
+    }
+
+    private void LoadFromStoreDocument(NoteStoreDocument document)
+    {
+        foreach (NoteFolderData root in document.Folders)
+            AddFolderRecursive(root, null);
+
+        RecalculateCounts();
+
+        SelectedFolderNode =
+            document.SelectedFolderId is { } folderId
+                ? FindFolderById(folderId, TreeNodes)
+                : TreeNodes.FirstOrDefault();
+        SelectedNote =
+            document.SelectedNoteId is { } noteId
+                ? FindNoteById(noteId, TreeNodes)
+                : SelectedFolderNode?.Notes.FirstOrDefault();
+        SelectedTreeNode = SelectedNote is not null
+            ? FindNoteNode(SelectedNote, TreeNodes)
+            : SelectedFolderNode;
+    }
+
+    private void AddFolderRecursive(NoteFolderData folder, NoteTreeNode? parent)
+    {
+        var treeFolder = new NoteTreeNode
+        {
+            Title = folder.Title,
+            Parent = parent
+        };
+        if (parent is null)
+            TreeNodes.Add(treeFolder);
+        else
+            parent.Children.Add(treeFolder);
+
+        foreach (NoteFolderData child in folder.Folders)
+            AddFolderRecursive(child, treeFolder);
+
+        foreach (NoteData note in folder.Notes)
+        {
+            var model = new NoteModel
+            {
+                Title = note.Title,
+                Content = note.Content,
+                PreviewText = ExtractPreviewText(note.Content),
+                CreatedDate = note.CreatedDate,
+                ModifiedDate = note.ModifiedDate,
+                IsLocked = note.IsLocked
+            };
+            treeFolder.Notes.Add(model);
+            AddNoteTreeNode(treeFolder, model);
+        }
+    }
+
+    private static NoteTreeNode? FindFolderById(Guid id, IEnumerable<NoteTreeNode> folders)
+    {
+        foreach (NoteTreeNode folder in folders)
+        {
+            if (folder.Id == id)
+                return folder;
+
+            NoteTreeNode? match = FindFolderById(id, folder.Children.Where(child => child.IsFolder));
+            if (match is not null)
+                return match;
+        }
+
+        return null;
+    }
+
+    private static NoteModel? FindNoteById(Guid id, IEnumerable<NoteTreeNode> folders)
+    {
+        foreach (NoteTreeNode folder in folders)
+        {
+            NoteModel? note = folder.Notes.FirstOrDefault(n => n.Id == id);
+            if (note is not null)
+                return note;
+
+            NoteModel? match = FindNoteById(id, folder.Children.Where(child => child.IsFolder));
+            if (match is not null)
+                return match;
+        }
+
+        return null;
     }
 
     private async Task<NoteStoreDocument> CreateStoreDocumentAsync(

@@ -10,14 +10,14 @@ namespace MauiNotes.ViewModels;
 
 public partial class NotesViewModel
 {
-    public async Task<bool> BeginAiAssistantAsync(CustomRichTextEditor.CustomRichTextEditor editor)
+    public async Task BeginAiAssistantAsync(CustomRichTextEditor.CustomRichTextEditor editor)
     {
         if (IsAiProcessing || IsAiPopupOpen)
         {
             Debug.WriteLine(
                 $"[AI] Reusing active AI session; processing={IsAiProcessing}; " +
                 $"popupOpen={IsAiPopupOpen}; snapshotAvailable={aiSelectedSnapshot is not null}.");
-            return true;
+            return;
         }
 
         AiError = string.Empty;
@@ -81,7 +81,7 @@ public partial class NotesViewModel
                     UpdateNoteFromEditor(
                         aiSourceNote,
                         aiSourceHtml,
-                        DateTime.Now,
+                        DateTimeOffset.Now,
                         updateModifiedDate: false);
             }
             catch (InvalidOperationException ex)
@@ -93,7 +93,6 @@ public partial class NotesViewModel
 
         IsAiPopupOpen = true;
         Debug.WriteLine($"[AI] Writing-tools popup opened; aiSelectedSnapshot={(aiSelectedSnapshot is null ? "null" : "available")}.");
-        return true;
     }
 
     private async Task StartAiRequestAsync(AiEditingAction action, string customInstruction)
@@ -184,11 +183,6 @@ public partial class NotesViewModel
         IsAiProcessing = true;
         IsAiPopupOpen = false;
         Debug.WriteLine("[AI] Writing-tools popup closed after action selection; snapshot retained for processing.");
-        if (!IsAiProcessing)
-        {
-            Debug.WriteLine("[AI] Processing was cancelled while the writing-tools popup was closing.");
-            return;
-        }
 
         await ProcessAiAsync(
             action,
@@ -238,7 +232,7 @@ public partial class NotesViewModel
                 return;
             }
 
-            result = NormalizeEscapedHtml(result);
+            result = NormalizeEscapedHtml(StripMarkdownFences(result));
             LogHtmlBoundary("ai-response.normalized", result, sourceNote.Id);
             Debug.WriteLine(
                 $"[AI] Request completed; response received for {action}: resultLength={result.Length}; " +
@@ -283,7 +277,7 @@ public partial class NotesViewModel
                 return;
             }
 
-            UpdateNoteFromEditor(sourceNote, updatedHtml, DateTime.Now);
+            UpdateNoteFromEditor(sourceNote, updatedHtml, DateTimeOffset.Now);
             LogHtmlBoundary("note.content.after-ai-update", sourceNote.Content, sourceNote.Id);
             aiAppliedReceipt = replacement.UndoReceipt;
             aiAppliedNote = sourceNote;
@@ -363,7 +357,7 @@ public partial class NotesViewModel
             return;
         }
 
-        UpdateNoteFromEditor(aiAppliedNote, html, DateTime.Now);
+        UpdateNoteFromEditor(aiAppliedNote, html, DateTimeOffset.Now);
         AiStatus = "AI edit reverted.";
         aiAppliedReceipt = null;
         SetHasAiReviewResult(false);
@@ -404,7 +398,7 @@ public partial class NotesViewModel
             return;
         }
 
-        UpdateNoteFromEditor(aiAppliedNote, html, DateTime.Now);
+        UpdateNoteFromEditor(aiAppliedNote, html, DateTimeOffset.Now);
         SetAiSelectedSnapshot(restored.UndoReceipt.AppliedRangeSnapshot, "Restored snapshot for retry");
         aiAppliedReceipt = null;
         SetHasAiReviewResult(false);
@@ -424,7 +418,7 @@ public partial class NotesViewModel
 
         string? html = await aiEditor.GetCurrentHtmlAsync();
         if (html is not null)
-            UpdateNoteFromEditor(aiAppliedNote, html, DateTime.Now);
+            UpdateNoteFromEditor(aiAppliedNote, html, DateTimeOffset.Now);
     }
 
     private void SetHasAiReviewResult(bool value)
@@ -453,7 +447,7 @@ public partial class NotesViewModel
     private void UpdateNoteFromEditor(
         NoteModel note,
         string html,
-        DateTime modifiedDate,
+        DateTimeOffset modifiedDate,
         bool updateModifiedDate = true)
     {
         LogHtmlBoundary("editor-content.update.input", html, note.Id);

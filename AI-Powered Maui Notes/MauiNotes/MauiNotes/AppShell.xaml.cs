@@ -15,6 +15,10 @@ namespace MauiNotes
             Routing.RegisterRoute("EditorPage", typeof(EditorPageMobileUI));
 
             SharedNotesViewModel = notesViewModel;
+            // Deliberate: the single-page mobile layout (notes list with an
+            // editor page navigated via Shell) is registered on Android only.
+            // iOS / MacCatalyst / Windows keep the two-column desktop layout
+            // where the editor is always visible next to the tree.
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
                 SharedNotesViewModel.IsFormatPopoverOpen = false;

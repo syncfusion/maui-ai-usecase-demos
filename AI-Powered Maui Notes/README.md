@@ -2,7 +2,7 @@
 
 A cross-platform .NET MAUI notes application built around the **Syncfusion RichTextEditor**. Notes are organized in a tree of folders and notes, edited in a full rich text editor (formatting toolbar, text/highlight palettes, tables, links, images), and enhanced with an **AI writing assistant** powered by **Azure OpenAI** that edits the selected text (or the whole note) in place — with Revert, Retry, Undo, Redo, and Done controls.
 
-The sample is fully self-contained: notes are persisted to a local JSON file, and the first run seeds realistic sample content (Work / Personal / Ideas folders) so the AI features can be tried immediately.
+The sample is fully self-contained: notes are persisted to a local JSON file (loaded on startup), and the first run seeds realistic sample content (Work / Personal / Ideas folders) so the AI features can be tried immediately.
 
 ## Highlights
 
@@ -12,7 +12,7 @@ The sample is fully self-contained: notes are persisted to a local JSON file, an
 - **Robust AI client**: environment-variable configuration, HTTPS-only endpoint validation, input size limits, status-code-specific error messages, cancellation, and prompt-injection-hardened system prompt
 - Notes organization with **Syncfusion TreeView**: folders, create/rename/duplicate/move/delete, note locking, Today/Yesterday/week groupings
 - **MVVM architecture** with the built-in MAUI dependency injection — no external DI framework
-- Works across **Android, iOS, macOS, and Windows**
+- Works across **Android, iOS, macOS, and Windows** (Android uses a dedicated single-page mobile layout; the other platforms use the two-column desktop layout)
 
 ## Prerequisites
 
