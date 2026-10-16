@@ -9,13 +9,8 @@ namespace Todo.Features.CustomLists.ViewModels;
 /// ViewModel for the centered create-list dialog. Matches the chrome
 /// shown in <c>createnewlist.png</c>: title, single text input, and
 /// <c>Cancel</c> / <c>Create</c> buttons.
-///
-/// <para>
-/// The dialog is intentionally <see cref="IModalResultProvider"/> so
-/// the modal navigation service can hand back a result on dismissal.
-/// </para>
 /// </summary>
-public partial class CreateListDialogViewModel : ViewModelBase, IModalResultProvider
+public partial class CreateListDialogViewModel : ViewModelBase
 {
     private readonly IListService _listService;
     private readonly INavigationService _navigation;
@@ -29,9 +24,6 @@ public partial class CreateListDialogViewModel : ViewModelBase, IModalResultProv
     /// </summary>
     [ObservableProperty]
     private string? errorMessage;
-
-    /// <summary>Modal dismissal result consumed by the navigation service.</summary>
-    public object? Result { get; set; }
 
     public string DialogTitle => "Create new list";
     public string PrimaryButtonText => "Create";

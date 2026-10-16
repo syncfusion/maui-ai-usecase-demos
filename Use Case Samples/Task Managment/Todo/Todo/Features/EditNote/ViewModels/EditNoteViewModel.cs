@@ -18,7 +18,7 @@ namespace Todo.Features.EditNote.ViewModels;
 /// without any further changes to this ViewModel.
 /// </para>
 /// </summary>
-public partial class EditNoteViewModel : ViewModelBase, IModalResultProvider
+public partial class EditNoteViewModel : ViewModelBase
 {
     private readonly INoteService _noteService;
     private readonly INavigationService _navigation;
@@ -39,9 +39,6 @@ public partial class EditNoteViewModel : ViewModelBase, IModalResultProvider
 
     [ObservableProperty]
     private bool isExisting;
-
-    /// <summary>Modal dismissal result consumed by the navigation service.</summary>
-    public object? Result { get; set; }
 
     public string DialogTitle => IsExisting ? "Edit note" : "Create note";
     public string PrimaryButtonText => IsExisting ? "Save" : "Create";

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Todo.Common;
 using Todo.Features.Notes.ViewModels;
 
@@ -16,6 +17,7 @@ public abstract class NotesFilterPageBase : ContentPage
     private readonly NotesListViewModel _viewModel;
     private readonly NotesListCategory _category;
     private MainLayoutView? _layout;
+    private bool _hasAppeared;
 
     protected NotesFilterPageBase(NotesListViewModel viewModel, NotesListCategory category)
     {
@@ -45,8 +47,15 @@ public abstract class NotesFilterPageBase : ContentPage
             Content = _layout;
         }
 
-        // Keep the page's filter in sync with the active sidebar selection.
-        _viewModel.SelectedCategory = _category;
+        // Only seed the category on the very first appearance. Re-seeding
+        // on every appearance used to clobber a custom-list selection the
+        // user had active on My Notes when they tapped away and back
+        // (PR #37 review issue #5).
+        if (!_hasAppeared)
+        {
+            _hasAppeared = true;
+            _viewModel.SelectedCategory = _category;
+        }
     }
 
     protected override void OnDisappearing()
@@ -74,10 +83,16 @@ public abstract class NotesFilterPageBase : ContentPage
         {
             await Shell.Current.GoToAsync($"//{route}");
         }
-        catch
+        catch (Exception ex)
         {
-            // Navigation failures are non-fatal in this sample; the
-            // ViewModel still reflects the new selection.
+            // PR #37 review issue #5: log the failure instead of
+            // silently swallowing it. The ViewModel still reflects the
+            // new selection so the UI stays consistent, but the cause
+            // is now visible in the device log.
+            LoggerFactory
+                .Create(b => b.AddDebug())
+                .CreateLogger<NotesFilterPageBase>()
+                .LogWarning(ex, "Shell navigation to {Route} failed", route);
         }
     }
 }

@@ -212,9 +212,16 @@
                                       ColumnSpacing="10"
                                       VerticalOptions="Center">
 
-                                    <!-- Complete / checkbox -->
+                                    <!--
+                                        Complete / checkbox. IsChecked is
+                                        OneWay (model is source of truth)
+                                        and the toggle runs through the
+                                        ViewModel via the CheckedChanged
+                                        event (PR #37 review issue #7).
+                                    -->
                                     <CheckBox Grid.Column="0"
-                                              IsChecked="{Binding IsCompleted, Mode=TwoWay}"
+                                              IsChecked="{Binding IsCompleted, Mode=OneWay}"
+                                              CheckedChanged="OnCheckChanged"
                                               Color="{StaticResource PrimaryColor}"
                                               VerticalOptions="Center" />
 

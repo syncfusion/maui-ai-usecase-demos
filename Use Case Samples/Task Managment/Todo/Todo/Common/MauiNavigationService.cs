@@ -71,8 +71,10 @@ public sealed class MauiNavigationService : INavigationService
 
 /// <summary>
 /// Per-modal-page registry that tracks the <see cref="TaskCompletionSource{TResult}"/>
-/// awaiting the dismissal result. Stored weakly via the page
-/// reference so that pages can be garbage-collected normally.
+/// awaiting the dismissal result. Keys are held as strong references
+/// to the page, but the page lives in the modal stack anyway and the
+/// entry is removed in <c>PushModalAsync</c> as soon as the result
+/// arrives, so the registry never holds on to a popped page.
 /// </summary>
 internal static class ModalRequestRegistry
 {
@@ -101,14 +103,4 @@ internal static class ModalRequestRegistry
             tcs.TrySetResult(result);
         }
     }
-}
-
-/// <summary>
-/// Marker so that consumers know a view model is hosted on a modal
-/// page that may produce a result on dismiss. Currently unused but
-/// documented as part of the modal contract.
-/// </summary>
-public interface IModalResultProvider
-{
-    object? Result { get; set; }
 }

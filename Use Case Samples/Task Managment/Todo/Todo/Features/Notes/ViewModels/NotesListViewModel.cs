@@ -41,13 +41,6 @@ public partial class NotesListViewModel : ViewModelBase
     /// </summary>
     public ObservableCollection<Note> FilteredNotes { get; } = new();
 
-    public NotesListViewModel()
-        : this(ServiceLocator.Current,
-               ServiceLocator.CurrentListService,
-               new MauiNavigationService())
-    {
-    }
-
     public NotesListViewModel(INoteService noteService, IListService listService, INavigationService navigation)
     {
         _noteService = noteService;
@@ -395,39 +388,46 @@ public partial class NotesListViewModel : ViewModelBase
     // ---------------------------------------------------------------
     //  Item-template commands (check / star / delete / restore)
     // ---------------------------------------------------------------
+    // Each command awaits its service call so any future async work
+    // (a real backend, etc.) is wired correctly. The fire-and-forget
+    // pattern in the previous revision would have swallowed exceptions
+    // and broken the moment the service became actually async
+    // (PR #37 review issue #6). Note: the method name intentionally
+    // does NOT end with "Async" so the generated command property
+    // matches the existing XAML bindings (ToggleCompleteCommand, ...).
     [RelayCommand]
-    private void ToggleComplete(Note? note)
+    private async Task ToggleComplete(Note? note)
     {
         if (note is null) return;
-        _noteService.ToggleCompleteAsync(note.Id);
+        await _noteService.ToggleCompleteAsync(note.Id);
     }
 
     [RelayCommand]
-    private void ToggleImportant(Note? note)
+    private async Task ToggleImportant(Note? note)
     {
         if (note is null) return;
-        _noteService.ToggleImportantAsync(note.Id);
+        await _noteService.ToggleImportantAsync(note.Id);
     }
 
     [RelayCommand]
-    private void Delete(Note? note)
+    private async Task Delete(Note? note)
     {
         if (note is null) return;
-        _noteService.SoftDeleteAsync(note.Id);
+        await _noteService.SoftDeleteAsync(note.Id);
     }
 
     [RelayCommand]
-    private void Restore(Note? note)
+    private async Task Restore(Note? note)
     {
         if (note is null) return;
-        _noteService.RestoreAsync(note.Id);
+        await _noteService.RestoreAsync(note.Id);
     }
 
     [RelayCommand]
-    private void DeletePermanently(Note? note)
+    private async Task DeletePermanently(Note? note)
     {
         if (note is null) return;
-        _noteService.DeletePermanentlyAsync(note.Id);
+        await _noteService.DeletePermanentlyAsync(note.Id);
     }
 
     // ---------------------------------------------------------------
@@ -653,10 +653,10 @@ public partial class NotesListViewModel : ViewModelBase
                 await EditNoteAsync(note);
                 break;
             case "Delete":
-                Delete(note);
+                await Delete(note);
                 break;
             case "Restore note":
-                Restore(note);
+                await Restore(note);
                 break;
             case "Delete permanently":
                 await ConfirmDeletePermanentlyAsync(note);
@@ -687,38 +687,6 @@ public partial class NotesListViewModel : ViewModelBase
             await _noteService.DeletePermanentlyAsync(note.Id);
         }
     }
-
-    //  Context-menu actions (more button on each card)
-    // ---------------------------------------------------------------
-
-    /// <summary>
-    /// Shows the permanent-delete confirmation dialog (per
-    /// <c>deletepermently.png</c>). When the user confirms, the note is
-    /// removed from the in-memory store. When the user cancels, the note
-    /// is left untouched.
-    /// </summary>
-    [RelayCommand]
-    private async Task RequestDeletePermanentlyAsync(Note? note)
-    {
-        if (note is null) return;
-        if (ConfirmDeletePermanently is null)
-        {
-            // No dialog hook available – fall back to direct delete so
-            // the rest of the flow still works.
-            await _noteService.DeletePermanentlyAsync(note.Id);
-            return;
-        }
-
-        var confirmed = await ConfirmDeletePermanently.Invoke(note);
-        if (confirmed)
-            await _noteService.DeletePermanentlyAsync(note.Id);
-    }
-
-    /// <summary>
-    /// Hook used by the View to show the permanent-delete dialog.
-    /// Returns <c>true</c> if the user confirmed the deletion.
-    /// </summary>
-    public Func<Note, Task<bool>>? ConfirmDeletePermanently { get; set; }
 
     // ---------------------------------------------------------------
     //  Filtering

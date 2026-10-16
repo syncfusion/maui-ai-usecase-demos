@@ -12,7 +12,7 @@ namespace Todo.Features.CustomLists.ViewModels;
 /// pre-populated with the existing name, and <c>Cancel</c> /
 /// <c>Save</c> buttons.
 /// </summary>
-public partial class RenameListDialogViewModel : ViewModelBase, IModalResultProvider
+public partial class RenameListDialogViewModel : ViewModelBase
 {
     private readonly IListService _listService;
     private readonly INavigationService _navigation;
@@ -23,9 +23,6 @@ public partial class RenameListDialogViewModel : ViewModelBase, IModalResultProv
 
     [ObservableProperty]
     private string? errorMessage;
-
-    /// <summary>Modal dismissal result consumed by the navigation service.</summary>
-    public object? Result { get; set; }
 
     public string DialogTitle => "Rename list";
     public string PrimaryButtonText => "Save";

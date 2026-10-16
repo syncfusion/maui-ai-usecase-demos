@@ -12,6 +12,32 @@ public partial class NotesContentView : ContentView
     }
 
     // -----------------------------------------------------------------
+    //  Checkbox → ToggleComplete command (PR #37 review issue #7)
+    // -----------------------------------------------------------------
+
+    /// <summary>
+    /// Routes a checkbox toggle on a note card into the ViewModel's
+    /// <c>ToggleCompleteCommand</c> so the mutation flows through the
+    /// service layer (rather than the data-binding setter on
+    /// <c>Note.IsCompleted</c>, which would skip the <c>UpdatedAt</c>
+    /// refresh). The IsChecked binding is intentionally OneWay so the
+    /// toggle is the only mutation path.
+    /// </summary>
+    private void OnCheckChanged(object? sender, CheckedChangedEventArgs e)
+    {
+        if (sender is not BindableObject bindable || bindable.BindingContext is not Note note)
+            return;
+
+        // Skip the round-trip when the binding-driven refresh of
+        // IsChecked arrives at the same value the model already has —
+        // otherwise every property change would re-toggle the note.
+        if (note.IsCompleted == e.Value) return;
+
+        if (BindingContext is NotesListViewModel vm)
+            vm.ToggleCompleteCommand.Execute(note);
+    }
+
+    // -----------------------------------------------------------------
     //  Module-07 task 7-2: cross-list drag-and-drop (MAUI gestures)
     // -----------------------------------------------------------------
 

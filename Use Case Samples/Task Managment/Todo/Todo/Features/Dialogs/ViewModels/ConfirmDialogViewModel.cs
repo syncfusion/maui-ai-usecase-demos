@@ -9,7 +9,7 @@ namespace Todo.Features.Dialogs.ViewModels;
 /// matches <c>deletepermently.png</c>: title, body, <c>Cancel</c> +
 /// primary action. Used by the Bin view to confirm a permanent delete.
 /// </summary>
-public partial class ConfirmDialogViewModel : ViewModelBase, IModalResultProvider
+public partial class ConfirmDialogViewModel : ViewModelBase
 {
     private readonly INavigationService _navigation;
 
@@ -27,8 +27,6 @@ public partial class ConfirmDialogViewModel : ViewModelBase, IModalResultProvide
 
     [ObservableProperty]
     private bool isDestructive;
-
-    public object? Result { get; set; }
 
     public ConfirmDialogViewModel(INavigationService navigation)
     {

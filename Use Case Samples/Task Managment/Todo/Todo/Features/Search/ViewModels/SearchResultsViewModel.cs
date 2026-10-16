@@ -30,9 +30,9 @@ public partial class SearchResultsViewModel : ViewModelBase
     private readonly INavigationService _navigation;
 
     public SearchResultsViewModel()
-        : this(new InMemoryNoteSearchService(ServiceLocator.Current),
-               ServiceLocator.Current,
-               ServiceLocator.CurrentNavigation)
+        : this(new InMemoryNoteSearchService(new InMemoryNoteService()),
+               new InMemoryNoteService(),
+               new MauiNavigationService())
     {
     }
 
@@ -98,17 +98,17 @@ public partial class SearchResultsViewModel : ViewModelBase
     // ---------------------------------------------------------------
 
     [RelayCommand]
-    private void ToggleComplete(Note? note)
+    private async Task ToggleComplete(Note? note)
     {
         if (note is null) return;
-        _noteService.ToggleCompleteAsync(note.Id);
+        await _noteService.ToggleCompleteAsync(note.Id);
     }
 
     [RelayCommand]
-    private void ToggleImportant(Note? note)
+    private async Task ToggleImportant(Note? note)
     {
         if (note is null) return;
-        _noteService.ToggleImportantAsync(note.Id);
+        await _noteService.ToggleImportantAsync(note.Id);
     }
 
     [RelayCommand]
