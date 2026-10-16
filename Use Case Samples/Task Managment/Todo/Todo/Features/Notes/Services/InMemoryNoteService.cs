@@ -15,35 +15,14 @@ public sealed class InMemoryNoteService : INoteService
 
     public InMemoryNoteService()
     {
-        // The sample data file seeds the design-faithful task lists for the
-        // Important, Reminder and Bin views (see Important.png / remainder.png
-        // / bin.png). Every seed entry is soft-deleted AND marked important
-        // AND has a reminder date, so My Notes opens empty while the other
-        // three filter views render the documented task list.
-        var seed = SampleData.SeedNotes();
-        _notes = new ObservableCollection<Note>(seed.Select(Clone));
+        // My Notes starts empty by design (Module-02 + task requirement
+        // "on application load the My Notes page must not contain any
+        // preloaded tasks or sample data"). No seed notes are pushed
+        // into the store; users create everything via the bottom
+        // input bar or the create-list flow.
+        _notes = new ObservableCollection<Note>();
         Notes = new ReadOnlyObservableCollection<Note>(_notes);
     }
-
-    /// <summary>
-    /// Returns a fresh copy of a seed note so that each consumer (in-memory
-    /// store, tests, design-time previews) gets independent state and any
-    /// mutation in one does not leak into the canonical seed list.
-    /// </summary>
-    private static Note Clone(Note src) => new()
-    {
-        Id = src.Id,
-        Title = src.Title,
-        DueDate = src.DueDate,
-        ReminderDate = src.ReminderDate,
-        ListId = src.ListId,
-        IsImportant = src.IsImportant,
-        IsCompleted = src.IsCompleted,
-        DeletedAt = src.DeletedAt,
-        DisplayOrder = src.DisplayOrder,
-        CreatedAt = src.CreatedAt,
-        UpdatedAt = src.UpdatedAt
-    };
 
     public ReadOnlyObservableCollection<Note> Notes { get; }
 

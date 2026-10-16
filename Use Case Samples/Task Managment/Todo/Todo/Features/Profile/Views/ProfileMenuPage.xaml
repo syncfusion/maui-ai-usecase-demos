@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Todo.Features.Profile.Views.ProfileMenuPage"
+             x:Name="ProfileRoot"
+             Shell.NavBarIsVisible="False"
+             Shell.PresentationMode="ModalNotAnimated"
+             BackgroundColor="#40000000">
+
+    <ContentPage.GestureRecognizers>
+        <TapGestureRecognizer Tapped="OnScrimTapped" />
+    </ContentPage.GestureRecognizers>
+
+    <Grid>
+        <!-- Dropdown card anchored to the top-right (profile_pressed.png) -->
+        <Border WidthRequest="280"
+                Margin="0,56,16,0"
+                HorizontalOptions="End"
+                VerticalOptions="Start"
+                BackgroundColor="{StaticResource SurfaceColor}"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 8">
+            <Border.Shadow>
+                <Shadow Brush="#59000000" Radius="12" Offset="0,6" Opacity="0.5" />
+            </Border.Shadow>
+            <VerticalStackLayout Spacing="0" Padding="4">
+
+                <!-- Header strip: avatar + name + email (profile_pressed.png) -->
+                <Grid Padding="12,14"
+                      ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0"
+                            WidthRequest="44"
+                            HeightRequest="44"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 22"
+                            BackgroundColor="{StaticResource PrimaryLightColor}">
+                        <Image Source="profile.png"
+                               Aspect="AspectFill"
+                               SemanticProperties.Description="Profile image" />
+                    </Border>
+                    <VerticalStackLayout Grid.Column="1"
+                                         Margin="12,0,0,0"
+                                         Spacing="2"
+                                         VerticalOptions="Center">
+                        <Label Text="Hi John"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimaryColor}" />
+                        <Label Text="john@gmail.com"
+                               FontSize="12"
+                               TextColor="{StaticResource TextSecondaryColor}" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <BoxView HeightRequest="1" Color="{StaticResource DividerColor}" />
+
+                <!-- Menu items -->
+                <Button Style="{StaticResource HoverIconButtonStyle}"
+                        HeightRequest="48"
+                        Padding="12,0"
+                        HorizontalOptions="Fill"
+                        HorizontalTextAlignment="Start"
+                        FontSize="14"
+                        TextColor="{StaticResource TextPrimaryColor}"
+                        Clicked="OnManageAccountsClicked"
+                        SemanticProperties.Description="Manage accounts">
+                    <Button.Content>
+                        <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                            <Label Text="&#128100;" FontSize="16"
+                                   TextColor="{StaticResource TextSecondaryColor}"
+                                   VerticalOptions="Center" />
+                            <Label Text="Manage Accounts"
+                                   FontSize="14"
+                                   TextColor="{StaticResource TextPrimaryColor}"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Button.Content>
+                </Button>
+
+                <Button x:Name="SettingsButton"
+                        Style="{StaticResource HoverIconButtonStyle}"
+                        HeightRequest="48"
+                        Padding="12,0"
+                        HorizontalOptions="Fill"
+                        HorizontalTextAlignment="Start"
+                        FontSize="14"
+                        TextColor="{StaticResource TextPrimaryColor}"
+                        Clicked="OnSettingsClicked"
+                        SemanticProperties.Description="Settings">
+                    <Button.Content>
+                        <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                            <Label Text="&#9881;" FontSize="16"
+                                   TextColor="{StaticResource TextSecondaryColor}"
+                                   VerticalOptions="Center" />
+                            <Label Text="Settings"
+                                   FontSize="14"
+                                   TextColor="{StaticResource TextPrimaryColor}"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Button.Content>
+                </Button>
+
+                <BoxView HeightRequest="1" Color="{StaticResource DividerColor}" Margin="0,4" />
+
+                <Button Style="{StaticResource HoverIconButtonStyle}"
+                        HeightRequest="48"
+                        Padding="12,0"
+                        HorizontalOptions="Fill"
+                        HorizontalTextAlignment="Start"
+                        FontSize="14"
+                        TextColor="{StaticResource ErrorColor}"
+                        Clicked="OnSignOutClicked"
+                        SemanticProperties.Description="Sign out">
+                    <Button.Content>
+                        <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                            <Label Text="&#9854;" FontSize="16"
+                                   TextColor="{StaticResource ErrorColor}"
+                                   VerticalOptions="Center" />
+                            <Label Text="Sign Out"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource ErrorColor}"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Button.Content>
+                </Button>
+
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentPage>

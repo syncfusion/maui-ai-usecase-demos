@@ -33,4 +33,18 @@ public partial class NoteList : ObservableObject
 
     [ObservableProperty]
     private DateTime createdAt = DateTime.Now;
+
+    /// <summary>
+    /// Custom background image filename (in <c>Resources/Images</c>) the
+    /// user attached via the "Customize theme" dialog. <c>null</c> means
+    /// the list falls back to the built-in My Notes background.
+    /// </summary>
+    [ObservableProperty]
+    private string? backgroundImage;
+
+    /// <summary>
+    /// Active sort order for the notes in this list.
+    /// </summary>
+    [ObservableProperty]
+    private ListSortOrder sortOrder = ListSortOrder.Manual;
 }

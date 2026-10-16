@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Todo.Common.Views.ToastHost">
+
+    <!-- Floating toast pill. Lives at the bottom-right of its host and
+         fades in/out when a toast is raised by the IToastService. -->
+    <Border x:Name="Pill"
+            IsVisible="False"
+            Opacity="0"
+            Margin="16,0,16,88"
+            Padding="18,12"
+            BackgroundColor="#E6323232"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 24"
+            HorizontalOptions="End"
+            VerticalOptions="End"
+            MaximumWidthRequest="360">
+        <Border.Shadow>
+            <Shadow Brush="#66000000" Radius="10" Offset="0,4" Opacity="0.55" />
+        </Border.Shadow>
+        <HorizontalStackLayout Spacing="10"
+                               VerticalOptions="Center">
+            <Label x:Name="MessageLabel"
+                   FontSize="14"
+                   FontFamily="OpenSansRegular"
+                   TextColor="#FFFFFF"
+                   LineBreakMode="TailTruncation"
+                   MaximumWidthRequest="300"
+                   VerticalOptions="Center" />
+            <Button x:Name="CloseButton"
+                    Text="&#10005;"
+                    FontSize="12"
+                    WidthRequest="28"
+                    HeightRequest="28"
+                    Padding="0"
+                    BackgroundColor="Transparent"
+                    TextColor="#CCCCCC"
+                    SemanticProperties.Description="Dismiss notification" />
+        </HorizontalStackLayout>
+    </Border>
+
+</ContentView>

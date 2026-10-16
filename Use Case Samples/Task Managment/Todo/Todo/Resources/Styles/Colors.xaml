@@ -31,26 +31,57 @@
     <SolidColorBrush x:Key="MyNotesBrush" Color="{StaticResource MyNotesColor}" />
 
     <!-- ============================================================ -->
-    <!-- Semantic / surface tokens                                    -->
+    <!-- Semantic / surface tokens (theme aware)                       -->
+    <!-- AppThemeBinding lets the whole app follow Light/Dark/System.  -->
+    <!-- Views referencing these keys automatically resolve the value -->
+    <!-- for the active theme.                                        -->
     <!-- ============================================================ -->
-    <Color x:Key="BackgroundColor">#FAFAFA</Color>
-    <Color x:Key="SurfaceColor">#FFFFFF</Color>
-    <Color x:Key="SidebarBackgroundColor">#F5F5F5</Color>
-    <Color x:Key="SidebarSelectionColor">#EEEAFB</Color>
-    <Color x:Key="DividerColor">#E0E0E0</Color>
-    <Color x:Key="BorderColor">#E0E0E0</Color>
+    <Color x:Key="BackgroundColor">
+        <AppThemeBinding Light="#FAFAFA" Dark="#1B1B1B" />
+    </Color>
+    <Color x:Key="SurfaceColor">
+        <AppThemeBinding Light="#FFFFFF" Dark="#242424" />
+    </Color>
+    <Color x:Key="SidebarBackgroundColor">
+        <AppThemeBinding Light="#F5F5F5" Dark="#1F1F1F" />
+    </Color>
+    <Color x:Key="SidebarSelectionColor">
+        <AppThemeBinding Light="#EEEAFB" Dark="#332B52" />
+    </Color>
+    <Color x:Key="DividerColor">
+        <AppThemeBinding Light="#E0E0E0" Dark="#3A3A3A" />
+    </Color>
+    <Color x:Key="BorderColor">
+        <AppThemeBinding Light="#E0E0E0" Dark="#3A3A3A" />
+    </Color>
 
-    <Color x:Key="BottomBarBackgroundColor">#FFFFFF</Color>
-    <Color x:Key="InputPillBackgroundColor">#F5F5F5</Color>
+    <Color x:Key="BottomBarBackgroundColor">
+        <AppThemeBinding Light="#FFFFFF" Dark="#242424" />
+    </Color>
+    <Color x:Key="InputPillBackgroundColor">
+        <AppThemeBinding Light="#F5F5F5" Dark="#2E2E2E" />
+    </Color>
 
     <!-- ============================================================ -->
-    <!-- Text                                                         -->
+    <!-- Text (theme aware)                                           -->
     <!-- ============================================================ -->
-    <Color x:Key="TextPrimaryColor">#212121</Color>
-    <Color x:Key="TextSecondaryColor">#757575</Color>
-    <Color x:Key="TextTertiaryColor">#9E9E9E</Color>
+    <Color x:Key="TextPrimaryColor">
+        <AppThemeBinding Light="#212121" Dark="#EAEAEA" />
+    </Color>
+    <Color x:Key="TextSecondaryColor">
+        <AppThemeBinding Light="#757575" Dark="#A0A0A0" />
+    </Color>
+    <Color x:Key="TextTertiaryColor">
+        <AppThemeBinding Light="#9E9E9E" Dark="#8A8A8A" />
+    </Color>
     <Color x:Key="TextOnDarkColor">#FFFFFF</Color>
     <Color x:Key="TextInverseColor">#FFFFFF</Color>
+
+    <!-- Note card surface (lighter than the list background so the
+         white card stays distinct in both themes). -->
+    <Color x:Key="NoteCardColor">
+        <AppThemeBinding Light="#FFFFFF" Dark="#2C2C2C" />
+    </Color>
 
     <!-- ============================================================ -->
     <!-- Status                                                       -->

@@ -54,10 +54,45 @@ public partial class Note : ObservableObject
     private DateTime updatedAt = DateTime.Now;
 
     /// <summary>
+    /// Recurrence of the reminder / due date. Defaults to
+    /// <see cref="RepeatInterval.None"/> (one-off note).
+    /// </summary>
+    [ObservableProperty]
+    private RepeatInterval repeatInterval = RepeatInterval.None;
+
+    /// <summary>
+    /// Whether OS-level notifications are enabled for this note.
+    /// </summary>
+    [ObservableProperty]
+    private bool notificationEnabled;
+
+    /// <summary>
+    /// The time of day at which the reminder / notification should fire.
+    /// When <see cref="ReminderDate"/> has a value and this is null, the
+    /// time portion of <see cref="ReminderDate"/> is used.
+    /// </summary>
+    [ObservableProperty]
+    private TimeSpan? notificationTime;
+
+    /// <summary>
     /// Indicates whether the note has a reminder (date flag only — no
     /// OS notification fires in this sample).
     /// </summary>
     public bool HasReminder => ReminderDate.HasValue;
+
+    /// <summary>
+    /// Recurrence label shown in the note metadata row.
+    /// </summary>
+    public string RepeatLabel => RepeatInterval switch
+    {
+        RepeatInterval.Daily => "Daily",
+        RepeatInterval.Weekly => "Weekly",
+        RepeatInterval.Monthly => "Monthly",
+        RepeatInterval.Yearly => "Yearly",
+        _ => string.Empty
+    };
+
+    public bool HasRepeat => RepeatInterval != RepeatInterval.None;
 
     /// <summary>
     /// Indicates whether the note is due today.
