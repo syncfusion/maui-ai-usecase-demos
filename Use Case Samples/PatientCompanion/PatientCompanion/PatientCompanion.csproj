@@ -140,9 +140,6 @@
 		<MauiXaml Update="Views\HomePage.xaml">
 			<Inflator>SourceGen</Inflator>
 		</MauiXaml>
-		<MauiXaml Update="Views\MainLayoutPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
 		<MauiXaml Update="Views\MedicationsPage.xaml">
 			<Inflator>SourceGen</Inflator>
 		</MauiXaml>

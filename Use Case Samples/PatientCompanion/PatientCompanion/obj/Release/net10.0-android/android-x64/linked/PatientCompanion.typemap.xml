@@ -1,0 +1,8 @@
+<api type="release" assembly-name="PatientCompanion" mvid="bce5f0f04cff408a946c052fa8a99c97">
+  <module assembly-name="PatientCompanion" mvid="bce5f0f04cff408a946c052fa8a99c97" mvid-bytes="8PDlvP9MikCUbAUvqKmclw==">
+    <types-scratch>
+      <entry key="crc640dc6cc1a9d9cd2d8/MainActivity" java-name="crc640dc6cc1a9d9cd2d8/MainActivity" managed-type-name="PatientCompanion.MainActivity" token="33554454" />
+      <entry key="crc640dc6cc1a9d9cd2d8/MainApplication" java-name="crc640dc6cc1a9d9cd2d8/MainApplication" managed-type-name="PatientCompanion.MainApplication" token="33554455" />
+    </types-scratch>
+  </module>
+</api>

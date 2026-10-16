@@ -20,15 +20,6 @@ public partial class AppointmentDateTimeView : ContentView
         BindingContext = new AppointmentDateTimeViewModel(appointmentViewModel);
     }
 
-    private void VisitType_SelectionChanged(object sender, EventArgs e)
-    {
-        if (BindingContext is AppointmentDateTimeViewModel viewModel &&
-            sender is Syncfusion.Maui.Core.SfChipGroup chipGroup)
-        {
-            viewModel.ApplyVisitType(chipGroup.SelectedItem as string);
-        }
-    }
-
     private void Time_SelectionChanged(object sender, EventArgs e)
     {
         if (BindingContext is AppointmentDateTimeViewModel viewModel &&

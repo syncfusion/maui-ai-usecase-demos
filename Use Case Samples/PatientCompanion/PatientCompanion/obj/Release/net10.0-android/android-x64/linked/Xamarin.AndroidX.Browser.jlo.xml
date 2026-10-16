@@ -1,0 +1,16 @@
+<api>
+  <jcw-types>
+    <type name="KeepAliveService" package="crc64396a3fe5f8138e3f" application_java_class="android.app.Application" mono_runtime_initialization="mono.MonoPackageManager.LoadApplication (context);" extends_type="android.app.Service" partial_assembly_qualified_name="AndroidX.Browser.CustomTabs.KeepAliveService, Xamarin.AndroidX.Browser">
+      <constructors>
+        <constructor name="KeepAliveService" method="n_.ctor:()V:" jni_signature="()V" managed_parameters="" retval="void" is_dynamically_registered="True" />
+      </constructors>
+      <methods>
+        <method name="onBind" method="n_onBind:(Landroid/content/Intent;)Landroid/os/IBinder;:GetOnBind_Landroid_content_Intent_Handler" jni_signature="(Landroid/content/Intent;)Landroid/os/IBinder;" params="android.content.Intent p0" retval="android.os.IBinder" super_call="p0" activate_call="p0" />
+      </methods>
+    </type>
+  </jcw-types>
+  <acw-types partial-assembly-name="Xamarin.AndroidX.Browser" module-name="Xamarin.AndroidX.Browser.dll">
+    <type assembly-qualified-name="AndroidX.Browser.CustomTabs.KeepAliveService, Xamarin.AndroidX.Browser, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" compat-jni-name="androidx.browser.customtabs.KeepAliveService" java-key="crc64396a3fe5f8138e3f.KeepAliveService" managed-key="AndroidX.Browser.CustomTabs.KeepAliveService" partial-assembly-qualified-name="AndroidX.Browser.CustomTabs.KeepAliveService, Xamarin.AndroidX.Browser" />
+    <type assembly-qualified-name="AndroidX.Browser.CustomTabs.IEngagementSignalsCallback, Xamarin.AndroidX.Browser, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" compat-jni-name="androidx.browser.customtabs.EngagementSignalsCallback" java-key="androidx.browser.customtabs.EngagementSignalsCallback" managed-key="AndroidX.Browser.CustomTabs.IEngagementSignalsCallback" partial-assembly-qualified-name="AndroidX.Browser.CustomTabs.IEngagementSignalsCallback, Xamarin.AndroidX.Browser" />
+  </acw-types>
+</api>

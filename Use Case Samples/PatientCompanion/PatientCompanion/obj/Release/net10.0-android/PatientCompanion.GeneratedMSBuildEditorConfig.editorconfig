@@ -1,0 +1,275 @@
+is_global = true
+build_property.EnableAotAnalyzer = 
+build_property.EnableSingleFileAnalyzer = true
+build_property.EnableTrimAnalyzer = false
+build_property.IncludeAllContentForSelfExtract = 
+build_property.VerifyReferenceTrimCompatibility = 
+build_property.VerifyReferenceAotCompatibility = 
+build_property.MauiXamlNoWarn = 
+build_property.EnableMauiXamlDiagnostics = 
+build_property.MauiXamlLineInfo = 
+build_property.Configuration = Release
+build_property.MauiXamlHotReload = 
+build_property.EnablePreviewFeatures = 
+build_property.MvvmToolkitEnableINotifyPropertyChangingSupport = true
+build_property._MvvmToolkitIsUsingWindowsRuntimePack = false
+build_property.CsWinRTComponent = 
+build_property.CsWinRTAotOptimizerEnabled = 
+build_property.CsWinRTAotWarningLevel = 
+build_property.TargetFramework = net10.0-android
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v10.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EntryPointFilePath = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = PatientCompanion
+build_property.ProjectDir = /home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = false
+build_property.EffectiveAnalysisLevelStyle = 10.0
+build_property.EnableCodeStyleSeverity = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/App.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.App.xaml
+build_metadata.AdditionalFiles.TargetPath = App.xaml
+build_metadata.AdditionalFiles.RelativePath = App.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/AppShell.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.AppShell.xaml
+build_metadata.AdditionalFiles.TargetPath = AppShell.xaml
+build_metadata.AdditionalFiles.RelativePath = AppShell.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Controls/AppointmentCardView.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Controls.AppointmentCardView.xaml
+build_metadata.AdditionalFiles.TargetPath = Controls/AppointmentCardView.xaml
+build_metadata.AdditionalFiles.RelativePath = Controls/AppointmentCardView.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Controls/AppPageLayout.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Controls.AppPageLayout.xaml
+build_metadata.AdditionalFiles.TargetPath = Controls/AppPageLayout.xaml
+build_metadata.AdditionalFiles.RelativePath = Controls/AppPageLayout.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Controls/BottomNavigationView.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Controls.BottomNavigationView.xaml
+build_metadata.AdditionalFiles.TargetPath = Controls/BottomNavigationView.xaml
+build_metadata.AdditionalFiles.RelativePath = Controls/BottomNavigationView.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Controls/DoctorsCardView.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Controls.DoctorsCardView.xaml
+build_metadata.AdditionalFiles.TargetPath = Controls/DoctorsCardView.xaml
+build_metadata.AdditionalFiles.RelativePath = Controls/DoctorsCardView.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Controls/HealthChartCardView.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Controls.HealthChartCardView.xaml
+build_metadata.AdditionalFiles.TargetPath = Controls/HealthChartCardView.xaml
+build_metadata.AdditionalFiles.RelativePath = Controls/HealthChartCardView.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Controls/HealthMetricCardView.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Controls.HealthMetricCardView.xaml
+build_metadata.AdditionalFiles.TargetPath = Controls/HealthMetricCardView.xaml
+build_metadata.AdditionalFiles.RelativePath = Controls/HealthMetricCardView.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Controls/MedicationCardView.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Controls.MedicationCardView.xaml
+build_metadata.AdditionalFiles.TargetPath = Controls/MedicationCardView.xaml
+build_metadata.AdditionalFiles.RelativePath = Controls/MedicationCardView.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Controls/QuickActionCardView.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Controls.QuickActionCardView.xaml
+build_metadata.AdditionalFiles.TargetPath = Controls/QuickActionCardView.xaml
+build_metadata.AdditionalFiles.RelativePath = Controls/QuickActionCardView.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Controls/VisitCardView.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Controls.VisitCardView.xaml
+build_metadata.AdditionalFiles.TargetPath = Controls/VisitCardView.xaml
+build_metadata.AdditionalFiles.RelativePath = Controls/VisitCardView.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Controls/VitalCardView.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Controls.VitalCardView.xaml
+build_metadata.AdditionalFiles.TargetPath = Controls/VitalCardView.xaml
+build_metadata.AdditionalFiles.RelativePath = Controls/VitalCardView.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Resources/Styles/Colors.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Resources.Styles.Colors.xaml
+build_metadata.AdditionalFiles.TargetPath = Resources/Styles/Colors.xaml
+build_metadata.AdditionalFiles.RelativePath = Resources/Styles/Colors.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Resources/Styles/Styles.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Resources.Styles.Styles.xaml
+build_metadata.AdditionalFiles.TargetPath = Resources/Styles/Styles.xaml
+build_metadata.AdditionalFiles.RelativePath = Resources/Styles/Styles.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Views/AppointmentDateTimeView.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Views.AppointmentDateTimeView.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/AppointmentDateTimeView.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/AppointmentDateTimeView.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Views/AppointmentDoctorSelectionView.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Views.AppointmentDoctorSelectionView.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/AppointmentDoctorSelectionView.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/AppointmentDoctorSelectionView.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Views/AppointmentPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Views.AppointmentPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/AppointmentPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/AppointmentPage.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Views/AppointmentReviewView.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Views.AppointmentReviewView.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/AppointmentReviewView.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/AppointmentReviewView.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Views/AppointmentSpecialityView.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Views.AppointmentSpecialityView.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/AppointmentSpecialityView.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/AppointmentSpecialityView.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Views/HealthPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Views.HealthPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/HealthPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/HealthPage.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Views/HomePage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Views.HomePage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/HomePage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/HomePage.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Views/MedicationsPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Views.MedicationsPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/MedicationsPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/MedicationsPage.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Views/RecordsPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Views.RecordsPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/RecordsPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/RecordsPage.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 
+
+[/home/user/maui-ai-usecase-demos/Use Case Samples/PatientCompanion/PatientCompanion/Views/VisitsPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = PatientCompanion.Views.VisitsPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/VisitsPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/VisitsPage.xaml
+build_metadata.AdditionalFiles.Inflator = SourceGen
+build_metadata.AdditionalFiles.NoWarn = 
+build_metadata.AdditionalFiles.EnableDiagnostics = 
+build_metadata.AdditionalFiles.LineInfo = 

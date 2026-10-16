@@ -14,9 +14,4 @@ public partial class VisitsPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
-
-    private async void OnBookAppointmentTapped(object sender, TappedEventArgs e)
-{
-await Shell.Current.GoToAsync(nameof(AppointmentPage));
-}
 }
