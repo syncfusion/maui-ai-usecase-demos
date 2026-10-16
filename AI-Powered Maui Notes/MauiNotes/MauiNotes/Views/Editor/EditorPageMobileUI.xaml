@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:custom="clr-namespace:CustomRichTextEditor;assembly=CustomRichTextEditor"
+             xmlns:ai="clr-namespace:MauiNotes.Controls.AI"
+             xmlns:toolbars="clr-namespace:MauiNotes.Controls.Toolbars"
+             xmlns:popups="clr-namespace:MauiNotes.Controls.Popups"
+             xmlns:vm="clr-namespace:MauiNotes.ViewModels"
+             x:Class="MauiNotes.Views.Editor.EditorPageMobileUI"
+             x:DataType="vm:NotesViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="White">
+    <Grid RowDefinitions="52,1,27,*" BackgroundColor="White">
+        <Grid ColumnDefinitions="40,40,*" ColumnSpacing="4" Padding="4,0" BackgroundColor="White">
+            <Border WidthRequest="40" HeightRequest="40"
+                    Stroke="#D2D2D7" StrokeThickness="0.5"
+                    StrokeShape="Ellipse" Background="White"
+                    HorizontalOptions="Center" VerticalOptions="Center">
+                <Label Text="&#xe707;"
+                       FontFamily="MauiMaterialAssets"
+                       FontSize="20"
+                       TextColor="#1D1D1F"
+                       BackgroundColor="Transparent"
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"
+                       HorizontalOptions="Fill"
+                       VerticalOptions="Fill"
+                       WidthRequest="40"
+                       HeightRequest="40"
+                       SemanticProperties.Description="Back to notes">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnBackClicked" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </Border>
+            <Border Grid.Column="1" WidthRequest="40" HeightRequest="40"
+                    Stroke="#D2D2D7" StrokeThickness="0.5"
+                    StrokeShape="Ellipse" Background="White"
+                    HorizontalOptions="Center" VerticalOptions="Center">
+                <Label Text="&#xE756;"
+                       FontFamily="MauiMaterialAssets"
+                       FontSize="18"
+                       TextColor="#1D1D1F"
+                       BackgroundColor="Transparent"
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"
+                       WidthRequest="40"
+                       HeightRequest="40"
+                       SemanticProperties.Description="New note">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NewNoteCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </Border>
+            <toolbars:EditorToolbar x:Name="EditorToolbar"
+                                    Grid.Column="2"
+                                    HorizontalOptions="End"
+                                    VerticalOptions="Center" />
+        </Grid>
+
+        <BoxView x:Name="PopupPositionAnchor"
+                 Grid.Row="1"
+                 HeightRequest="1"
+                 Color="#E5E5E7"
+                 VerticalOptions="Center"
+                 AutomationId="EditorPopupPositionAnchor"
+                 InputTransparent="True" />
+
+        <Grid Grid.Row="2">
+            <Label Text="{Binding EditorTimestampText}"
+                   FontSize="12"
+                   TextColor="#8D8D95"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"
+                   VerticalOptions="Fill"
+                   VerticalTextAlignment="Center" />
+        </Grid>
+
+        <Grid Grid.Row="3" Padding="12,0,12,8">
+            <custom:CustomRichTextEditor x:Name="RichTextEditor"
+                                         Value="{Binding EditorHtml, Mode=TwoWay}"
+                                         Placeholder="Select a note to start editing..."
+                                         DefaultFontFamily="system-ui"
+                                         EditorBackgroundColor="White"
+                                         ReadOnly="{Binding IsEditorReadOnly}"
+                                         FormatChanged="OnEditorFormatChanged" />
+        </Grid>
+
+        <popups:FormatPopup x:Name="FormatPopup" Grid.RowSpan="4" />
+        <popups:TextPalettePopup x:Name="TextPalettePopup" Grid.RowSpan="4" />
+        <popups:HighlightPalettePopup x:Name="HighlightPalettePopup" Grid.RowSpan="4" />
+        <ai:AiEditingPopup x:Name="AiEditingPopup" Grid.RowSpan="4" />
+    </Grid>
+</ContentPage>

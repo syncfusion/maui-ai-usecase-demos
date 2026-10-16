@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="MauiNotes/MauiNotes.csproj" />
+  <Project Path="CustomRichTextEditor/CustomRichTextEditor.csproj" />
+</Solution>
