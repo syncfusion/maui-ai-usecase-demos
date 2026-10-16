@@ -305,6 +305,7 @@
                             Padding="0"
                             BackgroundColor="Transparent"
                             TextColor="{StaticResource TextSecondaryColor}"
+                            IsEnabled="False"
                             SemanticProperties.Description="Add image" />
                     <Button Grid.Column="2"
                             ImageSource="dateicon.png"
@@ -314,6 +315,7 @@
                             Padding="0"
                             BackgroundColor="Transparent"
                             TextColor="{StaticResource TextSecondaryColor}"
+                            IsEnabled="False"
                             SemanticProperties.Description="Archive note" />
                     <Button Grid.Column="3"
                             ImageSource="bellicon.png"
@@ -323,6 +325,7 @@
                             Padding="0"
                             BackgroundColor="Transparent"
                             TextColor="{StaticResource TextSecondaryColor}"
+                            IsEnabled="False"
                             SemanticProperties.Description="Set reminder" />
                     <Button Grid.Column="4"
                             Text="|"
@@ -332,6 +335,7 @@
                             Padding="0"
                             BackgroundColor="Transparent"
                             TextColor="{StaticResource TextSecondaryColor}"
+                            IsEnabled="False"
                             SemanticProperties.Description="More note options" />
                     <Button Grid.Column="5"
                             ImageSource="tickicon.png"

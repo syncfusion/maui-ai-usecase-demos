@@ -16,11 +16,12 @@
         <HorizontalStackLayout Grid.Column="0"
                                Spacing="4"
                                VerticalOptions="Center">
-            <!-- Hamburger menu: collapses / expands the sidebar -->
+            <!-- Hamburger menu: collapses / expands the sidebar.
+                 Module-08 task 8-2: 48x48 touch target per the spec. -->
             <Button ImageSource="humburger.png"
                     FontSize="20"
-                    WidthRequest="40"
-                    HeightRequest="40"
+                    WidthRequest="48"
+                    HeightRequest="48"
                     Padding="0"
                     BackgroundColor="Transparent"
                     TextColor="{StaticResource TextSecondaryColor}"
@@ -44,6 +45,14 @@
                 StrokeThickness="0"
                 StrokeShape="RoundRectangle 18">
             <Grid ColumnDefinitions="*,Auto">
+                <!--
+                    The entry is read-only because the actual search UI
+                    lives in SearchResultsPage. We still want a tap anywhere
+                    on the pill to open that page, so the parent Grid
+                    carries a TapGestureRecognizer. The trailing search
+                    icon button is kept as a redundant affordance for
+                    screen readers and pointer users.
+                -->
                 <Entry Placeholder="Search"
                        FontSize="14"
                        TextColor="{StaticResource TextPrimaryColor}"
@@ -58,9 +67,19 @@
                         Command="{Binding OpenSearchCommand}"
                         SemanticProperties.Description="Search notes"
                         VerticalOptions="Center" />
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding OpenSearchCommand}" />
+                </Grid.GestureRecognizers>
             </Grid>
         </Border>
 
+        <!--
+            Static avatar shown in the header per the design (mynotes.png).
+            Not interactive — profile pages are explicitly out of scope, so
+            the avatar is decorative. We mark it as ignored by accessibility
+            so a screen reader doesn't announce a non-actionable "Profile"
+            control.
+        -->
         <Border Grid.Column="2"
                 WidthRequest="34"
                 HeightRequest="34"
@@ -70,7 +89,7 @@
                 VerticalOptions="Center">
             <Image Source="profile.png"
                    Aspect="AspectFill"
-                   SemanticProperties.Description="Profile" />
+                   SemanticProperties.Description="User avatar" />
         </Border>
     </Grid>
 

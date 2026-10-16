@@ -111,6 +111,15 @@ public partial class NotesListViewModel : ViewModelBase
     public ReadOnlyObservableCollection<Todo.Features.CustomLists.Models.NoteList> CustomLists => _listService.Lists;
 
     /// <summary>
+    /// True when at least one user-defined list exists. Drives the
+    /// visibility of the sidebar "Lists" section header
+    /// (Module-08 task 8-3 — ensures the empty / non-empty state of
+    /// the custom-lists region refreshes as the user creates or
+    /// removes lists).
+    /// </summary>
+    public bool HasCustomLists => _listService.Lists.Count > 0;
+
+    /// <summary>
     /// Indicates whether the active filter is a user-defined list
     /// (rather than a built-in category). Drives header copy and
     /// background image selection.
@@ -219,16 +228,10 @@ public partial class NotesListViewModel : ViewModelBase
     public bool IsEmpty => FilteredNotes.Count == 0;
 
     // ---------------------------------------------------------------
-    //  Sidebar expand / collapse state
+    //  Sidebar expand / collapse state (Module-08 task 8-1)
     // ---------------------------------------------------------------
     [ObservableProperty]
     private bool isSidebarCollapsed;
-
-    /// <summary>
-    /// Expanded sidebar width (used by the responsive grid column
-    /// defined in <c>MainLayoutView.xaml</c>).
-    /// </summary>
-    public const double SidebarExpandedWidth = 220;
 
     [RelayCommand]
     private void ToggleSidebar() => IsSidebarCollapsed = !IsSidebarCollapsed;
@@ -769,6 +772,12 @@ public partial class NotesListViewModel : ViewModelBase
         if (e.OldItems is not null)
             foreach (Todo.Features.CustomLists.Models.NoteList l in e.OldItems)
                 l.PropertyChanged -= OnListPropertyChanged;
+
+        // Module-08 task 8-3: the sidebar "Lists" header is bound to
+        // HasCustomLists — refresh the flag every time the underlying
+        // collection changes so the section header appears / disappears
+        // as the user creates or removes lists.
+        OnPropertyChanged(nameof(HasCustomLists));
 
         // If the currently-active list has been removed, snap back to
         // the built-in My Notes view.

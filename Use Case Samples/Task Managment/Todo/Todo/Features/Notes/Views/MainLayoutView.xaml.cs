@@ -10,6 +10,11 @@ namespace Todo.Features.Notes.Views;
 /// </summary>
 public partial class MainLayoutView : ContentView
 {
+    // Module-08 task 8-1: expanded sidebar matches the wide layout in
+    // mynotes.png. Phone layout starts collapsed (matches collapsed.png);
+    // the hamburger button in the header toggles between the two.
+    private const double ExpandedSidebarWidth = 220;
+
     private readonly NotesListViewModel _viewModel;
 
     public MainLayoutView(NotesListViewModel viewModel)
@@ -18,8 +23,13 @@ public partial class MainLayoutView : ContentView
         _viewModel = viewModel;
         BindingContext = viewModel;
 
-        // Apply initial sidebar state, then keep the grid in sync.
-        UpdateSidebarColumn(viewModel.IsSidebarCollapsed);
+        // Module-08 task 8-1: on Phone idiom the XAML sets the sidebar
+        // column to 0 (matches collapsed.png). For non-Phone idioms we
+        // honor the ViewModel flag so a user who collapsed the sidebar
+        // on a tablet sees the same state on the next appearance.
+        var startCollapsed = DeviceIdiomMatches(DeviceIdiom.Phone) || viewModel.IsSidebarCollapsed;
+        viewModel.IsSidebarCollapsed = startCollapsed;
+        UpdateSidebarColumn(startCollapsed);
         viewModel.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(NotesListViewModel.IsSidebarCollapsed))
@@ -37,7 +47,10 @@ public partial class MainLayoutView : ContentView
     {
         // Collapse the sidebar column completely so the main content
         // area occupies the full available width.
-        RootGrid.ColumnDefinitions[0].Width = isCollapsed ? new GridLength(0) : new GridLength(220);
+        RootGrid.ColumnDefinitions[0].Width = isCollapsed ? new GridLength(0) : new GridLength(ExpandedSidebarWidth);
         Sidebar.IsVisible = !isCollapsed;
     }
+
+    private static bool DeviceIdiomMatches(DeviceIdiom idiom) =>
+        DeviceInfo.Current?.Idiom == idiom;
 }

@@ -6,17 +6,24 @@
              x:Class="Todo.Features.Notes.Views.MainLayoutView"
              x:DataType="vm:NotesListViewModel">
 
+    <!--
+        Module-08 task 8-1 (responsive layout pass):
+        - The sidebar column is 0 on Phone (matches collapsed.png) and
+          220 on Tablet/Desktop (matches the expanded sidebar in
+          mynotes.png). The hamburger button in the header can still
+          toggle the column manually on any device.
+    -->
     <Grid x:Name="RootGrid"
           Margin="0,10,0,0"
           RowDefinitions="48,*"
-          ColumnDefinitions="220,*"
+          ColumnDefinitions="{OnIdiom Phone=0, Default=220}"
           BackgroundColor="{StaticResource BackgroundColor}">
 
         <!-- Shared application header (spans both columns) -->
         <views:HeaderView Grid.Row="0"
                           Grid.ColumnSpan="2" />
 
-        <!-- Sidebar (collapses to 0 width on hamburger tap) -->
+        <!-- Sidebar (hides on Phone per collapsed.png) -->
         <views:SidebarView x:Name="Sidebar"
                            Grid.Row="1"
                            Grid.Column="0" />

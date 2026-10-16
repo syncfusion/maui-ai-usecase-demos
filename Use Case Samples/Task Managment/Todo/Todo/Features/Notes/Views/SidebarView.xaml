@@ -95,10 +95,13 @@
                 </CollectionView>
 
                 <!-- "Lists" section header (only shown when there are
-                     custom lists AND the sidebar is expanded). -->
+                     custom lists AND the sidebar is expanded). Bound to
+                     the ViewModel's HasCustomLists flag so the header
+                     refreshes as lists are created / removed
+                     (Module-08 task 8-3). -->
                 <Label Text="Lists"
                        Style="{StaticResource SidebarSectionHeaderStyle}"
-                       IsVisible="{Binding Source={x:Reference SidebarRoot}, Path=BindingContext.CustomLists.Count, Converter={StaticResource CountToVisibilityConverter}}" />
+                       IsVisible="{Binding Source={x:Reference SidebarRoot}, Path=BindingContext.HasCustomLists}" />
 
                 <!-- Custom (user-defined) lists -->
                 <CollectionView x:Name="CustomListsView"

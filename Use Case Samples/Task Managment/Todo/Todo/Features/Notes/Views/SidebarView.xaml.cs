@@ -72,7 +72,11 @@ public partial class SidebarView : ContentView
         var key = NotesListViewModel.EncodeDropTarget(category);
         vm.DropTargetKey = key;
         ApplyDropVisual(border, active: true);
-        e.AcceptedOperation = DataPackageOperation.Move;
+        // MAUI's DataPackageOperation only exposes None/Copy (see
+        // Microsoft.Maui.Controls DragAndDrop). "Move" is not part of
+        // the cross-platform enum; we use Copy so the drop is accepted
+        // and the in-app move command runs to relocate the note.
+        e.AcceptedOperation = DataPackageOperation.Copy;
     }
 
     private void OnSidebarDragLeave(object? sender, DragEventArgs e)
@@ -119,7 +123,9 @@ public partial class SidebarView : ContentView
         var key = NotesListViewModel.EncodeDropTarget(list.Id);
         vm.DropTargetKey = key;
         ApplyDropVisual(border, active: true);
-        e.AcceptedOperation = DataPackageOperation.Move;
+        // MAUI's DataPackageOperation only exposes None/Copy; use Copy
+        // to accept the drop (see handler in OnSidebarDragOver).
+        e.AcceptedOperation = DataPackageOperation.Copy;
     }
 
     private void OnCustomListDragLeave(object? sender, DragEventArgs e)
