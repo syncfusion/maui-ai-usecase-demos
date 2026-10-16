@@ -1,0 +1,29 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Todo"
+             xmlns:conv="clr-namespace:Todo.Converters"
+             x:Class="Todo.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Sizes.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Global converters -->
+            <conv:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <conv:BoolToTextDecorationConverter x:Key="BoolToTextDecorationConverter" />
+            <conv:DateTimeFormatConverter x:Key="DateTimeFormatConverter" />
+            <conv:NotNullToBoolConverter x:Key="NotNullToBoolConverter" />
+            <conv:BoolToStarGlyphConverter x:Key="BoolToStarGlyphConverter" />
+            <conv:BoolToStarColorConverter x:Key="BoolToStarColorConverter" />
+            <conv:CategoryToColorConverter x:Key="CategoryToColorConverter" />
+            <conv:EnumDisplayNameConverter x:Key="EnumDisplayNameConverter" />
+            <conv:ObjectToCategoryConverter x:Key="ObjectToCategoryConverter" />
+            <conv:StringNotEmptyToBoolConverter x:Key="StringNotEmptyToBoolConverter" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

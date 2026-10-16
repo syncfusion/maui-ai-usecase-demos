@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Todo.Features.CustomLists.ViewModels"
+             x:Class="Todo.Features.CustomLists.Views.CreateListDialogPage"
+             x:DataType="vm:CreateListDialogViewModel"
+             Shell.NavBarIsVisible="False"
+             Shell.PresentationMode="ModalNotAnimated"
+             BackgroundColor="#80000000">
+
+    <Grid Padding="32"
+          VerticalOptions="Center"
+          HorizontalOptions="Center">
+
+        <Border MaximumWidthRequest="420"
+                WidthRequest="{OnIdiom Phone=300, Default=400}"
+                BackgroundColor="{StaticResource SurfaceColor}"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 16"
+                Padding="24">
+            <Border.Shadow>
+                <Shadow Brush="#33000000"
+                        Radius="8"
+                        Offset="0,4"
+                        Opacity="0.20" />
+            </Border.Shadow>
+            <VerticalStackLayout Spacing="16">
+
+                <!-- Dialog title (matches createnewlist.png) -->
+                <Label Text="{Binding DialogTitle}"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource TextPrimaryColor}" />
+
+                <!-- List-name input -->
+                <Border BackgroundColor="{StaticResource InputPillBackgroundColor}"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 8"
+                        Padding="12,0">
+                    <Entry Text="{Binding ListName, Mode=TwoWay}"
+                           Placeholder="List name"
+                           FontSize="14"
+                           TextColor="{StaticResource TextPrimaryColor}"
+                           PlaceholderColor="{StaticResource TextTertiaryColor}"
+                           BackgroundColor="Transparent"
+                           MinimumHeightRequest="44" />
+                </Border>
+
+                <!-- Inline validation message (only visible when set) -->
+                <Label Text="{Binding ErrorMessage}"
+                       FontSize="12"
+                       TextColor="{StaticResource ErrorColor}"
+                       IsVisible="{Binding ErrorMessage, Converter={StaticResource NotNullToBoolConverter}}" />
+
+                <!-- Action buttons -->
+                <Grid ColumnDefinitions="*,Auto,Auto"
+                      ColumnSpacing="12"
+                      HorizontalOptions="End"
+                      Margin="0,8,0,0">
+                    <Button Grid.Column="1"
+                            Text="Cancel"
+                            Style="{StaticResource TextButtonStyle}"
+                            Command="{Binding CancelCommand}"
+                            MinimumWidthRequest="96" />
+                    <Button Grid.Column="2"
+                            Text="{Binding PrimaryButtonText}"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Command="{Binding CreateCommand}"
+                            MinimumWidthRequest="96" />
+                </Grid>
+
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentPage>
