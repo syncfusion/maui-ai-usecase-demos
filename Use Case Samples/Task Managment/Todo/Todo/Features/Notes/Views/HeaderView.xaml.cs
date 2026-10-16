@@ -11,6 +11,12 @@ public partial class HeaderView : ContentView
     }
 
     /// <summary>
+    /// Bubbles up an avatar tap to the host page so the
+    /// <see cref="MainLayoutView"/> can show the profile dropdown.
+    /// </summary>
+    public event EventHandler? ProfileTapped;
+
+    /// <summary>
     /// Forwards a tap on the header search entry to the bound
     /// ViewModel's <see cref="NotesListViewModel.OpenSearchCommand"/>.
     /// The entry is read-only and acts as a button surrogate so the
@@ -29,5 +35,10 @@ public partial class HeaderView : ContentView
         {
             cmd.Execute(null);
         }
+    }
+
+    private void OnProfileTapped(object? sender, TappedEventArgs e)
+    {
+        ProfileTapped?.Invoke(this, EventArgs.Empty);
     }
 }

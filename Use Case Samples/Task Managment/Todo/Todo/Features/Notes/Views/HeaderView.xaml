@@ -2,6 +2,8 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Todo.Features.Notes.ViewModels"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:syncfusionCore="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
              x:Class="Todo.Features.Notes.Views.HeaderView"
              x:DataType="vm:NotesListViewModel">
 
@@ -17,16 +19,15 @@
                                Spacing="4"
                                VerticalOptions="Center">
             <!-- Hamburger menu: collapses / expands the sidebar.
-                 Module-08 task 8-2: 48x48 touch target per the spec. -->
-            <Button ImageSource="humburger.png"
-                    FontSize="20"
-                    WidthRequest="48"
-                    HeightRequest="48"
-                    Padding="0"
-                    BackgroundColor="Transparent"
-                    TextColor="{StaticResource TextSecondaryColor}"
-                    Command="{Binding ToggleSidebarCommand}"
-                    SemanticProperties.Description="Toggle navigation menu" />
+                 Syncfusion SfButton with a transparent icon style for hover. -->
+            <syncfusion:SfButton ImageSource="humburger.png"
+                                 Style="{StaticResource IconSfButtonStyle}"
+                                 WidthRequest="44"
+                                 HeightRequest="44"
+                                 FontSize="20"
+                                 StrokeThickness="0"
+                                 Command="{Binding ToggleSidebarCommand}"
+                                 SemanticProperties.Description="Toggle navigation menu" />
             <Label Text="To Do List"
                    FontSize="17"
                    FontAttributes="Bold"
@@ -34,63 +35,67 @@
                    VerticalOptions="Center" />
         </HorizontalStackLayout>
 
-        <!-- Search pill -->
-        <Border Grid.Column="1"
-                WidthRequest="{OnIdiom Phone=180, Default=360}"
-                HeightRequest="36"
-                Padding="12,0"
-                HorizontalOptions="Center"
-                VerticalOptions="Center"
-                BackgroundColor="{StaticResource InputPillBackgroundColor}"
-                StrokeThickness="0"
-                StrokeShape="RoundRectangle 18">
+        <!-- Search pill - styled to match the mynotes.png header reference. -->
+        <syncfusionCore:SfTextInputLayout Grid.Column="1"
+                                         ContainerType="None"
+                                         Hint="Search"
+                                         ShowHint="False"
+                                         ReserveSpaceForAssistiveLabels="False"
+                                         InputViewPadding="0"
+                                         BackgroundColor="{StaticResource InputPillBackgroundColor}"
+                                         OutlineCornerRadius="18"
+                                         WidthRequest="{OnIdiom Phone=180, Default=360}"
+                                         HeightRequest="36"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="Center">
             <Grid ColumnDefinitions="*,Auto">
-                <!--
-                    The entry is read-only because the actual search UI
-                    lives in SearchResultsPage. We still want a tap anywhere
-                    on the pill to open that page, so the parent Grid
-                    carries a TapGestureRecognizer. The trailing search
-                    icon button is kept as a redundant affordance for
-                    screen readers and pointer users.
-                -->
                 <Entry Placeholder="Search"
                        FontSize="14"
                        TextColor="{StaticResource TextPrimaryColor}"
                        PlaceholderColor="{StaticResource TextSecondaryColor}"
                        IsReadOnly="True"
                        Focused="OnSearchEntryFocused"
+                       BackgroundColor="Transparent"
                        VerticalOptions="Center" />
-                <Button Grid.Column="1"
-                        ImageSource="search.png"
-                        FontSize="15" Background="Transparent"
-                        TextColor="{StaticResource TextSecondaryColor}"
-                        Command="{Binding OpenSearchCommand}"
-                        SemanticProperties.Description="Search notes"
-                        VerticalOptions="Center" />
+                <syncfusion:SfButton Grid.Column="1"
+                                     ImageSource="search.png"
+                                     Style="{StaticResource IconSfButtonStyle}"
+                                     FontSize="15"
+                                     StrokeThickness="0"
+                                     Background="Transparent"
+                                     TextColor="{StaticResource TextSecondaryColor}"
+                                     Command="{Binding OpenSearchCommand}"
+                                     SemanticProperties.Description="Search notes"
+                                     VerticalOptions="Center" />
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding OpenSearchCommand}" />
                 </Grid.GestureRecognizers>
             </Grid>
-        </Border>
+        </syncfusionCore:SfTextInputLayout>
 
         <!--
-            Static avatar shown in the header per the design (mynotes.png).
-            Not interactive — profile pages are explicitly out of scope, so
-            the avatar is decorative. We mark it as ignored by accessibility
-            so a screen reader doesn't announce a non-actionable "Profile"
-            control.
+            Profile avatar - shows a dropdown profile menu (Hi John, account
+            options) when tapped. The border is wrapped in a tap recognizer
+            so the entire pill behaves like a button.
         -->
-        <Border Grid.Column="2"
-                WidthRequest="34"
-                HeightRequest="34"
-                Padding="0"
-                StrokeThickness="0"
-                StrokeShape="RoundRectangle 17"
-                VerticalOptions="Center">
-            <Image Source="profile.png"
-                   Aspect="AspectFill"
-                   SemanticProperties.Description="User avatar" />
-        </Border>
+        <Grid Grid.Column="2" VerticalOptions="Center">
+            <Border WidthRequest="36"
+                    HeightRequest="36"
+                    Padding="0"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 18"
+                    BackgroundColor="{StaticResource InputPillBackgroundColor}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18" />
+                </Border.StrokeShape>
+                <Image Source="profile.png"
+                       Aspect="AspectFill"
+                       SemanticProperties.Description="User avatar" />
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnProfileTapped" />
+                </Border.GestureRecognizers>
+            </Border>
+        </Grid>
     </Grid>
 
 </ContentView>

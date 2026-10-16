@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Todo.Common;
@@ -13,9 +14,10 @@ namespace Todo.Features.EditNote.ViewModels;
 /// input, <c>Cancel</c> / <c>Save</c> buttons.
 ///
 /// <para>
-/// <see cref="DueDate"/> / <see cref="ReminderDate"/> are exposed here so
-/// the date picker added in Module-04 (task 4-4) can bind to them
-/// without any further changes to this ViewModel.
+/// The dialog exposes DueDate / ReminderDate / RepeatType /
+/// NotificationsEnabled so the bottom input bar can attach a date,
+/// time, recurrence, and notification flag to the note without
+/// leaving the form.
 /// </para>
 /// </summary>
 public partial class EditNoteViewModel : ViewModelBase
@@ -35,10 +37,48 @@ public partial class EditNoteViewModel : ViewModelBase
     private DateTime? dueDate;
 
     [ObservableProperty]
+    private TimeSpan? dueTime;
+
+    [ObservableProperty]
+    private bool hasDueDate;
+
+    [ObservableProperty]
     private DateTime? reminderDate;
 
     [ObservableProperty]
+    private TimeSpan? reminderTime;
+
+    [ObservableProperty]
+    private bool hasReminder;
+
+    [ObservableProperty]
+    private RepeatType repeatType = RepeatType.None;
+
+    /// <summary>
+    /// String projection of <see cref="RepeatType"/> for the
+    /// <see cref="Picker"/> in the dialog. Setting the string
+    /// round-trips through the underlying enum.
+    /// </summary>
+    public string RepeatTypeText
+    {
+        get => RepeatType.ToString();
+        set
+        {
+            if (Enum.TryParse<RepeatType>(value, out var parsed))
+                RepeatType = parsed;
+        }
+    }
+
+    [ObservableProperty]
+    private bool notificationsEnabled = true;
+
+    [ObservableProperty]
     private bool isExisting;
+
+    /// <summary>Available repeat options for the picker (as strings
+    /// so the MAUI <see cref="Picker"/> can render them).</summary>
+    public IReadOnlyList<string> RepeatOptions { get; } =
+        new[] { "None", "Daily", "Weekly", "Monthly", "Yearly" };
 
     public string DialogTitle => IsExisting ? "Edit note" : "Create note";
     public string PrimaryButtonText => IsExisting ? "Save" : "Create";
@@ -58,12 +98,36 @@ public partial class EditNoteViewModel : ViewModelBase
         {
             IsExisting = true;
             Title = existing.Title ?? string.Empty;
-            DueDate = existing.DueDate;
-            ReminderDate = existing.ReminderDate;
+            HasDueDate = existing.DueDate.HasValue;
+            if (existing.DueDate.HasValue)
+            {
+                DueDate = existing.DueDate.Value.Date;
+                DueTime = existing.DueDate.Value.TimeOfDay;
+            }
+            HasReminder = existing.ReminderDate.HasValue;
+            if (existing.ReminderDate.HasValue)
+            {
+                ReminderDate = existing.ReminderDate.Value.Date;
+                ReminderTime = existing.ReminderDate.Value.TimeOfDay;
+            }
+            RepeatType = existing.RepeatType;
+            NotificationsEnabled = existing.NotificationsEnabled;
         }
     }
 
     partial void OnTitleChanged(string value) => SaveCommand.NotifyCanExecuteChanged();
+    partial void OnHasDueDateChanged(bool value)
+    {
+        if (value && !DueDate.HasValue) DueDate = DateTime.Today;
+        if (value && !DueTime.HasValue) DueTime = TimeSpan.FromHours(9);
+        SaveCommand.NotifyCanExecuteChanged();
+    }
+    partial void OnHasReminderChanged(bool value)
+    {
+        if (value && !ReminderDate.HasValue) ReminderDate = DateTime.Today;
+        if (value && !ReminderTime.HasValue) ReminderTime = TimeSpan.FromHours(9);
+        SaveCommand.NotifyCanExecuteChanged();
+    }
 
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync()
@@ -71,15 +135,32 @@ public partial class EditNoteViewModel : ViewModelBase
         var trimmed = (Title ?? string.Empty).Trim();
         if (string.IsNullOrEmpty(trimmed)) return;
 
+        DateTime? due = null;
+        if (HasDueDate && DueDate.HasValue)
+        {
+            var d = DueDate.Value.Date;
+            var t = DueTime ?? TimeSpan.Zero;
+            due = d + t;
+        }
+        DateTime? reminder = null;
+        if (HasReminder && ReminderDate.HasValue)
+        {
+            var d = ReminderDate.Value.Date;
+            var t = ReminderTime ?? TimeSpan.Zero;
+            reminder = d + t;
+        }
+
         if (_existing is null)
         {
-            await _noteService.CreateAsync(trimmed, DueDate, ReminderDate);
+            await _noteService.CreateAsync(trimmed, due, reminder);
         }
         else
         {
             _existing.Title = trimmed;
-            _existing.DueDate = DueDate;
-            _existing.ReminderDate = ReminderDate;
+            _existing.DueDate = due;
+            _existing.ReminderDate = reminder;
+            _existing.RepeatType = RepeatType;
+            _existing.NotificationsEnabled = NotificationsEnabled;
             await _noteService.UpdateAsync(_existing);
         }
 

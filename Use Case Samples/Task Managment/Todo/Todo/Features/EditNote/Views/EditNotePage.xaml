@@ -2,68 +2,172 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Todo.Features.EditNote.ViewModels"
+             xmlns:models="clr-namespace:Todo.Features.Notes.Models"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:syncfusionCore="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              x:Class="Todo.Features.EditNote.Views.EditNotePage"
              x:DataType="vm:EditNoteViewModel"
              Shell.NavBarIsVisible="False"
              Shell.PresentationMode="ModalNotAnimated"
              BackgroundColor="#80000000">
 
-    <Grid Padding="32"
-          VerticalOptions="Center"
-          HorizontalOptions="Center">
+    <ScrollView>
+        <Grid Padding="32"
+              VerticalOptions="Center"
+              HorizontalOptions="Center">
 
-        <Border MaximumWidthRequest="420"
-                WidthRequest="{OnIdiom Phone=300, Default=400}"
-                BackgroundColor="{StaticResource SurfaceColor}"
-                StrokeThickness="0"
-                StrokeShape="RoundRectangle 16"
-                Padding="24">
-            <Border.Shadow>
-                <Shadow Brush="#33000000"
-                        Radius="8"
-                        Offset="0,4"
-                        Opacity="0.20" />
-            </Border.Shadow>
-            <VerticalStackLayout Spacing="16">
+            <Border MaximumWidthRequest="480"
+                    WidthRequest="{OnIdiom Phone=320, Default=480}"
+                    BackgroundColor="{StaticResource SurfaceColor}"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 16"
+                    Padding="24">
+                <Border.Shadow>
+                    <Shadow Brush="#33000000"
+                            Radius="8"
+                            Offset="0,4"
+                            Opacity="0.20" />
+                </Border.Shadow>
+                <VerticalStackLayout Spacing="16">
 
-                <!-- Dialog title -->
-                <Label Text="{Binding DialogTitle}"
-                       FontSize="20"
-                       FontAttributes="Bold"
-                       TextColor="{StaticResource TextPrimaryColor}" />
+                    <!-- Dialog title -->
+                    <Label Text="{Binding DialogTitle}"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimaryColor}" />
 
-                <!-- Title input -->
-                <Border BackgroundColor="{StaticResource InputPillBackgroundColor}"
-                        StrokeThickness="0"
-                        StrokeShape="RoundRectangle 8"
-                        Padding="12,0">
-                    <Entry Text="{Binding Title, Mode=TwoWay}"
-                           Placeholder="List name"
+                    <!-- Title input -->
+                    <syncfusionCore:SfTextInputLayout Hint="Title"
+                                                     ContainerType="Outlined"
+                                                     OutlineCornerRadius="8">
+                        <Entry Text="{Binding Title, Mode=TwoWay}"
+                               Placeholder="What do you want to do?"
+                               FontSize="14"
+                               TextColor="{StaticResource TextPrimaryColor}"
+                               PlaceholderColor="{StaticResource TextTertiaryColor}"
+                               BackgroundColor="Transparent" />
+                    </syncfusionCore:SfTextInputLayout>
+
+                    <!-- Due date / time -->
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" VerticalOptions="Center">
+                        <Label Grid.Column="0"
+                               Text="Due date"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimaryColor}"
+                               VerticalOptions="Center" />
+                        <syncfusion:SfSwitch Grid.Column="1"
+                                             IsOn="{Binding HasDueDate, Mode=TwoWay}"
+                                             VerticalOptions="Center" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8"
+                          IsVisible="{Binding HasDueDate}">
+                        <syncfusionCore:SfTextInputLayout Grid.Column="0"
+                                                         Hint="Date"
+                                                         ContainerType="Outlined"
+                                                         OutlineCornerRadius="8">
+                            <DatePicker Date="{Binding DueDate, Mode=TwoWay, Converter={StaticResource NullableDateConverter}}"
+                                        Format="ddd, MMM d"
+                                        FontSize="14"
+                                        TextColor="{StaticResource TextPrimaryColor}" />
+                        </syncfusionCore:SfTextInputLayout>
+                        <syncfusionCore:SfTextInputLayout Grid.Column="1"
+                                                         Hint="Time"
+                                                         ContainerType="Outlined"
+                                                         OutlineCornerRadius="8">
+                            <TimePicker Time="{Binding DueTime, Mode=TwoWay, Converter={StaticResource NullableTimeConverter}}"
+                                        FontSize="14"
+                                        TextColor="{StaticResource TextPrimaryColor}" />
+                        </syncfusionCore:SfTextInputLayout>
+                    </Grid>
+
+                    <!-- Reminder -->
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" VerticalOptions="Center">
+                        <Label Grid.Column="0"
+                               Text="Reminder"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimaryColor}"
+                               VerticalOptions="Center" />
+                        <syncfusion:SfSwitch Grid.Column="1"
+                                             IsOn="{Binding HasReminder, Mode=TwoWay}"
+                                             VerticalOptions="Center" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8"
+                          IsVisible="{Binding HasReminder}">
+                        <syncfusionCore:SfTextInputLayout Grid.Column="0"
+                                                         Hint="Date"
+                                                         ContainerType="Outlined"
+                                                         OutlineCornerRadius="8">
+                            <DatePicker Date="{Binding ReminderDate, Mode=TwoWay, Converter={StaticResource NullableDateConverter}}"
+                                        Format="ddd, MMM d"
+                                        FontSize="14"
+                                        TextColor="{StaticResource TextPrimaryColor}" />
+                        </syncfusionCore:SfTextInputLayout>
+                        <syncfusionCore:SfTextInputLayout Grid.Column="1"
+                                                         Hint="Time"
+                                                         ContainerType="Outlined"
+                                                         OutlineCornerRadius="8">
+                            <TimePicker Time="{Binding ReminderTime, Mode=TwoWay, Converter={StaticResource NullableTimeConverter}}"
+                                        FontSize="14"
+                                        TextColor="{StaticResource TextPrimaryColor}" />
+                        </syncfusionCore:SfTextInputLayout>
+                    </Grid>
+
+                    <!-- Repeat -->
+                    <Label Text="Repeat"
                            FontSize="14"
-                           TextColor="{StaticResource TextPrimaryColor}"
-                           PlaceholderColor="{StaticResource TextTertiaryColor}"
-                           BackgroundColor="Transparent"
-                           MinimumHeightRequest="44" />
-                </Border>
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimaryColor}" />
+                    <syncfusionCore:SfTextInputLayout Hint="Repeat"
+                                                     ContainerType="Outlined"
+                                                     OutlineCornerRadius="8">
+                        <Picker ItemsSource="{Binding RepeatOptions}"
+                                SelectedItem="{Binding RepeatTypeText, Mode=TwoWay}"
+                                FontSize="14"
+                                TextColor="{StaticResource TextPrimaryColor}" />
+                    </syncfusionCore:SfTextInputLayout>
 
-                <!-- Action buttons -->
-                <Grid ColumnDefinitions="*,Auto,Auto"
-                      ColumnSpacing="12"
-                      HorizontalOptions="End"
-                      Margin="0,8,0,0">
-                    <Button Grid.Column="1"
-                            Text="Cancel"
-                            Style="{StaticResource TextButtonStyle}"
-                            Command="{Binding CancelCommand}"
-                            MinimumWidthRequest="96" />
-                    <Button Grid.Column="2"
-                            Text="{Binding PrimaryButtonText}"
-                            Style="{StaticResource PrimaryButtonStyle}"
-                            Command="{Binding SaveCommand}"
-                            MinimumWidthRequest="96" />
-                </Grid>
+                    <!-- Notifications -->
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" VerticalOptions="Center">
+                        <Label Grid.Column="0"
+                               Text="Notifications"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimaryColor}"
+                               VerticalOptions="Center" />
+                        <syncfusion:SfSwitch Grid.Column="1"
+                                             IsOn="{Binding NotificationsEnabled, Mode=TwoWay}"
+                                             VerticalOptions="Center" />
+                    </Grid>
 
-            </VerticalStackLayout>
-        </Border>
-    </Grid>
+                    <!-- Action buttons -->
+                    <Grid ColumnDefinitions="*,Auto,Auto"
+                          ColumnSpacing="12"
+                          HorizontalOptions="End"
+                          Margin="0,8,0,0">
+                        <syncfusion:SfButton Grid.Column="1"
+                                             Text="Cancel"
+                                             Style="{StaticResource OutlinedSfButtonStyle}"
+                                             Command="{Binding CancelCommand}"
+                                             MinimumWidthRequest="96" />
+                        <syncfusion:SfButton Grid.Column="2"
+                                             Text="{Binding PrimaryButtonText}"
+                                             BackgroundColor="{StaticResource PrimaryColor}"
+                                             TextColor="{StaticResource OnPrimaryColor}"
+                                             FontFamily="{StaticResource FontFamilySemibold}"
+                                             FontSize="14"
+                                             CornerRadius="8"
+                                             StrokeThickness="0"
+                                             Padding="14,10"
+                                             MinimumHeightRequest="44"
+                                             Command="{Binding SaveCommand}"
+                                             MinimumWidthRequest="96" />
+                    </Grid>
+
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </ScrollView>
 </ContentPage>

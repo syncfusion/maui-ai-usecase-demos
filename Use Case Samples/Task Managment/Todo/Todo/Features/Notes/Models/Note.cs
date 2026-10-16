@@ -54,6 +54,22 @@ public partial class Note : ObservableObject
     private DateTime updatedAt = DateTime.Now;
 
     /// <summary>
+    /// Optional recurrence for the note. None / Daily / Weekly /
+    /// Monthly / Yearly. Drives the repeat chip on the card and the
+    /// "Repeat" picker in the Edit Note dialog.
+    /// </summary>
+    [ObservableProperty]
+    private RepeatType repeatType = RepeatType.None;
+
+    /// <summary>
+    /// Whether notifications are enabled for this note. When false
+    /// the global notification switch is honored but this note
+    /// specifically is silenced.
+    /// </summary>
+    [ObservableProperty]
+    private bool notificationsEnabled = true;
+
+    /// <summary>
     /// Indicates whether the note has a reminder (date flag only — no
     /// OS notification fires in this sample).
     /// </summary>

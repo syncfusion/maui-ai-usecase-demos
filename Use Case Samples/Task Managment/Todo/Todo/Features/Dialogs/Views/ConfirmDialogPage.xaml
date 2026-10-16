@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Todo.Features.Dialogs.ViewModels"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              x:Class="Todo.Features.Dialogs.Views.ConfirmDialogPage"
              x:DataType="vm:ConfirmDialogViewModel"
              Shell.NavBarIsVisible="False"
@@ -39,30 +40,37 @@
                       ColumnSpacing="12"
                       HorizontalOptions="End"
                       Margin="0,8,0,0">
-                    <Button Grid.Column="1"
-                            Text="{Binding CancelText}"
-                            Style="{StaticResource TextButtonStyle}"
-                            Command="{Binding CancelCommand}"
-                            MinimumWidthRequest="96" />
-                    <Button Grid.Column="2"
-                            x:Name="ConfirmButton"
-                            Text="{Binding ConfirmText}"
-                            Style="{StaticResource PrimaryButtonStyle}"
-                            Command="{Binding ConfirmCommand}"
-                            MinimumWidthRequest="96">
-                        <Button.Triggers>
-                            <DataTrigger TargetType="Button"
+                    <syncfusion:SfButton Grid.Column="1"
+                                         Text="{Binding CancelText}"
+                                         Style="{StaticResource OutlinedSfButtonStyle}"
+                                         Command="{Binding CancelCommand}"
+                                         MinimumWidthRequest="96" />
+                    <syncfusion:SfButton Grid.Column="2"
+                                         x:Name="ConfirmButton"
+                                         Text="{Binding ConfirmText}"
+                                         BackgroundColor="{StaticResource PrimaryColor}"
+                                         TextColor="{StaticResource OnPrimaryColor}"
+                                         FontFamily="{StaticResource FontFamilySemibold}"
+                                         FontSize="14"
+                                         CornerRadius="8"
+                                         StrokeThickness="0"
+                                         Padding="14,10"
+                                         MinimumHeightRequest="44"
+                                         Command="{Binding ConfirmCommand}"
+                                         MinimumWidthRequest="96">
+                        <syncfusion:SfButton.Triggers>
+                            <DataTrigger TargetType="syncfusion:SfButton"
                                          Binding="{Binding IsDestructive}"
                                          Value="True">
                                 <Setter Property="BackgroundColor" Value="{StaticResource ErrorColor}" />
                             </DataTrigger>
-                            <DataTrigger TargetType="Button"
+                            <DataTrigger TargetType="syncfusion:SfButton"
                                          Binding="{Binding IsDestructive}"
                                          Value="False">
                                 <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
                             </DataTrigger>
-                        </Button.Triggers>
-                    </Button>
+                        </syncfusion:SfButton.Triggers>
+                    </syncfusion:SfButton>
                 </Grid>
 
             </VerticalStackLayout>

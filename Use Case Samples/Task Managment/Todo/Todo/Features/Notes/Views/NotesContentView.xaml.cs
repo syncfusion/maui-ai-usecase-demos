@@ -11,6 +11,21 @@ public partial class NotesContentView : ContentView
         InitializeComponent();
     }
 
+    /// <summary>
+    /// Routes a tap on the content-area title to the
+    /// <c>RenameCurrentListCommand</c> on the ViewModel, so the user
+    /// can rename the active list by tapping the title (matches the
+    /// Microsoft To Do behavior).
+    /// </summary>
+    private void OnTitleTapped(object? sender, TappedEventArgs e)
+    {
+        if (BindingContext is NotesListViewModel vm
+            && vm.RenameCurrentListCommand.CanExecute(null))
+        {
+            vm.RenameCurrentListCommand.Execute(null);
+        }
+    }
+
     // -----------------------------------------------------------------
     //  Checkbox → ToggleComplete command (PR #37 review issue #7)
     // -----------------------------------------------------------------

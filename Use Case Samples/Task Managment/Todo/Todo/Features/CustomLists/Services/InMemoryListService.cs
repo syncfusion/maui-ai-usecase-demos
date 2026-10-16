@@ -89,4 +89,23 @@ public sealed class InMemoryListService : IListService
         return _lists.Any(l => l.Id != excludeId
                                 && string.Equals(l.Name, name.Trim(), comparison));
     }
+
+    public Task ReorderAsync(string sourceId, int targetDisplayOrder)
+    {
+        var source = _lists.FirstOrDefault(l => l.Id == sourceId);
+        if (source is null) return Task.CompletedTask;
+        var currentOrder = source.DisplayOrder;
+        if (currentOrder == targetDisplayOrder) return Task.CompletedTask;
+
+        // Move the list to the new index and re-number everything
+        // else. We keep the collection sorted by DisplayOrder so the
+        // sidebar rendering does not have to do any extra work.
+        var ordered = _lists.OrderBy(l => l.DisplayOrder).ToList();
+        ordered.Remove(source);
+        var newIndex = Math.Clamp(targetDisplayOrder, 0, ordered.Count);
+        ordered.Insert(newIndex, source);
+        for (var i = 0; i < ordered.Count; i++)
+            ordered[i].DisplayOrder = i;
+        return Task.CompletedTask;
+    }
 }

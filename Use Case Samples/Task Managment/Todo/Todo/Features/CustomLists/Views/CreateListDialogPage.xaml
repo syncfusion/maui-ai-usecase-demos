@@ -2,6 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Todo.Features.CustomLists.ViewModels"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:syncfusionCore="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
              x:Class="Todo.Features.CustomLists.Views.CreateListDialogPage"
              x:DataType="vm:CreateListDialogViewModel"
              Shell.NavBarIsVisible="False"
@@ -26,47 +28,48 @@
             </Border.Shadow>
             <VerticalStackLayout Spacing="16">
 
-                <!-- Dialog title (matches createnewlist.png) -->
                 <Label Text="{Binding DialogTitle}"
                        FontSize="20"
                        FontAttributes="Bold"
                        TextColor="{StaticResource TextPrimaryColor}" />
 
-                <!-- List-name input -->
-                <Border BackgroundColor="{StaticResource InputPillBackgroundColor}"
-                        StrokeThickness="0"
-                        StrokeShape="RoundRectangle 8"
-                        Padding="12,0">
+                <syncfusionCore:SfTextInputLayout Hint="List name"
+                                                 ContainerType="Outlined"
+                                                 OutlineCornerRadius="8">
                     <Entry Text="{Binding ListName, Mode=TwoWay}"
                            Placeholder="List name"
                            FontSize="14"
                            TextColor="{StaticResource TextPrimaryColor}"
                            PlaceholderColor="{StaticResource TextTertiaryColor}"
-                           BackgroundColor="Transparent"
-                           MinimumHeightRequest="44" />
-                </Border>
+                           BackgroundColor="Transparent" />
+                </syncfusionCore:SfTextInputLayout>
 
-                <!-- Inline validation message (only visible when set) -->
                 <Label Text="{Binding ErrorMessage}"
                        FontSize="12"
                        TextColor="{StaticResource ErrorColor}"
                        IsVisible="{Binding ErrorMessage, Converter={StaticResource NotNullToBoolConverter}}" />
 
-                <!-- Action buttons -->
                 <Grid ColumnDefinitions="*,Auto,Auto"
                       ColumnSpacing="12"
                       HorizontalOptions="End"
                       Margin="0,8,0,0">
-                    <Button Grid.Column="1"
-                            Text="Cancel"
-                            Style="{StaticResource TextButtonStyle}"
-                            Command="{Binding CancelCommand}"
-                            MinimumWidthRequest="96" />
-                    <Button Grid.Column="2"
-                            Text="{Binding PrimaryButtonText}"
-                            Style="{StaticResource PrimaryButtonStyle}"
-                            Command="{Binding CreateCommand}"
-                            MinimumWidthRequest="96" />
+                    <syncfusion:SfButton Grid.Column="1"
+                                         Text="Cancel"
+                                         Style="{StaticResource OutlinedSfButtonStyle}"
+                                         Command="{Binding CancelCommand}"
+                                         MinimumWidthRequest="96" />
+                    <syncfusion:SfButton Grid.Column="2"
+                                         Text="{Binding PrimaryButtonText}"
+                                         BackgroundColor="{StaticResource PrimaryColor}"
+                                         TextColor="{StaticResource OnPrimaryColor}"
+                                         FontFamily="{StaticResource FontFamilySemibold}"
+                                         FontSize="14"
+                                         CornerRadius="8"
+                                         StrokeThickness="0"
+                                         Padding="14,10"
+                                         MinimumHeightRequest="44"
+                                         Command="{Binding CreateCommand}"
+                                         MinimumWidthRequest="96" />
                 </Grid>
 
             </VerticalStackLayout>

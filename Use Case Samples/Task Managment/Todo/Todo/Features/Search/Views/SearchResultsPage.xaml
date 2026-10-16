@@ -5,6 +5,8 @@
              xmlns:models="clr-namespace:Todo.Features.Notes.Models"
              xmlns:conv="clr-namespace:Todo.Converters"
              xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+             xmlns:syncfusionCore="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:syncfusionButtons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              x:Class="Todo.Features.Search.Views.SearchResultsPage"
              x:Name="SearchRoot"
              x:DataType="vm:SearchResultsViewModel"
@@ -16,7 +18,6 @@
           RowDefinitions="48,*"
           BackgroundColor="{StaticResource BackgroundColor}">
 
-        <!-- Header with a back arrow + the search input (per search.png) -->
         <Grid Grid.Row="0"
               HeightRequest="{StaticResource HeaderHeight}"
               Padding="8,0,16,0"
@@ -26,26 +27,26 @@
                 <Shadow Brush="#10000000" Radius="4" Offset="0,1" Opacity="0.10" />
             </Grid.Shadow>
 
-            <Button Grid.Column="0"
-                    Text="&#8592;"
-                    FontSize="22"
-                    WidthRequest="40"
-                    HeightRequest="40"
-                    Padding="0"
-                    BackgroundColor="Transparent"
-                    TextColor="{StaticResource TextSecondaryColor}"
-                    Clicked="OnBackClicked"
-                    SemanticProperties.Description="Go back" />
+            <syncfusionButtons:SfButton Grid.Column="0"
+                                         Text="&#8592;"
+                                         Style="{StaticResource IconSfButtonStyle}"
+                                         FontSize="22"
+                                         WidthRequest="40"
+                                         HeightRequest="40"
+                                         Padding="0"
+                                         StrokeThickness="0"
+                                         Background="Transparent"
+                                         TextColor="{StaticResource TextSecondaryColor}"
+                                         Clicked="OnBackClicked"
+                                         SemanticProperties.Description="Go back" />
 
-            <!-- Search input pill with leading magnifier + trailing clear (×) -->
-            <Border Grid.Column="1"
-                    HeightRequest="36"
-                    Padding="12,0"
-                    HorizontalOptions="Fill"
-                    VerticalOptions="Center"
-                    BackgroundColor="{StaticResource InputPillBackgroundColor}"
-                    StrokeThickness="0"
-                    StrokeShape="RoundRectangle 18">
+            <syncfusionCore:SfTextInputLayout Grid.Column="1"
+                                             ContainerType="Outlined"
+                                             OutlineCornerRadius="18"
+                                             HeightRequest="36"
+                                             HorizontalOptions="Fill"
+                                             VerticalOptions="Center"
+                                             BackgroundColor="{StaticResource InputPillBackgroundColor}">
                 <Grid ColumnDefinitions="Auto,*,Auto"
                       ColumnSpacing="8"
                       VerticalOptions="Center">
@@ -63,39 +64,39 @@
                            PlaceholderColor="{StaticResource TextSecondaryColor}"
                            BackgroundColor="Transparent"
                            VerticalOptions="Center" />
-                    <Button Grid.Column="2"
-                            Text="&#10005;"
-                            FontSize="14"
-                            WidthRequest="28"
-                            HeightRequest="28"
-                            Padding="0"
-                            BackgroundColor="Transparent"
-                            TextColor="{StaticResource TextSecondaryColor}"
-                            Command="{Binding ClearQueryCommand}"
-                            IsVisible="{Binding Query, Converter={StaticResource StringNotEmptyToBoolConverter}}"
-                            SemanticProperties.Description="Clear search" />
+                    <syncfusionButtons:SfButton Grid.Column="2"
+                                                 Text="&#10005;"
+                                                 Style="{StaticResource IconSfButtonStyle}"
+                                                 FontSize="14"
+                                                 WidthRequest="28"
+                                                 HeightRequest="28"
+                                                 Padding="0"
+                                                 StrokeThickness="0"
+                                                 Background="Transparent"
+                                                 TextColor="{StaticResource TextSecondaryColor}"
+                                                 Command="{Binding ClearQueryCommand}"
+                                                 IsVisible="{Binding Query, Converter={StaticResource StringNotEmptyToBoolConverter}}"
+                                                 SemanticProperties.Description="Clear search" />
                 </Grid>
-            </Border>
+            </syncfusionCore:SfTextInputLayout>
 
-            <!-- Right spacer to balance the back button visually -->
             <BoxView Grid.Column="2"
                      WidthRequest="40"
                      HeightRequest="40"
                      Color="Transparent" />
         </Grid>
 
-        <!-- Main content: empty state OR list of matching notes -->
         <Grid Grid.Row="1"
               Padding="16">
 
             <Border BackgroundColor="{StaticResource BackgroundColor}"
                     StrokeThickness="0"
                     StrokeShape="RoundRectangle 14">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="14" />
+                </Border.StrokeShape>
                 <Grid RowDefinitions="Auto,*,Auto">
 
-                    <!-- Background image (reuses mynotes_bg so the page
-                         still feels like the rest of the app when the
-                         user types a query). -->
                     <Image Grid.RowSpan="3"
                            Source="mynotes_bg.png"
                            Aspect="AspectFill"
@@ -103,20 +104,21 @@
                            VerticalOptions="Fill" />
                     <BoxView Grid.RowSpan="3" Color="#66000000" />
 
-                    <!-- Page title -->
                     <Grid Grid.Row="0"
                           Padding="20,14"
                           ColumnDefinitions="Auto,*,Auto">
                         <HorizontalStackLayout Grid.Column="0"
                                                Spacing="10"
                                                VerticalOptions="Center">
-                            <Button ImageSource="search.png"
-                                    FontSize="20"
-                                    Background="Transparent"
-                                    WidthRequest="32"
-                                    HeightRequest="32"
-                                    Padding="0"
-                                    IsEnabled="False" />
+                            <syncfusionButtons:SfButton ImageSource="search.png"
+                                                        Style="{StaticResource IconSfButtonStyle}"
+                                                        FontSize="20"
+                                                        Background="Transparent"
+                                                        WidthRequest="32"
+                                                        HeightRequest="32"
+                                                        Padding="0"
+                                                        StrokeThickness="0"
+                                                        IsEnabled="False" />
                             <Label Text="Search notes"
                                    FontSize="20"
                                    FontAttributes="Bold"
@@ -125,11 +127,8 @@
                         </HorizontalStackLayout>
                     </Grid>
 
-                    <!-- Result list + empty states -->
                     <Grid Grid.Row="1">
 
-                        <!-- Initial empty state: "You can search the
-                             created notes here" (per search.png). -->
                         <VerticalStackLayout IsVisible="{Binding IsQueryEmpty}"
                                              HorizontalOptions="Center"
                                              VerticalOptions="Center"
@@ -144,7 +143,6 @@
                                    HorizontalTextAlignment="Center" />
                         </VerticalStackLayout>
 
-                        <!-- No matches state -->
                         <VerticalStackLayout IsVisible="{Binding HasNoResults}"
                                              HorizontalOptions="Center"
                                              VerticalOptions="Center"
@@ -164,8 +162,6 @@
                                    HorizontalTextAlignment="Center" />
                         </VerticalStackLayout>
 
-                        <!-- Results list (reuses the same note-card
-                             template shape as the main list). -->
                         <syncfusion:SfListView ItemsSource="{Binding Results}"
                                                IsVisible="{Binding HasNoResults, Converter={StaticResource InvertedBoolConverter}}"
                                                ItemSpacing="0"
@@ -179,6 +175,9 @@
                                             BackgroundColor="{StaticResource SurfaceColor}"
                                             StrokeThickness="0"
                                             StrokeShape="RoundRectangle 10">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="10" />
+                                        </Border.StrokeShape>
                                         <Border.GestureRecognizers>
                                             <TapGestureRecognizer
                                                 Command="{Binding Source={x:Reference SearchRoot}, Path=BindingContext.OpenNoteCommand}"
@@ -219,29 +218,33 @@
                                                 </HorizontalStackLayout>
                                             </VerticalStackLayout>
 
-                                            <Button Grid.Column="2"
-                                                    Text="{Binding IsImportant, Converter={StaticResource BoolToStarGlyphConverter}}"
-                                                    TextColor="{Binding IsImportant, Converter={StaticResource BoolToStarColorConverter}}"
-                                                    FontSize="20"
-                                                    Background="Transparent"
-                                                    WidthRequest="40"
-                                                    HeightRequest="40"
-                                                    Padding="0"
-                                                    Command="{Binding Source={x:Reference SearchRoot}, Path=BindingContext.ToggleImportantCommand}"
-                                                    CommandParameter="{Binding .}"
-                                                    SemanticProperties.Description="Toggle important" />
+                                            <syncfusionButtons:SfButton Grid.Column="2"
+                                                                       Text="{Binding IsImportant, Converter={StaticResource BoolToStarGlyphConverter}}"
+                                                                       TextColor="{Binding IsImportant, Converter={StaticResource BoolToStarColorConverter}}"
+                                                                       Style="{StaticResource IconSfButtonStyle}"
+                                                                       FontSize="20"
+                                                                       Background="Transparent"
+                                                                       WidthRequest="40"
+                                                                       HeightRequest="40"
+                                                                       Padding="0"
+                                                                       StrokeThickness="0"
+                                                                       Command="{Binding Source={x:Reference SearchRoot}, Path=BindingContext.ToggleImportantCommand}"
+                                                                       CommandParameter="{Binding .}"
+                                                                       SemanticProperties.Description="Toggle important" />
 
-                                            <Button Grid.Column="3"
-                                                    Text="&#8943;"
-                                                    FontSize="22"
-                                                    Rotation="90"
-                                                    Background="Transparent"
-                                                    TextColor="{StaticResource TextSecondaryColor}"
-                                                    WidthRequest="40"
-                                                    HeightRequest="40"
-                                                    Padding="0"
-                                                    IsEnabled="False"
-                                                    SemanticProperties.Description="More note options" />
+                                            <syncfusionButtons:SfButton Grid.Column="3"
+                                                                       Text="&#8943;"
+                                                                       Style="{StaticResource IconSfButtonStyle}"
+                                                                       FontSize="22"
+                                                                       Rotation="90"
+                                                                       Background="Transparent"
+                                                                       TextColor="{StaticResource TextSecondaryColor}"
+                                                                       WidthRequest="40"
+                                                                       HeightRequest="40"
+                                                                       Padding="0"
+                                                                       StrokeThickness="0"
+                                                                       IsEnabled="False"
+                                                                       SemanticProperties.Description="More note options" />
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -249,8 +252,6 @@
                         </syncfusion:SfListView>
                     </Grid>
 
-                    <!-- Empty spacer row at the bottom to keep visual
-                         rhythm with the main list. -->
                     <BoxView Grid.Row="2"
                              HeightRequest="16"
                              Color="Transparent" />

@@ -24,7 +24,7 @@ public interface INoteService
     /// optional <paramref name="listId"/> attaches the note to a
     /// user-defined list (Module-05).
     /// </summary>
-    Task<Note> CreateAsync(string title, DateTime? dueDate = null, DateTime? reminderDate = null, string? listId = null);
+    Task<Note> CreateAsync(string title, DateTime? dueDate = null, DateTime? reminderDate = null, string? listId = null, RepeatType repeatType = RepeatType.None, bool notificationsEnabled = true);
 
     /// <summary>
     /// Replaces the editable fields of an existing note.

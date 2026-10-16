@@ -5,6 +5,7 @@
              xmlns:custmodels="clr-namespace:Todo.Features.CustomLists.Models"
              xmlns:common="clr-namespace:Todo.Common"
              xmlns:conv="clr-namespace:Todo.Converters"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              x:Class="Todo.Features.Notes.Views.SidebarView"
              x:Name="SidebarRoot"
              x:DataType="vm:NotesListViewModel"
@@ -33,12 +34,12 @@
                                     StrokeThickness="0"
                                     StrokeShape="RoundRectangle 8"
                                     HeightRequest="44">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
                                 <!-- Module-07 task 7-2: the sidebar entry
                                      can receive a drop from the note list
-                                     to move the note into this category.
-                                     The drop visual (background + stroke)
-                                     is applied in code-behind so it can
-                                     also clear when the drag leaves. -->
+                                     to move the note into this category. -->
                                 <Border.GestureRecognizers>
                                     <DropGestureRecognizer
                                         AllowDrop="True"
@@ -49,6 +50,11 @@
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="CommonStates">
                                         <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource InputPillBackgroundColor}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
                                         <VisualState x:Name="Selected">
                                             <VisualState.Setters>
                                                 <Setter Property="BackgroundColor" Value="{StaticResource SidebarSelectionColor}" />
@@ -60,29 +66,30 @@
                                 <Grid ColumnDefinitions="Auto,*"
                                       ColumnSpacing="14"
                                       VerticalOptions="Center">
-                                    <Button Grid.Column="0"
-                                            FontSize="20" Background="Transparent"
-                                            VerticalOptions="Center"
-                                            WidthRequest="32"
-                                            HeightRequest="32"
-                                            Padding="0"
-                                            IsEnabled="False"
-                                            TextColor="{Binding ., Converter={StaticResource CategoryToColorConverter}}">
-                                        <Button.Triggers>
-                                            <DataTrigger TargetType="Button" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.MyNotes}">
+                                    <syncfusion:SfButton Grid.Column="0"
+                                                         Style="{StaticResource IconSfButtonStyle}"
+                                                         FontSize="20"
+                                                         VerticalOptions="Center"
+                                                         WidthRequest="32"
+                                                         HeightRequest="32"
+                                                         Padding="0"
+                                                         IsEnabled="False"
+                                                         TextColor="{Binding ., Converter={StaticResource CategoryToColorConverter}}">
+                                        <syncfusion:SfButton.Triggers>
+                                            <DataTrigger TargetType="syncfusion:SfButton" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.MyNotes}">
                                                 <Setter Property="ImageSource" Value="profileicon.png" />
                                             </DataTrigger>
-                                            <DataTrigger TargetType="Button" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Important}">
+                                            <DataTrigger TargetType="syncfusion:SfButton" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Important}">
                                                 <Setter Property="ImageSource" Value="importanticon.png" />
                                             </DataTrigger>
-                                            <DataTrigger TargetType="Button" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Reminder}">
+                                            <DataTrigger TargetType="syncfusion:SfButton" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Reminder}">
                                                 <Setter Property="ImageSource" Value="belliconsidebar.png" />
                                             </DataTrigger>
-                                            <DataTrigger TargetType="Button" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Bin}">
+                                            <DataTrigger TargetType="syncfusion:SfButton" Binding="{Binding .}" Value="{x:Static common:NotesListCategory.Bin}">
                                                 <Setter Property="ImageSource" Value="binicon.png" />
                                             </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
+                                        </syncfusion:SfButton.Triggers>
+                                    </syncfusion:SfButton>
 
                                     <Label Grid.Column="1"
                                            Text="{Binding ., Converter={StaticResource EnumDisplayNameConverter}, FallbackValue=''}"
@@ -95,13 +102,20 @@
                 </CollectionView>
 
                 <!-- "Lists" section header (only shown when there are
-                     custom lists AND the sidebar is expanded). Bound to
-                     the ViewModel's HasCustomLists flag so the header
-                     refreshes as lists are created / removed
-                     (Module-08 task 8-3). -->
+                     custom lists AND the sidebar is expanded). -->
                 <Label Text="Lists"
                        Style="{StaticResource SidebarSectionHeaderStyle}"
                        IsVisible="{Binding Source={x:Reference SidebarRoot}, Path=BindingContext.HasCustomLists}" />
+
+                <!-- "No lists found" empty state shown when the custom
+                     lists region has zero entries. -->
+                <Label Text="No lists found"
+                       FontSize="12"
+                       FontAttributes="Italic"
+                       TextColor="{StaticResource TextSecondaryColor}"
+                       HorizontalOptions="Center"
+                       Margin="0,8"
+                       IsVisible="{Binding Source={x:Reference SidebarRoot}, Path=BindingContext.HasCustomLists, Converter={StaticResource InvertedBoolConverter}}" />
 
                 <!-- Custom (user-defined) lists -->
                 <CollectionView x:Name="CustomListsView"
@@ -117,10 +131,11 @@
                                     StrokeThickness="0"
                                     StrokeShape="RoundRectangle 8"
                                     HeightRequest="44">
-                                <!-- Module-07 task 7-2: same drop wiring
-                                     as the built-in entries, but the
-                                     payload encodes the list id so the
-                                     drop moves the note into THIS list. -->
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <!-- Module-07 task 7-2: drop from note list
+                                     moves the note into THIS list. -->
                                 <Border.GestureRecognizers>
                                     <DropGestureRecognizer
                                         AllowDrop="True"
@@ -131,6 +146,11 @@
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="CommonStates">
                                         <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource InputPillBackgroundColor}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
                                         <VisualState x:Name="Selected">
                                             <VisualState.Setters>
                                                 <Setter Property="BackgroundColor" Value="{StaticResource SidebarSelectionColor}" />
@@ -143,35 +163,56 @@
                                       ColumnSpacing="8"
                                       VerticalOptions="Center">
                                     <!-- List icon (notesicon.png) -->
-                                    <Button Grid.Column="0"
-                                            ImageSource="notesicon.png"
-                                            FontSize="16"
-                                            Background="Transparent"
-                                            WidthRequest="32"
-                                            HeightRequest="32"
-                                            Padding="0"
-                                            IsEnabled="False" />
+                                    <syncfusion:SfButton Grid.Column="0"
+                                                         ImageSource="notesicon.png"
+                                                         Style="{StaticResource IconSfButtonStyle}"
+                                                         FontSize="16"
+                                                         Background="Transparent"
+                                                         WidthRequest="32"
+                                                         HeightRequest="32"
+                                                         Padding="0"
+                                                         StrokeThickness="0"
+                                                         IsEnabled="False" />
 
-                                    <!-- List name -->
+                                    <!-- List name. A long-press starts a
+                                         drag so the user can reorder
+                                         the sidebar lists. Right-click
+                                         shows the context menu. -->
                                     <Label Grid.Column="1"
                                            Text="{Binding Name}"
                                            Style="{StaticResource SidebarItemLabelStyle}"
                                            LineBreakMode="TailTruncation"
-                                           IsVisible="{Binding Source={x:Reference SidebarRoot}, Path=BindingContext.IsSidebarCollapsed, Converter={StaticResource InvertedBoolConverter}}" />
+                                           IsVisible="{Binding Source={x:Reference SidebarRoot}, Path=BindingContext.IsSidebarCollapsed, Converter={StaticResource InvertedBoolConverter}}">
+                                        <Label.GestureRecognizers>
+                                            <DragGestureRecognizer
+                                                CanDrag="True"
+                                                DragStarting="OnCustomListDragStarting"
+                                                DropCompleted="OnCustomListDropCompleted" />
+                                            <!-- Right-click on Windows /
+                                                 desktop shows the list
+                                                 context menu. PointerEventArgs
+                                                 is the standard MAUI
+                                                 argument for this event. -->
+                                            <PointerGestureRecognizer
+                                                ButtonPressed="OnCustomListRightTapped" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
 
                                     <!-- Per-list "more" menu (rename / delete) -->
-                                    <Button Grid.Column="2"
-                                            Text="&#8943;"
-                                            FontSize="18"
-                                            Rotation="90"
-                                            WidthRequest="32"
-                                            HeightRequest="32"
-                                            Padding="0"
-                                            Background="Transparent"
-                                            TextColor="{StaticResource TextSecondaryColor}"
-                                            Command="{Binding Source={x:Reference SidebarRoot}, Path=BindingContext.ShowListMenuCommand}"
-                                            CommandParameter="{Binding .}"
-                                            SemanticProperties.Description="More list options" />
+                                    <syncfusion:SfButton Grid.Column="2"
+                                                         Text="&#8943;"
+                                                         Style="{StaticResource IconSfButtonStyle}"
+                                                         FontSize="18"
+                                                         Rotation="90"
+                                                         WidthRequest="32"
+                                                         HeightRequest="32"
+                                                         Padding="0"
+                                                         StrokeThickness="0"
+                                                         Background="Transparent"
+                                                         TextColor="{StaticResource TextSecondaryColor}"
+                                                         Command="{Binding Source={x:Reference SidebarRoot}, Path=BindingContext.ShowListMenuCommand}"
+                                                         CommandParameter="{Binding .}"
+                                                         SemanticProperties.Description="More list options" />
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -182,19 +223,20 @@
         </ScrollView>
 
         <!-- "+" button to create a new list (Module-05 task 5-2) -->
-        <Button Grid.Row="1"
-                Text="&#65291;"
-                FontSize="26"
-                WidthRequest="52"
-                HeightRequest="52"
-                CornerRadius="26"
-                Padding="0"
-                Margin="16,12,0,0"
-                HorizontalOptions="End"
-                BackgroundColor="{StaticResource PrimaryColor}"
-                TextColor="{StaticResource OnPrimaryColor}"
-                Command="{Binding OpenCreateListDialogCommand}"
-                SemanticProperties.Description="Create a to-do list" />
+        <syncfusion:SfButton Grid.Row="1"
+                             Text="&#65291;"
+                             Style="{StaticResource FabSfButtonStyle}"
+                             FontSize="26"
+                             WidthRequest="52"
+                             HeightRequest="52"
+                             StrokeThickness="0"
+                             Padding="0"
+                             Margin="16,12,0,0"
+                             HorizontalOptions="End"
+                             BackgroundColor="{StaticResource PrimaryColor}"
+                             TextColor="{StaticResource OnPrimaryColor}"
+                             Command="{Binding OpenCreateListDialogCommand}"
+                             SemanticProperties.Description="Create a to-do list" />
     </Grid>
 
 </ContentView>

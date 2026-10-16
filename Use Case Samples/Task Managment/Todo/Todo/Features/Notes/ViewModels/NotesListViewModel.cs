@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui.Storage;
 using Todo.Common;
 using Todo.Features.CustomLists.Services;
 using Todo.Features.Dialogs.ViewModels;
@@ -97,6 +98,33 @@ public partial class NotesListViewModel : ViewModelBase
         new[] { NotesListCategory.MyNotes, NotesListCategory.Important, NotesListCategory.Reminder, NotesListCategory.Bin };
 
     /// <summary>
+    /// Active (non-completed) notes for the current filter, sorted by
+    /// the active <see cref="SortMode"/>. Bound to the upper list in
+    /// the content view.
+    /// </summary>
+    public ObservableCollection<Note> ActiveNotes { get; } = new();
+
+    /// <summary>
+    /// Completed notes for the current filter. Bound to the
+    /// collapsible "Completed" section in the content view.
+    /// </summary>
+    public ObservableCollection<Note> CompletedNotes { get; } = new();
+
+    /// <summary>
+    /// True when the user has collapsed the Completed section.
+    /// Drives the Expander.IsExpanded binding.
+    /// </summary>
+    [ObservableProperty]
+    private bool isCompletedExpanded;
+
+    /// <summary>
+    /// Current sort mode for the active filter. Mirrors the value
+    /// the user picked in the "Sort by" sub-menu.
+    /// </summary>
+    [ObservableProperty]
+    private NoteSortMode sortMode = NoteSortMode.Manual;
+
+    /// <summary>
     /// User-defined lists bound from the shared <see cref="IListService"/>.
     /// The sidebar renders these below the four built-in entries
     /// (Module-05).
@@ -169,8 +197,22 @@ public partial class NotesListViewModel : ViewModelBase
 
     /// <summary>
     /// Filename of the background image to display behind the list.
+    /// Falls back to a per-list override when the user picked one in
+    /// the "Customize Theme" sub-menu.
     /// </summary>
-    public string BackgroundImage => SelectedCategory.ToBackgroundImage();
+    public string BackgroundImage
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(SelectedListId))
+            {
+                var list = _listService.Lists.FirstOrDefault(l => l.Id == SelectedListId);
+                if (list is not null && !string.IsNullOrEmpty(list.BackgroundImage))
+                    return list.BackgroundImage;
+            }
+            return SelectedCategory.ToBackgroundImage();
+        }
+    }
 
     // ---------------------------------------------------------------
     //  Empty-state copy (matched to design)
@@ -279,6 +321,35 @@ public partial class NotesListViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Triggered when the user taps the content-area title
+    /// (matches the "click on the title to rename" interaction in
+    /// Microsoft To Do). Falls back to the create-list dialog when
+    /// the active filter is the built-in My Notes.
+    /// </summary>
+    [RelayCommand]
+    private async Task RenameCurrentListAsync()
+    {
+        if (string.IsNullOrEmpty(SelectedListId)) return;
+        var list = _listService.Lists.FirstOrDefault(l => l.Id == SelectedListId);
+        if (list is null) return;
+        await OpenRenameListDialogAsync(list);
+    }
+
+    /// <summary>
+    /// Triggered when the user taps the three-dot button next to the
+    /// content title. Mirrors the per-list menu actions from the
+    /// sidebar (Rename / Sort by / Customize theme / Delete).
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowListMenuFromTitleAsync()
+    {
+        if (string.IsNullOrEmpty(SelectedListId)) return;
+        var list = _listService.Lists.FirstOrDefault(l => l.Id == SelectedListId);
+        if (list is null) return;
+        await ShowListMenuAsync(list);
+    }
+
+    /// <summary>
     /// Opens the centered rename-list dialog (matches
     /// <c>renamelist.png</c>) pre-populated with the current name.
     /// </summary>
@@ -313,8 +384,18 @@ public partial class NotesListViewModel : ViewModelBase
         {
             await _listService.DeleteAsync(list.Id);
             ClearSelectedListIfDeleted(list.Id);
+            // Toast: per Microsoft To Do design, show a confirmation
+            // toast after a destructive operation completes.
+            ShowToastRequested?.Invoke(this, "List deleted successfully");
         }
     }
+
+    /// <summary>
+    /// Raised when the ViewModel needs the host page to display a
+    /// short toast notification. The MainLayoutView listens for this
+    /// and shows the toast at the bottom of the screen.
+    /// </summary>
+    public event EventHandler<string>? ShowToastRequested;
 
     /// <summary>
     /// Three-dot "more" menu on a custom list entry. Opens a native
@@ -328,17 +409,134 @@ public partial class NotesListViewModel : ViewModelBase
         var choice = await _navigation.ShowActionSheetAsync(
             title: list.Name ?? "List",
             message: null,
-            destruction: "Delete",
-            "Rename list", "Delete") ?? string.Empty;
+            destruction: "Delete list",
+            "Rename list", "Sort by", "Customize theme", "Delete list") ?? string.Empty;
 
         switch (choice)
         {
             case "Rename list":
                 await OpenRenameListDialogAsync(list);
                 break;
-            case "Delete":
+            case "Sort by":
+                await ShowSortByMenuAsync(list);
+                break;
+            case "Customize theme":
+                await ShowCustomizeThemeAsync(list);
+                break;
+            case "Delete list":
                 await ConfirmDeleteListAsync(list);
                 break;
+        }
+    }
+
+    /// <summary>
+    /// Right-click context menu for a custom list: Rename / Delete.
+    /// Reuses the same dialogs as the more-icon.
+    /// </summary>
+    public async Task ShowListRightClickMenuAsync(Todo.Features.CustomLists.Models.NoteList? list)
+    {
+        if (list is null) return;
+        var choice = await _navigation.ShowActionSheetAsync(
+            title: list.Name ?? "List",
+            message: null,
+            destruction: "Delete list",
+            "Rename list", "Delete list") ?? string.Empty;
+
+        switch (choice)
+        {
+            case "Rename list":
+                await OpenRenameListDialogAsync(list);
+                break;
+            case "Delete list":
+                await ConfirmDeleteListAsync(list);
+                break;
+        }
+    }
+
+    /// <summary>
+    /// "Sort by" sub-menu for a custom list (Important / Reminder /
+    /// Due Date / Alphabetical). Persists the choice in the
+    /// <see cref="NotesListViewModel.SortMode"/> property.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowSortByMenuAsync(Todo.Features.CustomLists.Models.NoteList? list)
+    {
+        if (list is null) return;
+        var choice = await _navigation.ShowActionSheetAsync(
+            title: "Sort by",
+            message: null,
+            destruction: null,
+            "Important", "Reminder", "Due Date", "Alphabetical") ?? string.Empty;
+        switch (choice)
+        {
+            case "Important": SortMode = NoteSortMode.Important; break;
+            case "Reminder": SortMode = NoteSortMode.Reminder; break;
+            case "Due Date": SortMode = NoteSortMode.DueDate; break;
+            case "Alphabetical": SortMode = NoteSortMode.Alphabetical; break;
+        }
+        ApplyFilter();
+    }
+
+    /// <summary>
+    /// "Customize theme" sub-menu. Currently offers to pick a
+    /// background image (built-in presets) or attach a custom image
+    /// via the file picker. Persists the choice in
+    /// <see cref="NotesListViewModel.BackgroundImage"/> / a per-list
+    /// setting via a simple <c>BackgroundImage</c> file name.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowCustomizeThemeAsync(Todo.Features.CustomLists.Models.NoteList? list)
+    {
+        if (list is null) return;
+        var choice = await _navigation.ShowActionSheetAsync(
+            title: "Customize theme",
+            message: null,
+            destruction: null,
+            "Background image", "Attach custom image") ?? string.Empty;
+
+        switch (choice)
+        {
+            case "Background image":
+                await PickBackgroundPresetAsync(list);
+                break;
+            case "Attach custom image":
+                await AttachCustomImageAsync(list);
+                break;
+        }
+    }
+
+    private async Task PickBackgroundPresetAsync(Todo.Features.CustomLists.Models.NoteList list)
+    {
+        var choice = await _navigation.ShowActionSheetAsync(
+            title: "Choose background",
+            message: null,
+            destruction: null,
+            "Default", "Important (teal)", "Reminder (ocean)", "Bin (pink)") ?? string.Empty;
+        var key = choice switch
+        {
+            "Important (teal)" => "important_bg.png",
+            "Reminder (ocean)" => "remainder_bg.png",
+            "Bin (pink)" => "bin_bg.png",
+            _ => "mynotes_bg.png"
+        };
+        list.BackgroundImage = key;
+    }
+
+    private async Task AttachCustomImageAsync(Todo.Features.CustomLists.Models.NoteList list)
+    {
+        try
+        {
+            var pick = await FilePicker.Default.PickAsync(new PickOptions
+            {
+                PickerTitle = "Choose background image"
+            });
+            if (pick is not null)
+                list.BackgroundImage = pick.FullPath;
+        }
+        catch
+        {
+            // Swallow — file pickers can fail on some platforms. The
+            // user can retry.
         }
     }
 
@@ -632,11 +830,13 @@ public partial class NotesListViewModel : ViewModelBase
         string choice;
         if (SelectedCategory == NotesListCategory.Bin)
         {
+            // Per the spec: Bin note menu shows
+            //   Mark as Completed / Edit Note / Delete Note.
             choice = await _navigation.ShowActionSheetAsync(
                 title: note.Title ?? "Note",
                 message: null,
-                destruction: "Delete permanently",
-                "Restore note", "Delete permanently") ?? string.Empty;
+                destruction: "Delete note",
+                "Mark as Completed", "Edit Note", "Delete Note") ?? string.Empty;
         }
         else
         {
@@ -650,13 +850,23 @@ public partial class NotesListViewModel : ViewModelBase
         switch (choice)
         {
             case "Edit note":
+            case "Edit Note":
                 await EditNoteAsync(note);
                 break;
             case "Delete":
-                await Delete(note);
+            case "Delete note":
+            case "Delete Note":
+                if (SelectedCategory == NotesListCategory.Bin)
+                    await ConfirmDeletePermanentlyAsync(note);
+                else
+                    await Delete(note);
                 break;
             case "Restore note":
                 await Restore(note);
+                break;
+            case "Mark as Completed":
+                if (!note.IsCompleted)
+                    await _noteService.ToggleCompleteAsync(note.Id);
                 break;
             case "Delete permanently":
                 await ConfirmDeletePermanentlyAsync(note);
@@ -694,14 +904,85 @@ public partial class NotesListViewModel : ViewModelBase
     private void ApplyFilter()
     {
         FilteredNotes.Clear();
+        ActiveNotes.Clear();
+        CompletedNotes.Clear();
         // Module-05: a user-defined list takes priority over the
         // built-in category so the user can scope My Notes style
         // chrome to a specific list.
         var source = !string.IsNullOrEmpty(SelectedListId)
             ? _noteService.GetForList(SelectedListId!)
             : (IEnumerable<Note>)_noteService.GetForCategory(SelectedCategory);
-        foreach (var note in source)
+        var ordered = ApplySort(source);
+        foreach (var note in ordered)
+        {
             FilteredNotes.Add(note);
+            if (note.IsCompleted) CompletedNotes.Add(note);
+            else ActiveNotes.Add(note);
+        }
+        OnPropertyChanged(nameof(CompletedCount));
+        OnPropertyChanged(nameof(IsEmpty));
+        OnPropertyChanged(nameof(IsCompletedEmpty));
+    }
+
+    /// <summary>
+    /// Applies the current <see cref="SortMode"/> to the source
+    /// sequence. The Manual mode preserves the service ordering
+    /// (which itself respects DisplayOrder).
+    /// </summary>
+    private IEnumerable<Note> ApplySort(IEnumerable<Note> source) => SortMode switch
+    {
+        NoteSortMode.Important => source.OrderByDescending(n => n.IsImportant)
+                                        .ThenBy(n => n.IsCompleted)
+                                        .ThenBy(n => n.DisplayOrder),
+        NoteSortMode.Reminder => source.OrderByDescending(n => n.ReminderDate.HasValue)
+                                        .ThenBy(n => n.ReminderDate)
+                                        .ThenBy(n => n.IsCompleted)
+                                        .ThenBy(n => n.DisplayOrder),
+        NoteSortMode.DueDate => source.OrderBy(n => n.DueDate ?? DateTime.MaxValue)
+                                      .ThenBy(n => n.IsCompleted)
+                                      .ThenBy(n => n.DisplayOrder),
+        NoteSortMode.Alphabetical => source.OrderBy(n => n.Title, StringComparer.OrdinalIgnoreCase)
+                                            .ThenBy(n => n.IsCompleted)
+                                            .ThenBy(n => n.DisplayOrder),
+        _ => source.OrderBy(n => n.IsCompleted).ThenBy(n => n.DisplayOrder)
+    };
+
+    /// <summary>
+    /// Count of completed notes for the active filter. Bound to the
+    /// "Completed" section header.
+    /// </summary>
+    public int CompletedCount => CompletedNotes.Count;
+
+    /// <summary>
+    /// True when the completed section is empty. Drives whether the
+    /// Completed header is rendered at all.
+    /// </summary>
+    public bool IsCompletedEmpty => CompletedNotes.Count == 0;
+
+    /// <summary>
+    /// Key used by the cross-list drag to identify the dragged note
+    /// in the MAUI <c>DataPackage.Properties</c>.
+    /// </summary>
+    public const string DragPayloadNoteIdKey = "Todo.NoteId";
+
+    /// <summary>
+    /// Key used by the sidebar-list drag to identify the dragged
+    /// list in the MAUI <c>DataPackage.Properties</c>.
+    /// </summary>
+    public const string DragPayloadListIdKey = "Todo.ListId";
+
+    /// <summary>
+    /// Reorders a sidebar list. The source list is identified by its
+    /// id; the destination is encoded as the target key. Reserved for
+    /// future use by the sidebar drag-and-drop reordering gesture.
+    /// </summary>
+    [RelayCommand]
+    private async Task ReorderListAsync(DropTargetRequest? request)
+    {
+        if (request is null) return;
+        if (string.Equals(request.NoteId, request.TargetKey, StringComparison.Ordinal)) return;
+        if (!int.TryParse(request.TargetKey, out var targetIndex)) return;
+        await _listService.ReorderAsync(request.NoteId, targetIndex);
     }
 
     private void OnNotesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -725,8 +1006,12 @@ public partial class NotesListViewModel : ViewModelBase
                               or nameof(Note.IsCompleted)
                               or nameof(Note.DeletedAt)
                               or nameof(Note.ReminderDate)
+                              or nameof(Note.DueDate)
                               or nameof(Note.ListId)
-                              or nameof(Note.DisplayOrder))
+                              or nameof(Note.DisplayOrder)
+                              or nameof(Note.Title)
+                              or nameof(Note.RepeatType)
+                              or nameof(Note.NotificationsEnabled))
         {
             ApplyFilter();
         }
@@ -769,6 +1054,10 @@ public partial class NotesListViewModel : ViewModelBase
             OnPropertyChanged(nameof(HeaderTitle));
             OnPropertyChanged(nameof(EmptyStateTitle));
         }
+        else if (e.PropertyName == nameof(Todo.Features.CustomLists.Models.NoteList.BackgroundImage))
+        {
+            OnPropertyChanged(nameof(BackgroundImage));
+        }
     }
 }
 
@@ -788,3 +1077,17 @@ public sealed record DragReorderRequest(int OldIndex, int NewIndex);
 /// <see cref="NotesListViewModel.EncodeDropTarget(NotesListCategory)"/>.
 /// </summary>
 public sealed record DropTargetRequest(string NoteId, string TargetKey);
+
+/// <summary>
+/// Sort modes for the active list. Mirrors the options in the
+/// "Sort by" sub-menu (Important / Reminder / Due Date /
+/// Alphabetical). Manual preserves the service-side DisplayOrder.
+/// </summary>
+public enum NoteSortMode
+{
+    Manual,
+    Important,
+    Reminder,
+    DueDate,
+    Alphabetical
+}

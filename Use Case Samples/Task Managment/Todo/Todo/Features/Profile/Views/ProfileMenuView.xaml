@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             x:Class="Todo.Features.Profile.Views.ProfileMenuView">
+
+    <!--
+        Anchored profile dropdown (matches profile_pressed.png).
+        Header strip: profile image, "Hi John", "john@gmail.com".
+        Menu items: Manage Accounts, Settings, Sign Out.
+        A confirmation popup is shown on Sign Out.
+    -->
+    <Border BackgroundColor="{StaticResource SurfaceColor}"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 8"
+            Padding="0"
+            WidthRequest="280"
+            HorizontalOptions="End">
+        <Border.Shadow>
+            <Shadow Brush="#33000000" Radius="8" Offset="0,4" Opacity="0.20" />
+        </Border.Shadow>
+        <VerticalStackLayout Spacing="0">
+
+            <!-- Header strip: avatar + name + email -->
+            <Grid Padding="14,12"
+                  ColumnDefinitions="48,*"
+                  ColumnSpacing="12"
+                  BackgroundColor="{StaticResource InputPillBackgroundColor}">
+                <Border Grid.Column="0"
+                        WidthRequest="48"
+                        HeightRequest="48"
+                        Padding="0"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 24">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="24" />
+                    </Border.StrokeShape>
+                    <Image Source="profile.png"
+                           Aspect="AspectFill" />
+                </Border>
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                    <Label Text="Hi John"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimaryColor}" />
+                    <Label Text="john@gmail.com"
+                           FontSize="12"
+                           TextColor="{StaticResource TextSecondaryColor}" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <BoxView HeightRequest="1" Color="{StaticResource DividerColor}" />
+
+            <!-- Menu items -->
+            <syncfusion:SfButton Text="&#128100;  Manage Accounts"
+                                 Style="{StaticResource IconSfButtonStyle}"
+                                 BackgroundColor="Transparent"
+                                 TextColor="{StaticResource TextPrimaryColor}"
+                                 FontSize="14"
+                                 HeightRequest="44"
+                                 HorizontalContentAlignment="Start"
+                                 HorizontalOptions="Fill"
+                                 Padding="14,0"
+                                 StrokeThickness="0"
+                                 Clicked="OnManageAccountsClicked" />
+
+            <syncfusion:SfButton Text="&#9881;  Settings"
+                                 Style="{StaticResource IconSfButtonStyle}"
+                                 BackgroundColor="Transparent"
+                                 TextColor="{StaticResource TextPrimaryColor}"
+                                 FontSize="14"
+                                 HeightRequest="44"
+                                 HorizontalContentAlignment="Start"
+                                 HorizontalOptions="Fill"
+                                 Padding="14,0"
+                                 StrokeThickness="0"
+                                 Clicked="OnSettingsClicked" />
+
+            <BoxView HeightRequest="1" Color="{StaticResource DividerColor}" />
+
+            <syncfusion:SfButton Text="&#8592;  Sign Out"
+                                 Style="{StaticResource IconSfButtonStyle}"
+                                 BackgroundColor="Transparent"
+                                 TextColor="{StaticResource ErrorColor}"
+                                 FontSize="14"
+                                 HeightRequest="44"
+                                 HorizontalContentAlignment="Start"
+                                 HorizontalOptions="Fill"
+                                 Padding="14,0"
+                                 StrokeThickness="0"
+                                 Clicked="OnSignOutClicked" />
+        </VerticalStackLayout>
+    </Border>
+</ContentView>

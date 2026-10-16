@@ -7,6 +7,8 @@
              xmlns:conv="clr-namespace:Todo.Converters"
              xmlns:syncfusion="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              xmlns:syncfusionCore="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:syncfusionButtons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:syncfusionExpander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
              x:Class="Todo.Features.Notes.Views.NotesContentView"
              x:Name="NotesContentRoot"
              x:DataType="vm:NotesListViewModel"
@@ -14,9 +16,9 @@
 
     <ContentView.Resources>
         <ResourceDictionary>
-            <!-- Module-07 converters used by the drag-and-drop visuals. -->
             <conv:MultiplyByConverter x:Key="MultiplyByConverter" />
             <conv:DragStateColorConverter x:Key="DragStateColorConverter" />
+            <conv:RepeatTypeToGlyphConverter x:Key="RepeatTypeToGlyphConverter" />
         </ResourceDictionary>
     </ContentView.Resources>
 
@@ -47,50 +49,69 @@
             </Image>
             <BoxView Grid.RowSpan="3" Color="#66000000" />
 
-            <!-- Page title bar inside the content area -->
+            <!-- Page title bar inside the content area. The title
+                 itself is a clickable label that triggers Rename
+                 (matching the click-on-title behavior of Microsoft
+                 To Do) and shows a hover state. -->
             <Grid Grid.Row="0"
                   Padding="20,14"
                   ColumnDefinitions="Auto,*,Auto">
                 <HorizontalStackLayout Grid.Column="0"
                                        Spacing="10"
                                        VerticalOptions="Center">
-                    <Button FontSize="20"
-                            VerticalOptions="Center"
-                            Background="Transparent"
-                            WidthRequest="32"
-                            HeightRequest="32"
-                            Padding="0">
-                        <Button.Triggers>
-                            <DataTrigger TargetType="Button" Binding="{Binding SelectedCategory}" Value="{x:Static common:NotesListCategory.MyNotes}">
+                    <syncfusionButtons:SfButton Style="{StaticResource IconSfButtonStyle}"
+                                                FontSize="20"
+                                                VerticalOptions="Center"
+                                                Background="Transparent"
+                                                WidthRequest="32"
+                                                HeightRequest="32"
+                                                Padding="0"
+                                                StrokeThickness="0"
+                                                IsEnabled="False">
+                        <syncfusionButtons:SfButton.Triggers>
+                            <DataTrigger TargetType="syncfusionButtons:SfButton" Binding="{Binding SelectedCategory}" Value="{x:Static common:NotesListCategory.MyNotes}">
                                 <Setter Property="ImageSource" Value="profileiconmain.png" />
                             </DataTrigger>
-                            <DataTrigger TargetType="Button" Binding="{Binding SelectedCategory}" Value="{x:Static common:NotesListCategory.Important}">
+                            <DataTrigger TargetType="syncfusionButtons:SfButton" Binding="{Binding SelectedCategory}" Value="{x:Static common:NotesListCategory.Important}">
                                 <Setter Property="ImageSource" Value="importanticon.png" />
                             </DataTrigger>
-                            <DataTrigger TargetType="Button" Binding="{Binding SelectedCategory}" Value="{x:Static common:NotesListCategory.Reminder}">
+                            <DataTrigger TargetType="syncfusionButtons:SfButton" Binding="{Binding SelectedCategory}" Value="{x:Static common:NotesListCategory.Reminder}">
                                 <Setter Property="ImageSource" Value="belliconsidebar.png" />
                             </DataTrigger>
-                            <DataTrigger TargetType="Button" Binding="{Binding SelectedCategory}" Value="{x:Static common:NotesListCategory.Bin}">
+                            <DataTrigger TargetType="syncfusionButtons:SfButton" Binding="{Binding SelectedCategory}" Value="{x:Static common:NotesListCategory.Bin}">
                                 <Setter Property="ImageSource" Value="binicon.png" />
                             </DataTrigger>
-                        </Button.Triggers>
-                    </Button>
+                        </syncfusionButtons:SfButton.Triggers>
+                    </syncfusionButtons:SfButton>
                     <Label Text="{Binding HeaderTitle}"
                            FontSize="20"
                            FontAttributes="Bold"
                            TextColor="{StaticResource OnPrimaryColor}"
-                           VerticalOptions="Center" />
+                           VerticalOptions="Center"
+                           TextDecorations="None">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnTitleTapped" />
+                        </Label.GestureRecognizers>
+                        <Label.Triggers>
+                            <Trigger TargetType="Label" Property="IsFocused" Value="True">
+                                <Setter Property="TextColor" Value="{StaticResource PrimaryLightColor}" />
+                            </Trigger>
+                        </Label.Triggers>
+                    </Label>
                 </HorizontalStackLayout>
-                <Button Grid.Column="2"
-                        Text="&#8943;"
-                        FontSize="22"
-                        WidthRequest="40"
-                        HeightRequest="40"
-                        Padding="0" Rotation="90"
-                        BackgroundColor="Transparent"
-                        TextColor="{StaticResource OnPrimaryColor}"
-                        Command="{Binding OpenCreateNoteCommand}"
-                        SemanticProperties.Description="Create new note" />
+                <syncfusionButtons:SfButton Grid.Column="2"
+                                            Text="&#8943;"
+                                            Style="{StaticResource IconSfButtonStyle}"
+                                            FontSize="22"
+                                            WidthRequest="40"
+                                            HeightRequest="40"
+                                            Padding="0"
+                                            StrokeThickness="0"
+                                            Rotation="90"
+                                            BackgroundColor="Transparent"
+                                            TextColor="{StaticResource OnPrimaryColor}"
+                                            Command="{Binding ShowListMenuFromTitleCommand}"
+                                            SemanticProperties.Description="List options" />
             </Grid>
 
             <!-- Notes list / empty state -->
@@ -117,9 +138,7 @@
 
                 <!-- Module-07 task 7-1: gap-highlight bar that appears
                      at the in-list drop position while the user is
-                     dragging (draganddrop.png shows the gap below the
-                     lifted card). The bar is positioned via a
-                     TranslateY that follows DropGapIndex. -->
+                     dragging. -->
                 <BoxView IsVisible="{Binding IsDragging}"
                          HeightRequest="3"
                          Margin="16,0"
@@ -136,8 +155,7 @@
                     </BoxView.Triggers>
                 </BoxView>
 
-                <!-- Module-07 task 7-2: drag-mode hint banner that
-                     explains where the user can drop the card. -->
+                <!-- Module-07 task 7-2: drag-mode hint banner. -->
                 <Border IsVisible="{Binding IsDragging}"
                         Margin="16,8"
                         Padding="10,6"
@@ -158,8 +176,9 @@
                     </HorizontalStackLayout>
                 </Border>
 
-                <!-- Notes list (Syncfusion SfListView) -->
-                <syncfusion:SfListView ItemsSource="{Binding FilteredNotes}"
+                <!-- Active notes list (bound to the ActiveNotes
+                     collection populated by the ViewModel). -->
+                <syncfusion:SfListView ItemsSource="{Binding ActiveNotes}"
                                        IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}"
                                        ItemSpacing="0" ItemSize="70"
                                        BackgroundColor="Transparent"
@@ -171,15 +190,9 @@
                                     Padding="14,12"
                                     StrokeThickness="0"
                                     StrokeShape="RoundRectangle 10">
-                                <!-- Module-07 task 7-1 (draganddrop.png):
-                                     when this card is the one being
-                                     dragged, apply a stronger tint to
-                                     give the "lifted" affordance the
-                                     design shows. The MultiBinding
-                                     combines the note's Id with the
-                                     parent ViewModel's DraggingNoteId
-                                     and a DragStateColorConverter to
-                                     pick the right color. -->
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
                                 <Border.BackgroundColor>
                                     <MultiBinding Converter="{StaticResource DragStateColorConverter}"
                                                   ConverterParameter="#FFFFFF|#EEEAFB">
@@ -190,18 +203,9 @@
                                 </Border.BackgroundColor>
 
                                 <Border.GestureRecognizers>
-                                    <!-- Tap on the card body opens the
-                                         EditNote dialog. The inner
-                                         CheckBox / Star / more button
-                                         handle their own gestures and
-                                         don't bubble up. -->
                                     <TapGestureRecognizer
                                         Command="{Binding Source={x:Reference NotesContentRoot}, Path=BindingContext.EditNoteCommand}"
                                         CommandParameter="{Binding .}" />
-                                    <!-- Module-07 task 7-2: a long-press
-                                         starts a MAUI drag so the card can
-                                         be dropped on a sidebar entry to
-                                         move it to another list. -->
                                     <DragGestureRecognizer
                                         CanDrag="True"
                                         DragStarting="OnNoteDragStarting"
@@ -211,28 +215,19 @@
                                 <Grid ColumnDefinitions="Auto,*,Auto,Auto"
                                       ColumnSpacing="10"
                                       VerticalOptions="Center">
-
-                                    <!--
-                                        Complete / checkbox. IsChecked is
-                                        OneWay (model is source of truth)
-                                        and the toggle runs through the
-                                        ViewModel via the CheckedChanged
-                                        event (PR #37 review issue #7).
-                                    -->
                                     <CheckBox Grid.Column="0"
                                               IsChecked="{Binding IsCompleted, Mode=OneWay}"
                                               CheckedChanged="OnCheckChanged"
                                               Color="{StaticResource PrimaryColor}"
                                               VerticalOptions="Center" />
 
-                                    <!-- Title + metadata -->
                                     <VerticalStackLayout Grid.Column="1"
                                                          Spacing="2"
                                                          VerticalOptions="Center">
                                         <Label Text="{Binding Title}"
                                                Style="{StaticResource NoteTitleStyle}"
                                                TextDecorations="{Binding IsCompleted, Converter={StaticResource BoolToTextDecorationConverter}}" />
-                                        <HorizontalStackLayout Spacing="6">
+                                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
                                             <Label Text="&#128197;"
                                                    FontSize="12"
                                                    TextColor="{StaticResource TextSecondaryColor}"
@@ -247,41 +242,128 @@
                                             <Label Text="{Binding ReminderDate, Converter={StaticResource DateTimeFormatConverter}}"
                                                    Style="{StaticResource NoteMetaStyle}"
                                                    IsVisible="{Binding ReminderDate, Converter={StaticResource NotNullToBoolConverter}}" />
+                                            <Label Text="&#128260;"
+                                                   FontSize="12"
+                                                   TextColor="{StaticResource TextSecondaryColor}"
+                                                   IsVisible="{Binding RepeatType, Converter={StaticResource RepeatTypeToGlyphConverter}, ConverterParameter=visibility}" />
+                                            <Label Text="{Binding RepeatType, Converter={StaticResource RepeatTypeToGlyphConverter}}"
+                                                   Style="{StaticResource NoteMetaStyle}"
+                                                   IsVisible="{Binding RepeatType, Converter={StaticResource RepeatTypeToGlyphConverter}, ConverterParameter=visibility}" />
                                         </HorizontalStackLayout>
                                     </VerticalStackLayout>
 
-                                    <!-- Star (Important) -->
-                                    <Button Grid.Column="2"
-                                            Text="{Binding IsImportant, Converter={StaticResource BoolToStarGlyphConverter}}"
-                                            TextColor="{Binding IsImportant, Converter={StaticResource BoolToStarColorConverter}}"
-                                            FontSize="20"
-                                            Background="Transparent"
-                                            WidthRequest="40"
-                                            HeightRequest="40"
-                                            Padding="0"
-                                            Command="{Binding Source={x:Reference NotesContentRoot}, Path=BindingContext.ToggleImportantCommand}"
-                                            CommandParameter="{Binding .}"
-                                            SemanticProperties.Description="Toggle important" />
+                                    <syncfusionButtons:SfButton Grid.Column="2"
+                                                               Text="{Binding IsImportant, Converter={StaticResource BoolToStarGlyphConverter}}"
+                                                               TextColor="{Binding IsImportant, Converter={StaticResource BoolToStarColorConverter}}"
+                                                               Style="{StaticResource IconSfButtonStyle}"
+                                                               FontSize="20"
+                                                               Background="Transparent"
+                                                               WidthRequest="40"
+                                                               HeightRequest="40"
+                                                               Padding="0"
+                                                               StrokeThickness="0"
+                                                               Command="{Binding Source={x:Reference NotesContentRoot}, Path=BindingContext.ToggleImportantCommand}"
+                                                               CommandParameter="{Binding .}"
+                                                               SemanticProperties.Description="Toggle important" />
 
-                                    <!-- More menu (three-dot) -->
-                                    <Button Grid.Column="3"
-                                            Text="&#8943;"
-                                            FontSize="22"
-                                            Rotation="90"
-                                            Background="Transparent"
-                                            TextColor="{StaticResource TextSecondaryColor}"
-                                            WidthRequest="40"
-                                            HeightRequest="40"
-                                            Padding="0"
-                                            Command="{Binding Source={x:Reference NotesContentRoot}, Path=BindingContext.ShowNoteMenuCommand}"
-                                            CommandParameter="{Binding .}"
-                                            SemanticProperties.Description="More note options" />
+                                    <syncfusionButtons:SfButton Grid.Column="3"
+                                                               Text="&#8943;"
+                                                               Style="{StaticResource IconSfButtonStyle}"
+                                                               FontSize="22"
+                                                               Rotation="90"
+                                                               Background="Transparent"
+                                                               TextColor="{StaticResource TextSecondaryColor}"
+                                                               WidthRequest="40"
+                                                               HeightRequest="40"
+                                                               Padding="0"
+                                                               StrokeThickness="0"
+                                                               Command="{Binding Source={x:Reference NotesContentRoot}, Path=BindingContext.ShowNoteMenuCommand}"
+                                                               CommandParameter="{Binding .}"
+                                                               SemanticProperties.Description="More note options" />
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </syncfusion:SfListView.ItemTemplate>
                 </syncfusion:SfListView>
             </Grid>
+
+            <!-- ============== Completed section (Expander) ============== -->
+            <Border Grid.Row="1"
+                    Margin="16,0,16,80"
+                    Padding="0"
+                    StrokeThickness="0"
+                    BackgroundColor="Transparent"
+                    IsVisible="{Binding IsCompletedEmpty, Converter={StaticResource InvertedBoolConverter}}"
+                    VerticalOptions="End">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <syncfusionExpander:SfExpander IsExpanded="{Binding IsCompletedExpanded, Mode=TwoWay}">
+                    <syncfusionExpander:SfExpander.Header>
+                        <Grid Padding="14,10" ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                            <Label Grid.Column="0"
+                                   Text="{Binding CompletedCount, StringFormat='Completed ({0})'}"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource OnPrimaryColor}"
+                                   VerticalOptions="Center" />
+                            <Label Grid.Column="1"
+                                   Text="&#9662;"
+                                   FontSize="14"
+                                   TextColor="{StaticResource OnPrimaryColor}"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                    </syncfusionExpander:SfExpander.Header>
+                    <syncfusion:SfListView ItemsSource="{Binding CompletedNotes}"
+                                           ItemSpacing="0" ItemSize="60"
+                                           BackgroundColor="Transparent"
+                                           SelectionMode="None">
+                        <syncfusion:SfListView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Note">
+                                <Border Margin="0,3"
+                                        Padding="14,8"
+                                        BackgroundColor="#22FFFFFF"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 8">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <Grid ColumnDefinitions="Auto,*,Auto"
+                                          ColumnSpacing="10"
+                                          VerticalOptions="Center">
+                                        <CheckBox Grid.Column="0"
+                                                  IsChecked="{Binding IsCompleted, Mode=OneWay}"
+                                                  CheckedChanged="OnCheckChanged"
+                                                  Color="{StaticResource PrimaryColor}"
+                                                  VerticalOptions="Center" />
+                                        <Label Grid.Column="1"
+                                               Text="{Binding Title}"
+                                               FontSize="14"
+                                               TextDecorations="Strikethrough"
+                                               TextColor="{StaticResource TextOnDarkColor}"
+                                               Opacity="0.7"
+                                               VerticalOptions="Center" />
+                                        <syncfusionButtons:SfButton Grid.Column="2"
+                                                                   Text="&#8943;"
+                                                                   Style="{StaticResource IconSfButtonStyle}"
+                                                                   FontSize="18"
+                                                                   Rotation="90"
+                                                                   Background="Transparent"
+                                                                   TextColor="{StaticResource OnPrimaryColor}"
+                                                                   WidthRequest="32"
+                                                                   HeightRequest="32"
+                                                                   StrokeThickness="0"
+                                                                   Padding="0"
+                                                                   Command="{Binding Source={x:Reference NotesContentRoot}, Path=BindingContext.ShowNoteMenuCommand}"
+                                                                   CommandParameter="{Binding .}"
+                                                                   SemanticProperties.Description="More note options" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </syncfusion:SfListView.ItemTemplate>
+                    </syncfusion:SfListView>
+                </syncfusionExpander:SfExpander>
+            </Border>
 
             <!-- Bottom input bar -->
             <Border Grid.Row="2"
@@ -290,6 +372,9 @@
                     BackgroundColor="{StaticResource SurfaceColor}"
                     StrokeThickness="0"
                     StrokeShape="RoundRectangle 12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
                 <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto"
                       ColumnSpacing="2"
                       VerticalOptions="Center">
@@ -304,58 +389,64 @@
                                Style="{StaticResource InputPillEntryStyle}"
                                ReturnCommand="{Binding AddNoteCommand}" />
                     </syncfusionCore:SfTextInputLayout>
-                    <Button Grid.Column="1"
-                            ImageSource="calendaricon.png"
-                            FontSize="16"
-                            WidthRequest="40"
-                            HeightRequest="40"
-                            Padding="0"
-                            BackgroundColor="Transparent"
-                            TextColor="{StaticResource TextSecondaryColor}"
-                            IsEnabled="False"
-                            SemanticProperties.Description="Add image" />
-                    <Button Grid.Column="2"
-                            ImageSource="dateicon.png"
-                            FontSize="16"
-                            WidthRequest="40"
-                            HeightRequest="40"
-                            Padding="0"
-                            BackgroundColor="Transparent"
-                            TextColor="{StaticResource TextSecondaryColor}"
-                            IsEnabled="False"
-                            SemanticProperties.Description="Archive note" />
-                    <Button Grid.Column="3"
-                            ImageSource="bellicon.png"
-                            FontSize="16"
-                            WidthRequest="40"
-                            HeightRequest="40"
-                            Padding="0"
-                            BackgroundColor="Transparent"
-                            TextColor="{StaticResource TextSecondaryColor}"
-                            IsEnabled="False"
-                            SemanticProperties.Description="Set reminder" />
-                    <Button Grid.Column="4"
-                            Text="|"
-                            FontSize="18"
-                            WidthRequest="40"
-                            HeightRequest="40"
-                            Padding="0"
-                            BackgroundColor="Transparent"
-                            TextColor="{StaticResource TextSecondaryColor}"
-                            IsEnabled="False"
-                            SemanticProperties.Description="More note options" />
-                    <Button Grid.Column="5"
-                            ImageSource="tickicon.png"
-                            FontSize="18"
-                            FontAttributes="Bold"
-                            WidthRequest="40"
-                            HeightRequest="40"
-                            CornerRadius="20"
-                            Padding="0"
-                            BackgroundColor="{StaticResource PrimaryColor}"
-                            TextColor="{StaticResource OnPrimaryColor}"
-                            Command="{Binding AddNoteCommand}"
-                            SemanticProperties.Description="Save note" />
+                    <syncfusionButtons:SfButton Grid.Column="1"
+                                                ImageSource="calendaricon.png"
+                                                Style="{StaticResource IconSfButtonStyle}"
+                                                FontSize="16"
+                                                WidthRequest="40"
+                                                HeightRequest="40"
+                                                Padding="0"
+                                                StrokeThickness="0"
+                                                BackgroundColor="Transparent"
+                                                TextColor="{StaticResource TextSecondaryColor}"
+                                                SemanticProperties.Description="Add due date" />
+                    <syncfusionButtons:SfButton Grid.Column="2"
+                                                ImageSource="dateicon.png"
+                                                Style="{StaticResource IconSfButtonStyle}"
+                                                FontSize="16"
+                                                WidthRequest="40"
+                                                HeightRequest="40"
+                                                Padding="0"
+                                                StrokeThickness="0"
+                                                BackgroundColor="Transparent"
+                                                TextColor="{StaticResource TextSecondaryColor}"
+                                                SemanticProperties.Description="Add reminder" />
+                    <syncfusionButtons:SfButton Grid.Column="3"
+                                                ImageSource="bellicon.png"
+                                                Style="{StaticResource IconSfButtonStyle}"
+                                                FontSize="16"
+                                                WidthRequest="40"
+                                                HeightRequest="40"
+                                                Padding="0"
+                                                StrokeThickness="0"
+                                                BackgroundColor="Transparent"
+                                                TextColor="{StaticResource TextSecondaryColor}"
+                                                SemanticProperties.Description="Set notification" />
+                    <syncfusionButtons:SfButton Grid.Column="4"
+                                                Text="|"
+                                                Style="{StaticResource IconSfButtonStyle}"
+                                                FontSize="18"
+                                                WidthRequest="40"
+                                                HeightRequest="40"
+                                                Padding="0"
+                                                StrokeThickness="0"
+                                                BackgroundColor="Transparent"
+                                                TextColor="{StaticResource TextSecondaryColor}"
+                                                SemanticProperties.Description="More note options" />
+                    <syncfusionButtons:SfButton Grid.Column="5"
+                                                ImageSource="tickicon.png"
+                                                Style="{StaticResource FabSfButtonStyle}"
+                                                FontSize="18"
+                                                FontAttributes="Bold"
+                                                WidthRequest="40"
+                                                HeightRequest="40"
+                                                CornerRadius="20"
+                                                Padding="0"
+                                                StrokeThickness="0"
+                                                BackgroundColor="{StaticResource PrimaryColor}"
+                                                TextColor="{StaticResource OnPrimaryColor}"
+                                                Command="{Binding AddNoteCommand}"
+                                                SemanticProperties.Description="Save note" />
                 </Grid>
             </Border>
         </Grid>

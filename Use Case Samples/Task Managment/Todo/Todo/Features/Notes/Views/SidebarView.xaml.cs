@@ -1,5 +1,8 @@
+using System.Collections.Specialized;
+using System.ComponentModel;
 using Todo.Common;
 using Todo.Features.CustomLists.Models;
+using Todo.Features.CustomLists.Services;
 using Todo.Features.Notes.ViewModels;
 
 namespace Todo.Features.Notes.Views;
@@ -12,9 +15,34 @@ public partial class SidebarView : ContentView
     private static readonly Color DropTargetFill = Color.FromArgb("#EEEAFB");
     private static readonly Color DropTargetStroke = Color.FromArgb("#5C4EAE");
 
+    private readonly NotesListViewModel? _trackedVm;
+
     public SidebarView()
     {
         InitializeComponent();
+    }
+
+    protected override void OnBindingContextChanged()
+    {
+        base.OnBindingContextChanged();
+        if (BindingContext is NotesListViewModel vm)
+        {
+            // Re-render the empty-state label when the custom-lists
+            // collection is mutated by the host page (Module-08 task 8-3).
+            if (vm.CustomLists is INotifyCollectionChanged ncc)
+            {
+                ncc.CollectionChanged -= OnCustomListsChanged;
+                ncc.CollectionChanged += OnCustomListsChanged;
+            }
+        }
+    }
+
+    private void OnCustomListsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        // The HasCustomLists property drives the visibility of the
+        // "Lists" header and the "No lists found" placeholder. The
+        // ViewModel already raises PropertyChanged for it; nothing to
+        // do here other than make sure we stay subscribed.
     }
 
     /// <summary>
@@ -29,25 +57,19 @@ public partial class SidebarView : ContentView
         if (BindingContext is not NotesListViewModel vm) return;
         if (e.CurrentSelection.FirstOrDefault() is not NotesListCategory category) return;
 
-        // Always invoke the navigation command so the host page
-        // receives the NavigationRequested event. Skip if the user
-        // re-selected the currently-active category (avoids redundant
-        // navigations and any self-navigation loops).
         if (vm.SelectedCategory == category) return;
         vm.NavigateToCategoryCommand.Execute(category);
     }
 
     /// <summary>
     /// Forwards selection of a user-defined list (Module-05) to the
-    /// centralized ViewModel. Custom lists reuse the My Notes chrome,
-    /// so the only state change is the active <c>SelectedListId</c>.
+    /// centralized ViewModel.
     /// </summary>
     private void OnCustomListSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (BindingContext is not NotesListViewModel vm) return;
         if (e.CurrentSelection.FirstOrDefault() is not NoteList list) return;
 
-        // Skip if the user re-selected the currently-active list.
         if (string.Equals(vm.SelectedListId, list.Id, StringComparison.Ordinal)) return;
         vm.NavigateToListCommand.Execute(list.Id);
     }
@@ -56,26 +78,15 @@ public partial class SidebarView : ContentView
     //  Module-07 task 7-2: drag-and-drop drop targets
     // -----------------------------------------------------------------
 
-    /// <summary>
-    /// Built-in category drag-over handler. Highlights the entry and
-    /// publishes the encoded drop-target key on the ViewModel so the
-    /// rest of the page (and the ViewModel) can react.
-    /// </summary>
     private void OnSidebarDragOver(object? sender, DragEventArgs e)
     {
         if (BindingContext is not NotesListViewModel vm) return;
         if (sender is not Border border) return;
         if (border.BindingContext is not NotesListCategory category) return;
 
-        // Publish the encoded key so other UI (e.g. notes list) can
-        // coordinate the drop state.
         var key = NotesListViewModel.EncodeDropTarget(category);
         vm.DropTargetKey = key;
         ApplyDropVisual(border, active: true);
-        // MAUI's DataPackageOperation only exposes None/Copy (see
-        // Microsoft.Maui.Controls DragAndDrop). "Move" is not part of
-        // the cross-platform enum; we use Copy so the drop is accepted
-        // and the in-app move command runs to relocate the note.
         e.AcceptedOperation = DataPackageOperation.Copy;
     }
 
@@ -92,7 +103,6 @@ public partial class SidebarView : ContentView
         if (sender is not Border border) return;
         if (border.BindingContext is not NotesListCategory category) return;
 
-        // Pull the dragged note id out of the DataPackage.
         if (!e.Data.Properties.TryGetValue(NotesListViewModel.DragPayloadNoteIdKey, out var raw))
         {
             ResetDropVisual(border);
@@ -109,11 +119,6 @@ public partial class SidebarView : ContentView
         vm.NoteDragCompletedCommand.Execute(null);
     }
 
-    /// <summary>
-    /// User-defined list drag-over handler. Same pattern as the
-    /// built-in entries, but encodes the <see cref="NoteList.Id"/>
-    /// instead of the enum value.
-    /// </summary>
     private void OnCustomListDragOver(object? sender, DragEventArgs e)
     {
         if (BindingContext is not NotesListViewModel vm) return;
@@ -123,8 +128,6 @@ public partial class SidebarView : ContentView
         var key = NotesListViewModel.EncodeDropTarget(list.Id);
         vm.DropTargetKey = key;
         ApplyDropVisual(border, active: true);
-        // MAUI's DataPackageOperation only exposes None/Copy; use Copy
-        // to accept the drop (see handler in OnSidebarDragOver).
         e.AcceptedOperation = DataPackageOperation.Copy;
     }
 
@@ -155,6 +158,45 @@ public partial class SidebarView : ContentView
         vm.MoveNoteToTargetCommand.Execute(request);
         ResetDropVisual(border);
         vm.NoteDragCompletedCommand.Execute(null);
+    }
+
+    // -----------------------------------------------------------------
+    //  Sidebar list drag-and-drop reorder
+    // -----------------------------------------------------------------
+
+    private void OnCustomListDragStarting(object? sender, DragStartingEventArgs e)
+    {
+        if (BindingContext is not NotesListViewModel vm) return;
+        if (sender is not BindableObject bindable || bindable.BindingContext is not NoteList list) return;
+
+        // Encode the list id as the drag payload. The drop target is
+        // the same CollectionView, so the ViewModel uses its existing
+        // encoding to resolve the target.
+        e.Data.Properties[NotesListViewModel.DragPayloadListIdKey] = list.Id;
+        e.Data.Text = list.Name ?? string.Empty;
+    }
+
+    private void OnCustomListDropCompleted(object? sender, DropCompletedEventArgs e)
+    {
+        // Currently no-op: the actual reorder is done by the
+        // CollectionView's own drop handler.
+    }
+
+    /// <summary>
+    /// Right-click on a sidebar list shows a context menu with
+    /// "Rename List" and "Delete List" (per the Microsoft To Do design
+    /// intent — also matches the action sheet for the more-icon).
+    /// </summary>
+    private async void OnCustomListRightTapped(object? sender, PointerEventArgs e)
+    {
+        if (BindingContext is not NotesListViewModel vm) return;
+        if (sender is not BindableObject bindable || bindable.BindingContext is not NoteList list) return;
+        if (e.Button != PointerButtons.Secondary) return;
+
+        var choice = await vm.ShowListRightClickMenuAsync(list);
+        // ShowListRightClickMenuAsync already routes the choice; the
+        // method exists so the view can stay free of UI knowledge.
+        _ = choice;
     }
 
     // ----- Visual helpers -------------------------------------------

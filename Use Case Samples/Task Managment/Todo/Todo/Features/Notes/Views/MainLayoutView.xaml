@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Todo.Features.Notes.ViewModels"
              xmlns:views="clr-namespace:Todo.Features.Notes.Views"
+             xmlns:commonviews="clr-namespace:Todo.Features.Common.Views"
              x:Class="Todo.Features.Notes.Views.MainLayoutView"
              x:DataType="vm:NotesListViewModel">
 
@@ -22,7 +23,8 @@
           BackgroundColor="{StaticResource BackgroundColor}">
 
         <!-- Shared application header (spans both columns) -->
-        <views:HeaderView Grid.Row="0"
+        <views:HeaderView x:Name="Header"
+                          Grid.Row="0"
                           Grid.ColumnSpan="2" />
 
         <!-- Sidebar (hides on Phone per collapsed.png) -->
@@ -34,6 +36,30 @@
         <ContentView x:Name="MainContent"
                      Grid.Row="1"
                      Grid.Column="1" />
+
+        <!-- Profile menu overlay: positioned at the top-right and
+             toggled on demand. The grid sits above the content so the
+             dim background catches taps to dismiss the menu. -->
+        <Grid x:Name="ProfileOverlay"
+              Grid.RowSpan="2"
+              Grid.ColumnSpan="2"
+              IsVisible="False"
+              BackgroundColor="Transparent">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnProfileOverlayTapped" />
+            </Grid.GestureRecognizers>
+            <ContentView x:Name="ProfileMenuHost"
+                         HorizontalOptions="End"
+                         VerticalOptions="Start"
+                         Margin="0,52,16,0" />
+        </Grid>
+
+        <!-- Snackbar-style toast at the bottom of the screen. -->
+        <commonviews:ToastView x:Name="Toast"
+                               Grid.RowSpan="2"
+                               Grid.ColumnSpan="2"
+                               HorizontalOptions="Center"
+                               VerticalOptions="End" />
     </Grid>
 
 </ContentView>

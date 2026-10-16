@@ -33,4 +33,12 @@ public partial class NoteList : ObservableObject
 
     [ObservableProperty]
     private DateTime createdAt = DateTime.Now;
+
+    /// <summary>
+    /// Optional filename of a background image chosen for the list
+    /// via the "Customize Theme" sub-menu. <c>null</c> means the
+    /// page falls back to the per-category default background.
+    /// </summary>
+    [ObservableProperty]
+    private string? backgroundImage;
 }

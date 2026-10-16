@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:syncfusionCore="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:syncfusionInputs="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+    xmlns:syncfusionPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup">
+
+    <!--
+        Syncfusion MAUI implicit styles.
+        These styles set the project-wide default look for SfButton,
+        SfSwitch, SfTextInputLayout, SfSegmentedControl, SfPopup, and
+        SfBottomSheet so every screen in the To-Do app follows the same
+        palette (Primary #5C4EAE, surfaces, rounded corners, hover
+        effects) without needing per-page styling.
+    -->
+
+    <!-- ================================================================== -->
+    <!--  SfButton                                                          -->
+    <!-- ================================================================== -->
+    <Style TargetType="syncfusion:SfButton">
+        <Setter Property="Background" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="TextColor" Value="{StaticResource OnPrimaryColor}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilySemibold}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="Background" Value="{StaticResource PrimaryDarkColor}" />
+                            <Setter Property="Scale" Value="1.0" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="Background" Value="{StaticResource PrimaryDarkColor}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="Background" Value="{StaticResource PrimaryLightColor}" />
+                            <Setter Property="Opacity" Value="0.6" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <!-- Outlined button (e.g. Cancel in dialogs) -->
+    <Style x:Key="OutlinedSfButtonStyle" TargetType="syncfusion:SfButton">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="TextColor" Value="{StaticResource TextSecondaryColor}" />
+        <Setter Property="Stroke" Value="{StaticResource DividerColor}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyRegular}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="Background" Value="{StaticResource InputPillBackgroundColor}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <!-- Icon-style transparent button (used for menu, star, more icons) -->
+    <Style x:Key="IconSfButtonStyle" TargetType="syncfusion:SfButton">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="TextColor" Value="{StaticResource TextSecondaryColor}" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="20" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="Background" Value="{StaticResource InputPillBackgroundColor}" />
+                            <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <!-- Destructive button (red, used for Delete actions) -->
+    <Style x:Key="DestructiveSfButtonStyle" TargetType="syncfusion:SfButton">
+        <Setter Property="Background" Value="{StaticResource ErrorColor}" />
+        <Setter Property="TextColor" Value="{StaticResource OnPrimaryColor}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilySemibold}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="Opacity" Value="0.9" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <!-- Floating Action Button (the "+" in the sidebar / bottom-right) -->
+    <Style x:Key="FabSfButtonStyle" TargetType="syncfusion:SfButton">
+        <Setter Property="Background" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="TextColor" Value="{StaticResource OnPrimaryColor}" />
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CornerRadius" Value="26" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="Background" Value="{StaticResource PrimaryDarkColor}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <!-- ================================================================== -->
+    <!--  SfSwitch                                                          -->
+    <!-- ================================================================== -->
+    <Style TargetType="syncfusion:SfSwitch">
+        <Setter Property="OnColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="OffColor" Value="{StaticResource DividerColor}" />
+        <Setter Property="ThumbColor" Value="{StaticResource OnPrimaryColor}" />
+        <Setter Property="TrackHeight" Value="22" />
+        <Setter Property="TrackWidth" Value="44" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="On" />
+                    <VisualState x:Name="Off" />
+                    <VisualState x:Name="Disabled" />
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <!-- ================================================================== -->
+    <!--  SfTextInputLayout                                                 -->
+    <!-- ================================================================== -->
+    <Style TargetType="syncfusionCore:SfTextInputLayout">
+        <Setter Property="ContainerBackground" Value="Transparent" />
+        <Setter Property="ContainerType" Value="Outlined" />
+        <Setter Property="OutlineCornerRadius" Value="8" />
+        <Setter Property="Stroke" Value="{StaticResource BorderColor}" />
+        <Setter Property="FocusedStroke" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="HelperTextColor" Value="{StaticResource TextSecondaryColor}" />
+        <Setter Property="HintColor" Value="{StaticResource TextSecondaryColor}" />
+        <Setter Property="FocusedHintColor" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+    </Style>
+
+    <!-- ================================================================== -->
+    <!--  SfSegmentedControl (used for Theme picker in Settings)           -->
+    <!-- ================================================================== -->
+    <Style TargetType="syncfusionInputs:SfSegmentedControl">
+        <Setter Property="SegmentBackground" Value="{StaticResource SurfaceColor}" />
+        <Setter Property="SegmentBorderColor" Value="{StaticResource DividerColor}" />
+        <Setter Property="SegmentBorderThickness" Value="1" />
+        <Setter Property="SegmentCornerRadius" Value="8" />
+        <Setter Property="SegmentHeight" Value="40" />
+        <Setter Property="SegmentWidth" Value="0" />
+        <Setter Property="SegmentPadding" Value="12,4" />
+        <Setter Property="FontColor" Value="{StaticResource TextPrimaryColor}" />
+        <Setter Property="SelectionTextColor" Value="{StaticResource OnPrimaryColor}" />
+        <Setter Property="SelectionBackground" Value="{StaticResource PrimaryColor}" />
+        <Setter Property="SelectedSegmentTextColor" Value="{StaticResource OnPrimaryColor}" />
+        <Setter Property="StrokeThickness" Value="0" />
+    </Style>
+
+    <!-- ================================================================== -->
+    <!--  SfPopup                                                           -->
+    <!-- ================================================================== -->
+    <Style TargetType="syncfusionPopup:SfPopup">
+        <Setter Property="PopupBackground" Value="{StaticResource SurfaceColor}" />
+        <Setter Property="PopupCornerRadius" Value="16" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="ShowCloseButton" Value="False" />
+    </Style>
+
+</ResourceDictionary>

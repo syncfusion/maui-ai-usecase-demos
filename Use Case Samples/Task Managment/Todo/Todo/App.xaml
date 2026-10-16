@@ -11,6 +11,8 @@
                 <ResourceDictionary Source="Resources/Styles/Sizes.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <!-- Syncfusion implicit styles for SfButton, SfSwitch, SfTextInputLayout, SfSegmentedControl, SfPopup, etc. -->
+                <ResourceDictionary Source="Resources/Styles/SyncfusionStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Global converters -->
@@ -24,6 +26,9 @@
             <conv:EnumDisplayNameConverter x:Key="EnumDisplayNameConverter" />
             <conv:ObjectToCategoryConverter x:Key="ObjectToCategoryConverter" />
             <conv:StringNotEmptyToBoolConverter x:Key="StringNotEmptyToBoolConverter" />
+            <conv:NullableDateConverter x:Key="NullableDateConverter" />
+            <conv:NullableTimeConverter x:Key="NullableTimeConverter" />
+            <conv:RepeatTypeToGlyphConverter x:Key="RepeatTypeToGlyphConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

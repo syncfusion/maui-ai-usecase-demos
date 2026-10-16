@@ -15,39 +15,17 @@ public sealed class InMemoryNoteService : INoteService
 
     public InMemoryNoteService()
     {
-        // The sample data file seeds the design-faithful task lists for the
-        // Important, Reminder and Bin views (see Important.png / remainder.png
-        // / bin.png). Every seed entry is soft-deleted AND marked important
-        // AND has a reminder date, so My Notes opens empty while the other
-        // three filter views render the documented task list.
-        var seed = SampleData.SeedNotes();
-        _notes = new ObservableCollection<Note>(seed.Select(Clone));
+        // The My Notes page must not contain any preloaded tasks or sample
+        // data on application load (per the Module-08 spec). The store
+        // starts empty — the user creates notes via the bottom input bar
+        // and the data is held only in memory for the lifetime of the app.
+        _notes = new ObservableCollection<Note>();
         Notes = new ReadOnlyObservableCollection<Note>(_notes);
     }
 
-    /// <summary>
-    /// Returns a fresh copy of a seed note so that each consumer (in-memory
-    /// store, tests, design-time previews) gets independent state and any
-    /// mutation in one does not leak into the canonical seed list.
-    /// </summary>
-    private static Note Clone(Note src) => new()
-    {
-        Id = src.Id,
-        Title = src.Title,
-        DueDate = src.DueDate,
-        ReminderDate = src.ReminderDate,
-        ListId = src.ListId,
-        IsImportant = src.IsImportant,
-        IsCompleted = src.IsCompleted,
-        DeletedAt = src.DeletedAt,
-        DisplayOrder = src.DisplayOrder,
-        CreatedAt = src.CreatedAt,
-        UpdatedAt = src.UpdatedAt
-    };
-
     public ReadOnlyObservableCollection<Note> Notes { get; }
 
-    public Task<Note> CreateAsync(string title, DateTime? dueDate = null, DateTime? reminderDate = null, string? listId = null)
+    public Task<Note> CreateAsync(string title, DateTime? dueDate = null, DateTime? reminderDate = null, string? listId = null, RepeatType repeatType = RepeatType.None, bool notificationsEnabled = true)
     {
         var now = DateTime.Now;
         var nextOrder = _notes.Count == 0 ? 0 : _notes.Max(n => n.DisplayOrder) + 1;
@@ -60,7 +38,9 @@ public sealed class InMemoryNoteService : INoteService
             ListId = listId,
             DisplayOrder = nextOrder,
             CreatedAt = now,
-            UpdatedAt = now
+            UpdatedAt = now,
+            RepeatType = repeatType,
+            NotificationsEnabled = notificationsEnabled
         };
         _notes.Insert(0, note);
         return Task.FromResult(note);

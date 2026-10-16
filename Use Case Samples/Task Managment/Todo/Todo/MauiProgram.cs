@@ -46,6 +46,7 @@ public static class MauiProgram
         builder.Services.AddTransient<Features.Important.ImportantPage>();
         builder.Services.AddTransient<Features.Reminder.ReminderPage>();
         builder.Services.AddTransient<Features.Bin.BinPage>();
+        builder.Services.AddTransient<Features.Settings.Views.SettingsPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

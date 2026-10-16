@@ -46,4 +46,12 @@ public interface IListService
     /// <paramref name="name"/> (case-insensitive) already exists.
     /// </summary>
     bool NameExists(string name, string? excludeId = null);
+
+    /// <summary>
+    /// Moves the list with id <paramref name="sourceId"/> to the
+    /// position currently occupied by the list at
+    /// <paramref name="targetDisplayOrder"/>. The remaining lists are
+    /// renumbered so the ordering persists.
+    /// </summary>
+    Task ReorderAsync(string sourceId, int targetDisplayOrder);
 }
