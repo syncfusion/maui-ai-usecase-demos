@@ -1,0 +1,19 @@
+## .NET / MAUI
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.vscode/
+*.swp
+
+## Rider / Resharper
+.idea/
+*.DotSettings.user
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Logs
+*.log

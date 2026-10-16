@@ -33,8 +33,22 @@
                         <Border.Shadow>
                             <Shadow Brush="#202027" Opacity="0.2" Radius="18" Offset="0,8" />
                         </Border.Shadow>
-                        <Grid RowDefinitions="Auto,Auto" RowSpacing="0">
+                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="0">
                             <Border Grid.Row="0"
+                                    Margin="0,0,0,6"
+                                    Padding="8,6"
+                                    Stroke="#F2C4C4"
+                                    StrokeThickness="0.8"
+                                    StrokeShape="RoundRectangle 8"
+                                    BackgroundColor="#FBF3F3"
+                                    IsVisible="{Binding HasAiError}">
+                                <Label AutomationId="AiErrorText"
+                                       Text="{Binding AiError}"
+                                       FontSize="12"
+                                       TextColor="#B3261E"
+                                       LineBreakMode="TailTruncation" />
+                            </Border>
+                            <Border Grid.Row="1"
                                     Padding="9,3,4,3"
                                     Stroke="#E2E2E7"
                                     StrokeThickness="0.8"
@@ -95,7 +109,7 @@
                                 </Grid>
                             </Border>
 
-                            <ScrollView Grid.Row="1"
+                            <ScrollView Grid.Row="2"
                                         Margin="0,6,0,0"
                                         HeightRequest="340"
                                         IsEnabled="{Binding IsAiActionEnabled}"
@@ -346,6 +360,15 @@
                                                    IsVisible="{Binding IsAiReviewLoading}"
                                                    HorizontalOptions="Center"
                                                    VerticalOptions="Center" />
+                                <Label AutomationId="AiReviewErrorText"
+                                       Text="{Binding AiError}"
+                                       FontSize="12"
+                                       TextColor="#B3261E"
+                                       LineBreakMode="TailTruncation"
+                                       WidthRequest="130"
+                                       IsVisible="{Binding HasAiError}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
                             </HorizontalStackLayout>
                         </Grid>
                     </Border>
