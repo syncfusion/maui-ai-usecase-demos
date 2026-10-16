@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AIChatSample.ProfilePage"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Toolkit.Buttons;assembly=Syncfusion.Maui.Toolkit"
+             xmlns:controls="clr-namespace:AIChatSample.Controls"
+             xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="AC_SectionCard" TargetType="Border">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=white,Dark=#1C1B1D}" />
+                <Setter Property="Stroke" Value="{AppThemeBinding Light=#E5E1E3, Dark=#474648}" />
+                <Setter Property="StrokeThickness" Value="1" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="16" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Padding" Value="24" />
+            </Style>
+            <Style x:Key="AC_FieldLabel" TargetType="Label">
+                <Setter Property="FontFamily" Value="Roboto-Regular" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=#5F5E60, Dark=#929092}" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid x:Name="RootGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{Binding NavigationColumnWidth, Source={x:Reference AIChatNavigationPanel}}" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="{Binding ContentColumn, Source={x:Reference AIChatNavigationPanel}}"
+              Grid.ColumnSpan="{Binding ContentColumnSpan, Source={x:Reference AIChatNavigationPanel}}"
+              RowDefinitions="56,*">
+
+            <controls:AIChatToolbar x:Name="AIChatToolbar"
+                                    Grid.Row="0"
+                                    IsNavigationMenuVisible="{Binding IsNavigationMenuVisible, Source={x:Reference AIChatNavigationPanel}}"
+                                    NavigationMenuTapped="OnNavigationMenuTapped" />
+
+            <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
+                <Grid Padding="24,24,24,32" BackgroundColor="{AppThemeBinding Light=#FAF8FA,Dark=#313032}">
+                    <VerticalStackLayout Spacing="20" HorizontalOptions="Center" MaximumWidthRequest="760" WidthRequest="{OnIdiom Default=760, Phone=-1}">
+                        <Label Text="Profile" FontFamily="Roboto-Regular" FontSize="28" TextColor="{AppThemeBinding Light=#313032, Dark=#FFFFFF}" />
+                        <Label Text="Edit your account name and email. Changes update the app immediately." FontFamily="Roboto-Regular" FontSize="16" TextColor="{AppThemeBinding Light=#474648, Dark=#C9C6C8}" />
+
+                        <Border Style="{StaticResource AC_SectionCard}">
+                            <VerticalStackLayout Spacing="16">
+                                <HorizontalStackLayout Spacing="16">
+                                    <Border WidthRequest="88" HeightRequest="88" StrokeThickness="0" StrokeShape="RoundRectangle 44">
+                                        <Image Source="userprofile.png" HorizontalOptions="Center" VerticalOptions="Center" Aspect="AspectFit" />
+                                    </Border>
+                                    <VerticalStackLayout Spacing="6" VerticalOptions="Center">
+                                        <Label Text="{Binding UserProfile.Name}" FontFamily="Roboto-Medium" FontSize="20" TextColor="{AppThemeBinding Light=#313032, Dark=#FFFFFF}" />
+                                        <Label Text="{Binding UserProfile.Email}" FontFamily="Roboto-Regular" FontSize="14" TextColor="{AppThemeBinding Light=#5F5E60, Dark=#929092}" />
+                                    </VerticalStackLayout>
+                                </HorizontalStackLayout>
+
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="Display Name" Style="{StaticResource AC_FieldLabel}" />
+                                    <controls:BorderlessEntry Text="{Binding ProfileName}" Placeholder="Enter your display name" />
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="Email Address" Style="{StaticResource AC_FieldLabel}" />
+                                    <controls:BorderlessEntry Text="{Binding ProfileEmail}" Placeholder="name@example.com" Keyboard="Email" />
+                                </VerticalStackLayout>
+
+                                <Label Text="{Binding ProfileErrorMessage}" TextColor="#D93025" />
+
+                                <buttons:SfButton Text="Save Changes"
+                                                  Command="{Binding SaveProfileCommand}"
+                                                  FontFamily="Roboto-Medium"
+                                                  CornerRadius="0"
+                                                  HorizontalOptions="Start" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
+            </ScrollView>
+        </Grid>
+
+        <controls:AIChatNavigationPanel Grid.Column="0" x:Name="AIChatNavigationPanel" HorizontalOptions="Start"
+            InitialSelectedItem="Profile" ZIndex="2" />
+
+    </Grid>
+</ContentPage>

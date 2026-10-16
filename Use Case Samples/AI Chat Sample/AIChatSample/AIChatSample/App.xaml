@@ -1,0 +1,39 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:AIChatSample"
+             xmlns:syncTheme="clr-namespace:Syncfusion.Maui.Themes;assembly=Syncfusion.Maui.Core"
+             x:Class="AIChatSample.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!--
+                    Order matters: the MAUI default Styles.xaml sets implicit
+                    styles for built-in controls and references the MAUI
+                    default Colors.xaml keys (Primary, Gray200, ...). The
+                    AIChatSample-specific Styles/Colors.xaml re-declares a
+                    subset to allow the same implicit styles to resolve in
+                    this project without depending on the default file.
+                -->
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <ResourceDictionary Source="Styles/Colors.xaml" />
+                <ResourceDictionary Source="Styles/FontIcons.xaml" />
+                <ResourceDictionary Source="Styles/NavigationDrawerControlStyles.xaml" />
+                <ResourceDictionary Source="Themes/LightTheme.xaml" />
+                <ResourceDictionary Source="Themes/DarkTheme.xaml" />
+                <syncTheme:SyncfusionThemeResourceDictionary>
+                    <!--
+                        The Syncfusion AIAssistView / SfListView templates
+                        expect these keys to exist on the Syncfusion theme.
+                        Overriding them with Transparent lets the host page
+                        define its own hover / ripple background, matching
+                        the rest of the AI-Copilot chat palette.
+                    -->
+                    <Color x:Key="SfListViewHoverListViewItemBackground">Transparent</Color>
+                    <Color x:Key="SfListViewItemRippleBackground">Transparent</Color>
+                </syncTheme:SyncfusionThemeResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

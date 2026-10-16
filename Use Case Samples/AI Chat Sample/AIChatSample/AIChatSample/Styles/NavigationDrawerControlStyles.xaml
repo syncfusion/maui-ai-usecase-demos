@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AIChatSample.Styles.NavigationDrawerControlStyles"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Toolkit.Buttons;assembly=Syncfusion.Maui.Toolkit">
+
+    <!-- Drawer palette: consumed by AIChatNavigationPanel and the AIChatToolbar. -->
+    <Color x:Key="DrawerIconColor">#555555</Color>
+    <Color x:Key="NewAgentBg">#F3EFF2</Color>
+    <Color x:Key="HeaderTextPrimary">#2D2D2D</Color>
+    <Color x:Key="HeaderTextSecondary">#666666</Color>
+    <Color x:Key="HeaderHoverBg">#F3F3F3</Color>
+
+    <!-- Drawer row label -->
+    <Style x:Key="DrawerRowLabel" TargetType="Label">
+        <Setter Property="FontFamily" Value="Roboto-Regular" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light=#313032, Dark=#FFFFFF}" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="HorizontalOptions" Value="Start" />
+    </Style>
+
+    <!-- Drawer sub-item label (e.g. nested agent row in the Agent accordion). -->
+    <Style x:Key="DrawerSubItemLabel" TargetType="Label">
+        <Setter Property="FontFamily" Value="Roboto-Regular" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light=#313032, Dark=#FFFFFF}" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="HorizontalOptions" Value="Start" />
+    </Style>
+
+    <!-- New Agent button (pushed from the drawer). -->
+    <Style x:Key="NewAgentButton" TargetType="buttons:SfButton">
+        <Setter Property="Background" Value="{StaticResource NewAgentBg}" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="HeightRequest" Value="42" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="Margin" Value="8,0" />
+        <Setter Property="Padding" Value="16,0" />
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+        <Setter Property="VerticalTextAlignment" Value="Center" />
+        <Setter Property="EnableRippleEffect" Value="True" />
+    </Style>
+
+</ResourceDictionary>
