@@ -113,9 +113,6 @@
 		<MauiXaml Update="Controls\QuickActionCardView.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
-		<MauiXaml Update="Controls\SectionHeaderView.xaml">
-			<Inflator>SourceGen</Inflator>
-		</MauiXaml>
 		<MauiXaml Update="Controls\VisitCardView.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
