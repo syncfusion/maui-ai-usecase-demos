@@ -46,8 +46,7 @@
                                        Text="{Binding AiError}"
                                        FontSize="12"
                                        TextColor="#B3261E"
-                                       LineBreakMode="TailTruncation"
-                                       MaximumLineCount="2" />
+                                       LineBreakMode="TailTruncation" />
                             </Border>
                             <Border Grid.Row="1"
                                     Padding="9,3,4,3"
@@ -366,8 +365,7 @@
                                        FontSize="12"
                                        TextColor="#B3261E"
                                        LineBreakMode="TailTruncation"
-                                       MaximumLineCount="1"
-                                       MaximumWidthRequest="130"
+                                       WidthRequest="130"
                                        IsVisible="{Binding HasAiError}"
                                        HorizontalOptions="Center"
                                        VerticalOptions="Center" />
