@@ -1,7 +1,0 @@
-<api type="release" assembly-name="Microsoft.Maui.Graphics" mvid="af504bf84d0147569cc0034305b87d04">
-  <module assembly-name="Microsoft.Maui.Graphics" mvid="af504bf84d0147569cc0034305b87d04" mvid-bytes="+EtQrwFNVkecwANDBbh9BA==">
-    <types-scratch>
-      <entry key="crc643f2b18b2570eaa5a/PlatformGraphicsView" java-name="crc643f2b18b2570eaa5a/PlatformGraphicsView" managed-type-name="Microsoft.Maui.Graphics.Platform.PlatformGraphicsView" token="33554553" />
-    </types-scratch>
-  </module>
-</api>
