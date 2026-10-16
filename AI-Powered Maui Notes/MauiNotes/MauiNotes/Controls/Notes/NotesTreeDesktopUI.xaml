@@ -2,7 +2,6 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:tree="clr-namespace:Syncfusion.Maui.TreeView;assembly=Syncfusion.Maui.TreeView"
-             xmlns:treeengine="clr-namespace:Syncfusion.TreeView.Engine;assembly=Syncfusion.Maui.TreeView"
              xmlns:controls="clr-namespace:MauiNotes.Controls"
              xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              xmlns:popups="clr-namespace:MauiNotes.Controls.Popups"
@@ -56,7 +55,7 @@
                                 <tree:DragAndDropController CanAutoExpand="True" />
                             </tree:SfTreeView.DragAndDropController>
                             <tree:SfTreeView.ExpanderTemplate>
-                                <DataTemplate x:DataType="treeengine:TreeViewNode">
+                        <DataTemplate x:DataType="x:Object">
                                     <Grid WidthRequest="20" HeightRequest="28" HorizontalOptions="Center"
                                         VerticalOptions="Center">
                                         <Label Text="&#xE705;" FontFamily="MauiMaterialAssets" FontSize="14"

@@ -52,7 +52,7 @@ public class CustomRichTextEditor : ContentView
             EditorBackgroundColor = Colors.White,
             BorderColor = Colors.Transparent,
             BorderThickness = 0,
-            DefaultFont = "system-ui"
+            DefaultFontFamily = "system-ui"
         };
         Content = innerEditor;
         innerEditor.Loaded += (_, _) =>
@@ -117,8 +117,8 @@ public class CustomRichTextEditor : ContentView
     /// <summary>Default font family applied to new editor content.</summary>
     public string DefaultFontFamily
     {
-        get => innerEditor.DefaultFont;
-        set => innerEditor.DefaultFont = value;
+        get => innerEditor.DefaultFontFamily;
+        set => innerEditor.DefaultFontFamily = value;
     }
 
     public void Undo() => innerEditor.Undo();

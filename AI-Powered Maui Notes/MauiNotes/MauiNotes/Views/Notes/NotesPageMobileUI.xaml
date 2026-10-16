@@ -2,7 +2,6 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:tree="clr-namespace:Syncfusion.Maui.TreeView;assembly=Syncfusion.Maui.TreeView"
-             xmlns:treeengine="clr-namespace:Syncfusion.TreeView.Engine;assembly=Syncfusion.Maui.TreeView"
              xmlns:controls="clr-namespace:MauiNotes.Controls"
              xmlns:popups="clr-namespace:MauiNotes.Controls.Popups"
              xmlns:vm="clr-namespace:MauiNotes.ViewModels"
@@ -118,7 +117,7 @@
                          BackgroundColor="Transparent"
                          SelectionBackground="Transparent">
             <tree:SfTreeView.ExpanderTemplate>
-                <DataTemplate x:DataType="treeengine:TreeViewNode">
+                <DataTemplate x:DataType="x:Object">
                     <Grid WidthRequest="24"
                   HeightRequest="56"
                   HorizontalOptions="Center"

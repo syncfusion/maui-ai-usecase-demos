@@ -14,19 +14,19 @@ public partial class NotesViewModel
         var meetings = CreateFolder("Meetings", work);
         var architecture = CreateFolder("Architecture", work);
 
-        AddNote(meetings, "Sprint Review", today.AddHours(10).AddMinutes(45), "<h1>Sprint Review</h1><p>Completed Q4 deliverables and reviewed the next release.</p>");
-        AddNote(meetings, "Client Discussion", today.AddHours(14).AddMinutes(12), "<h1>Client Discussion</h1><p>Pricing model alignment and next steps.</p>");
+        AddNote(meetings, "Sprint Review", today.AddHours(10).AddMinutes(45), CreateSprintReviewContent());
+        AddNote(meetings, "Client Discussion", today.AddHours(14).AddMinutes(12), CreateClientDiscussionContent());
         AddNote(architecture, "Project Planning", DateTime.Now, CreateProjectPlanningHtml());
-        AddNote(architecture, "Database Design", today.AddDays(-3).AddHours(11), "<h1>Database Design</h1><p>Postgres migration schema.</p>");
+        AddNote(architecture, "Database Design", today.AddDays(-3).AddHours(11), CreateDatabaseDesignContent());
 
         var personal = CreateFolder("Personal", null);
-        AddNote(personal, "Travel Checklist", today.AddDays(-1).AddHours(18), "<h1>Travel Checklist</h1><p>Passports, bookings and gear.</p>");
-        AddNote(personal, "Shopping List", today.AddDays(-1).AddHours(19), "<h1>Shopping List</h1><p>Grocery and stationery items.</p>");
-        AddNote(personal, "Workspace Setup", today.AddDays(-4).AddHours(9), "<h1>Workspace Setup</h1><p>New desk layout and monitor arm.</p>");
-        AddNote(personal, "Weekly Review", today.AddDays(-6).AddHours(16), "<h1>Weekly Review</h1><p>The one-liners are missing.</p>");
+        AddNote(personal, "Travel Checklist", today.AddDays(-1).AddHours(18), CreateTravelChecklistContent());
+        AddNote(personal, "Shopping List", today.AddDays(-1).AddHours(19), CreateShoppingListContent());
+        AddNote(personal, "Workspace Setup", today.AddDays(-4).AddHours(9), CreateWorkspaceSetupContent());
+        AddNote(personal, "Weekly Review", today.AddDays(-6).AddHours(16), CreateWeeklyReviewContent());
 
         var ideas = CreateFolder("Ideas", null);
-        AddNote(ideas, "Product Ideas", today.AddDays(-16).AddHours(10), "<h1>Product Ideas</h1><p>Mac-style Canvas widget.</p>");
+        AddNote(ideas, "Product Ideas", today.AddDays(-16).AddHours(10), CreateProductIdeasContent());
 
         TreeNodes.Add(work);
         TreeNodes.Add(personal);
@@ -545,9 +545,13 @@ public partial class NotesViewModel
         RenamePopupIsOpen = false;
         RenamePopupText = string.Empty;
     }
-    private void DeleteSelectedItem()
+    private void DeleteSelectedItem(object? target = null)
     {
-        if (menuTarget is NoteModel note)
+        target ??= menuTarget;
+        if (target is NoteTreeNode { Note: not null } noteTreeNode)
+            target = noteTreeNode.Note;
+
+        if (target is NoteModel note)
         {
             NoteTreeNode? folder = FindFolderContainingNote(note, TreeNodes);
             if (folder is not null)
@@ -563,7 +567,7 @@ public partial class NotesViewModel
                 }
             }
         }
-        else if (menuTarget is NoteTreeNode folder)
+        else if (target is NoteTreeNode { IsFolder: true } folder)
         {
             NoteTreeNode? parent = folder.Parent;
             bool selectionWillBeDeleted = SelectedFolderNode is not null && IsWithinFolder(SelectedFolderNode, folder);
@@ -648,7 +652,94 @@ public partial class NotesViewModel
         folder.NoteCount = own + children;
         return folder.NoteCount;
     }
+    private static string CreateSprintReviewContent() =>
+        "<h1>Sprint Review</h1>" +
+        "<p>Completed Work</p>" +
+        "<p>The team completed the planned Q4 deliverables, including the notes editor improvements and folder navigation updates.</p>" +
+        "<p>Release Readiness</p>" +
+        "<p>Review outstanding defects, confirm regression testing, and prepare release notes before the next rollout.</p>" +
+        "<p>Next Steps</p>" +
+        "<p>Prioritize customer feedback, assign owners to follow-up work, and agree on the goals for the next sprint.</p>";
+
+    private static string CreateClientDiscussionContent() =>
+        "<h1>Client Discussion</h1>" +
+        "<p>Pricing Alignment</p>" +
+        "<p>Review the proposed pricing tiers, included features, and expected usage so the model reflects the client's needs.</p>" +
+        "<p>Open Questions</p>" +
+        "<p>Confirm onboarding support, data migration expectations, and any requirements for future team expansion.</p>" +
+        "<p>Next Steps</p>" +
+        "<p>Share a revised proposal, collect stakeholder feedback, and schedule a follow-up discussion to finalize the agreement.</p>";
+
+    private static string CreateDatabaseDesignContent() =>
+        "<h1>Database Design</h1>" +
+        "<p>Postgres Migration</p>" +
+        "<p>Plan the migration of note and folder data to PostgreSQL while preserving existing relationships and timestamps.</p>" +
+        "<p>Schema Considerations</p>" +
+        "<p>Define tables for notes and folders, use stable identifiers, and index parent relationships and modified dates for common queries.</p>" +
+        "<p>Migration Checks</p>" +
+        "<p>Validate record counts, confirm content integrity, and keep a rollback path available until the migrated data is verified.</p>";
+
+    private static string CreateTravelChecklistContent() =>
+        "<h1>Travel Checklist</h1>" +
+        "<p>Documents and Bookings</p>" +
+        "<p>Check passports and identification, save flight and accommodation confirmations, and note any reservation reference numbers.</p>" +
+        "<p>Packing</p>" +
+        "<p>Pack weather-appropriate clothing, toiletries, chargers, medication, and a small travel adapter.</p>" +
+        "<p>Before Leaving</p>" +
+        "<p>Confirm transport to the airport, share the itinerary with family, and secure the home before departure.</p>";
+
+    private static string CreateShoppingListContent() =>
+        "<h1>Shopping List</h1>" +
+        "<p>Groceries</p>" +
+        "<p>Fresh fruit and vegetables, bread, eggs, milk, rice, and ingredients for the meals planned this week.</p>" +
+        "<p>Household</p>" +
+        "<p>Dish soap, laundry detergent, and reusable storage bags.</p>" +
+        "<p>Stationery</p>" +
+        "<p>Replace the notebook, sticky notes, and pens used for weekly planning.</p>";
+
+    private static string CreateWorkspaceSetupContent() =>
+        "<h1>Workspace Setup</h1>" +
+        "<p>Desk Layout</p>" +
+        "<p>Keep the primary work area clear, position frequently used items within reach, and leave space for writing and planning.</p>" +
+        "<p>Monitor and Ergonomics</p>" +
+        "<p>Install the monitor arm, set the screen near eye level, and adjust the chair and keyboard for a comfortable posture.</p>" +
+        "<p>Finishing Touches</p>" +
+        "<p>Route cables neatly, check task lighting, and keep a small area available for notes and daily priorities.</p>";
+
+    private static string CreateWeeklyReviewContent() =>
+        "<h1>Weekly Review</h1>" +
+        "<p>Look Back</p>" +
+        "<p>Capture the week's accomplishments, decisions, and anything that needs a follow-up.</p>" +
+        "<p>Reset Priorities</p>" +
+        "<p>Move unfinished work into the right list, remove outdated tasks, and choose the most important outcomes for next week.</p>" +
+        "<p>Plan Ahead</p>" +
+        "<p>Check upcoming meetings and deadlines, reserve focused work time, and note one thing to improve in the week ahead.</p>";
+
+    private static string CreateProductIdeasContent() =>
+        "<h1>Product Ideas</h1>" +
+        "<p>Product Ideas</p>" +
+        "<p>Overview</p>" +
+        "<p>This document captures innovative product concepts that can improve productivity, collaboration, and digital workflows. The goal is to identify solutions that address real user needs while maintaining simplicity, usability, and scalability.</p>" +
+        "<p>Featured Idea: Mac-Style Canvas Widget</p>" +
+        "<p>A flexible canvas workspace that allows users to freely organize notes, images, tasks, and documents on an infinite board. Users can connect ideas visually, create mind maps, and manage projects through drag-and-drop interactions.</p>" +
+        "<p>Key Features</p>" +
+        "<p>Infinite zoomable canvas</p>" +
+        "<p>Sticky notes and rich text support</p>" +
+        "<p>Drag-and-drop organization</p>" +
+        "<p>Mind map connections</p>" +
+        "<p>Real-time collaboration</p>" +
+        "<p>Cross-platform synchronization</p>" +
+        "<p>AI-powered content suggestions</p>" +
+        "<p>Export to PDF, image, and presentation formats</p>" +
+        "<p>Benefits</p>" +
+        "<p>A visual canvas reduces context switching, improves personal productivity, and gives collaborators a shared space to understand progress and build on one another's ideas.</p>";
+
     private static string CreateProjectPlanningHtml() =>
         "<h1>Project Planning</h1>" +
-        "<p>Finalize sprint deliverables and alignment for the macOS Notes web client iteration.</p>";
+        "<p>Iteration Goals</p>" +
+        "<p>Finalize sprint deliverables and align the team on the next macOS Notes web client iteration.</p>" +
+        "<p>Planned Work</p>" +
+        "<p>Prioritize improvements to note creation, canvas-based organization, and collaboration workflows.</p>" +
+        "<p>Coordination</p>" +
+        "<p>Confirm owners, identify dependencies, and review progress at the next planning checkpoint.</p>";
 }

@@ -18,10 +18,10 @@ public partial class NodeActionPopups : ContentView
     private CollectionView? moveDestinationFoldersView;
     private IReadOnlyList<MoveDestinationMenuItem> moveDestinationMenuItems = Array.Empty<MoveDestinationMenuItem>();
     private NoteTreeNode? activeMenuNode;
+    private NoteTreeNode? pendingDeleteNode;
     private View? moveToMenuAnchor;
     private bool suppressMoveToCloseCleanup;
     private bool preserveNodeMenuAfterClose;
-    private bool preserveDeleteStateAfterClose;
     private bool mobileCloseHandlerAttached;
     private bool isMoveToMenuItemHovered;
     private bool isMoveDestinationPopupHovered;
@@ -89,6 +89,12 @@ public partial class NodeActionPopups : ContentView
 
     private void OnRenameMenuOptionTapped(object? sender, TappedEventArgs e)
     {
+        if (BindingContext is not NotesViewModel viewModel)
+        {
+            NodeActionsPopup.Dismiss();
+            return;
+        }
+
         // On mobile, the inline-rename path that the desktop uses (which
         // toggles NoteTreeNode.IsRenaming and lets the TreeView template
         // swap in an Entry) does not work, so the desktop flow is replaced
@@ -104,13 +110,11 @@ public partial class NodeActionPopups : ContentView
             preserveNodeMenuAfterClose = true;
             NodeActionsPopup.Dismiss();
             NodeActionsPopup.StaysOpen = false;
-            RenameFolderPopupHost.ShowFor(activeMenuNode);
+            RenameFolderPopupHost.ShowFor(activeMenuNode, viewModel);
             return;
         }
 
-        if (BindingContext is NotesViewModel viewModel)
-            viewModel.BeginRenameCommand.Execute(null);
-
+        viewModel.BeginRenameCommand.Execute(null);
         NodeActionsPopup.Dismiss();
     }
 
@@ -462,13 +466,14 @@ public partial class NodeActionPopups : ContentView
 
         bool deletingNote = viewModel.IsNoteMenuTarget;
         bool deletingFolder = viewModel.IsFolderMenuTarget;
-        if (!deletingNote && !deletingFolder)
+        if ((!deletingNote && !deletingFolder) || activeMenuNode is null)
         {
             NodeActionsPopup.Dismiss();
             viewModel.IsNodeMenuOpen = false;
             return;
         }
 
+        pendingDeleteNode = activeMenuNode;
         NodeActionsPopup.Dismiss();
         viewModel.IsNodeMenuOpen = false;
         Dispatcher.Dispatch(() =>
@@ -489,44 +494,30 @@ public partial class NodeActionPopups : ContentView
 
     private void OnConfirmDeleteTapped(object? sender, EventArgs e)
     {
-        if (BindingContext is not NotesViewModel viewModel ||
-            !viewModel.DeleteNodeCommand.CanExecute(null))
+        if (BindingContext is not NotesViewModel viewModel)
         {
             return;
         }
 
-        viewModel.DeleteNodeCommand.Execute(null);
-        DeleteConfirmationPopup.Dismiss();
+        object? target = IsMobilePresentation ? pendingDeleteNode : null;
+        if (IsMobilePresentation && target is null)
+            return;
+
+        if (!viewModel.DeleteNodeCommand.CanExecute(target))
+            return;
+
+        viewModel.DeleteNodeCommand.Execute(target);
+        DeleteConfirmationPopup.IsOpen = false;
     }
 
     private void OnCancelDeleteTapped(object? sender, EventArgs e)
     {
-        if (IsMobilePresentation)
-            ReturnToMainMenuFromDelete();
-        else
-            DeleteConfirmationPopup.Dismiss();
-    }
-
-    private void OnDeleteConfirmationBackTapped(object? sender, EventArgs e)
-    {
-        ReturnToMainMenuFromDelete();
-    }
-
-    private void ReturnToMainMenuFromDelete()
-    {
-        preserveDeleteStateAfterClose = true;
-        DeleteConfirmationPopup.Dismiss();
-        ShowMainMenu();
+        DeleteConfirmationPopup.IsOpen = false;
     }
 
     private void OnDeleteConfirmationPopupClosed(object? sender, EventArgs e)
     {
-        if (preserveDeleteStateAfterClose)
-        {
-            preserveDeleteStateAfterClose = false;
-            return;
-        }
-
+        pendingDeleteNode = null;
         if (IsMobilePresentation && BindingContext is NotesViewModel viewModel)
             viewModel.IsNodeMenuOpen = false;
     }

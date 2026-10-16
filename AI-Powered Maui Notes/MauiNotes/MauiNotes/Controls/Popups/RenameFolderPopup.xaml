@@ -2,7 +2,6 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
-             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              xmlns:controls="clr-namespace:MauiNotes.Controls"
              xmlns:vm="clr-namespace:MauiNotes.ViewModels"
              x:Class="MauiNotes.Controls.Popups.RenameFolderPopup"
@@ -32,7 +31,7 @@
                        ShowHeader="False"
                        ShowFooter="False"
                        ShowOverlayAlways="True"
-                       StaysOpen="True"
+                       StaysOpen="False"
                        Closed="OnRenamePopupClosed">
             <popup:SfPopup.PopupStyle>
                 <popup:PopupStyle Stroke="Transparent" StrokeThickness="0" CornerRadius="10" />
@@ -47,23 +46,8 @@
                             <Shadow Brush="#202027" Opacity="0.20" Radius="18" Offset="0,8" />
                         </Border.Shadow>
                         <Grid RowDefinitions="Auto,Auto,Auto,Auto">
-                            <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Padding="20,18,20,12">
-                                <buttons:SfButton Text="&#xe703;"
-                                                  FontFamily="MauiMaterialAssets"
-                                                  FontSize="18"
-                                                  SemanticProperties.Description="Back"
-                                                  Clicked="OnRenameBackTapped"
-                                                  Background="Transparent"
-                                                  Stroke="Transparent"
-                                                  StrokeThickness="0"
-                                                  TextColor="#45464D"
-                                                  Padding="0"
-                                                  WidthRequest="36"
-                                                  MinimumWidthRequest="36"
-                                                  MinimumHeightRequest="32"
-                                                  VerticalOptions="Center"
-                                                  CornerRadius="18" />
-                                <Label Grid.Column="1"
+                            <Grid Grid.Row="0" ColumnDefinitions="*" Padding="20,18,20,12">
+                                <Label Grid.Column="0"
                                        Text="Rename"
                                        FontSize="18"
                                        FontAttributes="Bold"
@@ -75,18 +59,21 @@
                                         StrokeThickness="0.5"
                                         StrokeShape="RoundRectangle 8"
                                         BackgroundColor="White"
-                                        Padding="12,8">
+                                        Padding="12,4">
                                     <controls:BorderlessEntry x:Name="RenameInput"
                                                               Text="{Binding RenamePopupText, Mode=TwoWay}"
                                                               FontSize="14"
                                                               TextColor="#29292D"
                                                               Background="Transparent"
-                                                              HeightRequest="32"
-                                                              MinimumHeightRequest="0"
+                                                              HeightRequest="40"
+                                                              MinimumHeightRequest="40"
                                                               Margin="0"
+                                                              HorizontalTextAlignment="Start"
+                                                              VerticalTextAlignment="Center"
                                                               VerticalOptions="Center"
                                                               Placeholder="Folder name"
                                                               PlaceholderColor="#9A9AA0"
+                                                              TextChanged="OnRenameTextChanged"
                                                               ReturnType="Done"
                                                               Completed="OnRenameCompleted" />
                                 </Border>

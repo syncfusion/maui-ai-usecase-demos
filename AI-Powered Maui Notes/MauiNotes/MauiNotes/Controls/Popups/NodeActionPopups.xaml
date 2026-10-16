@@ -153,7 +153,7 @@
         </popup:SfPopup>
 
         <popup:SfPopup x:Name="DeleteConfirmationPopup" WidthRequest="420" AutoSizeMode="Height"
-            ShowHeader="False" ShowFooter="False" ShowOverlayAlways="True" StaysOpen="True"
+            ShowHeader="False" ShowFooter="False" ShowOverlayAlways="True" StaysOpen="False"
             Closed="OnDeleteConfirmationPopupClosed">
             <popup:SfPopup.PopupStyle>
                 <popup:PopupStyle Stroke="Transparent" StrokeThickness="0" CornerRadius="10" />
@@ -166,18 +166,8 @@
                             <Shadow Brush="#202027" Opacity="0.20" Radius="18" Offset="0,8" />
                         </Border.Shadow>
                         <Grid RowDefinitions="Auto,Auto,Auto">
-                            <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Padding="20,18,20,12">
-                                <buttons:SfButton Text="&#xe703;"
-                                    FontFamily="MauiMaterialAssets"
-                                    FontSize="18"
-                                    SemanticProperties.Description="Back"
-                                    IsVisible="{Binding Source={x:Reference PopupHost}, Path=IsMobilePresentation}"
-                                    Clicked="OnDeleteConfirmationBackTapped"
-                                    Background="Transparent" Stroke="Transparent" StrokeThickness="0"
-                                    TextColor="#45464D" Padding="0"
-                                    WidthRequest="36" MinimumWidthRequest="36" MinimumHeightRequest="32"
-                                    VerticalOptions="Center" CornerRadius="18" />
-                                <Label Grid.Column="1" Text="Delete" FontSize="18" FontAttributes="Bold"
+                            <Grid Grid.Row="0" ColumnDefinitions="*" Padding="20,18,20,12">
+                                <Label Grid.Column="0" Text="Delete" FontSize="18" FontAttributes="Bold"
                                     TextColor="#29292D" VerticalTextAlignment="Center" />
                             </Grid>
                             <Grid Grid.Row="1" Padding="20,0,20,20">

@@ -666,7 +666,7 @@ public partial class NotesViewModel : ViewModelBase
         OpenNoteCommand = new Command<object>(OpenNote);
         ToggleNodeMenuCommand = new Command<object>(ToggleNodeMenu);
         BeginRenameCommand = new Command(BeginRename);
-        DeleteNodeCommand = new Command(DeleteSelectedItem);
+        DeleteNodeCommand = new Command<object?>(DeleteSelectedItem);
         AiActionCommand = new Command<string>(async action =>
         {
             if (Enum.TryParse(action, out AiEditingAction parsedAction) &&
