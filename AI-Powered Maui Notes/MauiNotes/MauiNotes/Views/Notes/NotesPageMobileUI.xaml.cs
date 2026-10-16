@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using MauiNotes.Models;
 using MauiNotes.Controls.Popups;
 using MauiNotes.ViewModels;
@@ -64,6 +65,10 @@ public partial class NotesPageMobileUI : ContentPage
         try
         {
             await Shell.Current.GoToAsync(nameof(EditorPageMobileUI));
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[NotesPage] OnNoteSelected failed: {ex}");
         }
         finally
         {

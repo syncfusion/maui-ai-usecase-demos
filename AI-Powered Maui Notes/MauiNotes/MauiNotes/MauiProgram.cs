@@ -15,9 +15,17 @@ namespace MauiNotes
         public static MauiApp CreateMauiApp()
         {
             // Register Syncfusion community license (required for v20.2.0.x+).
-            // The key can also be supplied via the SYNCFUSION_LICENSE_KEY environment variable.
-            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(
-                Environment.GetEnvironmentVariable("SYNCFUSION_LICENSE_KEY"));
+            // The key is supplied via the SYNCFUSION_LICENSE_KEY environment variable.
+            string licenseKey = Environment.GetEnvironmentVariable("SYNCFUSION_LICENSE_KEY") ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(licenseKey))
+            {
+                throw new InvalidOperationException(
+                    "SYNCFUSION_LICENSE_KEY environment variable is not set. A Syncfusion license key " +
+                    "(required for Syncfusion v20.2.0.x and later) must be provided before the app starts, " +
+                    "e.g. as a run configuration / launchSettings.json environment variable.");
+            }
+
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(licenseKey);
 
             var builder = MauiApp.CreateBuilder();
             builder.Services.AddSingleton(new AzureOpenAiOptions());

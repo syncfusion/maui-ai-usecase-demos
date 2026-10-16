@@ -240,31 +240,45 @@ public partial class NoteEditorDesktopUI : ContentView
         if (BindingContext is not NotesViewModel viewModel)
             return;
 
-        if (!await viewModel.BeginAiAssistantAsync(RichTextEditor))
-            return;
-        if (!await PopupPlacement.WaitForAnchorLayoutAsync(EditorToolbar.AiButton))
+        try
         {
-            viewModel.CloseAiAssistantCommand.Execute(null);
-            return;
-        }
+            await viewModel.BeginAiAssistantAsync(RichTextEditor);
+            if (!await PopupPlacement.WaitForAnchorLayoutAsync(EditorToolbar.AiButton))
+            {
+                viewModel.CloseAiAssistantCommand.Execute(null);
+                return;
+            }
 
-        FormatPopup.Dismiss();
-        TextPalettePopup.Dismiss();
-        HighlightPalettePopup.Dismiss();
-        AiEditingPopup.ShowWritingTools(EditorToolbar.AiButton);
+            FormatPopup.Dismiss();
+            TextPalettePopup.Dismiss();
+            HighlightPalettePopup.Dismiss();
+            AiEditingPopup.ShowWritingTools(EditorToolbar.AiButton);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[NoteEditorDesktopUI] OnAiRequested failed: {ex}");
+        }
     }
 
     private async void OnFormatRequested(object? sender, EventArgs e)
     {
         if (BindingContext is not NotesViewModel { IsEditorEditable: true })
             return;
-        if (!await PopupPlacement.WaitForAnchorLayoutAsync(EditorToolbar.FormatButton))
-            return;
 
-        AiEditingPopup.Dismiss();
-        TextPalettePopup.Dismiss();
-        HighlightPalettePopup.Dismiss();
-        FormatPopup.ToggleFormat(EditorToolbar.FormatButton);
+        try
+        {
+            if (!await PopupPlacement.WaitForAnchorLayoutAsync(EditorToolbar.FormatButton))
+                return;
+
+            AiEditingPopup.Dismiss();
+            TextPalettePopup.Dismiss();
+            HighlightPalettePopup.Dismiss();
+            FormatPopup.ToggleFormat(EditorToolbar.FormatButton);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[NoteEditorDesktopUI] OnFormatRequested failed: {ex}");
+        }
     }
 
     // Editor section - Keep toolbar formatting state synchronized with the RTE.

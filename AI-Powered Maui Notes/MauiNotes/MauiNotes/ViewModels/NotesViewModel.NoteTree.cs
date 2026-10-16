@@ -8,7 +8,7 @@ public partial class NotesViewModel
 {
     private void LoadSampleData()
     {
-        DateTime today = DateTime.Today;
+        DateTimeOffset today = new DateTimeOffset(DateTime.Today, TimeSpan.Zero);
 
         var work = CreateFolder("Work", null);
         var meetings = CreateFolder("Meetings", work);
@@ -16,7 +16,7 @@ public partial class NotesViewModel
 
         AddNote(meetings, "Sprint Review", today.AddHours(10).AddMinutes(45), CreateSprintReviewContent());
         AddNote(meetings, "Client Discussion", today.AddHours(14).AddMinutes(12), CreateClientDiscussionContent());
-        AddNote(architecture, "Project Planning", DateTime.Now, CreateProjectPlanningHtml());
+        AddNote(architecture, "Project Planning", DateTimeOffset.Now, CreateProjectPlanningHtml());
         AddNote(architecture, "Database Design", today.AddDays(-3).AddHours(11), CreateDatabaseDesignContent());
 
         var personal = CreateFolder("Personal", null);
@@ -47,7 +47,7 @@ public partial class NotesViewModel
         parent?.Children.Add(folder);
         return folder;
     }
-    private static void AddNote(NoteTreeNode folder, string title, DateTime sampleDate, string content)
+    private static void AddNote(NoteTreeNode folder, string title, DateTimeOffset sampleDate, string content)
     {
         // The title is never stored independently: it is always derived from
         // the first line (the <h1> block) of the note's HTML content. The
@@ -125,7 +125,7 @@ public partial class NotesViewModel
             return;
 
         const string newNoteContent = "<h1>New Note</h1><p></p>";
-        DateTime now = DateTime.Now;
+        DateTimeOffset now = DateTimeOffset.Now;
         var note = new NoteModel
         {
             Title = ExtractFirstLineText(newNoteContent),
@@ -393,7 +393,7 @@ public partial class NotesViewModel
             Title = sourceNote.Title,
             Content = sourceNote.Content,
             PreviewText = sourceNote.PreviewText,
-            CreatedDate = DateTime.Now,
+            CreatedDate = DateTimeOffset.Now,
             ModifiedDate = sourceNote.ModifiedDate
         };
         int noteIndex = folder.Notes.IndexOf(sourceNote);

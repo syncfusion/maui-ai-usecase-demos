@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Net;
 using System.Text.RegularExpressions;
 
@@ -156,6 +156,28 @@ public partial class NotesViewModel
 
         string normalized = Regex.Replace(content, @"\\+u003[cC]", "<", RegexOptions.IgnoreCase);
         return Regex.Replace(normalized, @"\\+u003[eE]", ">", RegexOptions.IgnoreCase);
+    }
+
+    /// <summary>
+    /// Strips a surrounding markdown code fence (```html ... ```) when the
+    /// model wraps its HTML output in one - otherwise the fence lines would
+    /// be applied as literal text into the note body.
+    /// </summary>
+    internal static string StripMarkdownFences(string content)
+    {
+        string trimmed = content.Trim();
+        if (!trimmed.StartsWith("```", StringComparison.Ordinal) || trimmed.Length < 7)
+            return content;
+
+        int firstNewline = trimmed.IndexOf('\n');
+        if (firstNewline < 0)
+            return content;
+
+        int lastFence = trimmed.LastIndexOf("```", StringComparison.Ordinal);
+        if (lastFence <= firstNewline)
+            return content;
+
+        return trimmed[(firstNewline + 1)..lastFence].TrimEnd();
     }
 
     private static void LogHtmlBoundary(string stage, string? content, Guid? noteId = null)

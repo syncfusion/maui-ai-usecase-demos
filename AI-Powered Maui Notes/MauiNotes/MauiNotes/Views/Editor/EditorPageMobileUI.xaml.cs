@@ -138,22 +138,27 @@ public partial class EditorPageMobileUI : ContentPage
         if (BindingContext is not NotesViewModel viewModel)
             return;
 
-        if (!await viewModel.BeginAiAssistantAsync(RichTextEditor))
-            return;
-
-        if (!await PopupPlacement.WaitForAnchorLayoutAsync(PopupPositionAnchor))
+        try
         {
-            viewModel.CloseAiAssistantCommand.Execute(null);
-            return;
+            await viewModel.BeginAiAssistantAsync(RichTextEditor);
+            if (!await PopupPlacement.WaitForAnchorLayoutAsync(PopupPositionAnchor))
+            {
+                viewModel.CloseAiAssistantCommand.Execute(null);
+                return;
+            }
+
+            if (!isPageVisible)
+                return;
+
+            FormatPopup.Dismiss();
+            TextPalettePopup.Dismiss();
+            HighlightPalettePopup.Dismiss();
+            AiEditingPopup.ShowWritingTools(PopupPositionAnchor);
         }
-
-        if (!isPageVisible)
-            return;
-
-        FormatPopup.Dismiss();
-        TextPalettePopup.Dismiss();
-        HighlightPalettePopup.Dismiss();
-        AiEditingPopup.ShowWritingTools(PopupPositionAnchor);
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[EditorPage] OnAiRequested failed: {ex}");
+        }
     }
 
     private async void OnBackClicked(object? sender, TappedEventArgs e)
@@ -169,6 +174,10 @@ public partial class EditorPageMobileUI : ContentPage
         try
         {
             await Shell.Current.GoToAsync("..");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[EditorPage] OnBackClicked failed: {ex}");
         }
         finally
         {
@@ -211,13 +220,20 @@ public partial class EditorPageMobileUI : ContentPage
         if (BindingContext is not NotesViewModel { IsEditorEditable: true })
             return;
 
-        if (!await PopupPlacement.WaitForAnchorLayoutAsync(PopupPositionAnchor) || !isPageVisible)
-            return;
+        try
+        {
+            if (!await PopupPlacement.WaitForAnchorLayoutAsync(PopupPositionAnchor) || !isPageVisible)
+                return;
 
-        AiEditingPopup.Dismiss();
-        TextPalettePopup.Dismiss();
-        HighlightPalettePopup.Dismiss();
-        FormatPopup.ToggleFormat(PopupPositionAnchor, centeredOnAnchor: true);
+            AiEditingPopup.Dismiss();
+            TextPalettePopup.Dismiss();
+            HighlightPalettePopup.Dismiss();
+            FormatPopup.ToggleFormat(PopupPositionAnchor, centeredOnAnchor: true);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[EditorPage] OnFormatRequested failed: {ex}");
+        }
     }
 
     private void OnWindowPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

@@ -350,7 +350,7 @@ public partial class NotesViewModel : ViewModelBase
 
             if (contentChanged)
             {
-                note.ModifiedDate = DateTime.Now;
+                note.ModifiedDate = DateTimeOffset.Now;
                 OnPropertyChanged(nameof(EditorTimestampText));
             }
 
