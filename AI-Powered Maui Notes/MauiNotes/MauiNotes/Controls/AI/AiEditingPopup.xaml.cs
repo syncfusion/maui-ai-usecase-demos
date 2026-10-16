@@ -135,7 +135,9 @@ public partial class AiEditingPopup : ContentView
 
     private void ShowReviewAtTrigger()
     {
-        if (viewModel?.IsAiProcessing != true || triggerAnchor is null)
+        if (viewModel is null ||
+            (viewModel.IsAiProcessing != true && !viewModel.HasAiError) ||
+            triggerAnchor is null)
             return;
 
         if (AiReviewPopup.IsOpen)
@@ -193,7 +195,7 @@ public partial class AiEditingPopup : ContentView
                 else
                     ShowReviewAtTrigger();
             }
-            else if (!viewModel.HasAiReviewResult)
+            else if (!viewModel.HasAiReviewResult && !viewModel.HasAiError)
             {
                 AiReviewPopup.Dismiss();
             }
