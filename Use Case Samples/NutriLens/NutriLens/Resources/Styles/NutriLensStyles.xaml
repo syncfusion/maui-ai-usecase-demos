@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar">
+
+    <!-- =========================
+         NutriLens color tokens
+         ========================= -->
+
+    <Color x:Key="NutriBrandLight">#047857</Color>
+    <Color x:Key="NutriBrandDark">#35C995</Color>
+
+    <Color x:Key="NutriBrandPressedLight">#035C43</Color>
+    <Color x:Key="NutriBrandPressedDark">#249C73</Color>
+
+    <Color x:Key="NutriPageBackgroundLight">#F4F7FB</Color>
+    <Color x:Key="NutriPageBackgroundDark">#111817</Color>
+
+    <Color x:Key="NutriSurfaceLight">#FFFFFF</Color>
+    <Color x:Key="NutriSurfaceDark">#1B2422</Color>
+
+    <Color x:Key="NutriMutedSurfaceLight">#EEF3F7</Color>
+    <Color x:Key="NutriMutedSurfaceDark">#26332F</Color>
+
+    <Color x:Key="NutriInputSurfaceLight">#F8FAFC</Color>
+    <Color x:Key="NutriInputSurfaceDark">#202B28</Color>
+
+    <Color x:Key="NutriChipSurfaceLight">#E6EEF8</Color>
+    <Color x:Key="NutriChipSurfaceDark">#2A3834</Color>
+
+    <Color x:Key="NutriTextPrimaryLight">#0F172A</Color>
+    <Color x:Key="NutriTextPrimaryDark">#F8FAFC</Color>
+
+    <Color x:Key="NutriTextSecondaryLight">#64748B</Color>
+    <Color x:Key="NutriTextSecondaryDark">#B7C4BF</Color>
+
+    <Color x:Key="NutriTextMutedLight">#94A3B8</Color>
+    <Color x:Key="NutriTextMutedDark">#82948D</Color>
+
+    <Color x:Key="NutriBorderLight">#D8E1EC</Color>
+    <Color x:Key="NutriBorderDark">#3A4A45</Color>
+
+    <Color x:Key="NutriShadowLight">#26000000</Color>
+    <Color x:Key="NutriShadowDark">#80000000</Color>
+
+    <!-- Health score colors -->
+    <Color x:Key="NutriExcellentLight">#047857</Color>
+    <Color x:Key="NutriExcellentDark">#35C995</Color>
+
+    <Color x:Key="NutriGoodLight">#84CC16</Color>
+    <Color x:Key="NutriGoodDark">#A3E635</Color>
+
+    <Color x:Key="NutriModerateLight">#F59E0B</Color>
+    <Color x:Key="NutriModerateDark">#FBBF24</Color>
+
+    <Color x:Key="NutriPoorLight">#DC2626</Color>
+    <Color x:Key="NutriPoorDark">#F87171</Color>
+
+    <!-- =========================
+         Radius tokens
+         ========================= -->
+
+    <CornerRadius x:Key="NutriRadiusSmall">10</CornerRadius>
+    <CornerRadius x:Key="NutriRadiusMedium">16</CornerRadius>
+    <CornerRadius x:Key="NutriRadiusLarge">20</CornerRadius>
+    <CornerRadius x:Key="NutriRadiusPill">28</CornerRadius>
+
+    <!-- =========================
+         Page style
+         ========================= -->
+
+    <Style
+        x:Key="NutriPageStyle"
+        TargetType="ContentPage">
+
+        <Setter
+            Property="BackgroundColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriPageBackgroundLight},
+                Dark={StaticResource NutriPageBackgroundDark}}" />
+    </Style>
+
+    <!-- =========================
+         Typography
+         ========================= -->
+
+    <Style
+        x:Key="NutriPageTitleStyle"
+        TargetType="Label">
+
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="30" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="LineBreakMode" Value="TailTruncation" />
+
+        <Setter
+            Property="TextColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriTextPrimaryLight},
+                Dark={StaticResource NutriTextPrimaryDark}}" />
+    </Style>
+
+    <Style
+        x:Key="NutriPageDescriptionStyle"
+        TargetType="Label">
+
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineBreakMode" Value="WordWrap" />
+
+        <Setter
+            Property="TextColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriTextSecondaryLight},
+                Dark={StaticResource NutriTextSecondaryDark}}" />
+    </Style>
+
+    <Style
+        x:Key="NutriSectionTitleStyle"
+        TargetType="Label">
+
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontAttributes" Value="Bold" />
+
+        <Setter
+            Property="TextColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriTextPrimaryLight},
+                Dark={StaticResource NutriTextPrimaryDark}}" />
+    </Style>
+
+    <Style
+        x:Key="NutriCardTitleStyle"
+        TargetType="Label">
+
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="MaxLines" Value="1" />
+        <Setter Property="LineBreakMode" Value="TailTruncation" />
+
+        <Setter
+            Property="TextColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriTextPrimaryLight},
+                Dark={StaticResource NutriTextPrimaryDark}}" />
+    </Style>
+
+    <Style
+        x:Key="NutriMetaTextStyle"
+        TargetType="Label">
+
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="FontSize" Value="12" />
+
+        <Setter
+            Property="TextColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriTextSecondaryLight},
+                Dark={StaticResource NutriTextSecondaryDark}}" />
+    </Style>
+
+    <Style
+        x:Key="NutriIconStyle"
+        TargetType="Label">
+
+        <Setter Property="FontFamily" Value="MaterialIconsRegular" />
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+        <Setter Property="VerticalTextAlignment" Value="Center" />
+    </Style>
+
+    <!-- =========================
+         Header
+         ========================= -->
+
+    <Style
+        x:Key="NutriHeaderProfileButtonStyle"
+        TargetType="buttons:SfButton">
+
+        <Setter Property="WidthRequest" Value="42" />
+        <Setter Property="HeightRequest" Value="42" />
+        <Setter Property="MinimumWidthRequest" Value="44" />
+        <Setter Property="MinimumHeightRequest" Value="44" />
+        <Setter Property="FontFamily" Value="MaterialIconsRegular" />
+        <Setter Property="FontSize" Value="21" />
+        <Setter Property="CornerRadius" Value="21" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="EnableRippleEffect" Value="True" />
+
+        <Setter
+            Property="TextColor"
+            Value="{AppThemeBinding
+                Light=White,
+                Dark={StaticResource NutriBrandDark}}" />
+
+        <Setter
+            Property="Background"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriBrandLight},
+                Dark={StaticResource NutriSurfaceDark}}" />
+
+        <Setter
+            Property="Stroke"
+            Value="{AppThemeBinding
+                Light=Transparent,
+                Dark={StaticResource NutriBrandDark}}" />
+    </Style>
+
+    <!-- =========================
+         Cards
+         ========================= -->
+
+    <Style
+        x:Key="NutriCardStyle"
+        TargetType="Border">
+
+        <Setter Property="Padding" Value="16" />
+        <Setter Property="StrokeThickness" Value="1" />
+
+        <Setter
+            Property="BackgroundColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriSurfaceLight},
+                Dark={StaticResource NutriSurfaceDark}}" />
+
+        <Setter
+            Property="Stroke"
+            Value="{AppThemeBinding
+                Light=Transparent,
+                Dark={StaticResource NutriBorderDark}}" />
+
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle
+                    CornerRadius="{StaticResource NutriRadiusMedium}" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style
+        x:Key="NutriElevatedCardStyle"
+        TargetType="Border"
+        BasedOn="{StaticResource NutriCardStyle}">
+
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow
+                    Offset="0,3"
+                    Radius="10"
+                    Opacity="0.35"
+                    Brush="{AppThemeBinding
+                        Light={StaticResource NutriShadowLight},
+                        Dark={StaticResource NutriShadowDark}}" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- =========================
+         Buttons
+         ========================= -->
+
+    <Style
+        x:Key="NutriPrimaryButtonStyle"
+        TargetType="buttons:SfButton">
+
+        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="MinimumHeightRequest" Value="44" />
+        <Setter Property="Padding" Value="18,0" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="Stroke" Value="Transparent" />
+        <Setter Property="CornerRadius" Value="24" />
+        <Setter Property="EnableRippleEffect" Value="True" />
+
+        <Setter
+            Property="Background"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriBrandLight},
+                Dark={StaticResource NutriBrandDark}}" />
+
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup Name="CommonStates">
+
+                    <VisualState Name="Normal" />
+
+                    <VisualState Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="Opacity" Value="0.84" />
+                            <Setter
+                                Property="Background"
+                                Value="{AppThemeBinding
+                                    Light={StaticResource NutriBrandPressedLight},
+                                    Dark={StaticResource NutriBrandPressedDark}}" />
+                        </VisualState.Setters>
+                    </VisualState>
+
+                    <VisualState Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="Opacity" Value="0.92" />
+                        </VisualState.Setters>
+                    </VisualState>
+
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <Style
+        x:Key="NutriSecondaryButtonStyle"
+        TargetType="buttons:SfButton">
+
+        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="MinimumHeightRequest" Value="44" />
+        <Setter Property="Padding" Value="18,0" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CornerRadius" Value="24" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="EnableRippleEffect" Value="True" />
+
+        <Setter
+            Property="Background"
+            Value="{AppThemeBinding
+                Light=Transparent,
+                Dark=Transparent}" />
+
+        <Setter
+            Property="TextColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriBrandLight},
+                Dark={StaticResource NutriBrandDark}}" />
+
+        <Setter
+            Property="Stroke"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriBrandLight},
+                Dark={StaticResource NutriBrandDark}}" />
+    </Style>
+
+    <Style
+        x:Key="NutriNavigationButtonStyle"
+        TargetType="buttons:SfButton">
+
+        <Setter Property="WidthRequest" Value="44" />
+        <Setter Property="HeightRequest" Value="40" />
+        <Setter Property="MinimumWidthRequest" Value="44" />
+        <Setter Property="MinimumHeightRequest" Value="44" />
+        <Setter Property="FontFamily" Value="MaterialIconsRegular" />
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Stroke" Value="Transparent" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="20" />
+        <Setter Property="EnableRippleEffect" Value="True" />
+    </Style>
+
+    <!-- =========================
+         Bottom navigation
+         ========================= -->
+
+    <Style
+        x:Key="NutriBottomBarStyle"
+        TargetType="Grid">
+
+        <Setter Property="HeightRequest" Value="84" />
+        <Setter Property="Padding" Value="10,8,10,5" />
+        <Setter Property="ColumnDefinitions" Value="*,*,*,*,*" />
+
+        <Setter
+            Property="BackgroundColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriSurfaceLight},
+                Dark={StaticResource NutriSurfaceDark}}" />
+    </Style>
+
+    <Style
+        x:Key="NutriActiveNavigationLabelStyle"
+        TargetType="Label">
+
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+
+        <Setter
+            Property="TextColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriBrandLight},
+                Dark={StaticResource NutriBrandDark}}" />
+    </Style>
+
+    <Style
+        x:Key="NutriInactiveNavigationLabelStyle"
+        TargetType="Label">
+
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+
+        <Setter
+            Property="TextColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriTextSecondaryLight},
+                Dark={StaticResource NutriTextSecondaryDark}}" />
+    </Style>
+
+    <!-- =========================
+         Search
+         ========================= -->
+
+    <Style
+        x:Key="NutriSearchEntryStyle"
+        TargetType="Entry">
+
+        <Setter Property="HeightRequest" Value="46" />
+        <Setter Property="MinimumHeightRequest" Value="44" />
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+
+        <Setter
+            Property="TextColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriTextPrimaryLight},
+                Dark={StaticResource NutriTextPrimaryDark}}" />
+
+        <Setter
+            Property="PlaceholderColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriTextMutedLight},
+                Dark={StaticResource NutriTextMutedDark}}" />
+    </Style>
+
+    <Style
+        x:Key="NutriSearchContainerStyle"
+        TargetType="Border">
+
+        <Setter Property="Padding" Value="0" />
+
+        <Setter
+            Property="BackgroundColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriInputSurfaceLight},
+                Dark={StaticResource NutriInputSurfaceDark}}" />
+
+        <Setter
+            Property="Stroke"
+            Value="{AppThemeBinding
+                Light=Transparent,
+                Dark={StaticResource NutriBorderDark}}" />
+
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle
+                    CornerRadius="{StaticResource NutriRadiusMedium}" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- =========================
+         Filter chips
+         ========================= -->
+
+    <Style
+        x:Key="NutriFilterChipStyle"
+        TargetType="Border">
+
+        <Setter
+            Property="BackgroundColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriChipSurfaceLight},
+                Dark={StaticResource NutriChipSurfaceDark}}" />
+
+        <Setter Property="Stroke" Value="Transparent" />
+
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle
+                    CornerRadius="{StaticResource NutriRadiusPill}" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- =========================
+         Busy indicator
+         ========================= -->
+
+    <Style
+        x:Key="NutriBusyIndicatorStyle"
+        TargetType="core:SfBusyIndicator">
+
+        <Setter
+            Property="IndicatorColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriBrandLight},
+                Dark={StaticResource NutriBrandDark}}" />
+    </Style>
+
+    <!-- =========================
+         Linear progress bar
+         ========================= -->
+
+    <Style
+        x:Key="NutriLinearProgressStyle"
+        TargetType="progressBar:SfLinearProgressBar">
+
+        <Setter Property="HeightRequest" Value="7" />
+        <Setter Property="Maximum" Value="1" />
+
+        <Setter
+            Property="ProgressFill"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriBrandLight},
+                Dark={StaticResource NutriBrandDark}}" />
+
+        <Setter
+            Property="BackgroundColor"
+            Value="{AppThemeBinding
+                Light={StaticResource NutriChipSurfaceLight},
+                Dark={StaticResource NutriChipSurfaceDark}}" />
+    </Style>
+
+</ResourceDictionary>

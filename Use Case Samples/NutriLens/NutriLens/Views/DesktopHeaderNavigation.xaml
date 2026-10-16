@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentView
+    x:Class="NutriLens.Views.DesktopHeaderNavigation"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    x:Name="Root"
+    IsVisible="{Binding IsDesktopVisible}">
+
+    <ContentView.Resources>
+
+        <Style
+    x:Key="DesktopNavigationButtonStyle"
+    TargetType="buttons:SfButton">
+
+            <Setter Property="HeightRequest" Value="42" />
+            <Setter Property="MinimumHeightRequest" Value="44" />
+            <Setter Property="MinimumWidthRequest" Value="44" />
+            <Setter Property="Padding" Value="14,0" />
+            <Setter Property="FontFamily" Value="OpenSansSemibold" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontAttributes" Value="None" />
+            <Setter Property="CornerRadius" Value="21" />
+            <Setter Property="Stroke" Value="Transparent" />
+            <Setter Property="StrokeThickness" Value="0" />
+            <Setter Property="EnableRippleEffect" Value="True" />
+
+            <!-- Unselected button -->
+            <Setter
+        Property="Background"
+        Value="{AppThemeBinding
+            Light=Transparent,
+            Dark=Transparent}" />
+
+            <Setter
+        Property="TextColor"
+        Value="{AppThemeBinding
+            Light={StaticResource NutriBrandLight},
+            Dark={StaticResource NutriBrandDark}}" />
+
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup Name="CommonStates">
+
+                        <VisualState Name="Normal" />
+
+                        <VisualState Name="PointerOver">
+                            <VisualState.Setters>
+                                <Setter
+                            Property="Background"
+                            Value="{AppThemeBinding
+                                Light={StaticResource NutriMutedSurfaceLight},
+                                Dark={StaticResource NutriMutedSurfaceDark}}" />
+
+                                <Setter
+                            Property="TextColor"
+                            Value="{AppThemeBinding
+                                Light={StaticResource NutriBrandLight},
+                                Dark={StaticResource NutriBrandDark}}" />
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <VisualState Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter Property="Opacity" Value="0.75" />
+                            </VisualState.Setters>
+                        </VisualState>
+
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+
+        <Style
+    x:Key="SelectedDesktopNavigationButtonStyle"
+    TargetType="buttons:SfButton"
+    BasedOn="{StaticResource DesktopNavigationButtonStyle}">
+
+            <Setter Property="FontAttributes" Value="Bold" />
+
+            <!-- Selected button background -->
+            <Setter
+        Property="Background"
+        Value="{AppThemeBinding
+            Light={StaticResource NutriBrandLight},
+            Dark={StaticResource NutriBrandDark}}" />
+
+            <!-- Selected button text -->
+            <Setter
+        Property="TextColor"
+        Value="{AppThemeBinding
+            Light=White,
+            Dark={StaticResource NutriPageBackgroundDark}}" />
+        </Style>
+
+    </ContentView.Resources>
+
+    <Border
+        Padding="4"
+        Background="Transparent"
+        Stroke="Transparent"
+        StrokeShape="RoundRectangle 24"
+        HorizontalOptions="Center"
+        VerticalOptions="Center">
+
+        <HorizontalStackLayout
+            Spacing="4"
+            HorizontalOptions="Center"
+            VerticalOptions="Center">
+
+            <buttons:SfButton
+                x:Name="DashboardButton"
+                Text="Dashboard"
+                Style="{StaticResource DesktopNavigationButtonStyle}"
+                Command="{Binding NavigateDashboardCommand}"
+                SemanticProperties.Description="Open dashboard" />
+
+            <buttons:SfButton
+                x:Name="HistoryButton"
+                Text="Scan History"
+                Style="{StaticResource DesktopNavigationButtonStyle}"
+                Command="{Binding NavigateHistoryCommand}"
+                SemanticProperties.Description="Open scan history" />
+
+            <buttons:SfButton
+                x:Name="TrendsButton"
+                Text="Health Trends"
+                Style="{StaticResource DesktopNavigationButtonStyle}"
+                Command="{Binding NavigateTrendsCommand}"
+                SemanticProperties.Description="Open health trends" />
+
+            <buttons:SfButton
+                x:Name="ProfileButton"
+                Text="Profile"
+                Style="{StaticResource DesktopNavigationButtonStyle}"
+                Command="{Binding NavigateProfileCommand}"
+                SemanticProperties.Description="Open profile" />
+        </HorizontalStackLayout>
+    </Border>
+</ContentView>

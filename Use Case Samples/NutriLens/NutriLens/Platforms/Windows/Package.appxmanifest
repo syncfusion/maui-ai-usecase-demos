@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap rescap">
+
+  <Identity Name="NutriLens" Publisher="CN=NutriLens" Version="1.0.0.0" />
+
+  <mp:PhoneIdentity PhoneProductId="5565F669-C802-41E4-A416-BFEDDB9C33E2" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+
+  <Properties>
+    <DisplayName>NutriLens</DisplayName>
+    <PublisherDisplayName>NutriLens</PublisherDisplayName>
+    <Logo>appicon.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
+      <uap:VisualElements
+        DisplayName="NutriLens"
+        Description="Food label ingredient analysis"
+        Square150x150Logo="appicon.png"
+        Square44x44Logo="appicon.png"
+        BackgroundColor="transparent">
+        <uap:DefaultTile Square71x71Logo="appicon.png" Wide310x150Logo="appicon.png" Square310x310Logo="appicon.png" />
+        <uap:SplashScreen Image="appicon.png" />
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+    <DeviceCapability Name="webcam" />
+  </Capabilities>
+
+</Package>

@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+    xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:models="clr-namespace:NutriLens.Models"
+    xmlns:vm="clr-namespace:NutriLens.ViewModels"
+    xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
+    x:Class="NutriLens.Views.TrendsPage"
+    x:DataType="vm:TrendsViewModel"
+    xmlns:desktop="clr-namespace:NutriLens.Views"
+    BackgroundColor="#F3F5FA"
+    NavigationPage.HasNavigationBar="False">
+
+    <Grid
+        RowDefinitions="{OnIdiom Phone='Auto,*,80',Default='Auto,*'}"
+        BackgroundColor="#F3F5FA">
+
+        <!-- Header -->
+        <Grid
+            Grid.Row="0"
+            Margin="20,18,20,0" 
+            ColumnDefinitions="Auto,*,Auto"
+            ColumnSpacing="12">
+
+            <HorizontalStackLayout
+                Spacing="8"
+                VerticalOptions="Center">
+
+                <Label
+                    Text="{Binding BiotechIcon}"
+                    Style="{StaticResource TrendIconStyle}"
+                    FontSize="24"
+                    TextColor="#047857"
+                    WidthRequest="24" />
+
+                <Label
+                    Text="NutriLens AI"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    TextColor="#1F2937"
+                    VerticalTextAlignment="Center" />
+            </HorizontalStackLayout>
+            <!-- Desktop navigation -->
+            <desktop:DesktopHeaderNavigation Grid.Column="1"  HorizontalOptions="End" 
+                                VerticalOptions="Center"
+                                CurrentPage="Trends" />
+            <buttons:SfButton
+                Grid.Column="2"
+                WidthRequest="36"
+                HeightRequest="36"
+                Text="{Binding PersonIcon}"
+                Style="{StaticResource TrendNavButtonStyle}"
+                FontSize="20"
+                TextColor="White" Clicked="OnProfileClicked"
+                Background="#047857"
+                CornerRadius="18" />
+        </Grid>
+
+        <!-- Main content -->
+        <ScrollView
+            Grid.Row="1"
+            VerticalScrollBarVisibility="Never">
+
+            <VerticalStackLayout
+                Padding="20,28,20,100"
+                Spacing="0">
+
+                <!-- Page title -->
+                <Label
+                    Text="Health Trends"
+                    FontSize="32"
+                    FontAttributes="Bold"
+                    TextColor="#0F172A" />
+
+                <!-- Timeframe selector -->
+                <Border
+    Margin="0,16,0,0"
+    Padding="4" WidthRequest="220"
+    HeightRequest="52"
+    HorizontalOptions="Fill"
+    BackgroundColor="#DCE9FF"
+    Stroke="Transparent"
+    StrokeShape="RoundRectangle 26">
+
+                    <Grid
+        ColumnDefinitions="*,*,*"
+        ColumnSpacing="4">
+
+                        <!-- 7 Days -->
+                        <Border
+            Grid.Column="0"
+            Padding="0"
+            BackgroundColor="{Binding Is7DSelected, Converter={StaticResource BoolToPeriodBackgroundConverter}}"
+            Stroke="Transparent"
+            StrokeShape="RoundRectangle 22">
+
+                            <Border.Shadow>
+                                <Shadow
+                    Brush="#40000000"
+                    Offset="0,2"
+                    Radius="5"
+                    Opacity="0.35" />
+                            </Border.Shadow>
+
+                            <buttons:SfButton
+                Text="7D"
+                MinimumHeightRequest="44"
+                FontSize="14"
+                FontAttributes="Bold"
+                Background="Transparent"
+                TextColor="{Binding Is7DSelected, Converter={StaticResource BoolToPeriodTextColorConverter}}"
+                Stroke="Transparent"
+                CornerRadius="22"
+                Padding="0"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                Command="{Binding SelectPeriodCommand}"
+                CommandParameter="7D"
+                SemanticProperties.Description="Select last 7 days" />
+                        </Border>
+
+                        <!-- 30 Days -->
+                        <Border
+            Grid.Column="1"
+            Padding="0"
+            BackgroundColor="{Binding Is30DSelected, Converter={StaticResource BoolToPeriodBackgroundConverter}}"
+            Stroke="Transparent"
+            StrokeShape="RoundRectangle 22">
+
+                            <Border.Shadow>
+                                <Shadow
+                    Brush="#40000000"
+                    Offset="0,2"
+                    Radius="5"
+                    Opacity="0.35" />
+                            </Border.Shadow>
+
+                            <buttons:SfButton
+                Text="30D"
+                MinimumHeightRequest="44"
+                FontSize="14" 
+                Background="Transparent"
+                TextColor="{Binding Is30DSelected, Converter={StaticResource BoolToPeriodTextColorConverter}}"
+                Stroke="Transparent"
+                CornerRadius="22"
+                Padding="0"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                Command="{Binding SelectPeriodCommand}"
+                CommandParameter="30D"
+                SemanticProperties.Description="Select last 30 days" />
+                        </Border>
+
+                        <!-- 90 Days -->
+                        <Border
+            Grid.Column="2"
+            Padding="0"
+            BackgroundColor="{Binding Is90DSelected, Converter={StaticResource BoolToPeriodBackgroundConverter}}"
+            Stroke="Transparent"
+            StrokeShape="RoundRectangle 22">
+
+                            <Border.Shadow>
+                                <Shadow
+                    Brush="#40000000"
+                    Offset="0,2"
+                    Radius="5"
+                    Opacity="0.35" />
+                            </Border.Shadow>
+
+                            <buttons:SfButton
+                Text="90D"
+                MinimumHeightRequest="44"
+                FontSize="14" 
+                Background="Transparent"
+                TextColor="{Binding Is90DSelected, Converter={StaticResource BoolToPeriodTextColorConverter}}"
+                Stroke="Transparent"
+                CornerRadius="22"
+                Padding="0"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                Command="{Binding SelectPeriodCommand}"
+                CommandParameter="90D"
+                SemanticProperties.Description="Select last 90 days" />
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!--
+                    Desktop-only two-column row:
+                      Phone  -> single column, stacked: Average score, Nutritional Trends label, Protein, Sugar
+                      Desktop-> left column: Average score (chart) spanning all rows,
+                               right column: Nutritional Trends label + Protein + Sugar
+                -->
+                <Grid
+                    ColumnDefinitions="{OnIdiom Phone='*', Default='*,*'}"
+                    RowDefinitions="{OnIdiom Phone='Auto,Auto,Auto,Auto', Default='Auto,Auto,Auto'}"
+                    ColumnSpacing="{OnIdiom Phone=0, Default=20}"
+                    RowSpacing="{OnIdiom Phone=0, Default=16}">
+
+                    <!-- Average score card (chart) -->
+                    <Border
+                        Grid.Row="0"
+                        Grid.RowSpan="{OnIdiom Phone=1, Default=3}"
+                        Grid.Column="0"
+                        Margin="0,24,0,0"
+                        Style="{StaticResource TrendCardStyle}"
+                        VerticalOptions="{OnIdiom Phone=Fill, Default=Start}">
+
+                        <VerticalStackLayout Spacing="16">
+
+                            <Label
+                                Text="Average Health Score"
+                                FontSize="15"
+                                TextColor="#64748B" />
+
+                            <Grid ColumnDefinitions="*,Auto">
+
+                                <HorizontalStackLayout
+                                    Spacing="4"
+                                    VerticalOptions="Center">
+
+                                    <Label
+                                        Text="{Binding AverageScoreText}"
+                                        FontSize="42"
+                                        FontAttributes="Bold"
+                                        TextColor="#047857" />
+
+                                    <Label
+                                        Text="/100"
+                                        FontSize="16"
+                                        TextColor="#64748B"
+                                        VerticalTextAlignment="Center" />
+                                </HorizontalStackLayout>
+
+                                <Border
+                                    Grid.Column="1"
+                                    Padding="10,6"
+                                    BackgroundColor="#DFF7EC"
+                                    Stroke="Transparent"
+                                    StrokeShape="RoundRectangle 12"
+                                    VerticalOptions="Center">
+
+                                    <HorizontalStackLayout Spacing="5">
+                                        <Label
+                                            Text="{Binding TrendingUpIcon}"
+                                            Style="{StaticResource TrendIconStyle}"
+                                            FontSize="17"
+                                            TextColor="#047857" />
+
+                                        <Label
+                                            Text="{Binding AverageScoreDelta}"
+                                            FontSize="13"
+                                            FontAttributes="Bold"
+                                            TextColor="#047857" />
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </Grid>
+
+                            <chart:SfCartesianChart
+                                HeightRequest="220"
+                                IsTransposed="False">
+
+                                <chart:SfCartesianChart.XAxes>
+                                    <chart:CategoryAxis Interval="2"
+                                        ShowMajorGridLines="False"
+                                        LabelStyle="{chart:ChartAxisLabelStyle TextColor=#64748B, FontSize=11}" />
+                                </chart:SfCartesianChart.XAxes>
+
+                                <chart:SfCartesianChart.YAxes>
+                                    <chart:NumericalAxis
+                                        Minimum="{Binding YMinimum}" IsVisible="False"
+                                        Maximum="{Binding YMaximum}"
+                                        Interval="10"
+                                        ShowMajorGridLines="False"
+                                        LabelStyle="{chart:ChartAxisLabelStyle TextColor=#94A3B8, FontSize=10}" />
+                                </chart:SfCartesianChart.YAxes>
+
+                                <chart:SfCartesianChart.Series>
+                                    <chart:LineSeries
+                                        ItemsSource="{Binding HealthScoreTrend}"
+                                        XBindingPath="Day"
+                                        YBindingPath="Score" ShowMarkers="True"
+                                        StrokeWidth="3" Fill="#047857"
+                                        EnableTooltip="True">
+                                        <chart:LineSeries.MarkerSettings>
+                                            <chart:ChartMarkerSettings
+                                                Width="8" Type="Circle"
+                                                Height="8"
+                                                Fill="White"
+                                                Stroke="#047857"
+                                                StrokeWidth="2" />
+                                        </chart:LineSeries.MarkerSettings>
+                                    </chart:LineSeries>
+                                </chart:SfCartesianChart.Series>
+                            </chart:SfCartesianChart>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Nutritional Trends label -->
+                    <Label
+                        Grid.Row="{OnIdiom Phone=1, Default=0}"
+                        Grid.Column="{OnIdiom Phone=0, Default=1}"
+                        Text="Nutritional Trends"
+                        FontSize="26"
+                        FontAttributes="Bold"
+                        TextColor="#0F172A"
+                        Margin="0,32,0,0" />
+
+                    <!-- Protein -->
+                    <Border
+                        Grid.Row="{OnIdiom Phone=2, Default=1}"
+                        Grid.Column="{OnIdiom Phone=0, Default=1}"
+                        Margin="0,12,0,0"
+                        Style="{StaticResource TrendCardStyle}">
+
+                        <VerticalStackLayout Spacing="10">
+
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label
+                                    Text="Protein Intake"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    TextColor="#0F172A" />
+
+                            </Grid>
+                            <progressBar:SfLinearProgressBar Progress="{Binding ProteinProgress}"
+                                                            HeightRequest="6" Maximum="1"
+                                                            ProgressFill="#047857"
+                                                            BackgroundColor="#DCE9FF"/>
+
+                            <Label
+                                Text="{Binding ProteinNote}"
+                                FontSize="13"
+                                TextColor="#334155" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Sugar -->
+                    <Border
+                        Grid.Row="{OnIdiom Phone=3, Default=2}"
+                        Grid.Column="{OnIdiom Phone=0, Default=1}"
+                        Margin="0,14,0,0"
+                        Style="{StaticResource TrendCardStyle}">
+
+                        <VerticalStackLayout Spacing="10">
+
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label
+                                    Text="Sugar Intake"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    TextColor="#0F172A" />
+
+                            </Grid>
+                            <progressBar:SfLinearProgressBar Progress="{Binding SugarProgress}"
+                                                            HeightRequest="6" Maximum="1"
+                                                            ProgressFill="#F4A261"
+                                                            BackgroundColor="#DCE9FF"/>
+
+                            <Label
+                                Text="{Binding SugarNote}"
+                                FontSize="13"
+                                TextColor="#334155" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!-- Frequent additives -->
+                <Label
+                    Text="Frequent Additives"
+                    FontSize="24"
+                    FontAttributes="Bold"
+                    TextColor="#0F172A"
+                    Margin="0,28,0,0" />
+
+                <Border
+                    Margin="0,12,0,0"
+                    Style="{StaticResource TrendCardStyle}">
+
+                    <VerticalStackLayout
+                        BindableLayout.ItemsSource="{Binding FrequentAdditives}"
+                        Spacing="16">
+
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:AdditiveTrendItem">
+
+                                <Grid
+                                    ColumnDefinitions="Auto,*,Auto"
+                                    ColumnSpacing="10">
+
+                                    <Label
+                                        Text="{Binding Icon}"
+                                        Style="{StaticResource TrendIconStyle}"
+                                        FontSize="23"
+                                        TextColor="{Binding Color}" />
+
+                                    <Label
+                                        Grid.Column="1"
+                                        Text="{Binding Name}"
+                                        FontSize="17"
+                                        TextColor="#111827"
+                                        LineBreakMode="WordWrap"
+                                        VerticalTextAlignment="Center" />
+
+                                    <Label
+                                        Grid.Column="2"
+                                        Text="{Binding Percentage}"
+                                        FontSize="13"
+                                        TextColor="{Binding Color}"
+                                        VerticalTextAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Fixed navigation -->
+        <Grid
+            Grid.Row="2" IsVisible="{OnIdiom Phone=true, Default=false}"
+            HeightRequest="84"
+            ZIndex="20"
+            ColumnDefinitions="*,*,*,*,*"
+            BackgroundColor="White">
+
+            <Grid.Shadow>
+                <Shadow
+                    Brush="#40000000"
+                    Offset="0,-4"
+                    Radius="10"
+                    Opacity="0.35" />
+            </Grid.Shadow>
+
+            <!-- Home -->
+            <VerticalStackLayout
+                Grid.Column="0"
+                Spacing="2"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+
+                <buttons:SfButton
+                    Text="{Binding HomeIcon}"
+                    Style="{StaticResource TrendNavButtonStyle}"
+                    TextColor="#6B7280"
+                    Clicked="OnHomeClicked" />
+
+                <Label
+                    Text="Home"
+                    FontSize="10"
+                    TextColor="#6B7280"
+                    HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+            <!-- History -->
+            <VerticalStackLayout
+                Grid.Column="1"
+                Spacing="2"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+
+                <buttons:SfButton
+                    Text="{Binding HistoryIcon}"
+                    Style="{StaticResource TrendNavButtonStyle}"
+                    TextColor="#6B7280"
+                    Clicked="OnHistoryClicked" />
+
+                <Label
+                    Text="History"
+                    FontSize="10"
+                    TextColor="#6B7280"
+                    HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+            <!-- Empty center slot -->
+            <BoxView
+                Grid.Column="2"
+                Color="White" />
+
+            <!-- Trends -->
+            <VerticalStackLayout
+                Grid.Column="3"
+                Spacing="2"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+
+                <buttons:SfButton
+                    Text="{Binding TrendsIcon}"
+                    Style="{StaticResource TrendNavButtonStyle}"
+                    TextColor="#047857" />
+
+                <Label
+                    Text="Trends"
+                    FontSize="10"
+                    FontAttributes="Bold"
+                    TextColor="#047857"
+                    HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+            <!-- Profile -->
+            <VerticalStackLayout
+                Grid.Column="4"
+                Spacing="2"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+
+                <buttons:SfButton
+                    Text="{Binding ProfileIcon}"
+                    Style="{StaticResource TrendNavButtonStyle}"
+                    TextColor="#6B7280"
+                    Clicked="OnProfileClicked" />
+
+                <Label
+                    Text="Profile"
+                    FontSize="10"
+                    TextColor="#6B7280"
+                    HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+            <!-- Floating Scan button -->
+            <Border
+                Grid.Column="2"
+                WidthRequest="72"
+                HeightRequest="72"
+                Margin="0,-36,0,0"
+                BackgroundColor="#047857"
+                Stroke="Transparent"
+                StrokeShape="RoundRectangle 36"
+                HorizontalOptions="Center"
+                VerticalOptions="Start"
+                ZIndex="30">
+
+                <Border.Shadow>
+                    <Shadow
+                        Brush="#66000000"
+                        Offset="0,6"
+                        Radius="12"
+                        Opacity="0.7" />
+                </Border.Shadow>
+
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Tapped="OnScanClicked" />
+                </Border.GestureRecognizers>
+
+                <Grid
+                    RowDefinitions="*,Auto"
+                    Padding="0,9,0,8">
+
+                    <Label
+                        Text="{Binding ScannerIcon}"
+                        Style="{StaticResource TrendIconStyle}"
+                        FontSize="28"
+                        TextColor="White" />
+
+                    <Label
+                        Grid.Row="1"
+                        Text="SCAN"
+                        FontSize="10"
+                        FontAttributes="Bold"
+                        TextColor="White"
+                        HorizontalTextAlignment="Center" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>
