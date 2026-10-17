@@ -1,0 +1,53 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Sample works\\Grouping-the-items-by-intent-in-SfListView-using-AI\\Grouping-the-items-by-intent-in-SfListView-using-AI\\ListView_IntentGrouping\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\dotnet\\sdk\\10.0.401\\Roslyn\\Microsoft.Managed.Core.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{92CD20A2-9D8B-1B13-55CE-4C2D7CA379A1}|ListView_IntentGrouping\\ListView_IntentGrouping.csproj|c:\\sample works\\grouping-the-items-by-intent-in-sflistview-using-ai\\grouping-the-items-by-intent-in-sflistview-using-ai\\listview_intentgrouping\\listview_intentgrouping\\mainpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{92CD20A2-9D8B-1B13-55CE-4C2D7CA379A1}|ListView_IntentGrouping\\ListView_IntentGrouping.csproj|solutionrelative:listview_intentgrouping\\mainpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Microsoft.Managed.Core.targets",
+              "DocumentMoniker": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Roslyn\\Microsoft.Managed.Core.targets",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\Program Files\\dotnet\\sdk\\10.0.401\\Roslyn\\Microsoft.Managed.Core.targets",
+              "ToolTip": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\Roslyn\\Microsoft.Managed.Core.targets",
+              "RelativeToolTip": "..\\..\\..\\..\\Program Files\\dotnet\\sdk\\10.0.401\\Roslyn\\Microsoft.Managed.Core.targets",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAMUAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
+              "WhenOpened": "2026-10-13T10:19:52.087Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainPage.xaml",
+              "DocumentMoniker": "C:\\Sample works\\Grouping-the-items-by-intent-in-SfListView-using-AI\\Grouping-the-items-by-intent-in-SfListView-using-AI\\ListView_IntentGrouping\\ListView_IntentGrouping\\MainPage.xaml",
+              "RelativeDocumentMoniker": "ListView_IntentGrouping\\MainPage.xaml",
+              "ToolTip": "C:\\Sample works\\Grouping-the-items-by-intent-in-SfListView-using-AI\\Grouping-the-items-by-intent-in-SfListView-using-AI\\ListView_IntentGrouping\\ListView_IntentGrouping\\MainPage.xaml",
+              "RelativeToolTip": "ListView_IntentGrouping\\MainPage.xaml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-10-13T10:16:40.465Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
