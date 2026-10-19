@@ -8,7 +8,7 @@ public partial class NotesViewModel
 {
     private void LoadSampleData()
     {
-        DateTimeOffset today = new DateTimeOffset(DateTime.Today, TimeSpan.Zero);
+        DateTimeOffset today = new DateTimeOffset(DateTime.Today);
 
         var work = CreateFolder("Work", null);
         var meetings = CreateFolder("Meetings", work);

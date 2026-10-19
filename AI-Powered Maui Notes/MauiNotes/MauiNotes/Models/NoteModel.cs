@@ -109,8 +109,8 @@ public class NoteModel : INotifyPropertyChanged
         get
         {
             DateTimeOffset effective = EffectiveDate;
-            DateTimeOffset effectiveDay = new DateTimeOffset(effective.Date, TimeSpan.Zero);
-            DateTimeOffset today = new DateTimeOffset(DateTime.Today, TimeSpan.Zero);
+            DateTime effectiveDay = effective.Date;
+            DateTime today = DateTime.Today;
 
             if (effectiveDay == today)
                 return effective.ToString("h:mm tt");
