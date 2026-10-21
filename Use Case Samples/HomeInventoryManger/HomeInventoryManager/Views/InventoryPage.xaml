@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			 x:Class="HomeInventoryManager.Views.InventoryPage"
+			 xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+			 xmlns:chips="clr-namespace:Syncfusion.Maui.Toolkit.Chips;assembly=Syncfusion.Maui.Toolkit"
+			 xmlns:badge="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+			 xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+			 xmlns:models="clr-namespace:HomeInventoryManager.Model"
+			 xmlns:behaviors="clr-namespace:HomeInventoryManager.Behaviors"
+			 xmlns:sfavatar="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+			 xmlns:controls="clr-namespace:HomeInventoryManager.Views"
+			 BackgroundColor="White"
+			 xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+			 Shell.NavBarIsVisible="False">
+
+	<Grid RowDefinitions="{OnIdiom Default='*', Phone='*,72'}"
+		  ColumnDefinitions="{OnIdiom Default='200,*', Phone='*'}">
+		<!-- Shared sidebar with active-tab-aware nav rows. -->
+		<controls:AppSideBar Grid.Row="{OnIdiom Default=0, Phone=1}"
+							 ActiveTab="Inventory" />
+
+		<ScrollView Grid.Row="{OnIdiom Default=0, Phone=0}"
+					Grid.Column="{OnIdiom Default='1', Phone='0'}">
+			<VerticalStackLayout Padding="{OnIdiom Default=20, Phone=8}"
+								 MaximumWidthRequest="1200"
+								 WidthRequest="{OnIdiom Default=-1, Phone=-1}"
+								 Spacing="16">
+
+				<!-- Header -->
+				<Grid ColumnDefinitions="56,*,Auto"
+					  ColumnSpacing="12"
+					  Padding="0,4,0,0">
+					<Border WidthRequest="56"
+							HeightRequest="56"
+							StrokeShape="RoundRectangle 28"
+							Stroke="#E2E8F0"
+							StrokeThickness="2">
+						<sfavatar:SfAvatarView ContentType="Custom"
+											   ImageSource="profile.png"
+											   Stroke="#E2E8F0">
+						</sfavatar:SfAvatarView>
+					</Border>
+					<VerticalStackLayout Grid.Column="1"
+										 VerticalOptions="Center"
+										 Spacing="2">
+						<Label Text="My Inventory"
+							   Style="{StaticResource SectionTitleStyle}"
+							   FontSize="22" />
+						<Label Text="{Binding TotalCount, StringFormat='{0} assets tracked'}"
+							   Style="{StaticResource SubtleLabelStyle}" />
+					</VerticalStackLayout>
+					<buttons:SfButton Grid.Column="2"
+									  Text="＋ Add"
+									  Style="{StaticResource FormsButtonStyle}"
+									  Clicked="RequestScan_Clicked" />
+				</Grid>
+
+				<!-- Search -->
+				<!--<Border BackgroundColor="White"
+						Stroke="#E5E7EB"
+						StrokeThickness="1"
+						StrokeShape="RoundRectangle 12">
+
+					<SearchBar Placeholder="Search by Name, Brand, Category, Serial Number..."
+							   Text="{Binding SearchText}" />
+
+				</Border>-->
+
+				<inputLayout:SfTextInputLayout Hint="Search by Name, Brand or Category"
+											   OutlineCornerRadius="12"
+											   InputViewPadding="25,5"
+											   ReserveSpaceForAssistiveLabels="False"
+											   FocusedStrokeThickness="0.6"
+											   UnfocusedStrokeThickness="0.6"
+											   Stroke="{StaticResource CardBorder}"
+											   HeightRequest="{OnIdiom Phone='38', Default='52'}"
+											   ContainerType="Outlined">
+					<inputLayout:SfTextInputLayout.HintLabelStyle>
+						<inputLayout:LabelStyle FontSize="14"
+												FontFamily="Roboto-Regular" />
+					</inputLayout:SfTextInputLayout.HintLabelStyle>
+					<Entry Text="{Binding SearchText}"
+						   Margin="16,0,0,4"
+						   HeightRequest="38" />
+				</inputLayout:SfTextInputLayout>
+
+				<!-- Category filter chips -->
+				<chips:SfChipGroup x:Name="categoryChipGroup"
+								   ChipClicked="CategoryChipGroup_ChipClicked"
+								   ItemsSource="{Binding Categories}"
+								   ChipType="Choice"
+								   ChoiceMode="Single"
+								   ChipCornerRadius="16"
+								   VerticalOptions="Center"
+								   ChipPadding="{OnIdiom Default='4,6', Phone='2,4'}"
+								   SelectedChipBackground="#7633DA"
+								   ChipTextColor="{AppThemeBinding Light=#313032, Dark=#FFFFFF}"
+								   SelectedChipTextColor="{AppThemeBinding Light=#FFFFFF, Dark=#FFFFFF}"
+								   ChipStrokeThickness="1"
+								   ChipTextSize="13"
+								   SelectedItem="{Binding SelectedCategories, Mode=TwoWay}">
+
+					<chips:SfChipGroup.ChipLayout>
+						<FlexLayout JustifyContent="Start"
+									Wrap="Wrap"
+									Direction="Row" />
+					</chips:SfChipGroup.ChipLayout>
+				</chips:SfChipGroup>
+
+				<!-- Loading -->
+				<ActivityIndicator IsRunning="{Binding IsBusy}"
+								   IsVisible="{Binding IsBusy}"
+								   Color="{StaticResource Primary}"
+								   HeightRequest="32" />
+
+				<!-- Empty state -->
+				<Border Style="{StaticResource CardElevatedStyle}"
+						IsVisible="{Binding HasItems, Converter={StaticResource InverseBoolConverter}}">
+					<VerticalStackLayout Spacing="8"
+										 Padding="20"
+										 HorizontalOptions="Center">
+						<Label Text="📭"
+							   FontSize="48"
+							   HorizontalOptions="Center" />
+						<Label Text="No items found"
+							   FontFamily="OpenSansSemibold"
+							   FontAttributes="Bold"
+							   FontSize="16"
+							   HorizontalOptions="Center"
+							   TextColor="{StaticResource TextPrimary}" />
+						<Label Text="Try changing the search or category filter."
+							   Style="{StaticResource SubtleLabelStyle}"
+							   HorizontalOptions="Center" />
+						<buttons:SfButton Text="Add an item"
+										  Style="{StaticResource PrimaryButtonStyle}"
+										  Command="{Binding RequestScanCommand}"
+										  Margin="0,8,0,0" />
+					</VerticalStackLayout>
+				</Border>
+
+				<!-- Inventory list -->
+				<listView:SfListView ItemsSource="{Binding FilteredItems}"
+									 SelectionMode="None"
+									 IsScrollingEnabled="False"
+									 ItemSpacing="{OnIdiom Default=12, Phone=4}"
+									 AutoFitMode="DynamicHeight">
+					<listView:SfListView.ItemsLayout>
+						<listView:GridLayout SpanCount="{OnIdiom Default=3, Phone=2}" />
+					</listView:SfListView.ItemsLayout>
+					<listView:SfListView.ItemTemplate>
+						<DataTemplate>
+							<Border StrokeShape="RoundRectangle 12"
+									Style="{StaticResource CardElevatedStyle}"
+									Padding="0"
+									behaviors:AnimateOnTap.IsEnabled="True">
+								<VerticalStackLayout>
+									<Grid HeightRequest="{OnIdiom Default=280, Phone=180}">
+										<Border StrokeShape="RoundRectangle 12"
+												Stroke="#E5E7EB"
+												StrokeThickness="0.6"
+												BackgroundColor="#F8FAFC">
+
+											<Image Source="{Binding Image}"
+												   Aspect="AspectFill" />
+
+										</Border>
+										<Border BackgroundColor="White"
+												Stroke="{Binding StatusColor}"
+												StrokeShape="RoundRectangle 14"
+												StrokeThickness="0.6"
+												Padding="10,4"
+												HorizontalOptions="Start"
+												VerticalOptions="Start"
+												Margin="12">
+											<Label Text="{Binding WarrantyStatus}"
+												   TextColor="{Binding StatusColor}"
+												   FontFamily="OpenSansSemibold"
+												   FontAttributes="Bold"
+												   FontSize="11"
+												   VerticalOptions="Center" />
+										</Border>
+									</Grid>
+									<VerticalStackLayout Padding="14"
+														 Spacing="6">
+										<Label Text="{Binding Brand}"
+											   FontSize="10"
+											   FontAttributes="Bold"
+											   TextColor="{StaticResource TextTertiary}" />
+										<Label Text="{Binding Name}"
+											   FontFamily="OpenSansSemibold"
+											   FontAttributes="Bold"
+											   FontSize="14"
+											   TextColor="{StaticResource TextPrimary}"
+											   MaxLines="2"
+											   LineBreakMode="TailTruncation" />
+										<Grid ColumnDefinitions="*,Auto"
+											  Margin="0,2,0,0">
+											<Label Text="{Binding PurchaseDate, StringFormat='Purchased {0:yyyy}'}"
+												   Style="{StaticResource SubtleLabelStyle}" />
+											<Label Grid.Column="1"
+												   Text="{Binding PurchasePrice, StringFormat='${0:N0}'}"
+												   FontFamily="OpenSansSemibold"
+												   FontAttributes="Bold"
+												   TextColor="{StaticResource Primary}" />
+										</Grid>
+									</VerticalStackLayout>
+								</VerticalStackLayout>
+							</Border>
+						</DataTemplate>
+					</listView:SfListView.ItemTemplate>
+				</listView:SfListView>
+
+			</VerticalStackLayout>
+		</ScrollView>
+
+	</Grid>
+
+</ContentPage>
