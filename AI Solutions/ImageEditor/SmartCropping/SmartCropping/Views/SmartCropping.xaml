@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:sf="clr-namespace:Syncfusion.Maui.ImageEditor;assembly=Syncfusion.Maui.ImageEditor"
              xmlns:helpers="clr-namespace:SmartCropping.Helpers"
-             xmlns:converters="clr-namespace:SmartCropping.Converters"
              xmlns:viewModel="clr-namespace:SmartCropping.ViewModel"
              x:Class="SmartCropping.SmartCropping"
              x:DataType="viewModel:SmartCroppingViewModel"
@@ -12,8 +11,6 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <converters:InverseBoolConverter x:Key="InverseBool" />
-
             <Style x:Key="ActionButtonStyle" TargetType="Button">
                 <Setter Property="BackgroundColor" Value="#FFFFFF" />
                 <Setter Property="TextColor" Value="#1F2937" />
