@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sf="clr-namespace:Syncfusion.Maui.ImageEditor;assembly=Syncfusion.Maui.ImageEditor"
+             xmlns:helpers="clr-namespace:SmartCropping.Helpers"
+             xmlns:viewModel="clr-namespace:SmartCropping.ViewModel"
+             x:Class="SmartCropping.SmartCropping"
+             x:DataType="viewModel:SmartCroppingViewModel"
+             Title="Smart Cropping"
+             BackgroundColor="#FFFFFF">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="ActionButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#FFFFFF" />
+                <Setter Property="TextColor" Value="#1F2937" />
+                <Setter Property="BorderColor" Value="#E5E7EB" />
+                <Setter Property="BorderWidth" Value="1" />
+                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="Padding" Value="14,8" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="HeightRequest" Value="40" />
+                <Setter Property="MinimumWidthRequest" Value="44" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="TextColor" Value="#9CA3AF" />
+                                    <Setter Property="BorderColor" Value="#F3F4F6" />
+                                    <Setter Property="BackgroundColor" Value="#FAFAFA" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+
+            <Style x:Key="PrimaryActionButtonStyle" TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+                <Setter Property="BackgroundColor" Value="#2563EB" />
+                <Setter Property="TextColor" Value="#FFFFFF" />
+                <Setter Property="BorderColor" Value="#2563EB" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="#E5E7EB" />
+                                    <Setter Property="TextColor" Value="#9CA3AF" />
+                                    <Setter Property="BorderColor" Value="#E5E7EB" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ErrorButtonStyle" TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+                <Setter Property="BackgroundColor" Value="#FFFFFF" />
+                <Setter Property="TextColor" Value="#B91C1C" />
+                <Setter Property="BorderColor" Value="#FCA5A5" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid Padding="24" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- ====== HEADER ====== -->
+        <VerticalStackLayout Grid.Row="0" Spacing="6">
+            <Label Text="Smart Cropping"
+                   FontSize="22"
+                   FontAttributes="Bold"
+                   TextColor="#111827" />
+            <Label Text="Let AI suggest a crop around the important content in an image."
+                   FontSize="13"
+                   TextColor="#6B7280" />
+        </VerticalStackLayout>
+
+        <!-- ====== ACTION BUTTONS ====== -->
+        <ScrollView Grid.Row="1" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+            <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                <Button Text="Open Image"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Command="{Binding OpenImageCommand}" />
+                <Button Text="Smart Crop"
+                        Style="{StaticResource PrimaryActionButtonStyle}"
+                        Command="{Binding SmartCropCommand}" />
+                <Button Text="Apply Crop"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Command="{Binding ApplyCropCommand}" />
+                <Button Text="Adjust Manually"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Command="{Binding AdjustManuallyCommand}" />
+                <Button Text="Reset"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Command="{Binding ResetCommand}" />
+                <Button Text="Save"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Command="{Binding SaveCommand}" />
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <!-- ====== STATUS MESSAGE ====== -->
+        <Grid Grid.Row="2">
+            <!-- Loading -->
+            <Border IsVisible="{Binding IsBusy}"
+                    BackgroundColor="#EFF6FF"
+                    Stroke="#BFDBFE"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="14,10">
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                    <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                       IsVisible="{Binding IsBusy}"
+                                       Color="#2563EB"
+                                       WidthRequest="18"
+                                       HeightRequest="18"
+                                       VerticalOptions="Center" />
+                    <Label Text="Finding the best crop..."
+                           TextColor="#1D4ED8"
+                           FontSize="13"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
+
+            <!-- Success / neutral -->
+            <Border IsVisible="{Binding IsSuggestionAvailable}"
+                    BackgroundColor="#EFF6FF"
+                    Stroke="#BFDBFE"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="14,10">
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                    <Label Text="&#9432;"
+                           TextColor="#2563EB"
+                           FontSize="14"
+                           VerticalOptions="Center" />
+                    <Label Text="Suggested crop is ready. Apply it or adjust manually."
+                           TextColor="#1D4ED8"
+                           FontSize="13"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
+
+            <!-- Crop applied -->
+            <Border IsVisible="{Binding IsCropApplied}"
+                    BackgroundColor="#ECFDF5"
+                    Stroke="#A7F3D0"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="14,10">
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                    <Label Text="&#10003;"
+                           TextColor="#047857"
+                           FontSize="14"
+                           VerticalOptions="Center" />
+                    <Label Text="Crop applied. Save the result or reset to start over."
+                           TextColor="#047857"
+                           FontSize="13"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
+
+            <!-- Error -->
+            <Border IsVisible="{Binding IsError}"
+                    BackgroundColor="#FEF2F2"
+                    Stroke="#FECACA"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="14,10">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <HorizontalStackLayout Grid.Column="0" Spacing="10" VerticalOptions="Center">
+                        <Label Text="&#9888;"
+                               TextColor="#B91C1C"
+                               FontSize="14"
+                               VerticalOptions="Center" />
+                        <Label Text="Unable to suggest a crop. Try again."
+                               TextColor="#B91C1C"
+                               FontSize="13"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <Button Grid.Column="1"
+                            Text="Retry"
+                            Style="{StaticResource ErrorButtonStyle}"
+                            Command="{Binding RetryCommand}"
+                            HeightRequest="32"
+                            Padding="12,4"
+                            FontSize="13"
+                            VerticalOptions="Center" />
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- ====== EDITOR + OVERLAY ====== -->
+        <Border Grid.Row="3"
+                BackgroundColor="#F3F4F6"
+                Stroke="#E5E7EB"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 12"
+                Padding="0">
+            <Grid>
+                <sf:SfImageEditor x:Name="ImageEditor"
+                                  BackgroundColor="#F3F4F6"
+                                  ShowToolbar="False"
+                                  AutoGenerateToolbarItems="False" />
+
+                <helpers:CropOverlayView x:Name="CropOverlay"
+                                         IsOverlayVisible="{Binding IsOverlayVisible}"
+                                         OverlayX="{Binding OverlayX, Mode=OneWay}"
+                                         OverlayY="{Binding OverlayY, Mode=OneWay}"
+                                         OverlayWidth="{Binding OverlayWidth, Mode=OneWay}"
+                                         OverlayHeight="{Binding OverlayHeight, Mode=OneWay}" />
+            </Grid>
+        </Border>
+    </Grid>
+</ContentPage>
