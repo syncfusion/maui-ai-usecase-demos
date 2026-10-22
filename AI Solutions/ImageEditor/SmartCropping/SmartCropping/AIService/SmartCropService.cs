@@ -1,4 +1,4 @@
-﻿using System.ClientModel;
+using System.ClientModel;
 using System.Diagnostics;
 using System.Text.Json;
 using Azure;
@@ -69,7 +69,7 @@ Return only valid JSON matching the schema.
             var client = CreateClient();
             ChatClient chatClient = client.GetChatClient(DeploymentName);
 
-            string imageDataUri = BuildDataUri(imageBytes);
+            BinaryData imageBinary = BinaryData.FromBytes(imageBytes);
 
             List<ChatMessage> messages =
             [
@@ -77,16 +77,14 @@ Return only valid JSON matching the schema.
 
                 new UserChatMessage(
                 [
-                    ChatMessageContentPart.CreateTextMessagePart(
+                    ChatMessageContentPart.CreateTextPart(
                         "Analyze the supplied image and identify its most important visual content. " +
                         "Suggest one rectangular crop region that keeps the important content visible, " +
                         "removes unnecessary surrounding space, preserves a balanced composition, " +
                         "uses the original image dimensions, and remains within image boundaries. " +
                         "Return only valid JSON matching the schema."),
 
-                    ChatMessageContentPart.CreateImagePart(
-                        ChatImageContentFormat.Png,
-                        imageDataUri)
+                    ChatMessageContentPart.CreateImagePart(imageBinary, "image/png", ChatImageDetailLevel.High)
                 ])
             ];
 
@@ -153,11 +151,6 @@ Return only valid JSON matching the schema.
 
             throw new InvalidOperationException("Azure AI returned an invalid crop response.", ex);
         }
-    }
-
-    private static string BuildDataUri(byte[] imageBytes)
-    {
-        return $"data:image/png;base64,{Convert.ToBase64String(imageBytes)}";
     }
 
     private static string CleanJson(string content)

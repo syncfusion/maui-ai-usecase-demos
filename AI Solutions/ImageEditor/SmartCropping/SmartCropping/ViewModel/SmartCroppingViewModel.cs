@@ -588,9 +588,11 @@ public partial class SmartCroppingViewModel : ObservableObject
 
         originalImageSource = source;
         originalImageBytes = bytes;
-        hasImage = true;
-
+        // hasImage is set to true AFTER LoadImageAsync completes so that
+        // no other command can act on a half-loaded image.
         await editorController!.LoadImageAsync(source);
+
+        hasImage = true;
 
         RefreshOverlayGeometry();
         StatusMessage = string.Empty;
