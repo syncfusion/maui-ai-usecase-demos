@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
+             xmlns:dashboard="clr-namespace:WardrobeAI.Views.Dashboard"
+             xmlns:closet="clr-namespace:WardrobeAI.Views.Closet"
+             xmlns:planner="clr-namespace:WardrobeAI.Views.OutfitPlanner"
+             xmlns:shopping="clr-namespace:WardrobeAI.Views.Shopping"
+             xmlns:profile="clr-namespace:WardrobeAI.Views.Profile"
+             xmlns:vm="clr-namespace:WardrobeAI.ViewModels"
+             x:Class="WardrobeAI.Views.Main.MainTabHostPage"
+             x:DataType="vm:MainTabHostViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Background}, Dark={StaticResource BackgroundDark}}"
+             Shell.TabBarIsVisible="False"
+             Shell.NavBarIsVisible="False"
+             Title="WardrobeAI">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <FontImageSource
+                x:Key="Plan"
+                Glyph="&#xe71d;"
+                FontFamily="MaterialAssets"
+                Color="Black"
+                Size="20" />
+            <FontImageSource
+                x:Key="Profile"
+                Glyph="&#xe71b;"
+                FontFamily="MaterialAssets"
+                Color="Black"
+                Size="20" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <!--
+        Host page for the post-onboarding main experience (SDS §6).
+        Replaces the original Shell <TabBar> with a Syncfusion <c>SfTabView</c>
+        so the bottom navigation matches the design language used elsewhere
+        in the app (chips, gauges, etc.) instead of the platform-native
+        Shell tab strip. The five content pages are the same ones the Shell
+        <TabBar> previously hosted; per-tab "refresh on selection" is
+        handled in the code-behind by calling <c>RefreshSelectedAsync</c>
+        on the host VM.
+    -->
+    <tabView:SfTabView x:Name="MainTabView"
+                       TabBarPlacement="Bottom"
+                       TabWidthMode="Default"
+                       IndicatorPlacement="Bottom"
+                       IndicatorWidthMode="Fit"
+                       IndicatorBackground="{StaticResource Primary}"
+                       TabBarBackground="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}"
+                       TabBarSize="80"
+                       SelectionChanged="MainTabView_SelectionChanged">
+
+        <tabView:SfTabView.Items>
+            <!--
+                Per-tab Content is filled in by MainTabHostPage.BuildTabs()
+                in the code-behind. SfTabItem.Content is typed View, and
+                ContentPage is a Page (not a View), so the child pages
+                cannot be assigned directly in XAML (XLS0504). The
+                code-behind wraps each child page's content tree in a
+                ContentView whose BindingContext is set to the child VM —
+                that gives each tab the same visual tree as the original
+                <ContentPage> root, with the same bindings and refresh
+                wiring, but satisfies the SfTabItem.Content contract.
+
+                Do NOT wrap the child in <NavigationPage><x:Arguments>...
+                </x:Arguments></NavigationPage>. That combination is invalid:
+                <x:Arguments> is parsed only when the element has *no other*
+                property setters, and mixing a property attribute like
+                BarColor with <x:Arguments> confuses the runtime inflator.
+                On Android that surfaces as MissingMethodException →
+                XamlParseException → JavaProxyThrowable and the process
+                dies on the first inflation of the host page.
+
+                Per-tab push navigation still works because AppShell has
+                already registered the per-tab routes (//main/dashboard,
+                //main/closet, etc.) via Routing.RegisterRoute; calls from
+                inside a tab use Shell.Current.GoToAsync(...) and the
+                Shell.Navigated handler in AppShell.xaml.cs re-routes them
+                back to the SfTabView via MainTabHostViewModel.SelectedIndex.
+            -->
+            <tabView:SfTabItem x:Name="DashboardTab"
+                               Header="Dashboard"
+                               ImageSource="dashboard.png"
+                               TextColor="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray200}}"
+                               FontFamily="OpenSansSemibold"
+                               FontSize="12" />
+
+            <tabView:SfTabItem x:Name="ClosetTab"
+                               Header="Closet"
+                               ImageSource="hanger.png"
+                               TextColor="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray200}}"
+                               FontFamily="OpenSansSemibold"
+                               FontSize="12" />
+
+            <tabView:SfTabItem x:Name="PlannerTab"
+                               Header="Plan"
+                               ImageSource="{StaticResource Plan}"
+                               TextColor="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray200}}"
+                               FontFamily="OpenSansSemibold"
+                               FontSize="12" />
+
+            <tabView:SfTabItem x:Name="ShopTab"
+                               Header="Shop"
+                               ImageSource="cart.png"
+                               TextColor="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray200}}"
+                               FontFamily="OpenSansSemibold"
+                               FontSize="12" />
+
+            <tabView:SfTabItem x:Name="ProfileTab"
+                               Header="Profile"
+                               ImageSource="{StaticResource Profile}"
+                               TextColor="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray200}}"
+                               FontFamily="OpenSansSemibold"
+                               FontSize="12" />
+        </tabView:SfTabView.Items>
+
+    </tabView:SfTabView>
+</ContentPage>

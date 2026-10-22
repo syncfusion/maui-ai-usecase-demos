@@ -1,0 +1,514 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    Desktop host page: persistent left side rail + 2 split-view panes
+    (Dashboard + Shopping, Closet + Planner) toggled by `IsVisible`.
+
+    Routing: this page is the destination of the `//main/desktop` Shell
+    sub-route, which App.OnWindowCreated navigates to on
+    DeviceIdiom.Desktop. Phones and tablets keep the SfTabView host
+    (Views.Main.MainTabHostPage) on `//main`.
+
+    Side rail: tapping "Dashboard & Shopping" or "Closet & Planner" flips
+    a `SelectedPane` enum on the host VM; the matching pane's IsVisible
+    goes true and the other goes false. There is NO Shell navigation
+    between the two panes — the side rail is a single-page tab switch
+    that keeps the left rail, the right app bar, the popup, and the
+    reparented child view models alive across switches. This avoids the
+    "whole UI sliding in from the right + full refresh" behaviour the
+    old GoToAsync-based implementation had.
+
+    Panes: each pane is a ContentView that wraps the reparented root
+    visual tree of a `DashboardShoppingSplitPage` /
+    `ClosetPlannerSplitPage` (those pages now contain only their two
+    columns — no rail, no popup). The host instantiates both panes
+    once, reparents their child pages once, and only the IsVisible bit
+    changes on switch.
+-->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:vm="clr-namespace:WardrobeAI.ViewModels"
+             xmlns:app="clr-namespace:WardrobeAI;assembly=WardrobeAI"
+             x:Class="WardrobeAI.Views.DesktopSplitHostPage"
+             x:DataType="vm:DesktopSplitHostViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Background}, Dark={StaticResource BackgroundDark}}"
+             Title="Wardrobe AI"
+             Shell.NavBarIsVisible="False">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Reusable menu-row style. Each row stacks a 22x22 icon and
+                 a label inside a 48px-tall rounded card; taps are wired via
+                 TapGestureRecognizer in the host code-behind. The active
+                 row overrides Background in the highlight helper. -->
+            <Style TargetType="Grid" x:Key="SideRailMenuItem">
+                <Setter Property="BackgroundColor" Value="Transparent"/>
+                <Setter Property="HeightRequest" Value="48"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="HorizontalOptions" Value="Fill"/>
+                <Setter Property="VerticalOptions" Value="Start"/>
+            </Style>
+            <Style TargetType="Label" x:Key="SideRailSectionHeading">
+                <Setter Property="FontFamily" Value="OpenSansSemibold"/>
+                <Setter Property="FontSize" Value="11"/>
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray300}}"/>
+                <Setter Property="CharacterSpacing" Value="1.5"/>
+                <Setter Property="HorizontalOptions" Value="Start"/>
+                <Setter Property="Margin" Value="14,16,0,6"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, *"
+          ColumnDefinitions="0.3*,1.5*"
+          ColumnSpacing="0"
+          RowSpacing="0">
+
+        <!-- Left side rail — persistent desktop navigation menu.
+             Hidden on phones/tablets because the host itself is
+             desktop-only (routed by Helpers.IdiomExtensions.IsDesktop in
+             App.OnWindowCreated). -->
+        <Grid Grid.Row="0" Grid.Column="0"
+              Grid.RowSpan="2"
+              RowDefinitions="*,Auto"
+              Padding="8,8,8,16"
+              BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource SurfaceContainerHigh}}">
+
+            <VerticalStackLayout Grid.Row="0" Spacing="4">
+
+                <Label Text="OVERVIEW"
+                       Style="{StaticResource SideRailSectionHeading}" />
+
+                <!-- Dashboard & Shopping pane. -->
+                <Grid x:Name="DashboardShoppingMenuItem"
+                      Style="{StaticResource SideRailMenuItem}"
+                      AutomationId="SideRail.DashboardShopping">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnDashboardShoppingTapped"/>
+                    </Grid.GestureRecognizers>
+                    <Border x:Name="DashboardShoppingRowBackground"
+                            StrokeShape="RoundRectangle 12"
+                            StrokeThickness="0"
+                            BackgroundColor="{StaticResource Primary}"
+                            Padding="14,0">
+                        <Grid ColumnDefinitions="22,*" ColumnSpacing="12" VerticalOptions="Center">
+                            <Image x:Name="DashboardShoppingRowIcon"
+                                   Grid.Column="0" Source="dashboard.png"
+                                   WidthRequest="18" HeightRequest="18"
+                                   VerticalOptions="Center" HorizontalOptions="Start" />
+                            <Label x:Name="DashboardShoppingRowLabel"
+                                   Grid.Column="1" Text="Dashboard &#38; Shopping"
+                                   TextColor="{StaticResource OnPrimary}"
+                                   FontFamily="OpenSansSemibold"
+                                   FontSize="14"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Closet & Planner pane. -->
+                <Grid x:Name="ClosetPlannerMenuItem"
+                      Style="{StaticResource SideRailMenuItem}"
+                      AutomationId="SideRail.ClosetPlanner">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnClosetPlannerTapped"/>
+                    </Grid.GestureRecognizers>
+                    <Border x:Name="ClosetPlannerRowBackground"
+                            StrokeShape="RoundRectangle 12"
+                            StrokeThickness="0"
+                            BackgroundColor="Transparent"
+                            Padding="14,0">
+                        <Grid ColumnDefinitions="22,*" ColumnSpacing="12" VerticalOptions="Center">
+                            <Image x:Name="ClosetPlannerRowIcon"
+                                   Grid.Column="0" Source="hanger.png"
+                                   WidthRequest="22" HeightRequest="22"
+                                   VerticalOptions="Center" HorizontalOptions="Start" />
+                            <Label x:Name="ClosetPlannerRowLabel"
+                                   Grid.Column="1" Text="Closet &#38; Planner"
+                                   TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                   FontFamily="OpenSansSemibold"
+                                   FontSize="14"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+                </Grid>
+            </VerticalStackLayout>
+
+            <!-- Footer profile card: avatar + signed-in user's display name.
+                 Anchored to Grid.Row="1" so it always sits at the bottom of
+                 the left rail regardless of how many menu items live in the
+                 VerticalStackLayout above. Tapping the card flips
+                 DesktopSplitHostViewModel.IsProfilePopupOpen, which drives
+                 the SfPopup declared at the bottom of this page. -->
+            <Grid Grid.Row="1"
+                  Padding="0,8,0,0"
+                  VerticalOptions="End"
+                  HorizontalOptions="Fill">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ToggleProfilePopupCommand}"
+                                          NumberOfTapsRequired="1"/>
+                </Grid.GestureRecognizers>
+                <Border x:Name="SideRailProfileCard"
+                        Padding="10,8"
+                        StrokeShape="RoundRectangle 14"
+                        StrokeThickness="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalOptions="Center">
+                        <Border Grid.Column="0"
+                                StrokeShape="RoundRectangle 20"
+                                StrokeThickness="0"
+                                WidthRequest="40" HeightRequest="40"
+                                VerticalOptions="Center"
+                                HorizontalOptions="Start"
+                                AutomationId="SideRailProfileAvatar">
+                            <Grid>
+                                <syncfusion:SfAvatarView ContentType="Custom"
+                                                         AvatarSize="ExtraSmall"
+                                                         WidthRequest="40" HeightRequest="40"
+                                                         ImageSource="{Binding ProfileImageBase64, Converter={StaticResource Base64ToImageSourceConverter}, FallbackValue={x:Null}}"
+                                                         HorizontalOptions="Center" VerticalOptions="Center"
+                                                         IsVisible="{Binding HasProfileImage}"/>
+                                <syncfusion:SfAvatarView ContentType="Initials"
+                                                         InitialsType="DoubleCharacter"
+                                                         AvatarSize="ExtraSmall"
+                                                         AvatarName="{x:Static app:AppConstants.DefaultUserName}"
+                                                         InitialsColor="White"
+                                                         Background="Gray"
+                                                         WidthRequest="40" HeightRequest="40"
+                                                         HorizontalOptions="Center" VerticalOptions="Center"
+                                                         IsVisible="{Binding HasProfileImage, Converter={StaticResource InverseBoolConverter}}"/>
+                            </Grid>
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                            <Label Text="{x:Static app:AppConstants.DefaultUserName}"
+                                   FontFamily="OpenSansSemibold"
+                                   FontSize="13"
+                                   LineBreakMode="TailTruncation"
+                                   TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"/>
+                            <Label Text="View profile"
+                                   FontFamily="OpenSansRegular"
+                                   FontSize="10"
+                                   TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- Top App Bar — spans both panes. Intentionally minimal: each
+             pane renders its own greetings / titles as part of its
+             reparented root visual tree, so the bar reserves space for
+             future breadcrumbs without duplicating content. -->
+        <Grid Grid.Row="0" Grid.Column="1"
+              ColumnDefinitions="Auto,*,Auto"
+              HorizontalOptions="Fill"
+              VerticalOptions="Center"
+              Padding="24,20,24,20"
+              BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}"/>
+
+        <!-- Pane container. The two `ContentView` placeholders are
+             filled with the actual `DashboardShoppingSplitPage` /
+             `ClosetPlannerSplitPage` instances by the code-behind
+             (see DesktopSplitHostPage code-behind). XAML cannot host
+             a `ContentPage` (a `Page`, not a `View`) as a child of
+             a `Grid` directly — the XAML compiler enforces that
+             XLS0504 / MAUIG1001. Assigning the pane in code mirrors
+             the pattern used by `MainTabHostPage.BuildTabs`.
+
+             The host flips IsVisible between the two pane
+             ContentViews whenever SelectedPane changes on the VM —
+             there is no Shell navigation, so the right-side app
+             bar and the left rail stay exactly where they are. -->
+        <Grid Grid.Row="1" Grid.Column="1"
+              RowDefinitions="*"
+              ColumnDefinitions="*"
+              RowSpacing="0"
+              ColumnSpacing="0">
+
+            <ContentView x:Name="DashboardShoppingPaneHost"
+                         IsVisible="{Binding IsDashboardShoppingPaneVisible}"
+                         AutomationId="DesktopSplitPane.DashboardShopping"/>
+
+            <ContentView x:Name="ClosetPlannerPaneHost"
+                         IsVisible="{Binding IsClosetPlannerPaneVisible}"
+                         AutomationId="DesktopSplitPane.ClosetPlanner"/>
+        </Grid>
+
+        <!-- Desktop profile-info popup overlay. Anchored to the
+             RowSpan=2, ColumnSpan=2 of the layout Grid so the centered
+             modal sits on top of the active pane. The popup's
+             BindingContext is forced to a DashboardViewModel so the same
+             ProfileStyleBadge / ProfileOutfitCount / etc. bindings the
+             two old split-view pages carried continue to work. -->
+        <popup:SfPopup x:Name="ProfileInfoPopup"
+                       Grid.Row="0" Grid.Column="0"
+                       Grid.RowSpan="2" Grid.ColumnSpan="2"
+                       IsOpen="{Binding IsProfilePopupOpen, Mode=TwoWay}"
+                       ShowHeader="False"
+                       ShowFooter="False"
+                       ShowCloseButton="True"
+                       StaysOpen="False"
+                       WidthRequest="380"
+                       HeightRequest="450"
+                       AnimationMode="Zoom"
+                       AutomationId="DesktopProfileInfoPopup">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle MessageBackground="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource SurfaceDark}}"
+                                  MessageTextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                  OverlayColor="#80000000"
+                                  Stroke="{AppThemeBinding Light={StaticResource BeigeCard}, Dark={StaticResource Gray900}}"
+                                  StrokeThickness="0"/>
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:DashboardViewModel">
+                    <VerticalStackLayout Spacing="0" Padding="0">
+                        <Grid ColumnDefinitions="Auto,*,Auto"
+                                  ColumnSpacing="12"
+                                  Padding="20,20,20,8">
+                            <syncfusion:SfBadgeView VerticalOptions="Center"
+                                    HorizontalOptions="Center" Grid.Column="0" WidthRequest="56" HeightRequest="56">
+                                <syncfusion:SfBadgeView.Content>
+                                    <syncfusion:SfAvatarView ContentType="Initials"
+                                                         InitialsType="DoubleCharacter"
+                                                         AvatarSize="Large"
+                                                         AvatarName="{x:Static app:AppConstants.DefaultUserName}"
+                                                         BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                                         InitialsColor="White" 
+                                                         Background="Gray"
+                                                         CornerRadius="45"
+                                                         WidthRequest="56" HeightRequest="56"
+                                                         HorizontalOptions="Center" VerticalOptions="Center"
+                                                         IsVisible="{Binding HasProfileImage, Converter={StaticResource InverseBoolConverter}}"/>
+                                </syncfusion:SfBadgeView.Content>
+                                <syncfusion:SfBadgeView.BadgeSettings>
+                                    <syncfusion:BadgeSettings Offset="-10,-10"
+                                                                  Animation="Scale"
+                                                                  Position="BottomRight"
+                                                                  Type="None"
+                                                                  Stroke="White"
+                                                                  StrokeThickness="1"
+                                                                  Background="Grey"
+                                                                  Icon="None"/>
+                                </syncfusion:SfBadgeView.BadgeSettings>
+                            </syncfusion:SfBadgeView>
+                            <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                <Label Text="{x:Static app:AppConstants.DefaultUserName}"
+                                           FontFamily="OpenSansSemibold"
+                                           FontSize="18"
+                                           TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"/>
+                                <Label Text="{Binding ProfileStyleBadge}"
+                                           FontFamily="OpenSansSemibold"
+                                           FontSize="10"
+                                           CharacterSpacing="1.2"
+                                           TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2"
+                                       Text="&#xe70b;"
+                                       FontSize="18"
+                                       FontFamily="MaterialAssets"
+                                       TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="End">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ToggleProfilePopupCommand}"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Grid>
+
+                        <Border Margin="20,12,20,12"
+                                    Padding="18,14"
+                                    StrokeShape="RoundRectangle 14"
+                                    StrokeThickness="0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource BeigeCard}, Dark={StaticResource Gray900}}">
+                            <Grid ColumnDefinitions="*,*,*"
+                                      ColumnSpacing="12"
+                                      RowDefinitions="Auto,Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="CATALOG"
+                                               FontFamily="OpenSansSemibold"
+                                               FontSize="10"
+                                               CharacterSpacing="1.5"
+                                               TextColor="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray300}}"/>
+                                    <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                        <Label Text="{Binding ProfileOutfitCount}"
+                                                   FontFamily="OpenSansSemibold"
+                                                   FontSize="22"
+                                                   TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"/>
+                                        <Label Text="Outfits"
+                                                   FontFamily="OpenSansRegular"
+                                                   FontSize="12"
+                                                   VerticalOptions="End" Margin="0,0,0,4"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                    <Label Text="ARCHIVE"
+                                               FontFamily="OpenSansSemibold"
+                                               FontSize="10"
+                                               CharacterSpacing="1.5"
+                                               TextColor="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray300}}"/>
+                                    <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                        <Label Text="{Binding ProfileClothingItemCount}"
+                                                   FontFamily="OpenSansSemibold"
+                                                   FontSize="22"
+                                                   TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"/>
+                                        <Label Text="Items"
+                                                   FontFamily="OpenSansRegular"
+                                                   FontSize="12"
+                                                   VerticalOptions="End" Margin="0,0,0,4"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2" Spacing="2">
+                                    <Label Text="PALETTE"
+                                               FontFamily="OpenSansSemibold"
+                                               FontSize="10"
+                                               CharacterSpacing="1.5"
+                                               TextColor="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray300}}"/>
+                                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                        <Border WidthRequest="14" HeightRequest="14"
+                                                    StrokeShape="RoundRectangle 7"
+                                                    StrokeThickness="0"
+                                                    BackgroundColor="{Binding ProfilePaletteHexes[0], FallbackValue=#9E9E9E, TargetNullValue=#9E9E9E}"/>
+                                        <Border WidthRequest="14" HeightRequest="14"
+                                                    StrokeShape="RoundRectangle 7"
+                                                    StrokeThickness="0"
+                                                    BackgroundColor="{Binding ProfilePaletteHexes[1], FallbackValue=#D9C9B0, TargetNullValue=#D9C9B0}"/>
+                                        <Border WidthRequest="14" HeightRequest="14"
+                                                    StrokeShape="RoundRectangle 7"
+                                                    StrokeThickness="0"
+                                                    BackgroundColor="{Binding ProfilePaletteHexes[2], FallbackValue=#E1E1E1, TargetNullValue=#E1E1E1}"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
+                        <Grid ColumnDefinitions="*,Auto"
+                                  ColumnSpacing="8"
+                                  Padding="20,4,20,4">
+                            <Label Grid.Column="0"
+                                       Text="STYLE PREFERENCES"
+                                       FontFamily="OpenSansSemibold"
+                                       FontSize="10"
+                                       CharacterSpacing="1.5"
+                                       VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray300}}"/>
+                            <Label Grid.Column="1"
+                                       Text="Curate Profile"
+                                       FontFamily="OpenSansSemibold"
+                                       FontSize="11"
+                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="End">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding CurateProfileCommand}"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Grid>
+                        <ScrollView Orientation="Horizontal"
+                                        HorizontalScrollBarVisibility="Never"
+                                        VerticalScrollBarVisibility="Never"
+                                        Padding="20,4,20,8">
+                            <HorizontalStackLayout Spacing="6" BindableLayout.ItemsSource="{Binding ProfileStylePreferences}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <Border Padding="12,6"
+                                                    StrokeShape="RoundRectangle 16"
+                                                    StrokeThickness="1"
+                                                    Stroke="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource Gray900}}"
+                                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainer}, Dark={StaticResource Gray900}}">
+                                            <Label Text="{Binding .}"
+                                                       FontFamily="OpenSansSemibold"
+                                                       FontSize="11"
+                                                       TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </HorizontalStackLayout>
+                        </ScrollView>
+
+                        <VerticalStackLayout Spacing="0" Padding="0,4,0,0">
+                            <Grid Padding="20,12,20,4" ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                                <Image Grid.Column="0"
+                                           Source="ai.png"
+                                           WidthRequest="16"
+                                           HeightRequest="16"
+                                           VerticalOptions="Center"/>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="AI Preferences"
+                                               FontFamily="OpenSansSemibold"
+                                               FontSize="13"
+                                               TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"/>
+                                    <Label Text="Tone, fit calibration &amp; recommendations"
+                                               FontFamily="OpenSansRegular"
+                                               FontSize="11"
+                                               TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                                </VerticalStackLayout>
+                                <Label Grid.Column="1" Text="&#xe706;"
+                                           FontSize="18"
+                                           FontFamily="MaterialAssets"
+                                           HorizontalOptions="End" VerticalOptions="Center"
+                                           TextColor="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray400}}"/>
+                            </Grid>
+                            <Grid Padding="20,12,20,4" ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                                <Label Grid.Column="0" Text="&#xe71c;"
+                                           FontSize="14"
+                                           VerticalOptions="Center"
+                                           FontFamily="UiKitIcons"
+                                           TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="Privacy &amp; Security"
+                                               FontFamily="OpenSansSemibold"
+                                               FontSize="13"
+                                               TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"/>
+                                    <Label Text="Encrypted closet cloud, private vault"
+                                               FontFamily="OpenSansRegular"
+                                               FontSize="11"
+                                               TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                                </VerticalStackLayout>
+                                <Label Grid.Column="1" Text="&#xe706;"
+                                           FontSize="18"
+                                           FontFamily="MaterialAssets"
+                                           HorizontalOptions="End" VerticalOptions="Center"
+                                           TextColor="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray400}}"/>
+                            </Grid>
+                            <Grid Padding="20,12,20,8" ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                                <Label Grid.Column="0" Text="&#xe700;"
+                                           FontSize="14"
+                                           VerticalOptions="Center"
+                                           FontFamily="UiKitIcons"
+                                           TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="Notifications"
+                                               FontFamily="OpenSansSemibold"
+                                               FontSize="13"
+                                               TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"/>
+                                    <Label Text="Weather triggers, dry cleaning alerts"
+                                               FontFamily="OpenSansRegular"
+                                               FontSize="11"
+                                               TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                                </VerticalStackLayout>
+                                <Label Grid.Column="1" Text="&#xe706;"
+                                           FontSize="18"
+                                           FontFamily="MaterialAssets"
+                                           HorizontalOptions="End" VerticalOptions="Center"
+                                           TextColor="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray400}}"/>
+                            </Grid>
+                        </VerticalStackLayout>
+
+                        <Button Text="Done"
+                                    Margin="20,12,20,20"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                    TextColor="{AppThemeBinding Light={StaticResource OnPrimary}, Dark={StaticResource OnPrimaryDark}}"
+                                    FontFamily="OpenSansSemibold"
+                                    FontSize="14"
+                                    CornerRadius="10"
+                                    HeightRequest="44"
+                                    Command="{Binding ToggleProfilePopupCommand}"/>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+    </Grid>
+</ContentPage>

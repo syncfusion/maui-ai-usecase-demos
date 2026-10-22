@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    Desktop split-view pane: Closet in column 1, Outfit Planner in
+    column 2. This page is now a child of DesktopSplitHostPage —
+    it no longer hosts its own side rail, profile popup, or Shell
+    routing. The host owns the chrome; this page is purely a
+    two-column content container.
+
+    Reparenting: ClosetPage and OutfitPlannerPage are resolved
+    from DI and their root visual trees are stolen into the column
+    ContentView hosts by ClosetPlannerSplitPage.OnAppearing (see
+    code-behind). Each child keeps its existing ViewModel + DI
+    scope + bindings + OnAppearing refresh logic untouched.
+-->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WardrobeAI.Views.ClosetPlannerSplitPage"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Background}, Dark={StaticResource BackgroundDark}}"
+             Title="Closet and Planner"
+             Shell.NavBarIsVisible="False">
+
+    <Grid ColumnDefinitions="2*,1.25*"
+          ColumnSpacing="0"
+          RowSpacing="0">
+
+        <!-- Column 1 — Closet content -->
+        <Grid Grid.Column="0"
+                    Padding="20,8,12,32"
+                    x:Name="ClosetScroll">
+            <ContentView x:Name="ClosetHost" />
+        </Grid>
+
+        <!-- Vertical divider between the two columns. -->
+        <BoxView Grid.Column="0"
+                 WidthRequest="10"
+                 Color="Transparent"
+                 HorizontalOptions="End" VerticalOptions="Fill"/>
+
+        <!-- Column 2 — Outfit Planner content -->
+        <Grid Grid.Column="1"
+                    Padding="12,8,20,32"
+                    x:Name="PlannerScroll">
+            <Border StrokeShape="RoundRectangle 16" StrokeThickness="0">
+                <ContentView x:Name="PlannerHost" />
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UIDeviceFamily</key>
+	<array>
+		<integer>1</integer>
+		<integer>2</integer>
+	</array>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>arm64</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>XSAppIconAssets</key>
+	<string>Assets.xcassets/appicon.appiconset</string>
+	<!-- Closet feature: MediaPicker usage descriptions for gallery + camera capture. -->
+	<key>NSCameraUsageDescription</key>
+	<string>Wardrobe AI uses the camera so you can capture photos of clothing to add to your closet.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Wardrobe AI accesses your photo library so you can pick existing photos of clothing to add to your closet.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Wardrobe AI may save closet photos back to your photo library.</string>
+	<!-- Weather feature (P2.7): live weather chip on the dashboard uses the
+	     device's approximate location to fetch current conditions. -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Wardrobe AI uses your location to show the current weather on your dashboard.</string>
+</dict>
+</plist>

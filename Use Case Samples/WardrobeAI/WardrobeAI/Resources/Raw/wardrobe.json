@@ -1,0 +1,107 @@
+[
+  {
+    "name": "White Crew Neck T-Shirt",
+    "image": "white_crew_neck_tshirt.png",
+    "link": "https://www.amazon.in/s?k=men+white+crew+neck+tshirt"
+  },
+  {
+    "name": "Black Crew Neck T-Shirt",
+    "image": "black_crew_neck_tshirt.png",
+    "link": "https://www.amazon.in/s?k=men+black+crew+neck+tshirt"
+  },
+  {
+    "name": "Navy Crew Neck T-Shirt",
+    "image": "navy_crew_neck_tshirt.png",
+    "link": "https://www.amazon.in/s?k=men+navy+tshirt"
+  },
+  {
+    "name": "White Oxford Shirt",
+    "image": "white_oxford_shirt.png",
+    "link": "https://www.amazon.in/s?k=men+white+oxford+shirt"
+  },
+  {
+    "name": "Light Blue Oxford Shirt",
+    "image": "lightblue_oxford_shirt.png",
+    "link": "https://www.amazon.in/s?k=men+light+blue+oxford+shirt"
+  },
+  {
+    "name": "Casual Checked Shirt",
+    "image": "casual_checked_shirt.png",
+    "link": "https://www.amazon.in/s?k=men+checked+shirt"
+  },
+  {
+    "name": "Polo Shirt",
+    "image": "polo_shirt.png",
+    "link": "https://www.amazon.in/s?k=men+polo+tshirt"
+  },
+  {
+    "name": "Formal White Shirt",
+    "image": "formal_white_shirt.png",
+    "link": "https://www.amazon.in/s?k=men+formal+white+shirt"
+  },
+  {
+    "name": "Dark Blue Jeans",
+    "image": "dark_blue_jeans.png",
+    "link": "https://www.amazon.in/s?k=men+dark+blue+jeans"
+  },
+  {
+    "name": "Black Jeans",
+    "image": "black_jeans.png",
+    "link": "https://www.amazon.in/s?k=men+black+jeans"
+  },
+  {
+    "name": "Beige Chinos",
+    "image": "beige_chinos.png",
+    "link": "https://www.amazon.in/s?k=men+beige+chinos"
+  },
+  {
+    "name": "Grey Trousers",
+    "image": "grey_trousers.png",
+    "link": "https://www.amazon.in/s?k=men+grey+trousers"
+  },
+  {
+    "name": "Shorts",
+    "image": "shorts.png",
+    "link": "https://www.amazon.in/s?k=men+casual+shorts"
+  },
+  {
+    "name": "Hoodie",
+    "image": "hoodie.png",
+    "link": "https://www.amazon.in/s?k=men+hoodie"
+  },
+  {
+    "name": "Lightweight Jacket",
+    "image": "lightweight_jacket.png",
+    "link": "https://www.amazon.in/s?k=men+casual+jacket"
+  },
+  {
+    "name": "Navy Blazer",
+    "image": "blazer_navy.jpg",
+    "link": "https://www.amazon.in/s?k=men+navy+blazer"
+  },
+  {
+    "name": "Kurta (Traditional Wear)",
+    "image": "kurta_traditional_wear.png",
+    "link": "https://www.amazon.in/s?k=men+kurta"
+  },
+  {
+    "name": "White Sneakers",
+    "image": "white_sneakers.jpg",
+    "link": "https://www.amazon.in/s?k=men+white+sneakers"
+  },
+  {
+    "name": "Formal Black Shoes",
+    "image": "formal_black_shoes.png",
+    "link": "https://www.amazon.in/s?k=men+formal+black+shoes"
+  },
+  {
+    "name": "Running Shoes",
+    "image": "running_shoes.png",
+    "link": "https://www.amazon.in/s?k=men+running+shoes"
+  },
+  {
+    "name": "Leather Belt",
+    "image": "leather_belt.png",
+    "link": "https://www.amazon.in/s?k=men+leather+belt"
+  }
+]

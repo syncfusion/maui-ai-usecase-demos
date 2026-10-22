@@ -1,0 +1,386 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:accordion="clr-namespace:Syncfusion.Maui.Accordion;assembly=Syncfusion.Maui.Expander"
+             xmlns:chip="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:vm="clr-namespace:WardrobeAI.ViewModels"
+             xmlns:app="clr-namespace:WardrobeAI;assembly=WardrobeAI"
+             x:Class="WardrobeAI.Views.Profile.ProfilePage"
+             x:Name="profilePage"
+             x:DataType="vm:ProfileViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Background}, Dark={StaticResource BackgroundDark}}">
+
+    <Grid RowDefinitions="Auto, *, Auto" RowSpacing="0" HorizontalOptions="Center" Padding="{OnIdiom Phone='0', Default='200,0'}">
+        <Grid.Resources>
+            <Style TargetType="chip:SfChipGroup" x:Key="ProfilePopupChipGroup">
+                <Setter Property="ChipBackground" Value="{AppThemeBinding Light={StaticResource SurfaceContainer}, Dark={StaticResource Gray900}}"/>
+                <Setter Property="ChipTextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"/>
+                <Setter Property="SelectedChipBackground" Value="{StaticResource Primary}"/>
+                <Setter Property="SelectedChipTextColor" Value="{StaticResource OnPrimary}"/>
+                <Setter Property="ChipPadding" Value="5,3"/>
+                <Setter Property="ChipType" Value="Choice"/>
+            </Style>
+            <!-- Input-style chip group used to display the user's selected
+                 style preferences. ChipType="Input" gives each chip a built-in
+                 close (X) button and raises ItemRemoved when the user taps it,
+                 so we don't need a custom FlexLayout/Border template (which
+                 had a known re-render issue on Android). -->
+            <Style TargetType="chip:SfChipGroup" x:Key="ProfileStyleChipGroup">
+                <Setter Property="ChipType" Value="Input"/>
+                <Setter Property="ChipBackground" Value="{AppThemeBinding Light={StaticResource SurfaceContainer}, Dark={StaticResource Gray900}}"/>
+                <Setter Property="ChipTextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"/>
+                <Setter Property="ChipStroke" Value="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray900}}"/>
+                <Setter Property="ChipStrokeThickness" Value="1"/>
+                <Setter Property="ChipCornerRadius" Value="20"/>
+                <Setter Property="ChipPadding" Value="2,6"/>
+                <Setter Property="CloseButtonColor" Value="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+            </Style>
+            <Style TargetType="ScrollView" x:Key="StyleChipScroller">
+                <Setter Property="Orientation" Value="Horizontal"/>
+                <Setter Property="HorizontalScrollBarVisibility" Value="Never"/>
+                <Setter Property="VerticalScrollBarVisibility" Value="Never"/>
+            </Style>
+            <Style TargetType="Label" x:Key="ProfileFieldLabel">
+                <Setter Property="FontFamily" Value="OpenSansSemibold"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+            </Style>
+        </Grid.Resources>
+
+        <!-- Top App Bar -->
+        <!--<HorizontalStackLayout Grid.Row="0" Padding="20,16,20,12" Spacing="12" HorizontalOptions="Fill"
+                              BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}">
+            <Grid WidthRequest="32" HeightRequest="32" VerticalOptions="Center">
+                <syncfusion:SfAvatarView ContentType="Custom"
+                                         AvatarSize="ExtraSmall"
+                                         WidthRequest="32" HeightRequest="32"
+                                         ImageSource="{Binding ProfileImageBase64, Converter={StaticResource Base64ToImageSourceConverter}, FallbackValue={x:Null}}"
+                                         IsVisible="{Binding HasProfileImage}"/>
+                <syncfusion:SfAvatarView ContentType="Initials"
+                                         InitialsType="DoubleCharacter"
+                                         AvatarSize="ExtraSmall"
+                                         AvatarName="{Binding InitialsAvatarName}"
+                                         BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                         InitialsColor="White"
+                                         WidthRequest="32" HeightRequest="32"
+                                         IsVisible="{Binding HasProfileImage, Converter={StaticResource InverseBoolConverter}}"/>
+            </Grid>
+            <Label Style="{StaticResource HeadlineMedium}" Text="Wardrobe AI" VerticalOptions="Center"
+                   HorizontalOptions="StartAndExpand" FontSize="20"/>
+        </HorizontalStackLayout>-->
+        <!-- Top App Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" HorizontalOptions="Fill" Padding="20,0,20,40"
+                      BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}">
+            <syncfusion:SfAvatarView ImageSource="ai.png" ContentType="Default" WidthRequest="40" HeightRequest="40" VerticalOptions="Center" Background="Transparent"/>
+            <Label Grid.Column="1" Style="{StaticResource TitleLarge}" Text="Wardrobe AI" VerticalOptions="Center" HorizontalOptions="Center" FontSize="24" Padding="-20,0,0,0"/>
+        </Grid>
+
+        <ScrollView Grid.Row="1" Padding="20,8,20,16" HorizontalScrollBarVisibility="Never">
+            <VerticalStackLayout Spacing="50">
+
+                <!-- Profile Header -->
+                <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                    <Border StrokeShape="RoundRectangle 64" Stroke="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}"
+                            StrokeThickness="3" WidthRequest="128" HeightRequest="128" Padding="0">
+                        <Border.Shadow>
+                            <Shadow Offset="0,7" Radius="5" Opacity="0.2"/>
+                        </Border.Shadow>
+                        <Grid>
+                            <syncfusion:SfAvatarView ContentType="Custom"
+                                                      AvatarSize="Large"
+                                                      Background="Gray"
+                                                      WidthRequest="128" HeightRequest="128"
+                                                      ImageSource="{Binding ProfileImageBase64, Converter={StaticResource Base64ToImageSourceConverter}, FallbackValue={x:Null}}"
+                                                      HorizontalOptions="Center" VerticalOptions="Center"
+                                                      IsVisible="{Binding HasProfileImage}"/>
+                            <syncfusion:SfAvatarView ContentType="Initials"
+                                                      InitialsType="DoubleCharacter"
+                                                      AvatarSize="Large" 
+                                                      FontSize="40"
+                                                      AvatarName="{Binding InitialsAvatarName}"
+                                                      Background="Gray"
+                                                      InitialsColor="White"
+                                                      WidthRequest="128" HeightRequest="128"
+                                                      HorizontalOptions="Center" VerticalOptions="Center"
+                                                      IsVisible="{Binding HasProfileImage, Converter={StaticResource InverseBoolConverter}}"/>
+                        </Grid>
+                    </Border>
+                    <Label Style="{StaticResource DisplayLarge}" Text="{x:Static app:AppConstants.DefaultUserName}" FontSize="28"
+                           HorizontalOptions="Center"/>
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource SecondaryContainer}, Dark={StaticResource Gray600}}"
+                            StrokeShape="RoundRectangle 20" Padding="16,6" StrokeThickness="1"
+                            Stroke="{AppThemeBinding Light={StaticResource SecondaryContainer}, Dark={StaticResource Gray900}}">
+                        <HorizontalStackLayout Spacing="6">
+                            <Label Text="" FontSize="14" TextColor="{StaticResource OnSecondaryContainer}" VerticalOptions="Center"/>
+                            <Label Style="{StaticResource LabelCaps}" Text="{Binding StyleBadge}"
+                                   TextColor="{StaticResource OnSecondaryContainer}" FontSize="11"/>
+                        </HorizontalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Style Preferences -->
+                <VerticalStackLayout Spacing="8">
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8" VerticalOptions="Center">
+                        <Label Grid.Column="0" Style="{StaticResource SubtitleMedium}" Text="Style Preferences"
+                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                               VerticalOptions="Center"/>
+                        <!-- Add button: opens the Style popup so the user can
+                             pick from a chip list or type a custom style. -->
+                        <buttons:SfButton Grid.Column="1"
+                                          Text="+"
+                                          FontSize="18"
+                                          FontFamily="OpenSansSemibold"
+                                          Padding="0"
+                                          WidthRequest="34"
+                                          HeightRequest="34"
+                                          CornerRadius="17"
+                                          Background="Transparent"
+                                          TextColor="Black"
+                                          StrokeThickness="0"
+                                          HorizontalOptions="End" VerticalOptions="Center"
+                                          Command="{Binding OpenAddStylePopupCommand}"
+                                          AutomationId="AddStyleButton"
+                                          ToolTipProperties.Text="Add style"/>
+                    </Grid>
+
+                    <!-- Selected style chips. SfChipGroup with ChipType="Input"
+                         renders each string as a chip with a built-in X button
+                         and handles Add/Remove re-renders reliably across all
+                         platforms (the previous FlexLayout+BindableLayout
+                         template did not always re-render on Remove). The
+                         ItemRemoved event is handled in code-behind to persist
+                         the trimmed value back to the database. -->
+                    <chip:SfChipGroup x:Name="StylePreferencesChipGroup"
+                                      Style="{StaticResource ProfileStyleChipGroup}"
+                                      ItemsSource="{Binding StylePreferences}"
+                                      ItemRemoved="OnStyleChipRemoved"
+                                      AutomationId="StylePreferencesChipGroup">
+                        <chip:SfChipGroup.ChipLayout>
+                            <FlexLayout Wrap="Wrap"
+                                        Direction="Row"
+                                        JustifyContent="Start"
+                                        AlignItems="Start"
+                                        AlignContent="Start"/>
+                        </chip:SfChipGroup.ChipLayout>
+                    </chip:SfChipGroup>
+                </VerticalStackLayout>
+
+                <!-- Monthly Shopping Budget (slider + edit icon) -->
+                <VerticalStackLayout Spacing="8">
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                        <Label Grid.Column="0" Style="{StaticResource SubtitleMedium}" Text="Monthly Budget"
+                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                               VerticalOptions="Center"/>
+                        <!-- Edit / Save icon. Material 'edit' / 'check' glyphs
+                             map to font-size 18 emoji-style placeholders so we
+                             don't need a custom font. -->
+                        <buttons:SfButton Grid.Column="1"
+                                          Text=""
+                                          FontSize="18"
+                                          Padding="8,4"
+                                          Background="Transparent"
+                                          StrokeThickness="0"
+                                          TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                          Command="{Binding ToggleBudgetEditCommand}"
+                                          HorizontalOptions="End" VerticalOptions="Center"
+                                          AutomationId="BudgetEditToggle"
+                                          ToolTipProperties.Text="Edit budget">
+                            <buttons:SfButton.Triggers>
+                                <DataTrigger TargetType="buttons:SfButton" Binding="{Binding IsEditingBudget}" Value="False">
+                                    <Setter Property="Text" Value=""/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="buttons:SfButton" Binding="{Binding IsEditingBudget}" Value="True">
+                                    <Setter Property="Text" Value=""/>
+                                </DataTrigger>
+                            </buttons:SfButton.Triggers>
+                        </buttons:SfButton>
+                    </Grid>
+
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
+                            StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="16">
+                        <VerticalStackLayout Spacing="12">
+                            <!-- Static pill: shown when not editing -->
+                            <HorizontalStackLayout Spacing="6"
+                                                   IsVisible="{Binding IsEditingBudget, Converter={StaticResource InverseBoolConverter}}">
+                                <Border BackgroundColor="{AppThemeBinding Light={StaticResource SecondaryContainer}, Dark={StaticResource Gray600}}"
+                                        StrokeShape="RoundRectangle 20" Padding="16,6" StrokeThickness="1"
+                                        Stroke="{AppThemeBinding Light={StaticResource SecondaryContainer}, Dark={StaticResource Gray900}}">
+                                    <HorizontalStackLayout Spacing="6">
+                                        <Label Text="" FontSize="14" TextColor="{StaticResource OnSecondaryContainer}" VerticalOptions="Center"/>
+                                        <Label Style="{StaticResource LabelCaps}" Text="{Binding MonthlyBudgetDisplay, StringFormat='{0} / month'}"
+                                               TextColor="{StaticResource OnSecondaryContainer}" FontSize="11"/>
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </HorizontalStackLayout>
+
+                            <!-- Edit affordance: slider + live helper + save button -->
+                            <VerticalStackLayout Spacing="8"
+                                                 IsVisible="{Binding IsEditingBudget}">
+                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8" VerticalOptions="Center">
+                                    <Label Grid.Column="0" Text="$0"
+                                           FontFamily="OpenSansSemibold" FontSize="13"
+                                           TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                           VerticalOptions="Center"/>
+                                    <Slider Grid.Column="1"
+                                            Minimum="{Binding MonthlyBudgetMinUsd, Converter={StaticResource DecimalToDoubleConverter}}"
+                                            Maximum="{Binding MonthlyBudgetMaxUsd, Converter={StaticResource DecimalToDoubleConverter}}"
+                                            Value="{Binding MonthlyBudgetUsd, Converter={StaticResource DecimalToDoubleConverter}, Mode=TwoWay}"
+                                            MinimumTrackColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}"
+                                            MaximumTrackColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                            ThumbColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}"
+                                            VerticalOptions="Center"
+                                            AutomationId="BudgetSlider"/>
+                                    <Label Grid.Column="2" Text="$1000"
+                                           FontFamily="OpenSansSemibold" FontSize="13"
+                                           TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                                <Label Style="{StaticResource BodySmall}"
+                                       Text="{Binding BudgetHelperText}"
+                                       LineBreakMode="WordWrap"
+                                       TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                       FontSize="12"/>
+                                <HorizontalStackLayout Spacing="8" HorizontalOptions="End">
+                                    <buttons:SfButton Text="Cancel"
+                                                      Background="Transparent"
+                                                      Stroke="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray300}}"
+                                                      StrokeThickness="1"
+                                                      CornerRadius="12"
+                                                      Padding="16,8"
+                                                      FontSize="13"
+                                                      TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                                      Command="{Binding ToggleBudgetEditCommand}"/>
+                                    <buttons:SfButton Text="Save"
+                                                      Background="{StaticResource Primary}"
+                                                      TextColor="{StaticResource OnPrimary}"
+                                                      CornerRadius="12"
+                                                      Padding="16,8"
+                                                      FontSize="13"
+                                                      FontFamily="OpenSansSemibold"
+                                                      Command="{Binding SaveBudgetCommand}"
+                                                      AutomationId="BudgetSave"/>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Settings (Accordion) -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Style="{StaticResource SubtitleMedium}" Text="Settings"
+                           TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Settings}" Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ProfileViewModel+SettingItem">
+                                <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
+                                        StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="0">
+                                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12" Padding="16,14">
+                                        <Label Text="{Binding Icon}" FontSize="18" FontFamily="MaterialAssets"
+                                               TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                               HorizontalOptions="Center" VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" Style="{StaticResource BodyLarge}" Text="{Binding Name}"
+                                               TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                               VerticalOptions="Center" Margin="12,0,0,0"/>
+                                        <buttons:SfButton Grid.Column="2" Text="&#xe706;" Background="Transparent" StrokeThickness="0"
+                                                          TextColor="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray300}}"
+                                                          Command="{Binding BindingContext.OpenSettingCommand, Source={x:Reference profilePage}}"
+                                                          CommandParameter="{Binding Name}"
+                                                          FontFamily="MaterialAssets"
+                                                          HorizontalOptions="End" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Add-Style popup: chip selector (from ClothingOptions.Styles) + custom Entry -->
+        <popup:SfPopup x:Name="AddStylePopup"
+                       Grid.Row="0" Grid.RowSpan="3"
+                       IsOpen="{Binding IsAddStylePopupOpen, Mode=TwoWay}"
+                       HeaderTitle="Add a style"
+                       AppearanceMode="TwoButton"
+                       ShowHeader="True"
+                       ShowFooter="True"
+                       AcceptButtonText="Save"
+                       DeclineButtonText="Cancel"
+                       WidthRequest="360"
+                       HeightRequest="520"
+                       StaysOpen="False"
+                       AcceptCommand="{Binding SaveNewStyleCommand}"
+                       DeclineCommand="{Binding CloseAddStylePopupCommand}">
+                       <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle AcceptButtonBackground="#001A42"
+                                  DeclineButtonBackground="#E9F1FF"
+                                  FooterBackground="{StaticResource BeigeCard}"
+                                  HeaderBackground="{StaticResource BeigeCard}"
+                                  MessageBackground="{StaticResource BeigeCard}"
+                                  AcceptButtonTextColor="#E9F1FF"
+                                  DeclineButtonTextColor="#001A42"/>
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:ProfileViewModel">
+                    <ScrollView Padding="20,12,20,4">
+                        <VerticalStackLayout Spacing="14">
+
+                            <!-- Validation error -->
+                            <Label Text="{Binding NewStyleValidationError}"
+                                   TextColor="{StaticResource Error}"
+                                   FontSize="13"
+                                   FontFamily="OpenSansSemibold"
+                                   IsVisible="{Binding NewStyleValidationError, Converter={StaticResource StringIsNotNullOrEmptyConverter}}" />
+
+                            <!-- Suggestions -->
+                            <VerticalStackLayout Spacing="6">
+                                <Label Style="{StaticResource ProfileFieldLabel}"
+                                       Text="Pick a style" />
+                                <ScrollView Style="{StaticResource StyleChipScroller}">
+                                    <chip:SfChipGroup Style="{StaticResource ProfilePopupChipGroup}"
+                                                      ItemsSource="{Binding AvailableStyles}"
+                                                      SelectedItem="{Binding NewStyleSelection, Mode=TwoWay}">
+                                        <chip:SfChipGroup.ChipLayout>
+                                            <FlexLayout Wrap="NoWrap" Direction="Row" JustifyContent="Start" AlignItems="Start" AlignContent="Start" />
+                                        </chip:SfChipGroup.ChipLayout>
+                                    </chip:SfChipGroup>
+                                </ScrollView>
+                            </VerticalStackLayout>
+
+                            <!-- Custom style -->
+                            <VerticalStackLayout Spacing="6">
+                                <Label Style="{StaticResource ProfileFieldLabel}"
+                                       Text="Or add your own" />
+                                <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource Gray950}}"
+                                        StrokeShape="RoundRectangle 12"
+                                        Stroke="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource Gray900}}"
+                                        StrokeThickness="1"
+                                        Padding="12,6">
+                                    <Entry Text="{Binding NewStyleCustom, Mode=TwoWay}"
+                                           Placeholder="e.g. Y2K, Coastal Grandma"
+                                           BackgroundColor="Transparent"
+                                           TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                           PlaceholderColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                           FontFamily="OpenSansRegular"
+                                           FontSize="15"
+                                           MaxLength="30" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <Label Style="{StaticResource BodySmall}"
+                                   Text="Tip: pick a preset OR type your own - the popup saves whichever you filled in."
+                                   FontSize="12"
+                                   LineBreakMode="WordWrap"
+                                   TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" />
+
+                        </VerticalStackLayout>
+                    </ScrollView>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+    </Grid>
+</ContentPage>
