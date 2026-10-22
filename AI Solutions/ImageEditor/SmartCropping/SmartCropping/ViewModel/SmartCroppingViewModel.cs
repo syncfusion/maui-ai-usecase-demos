@@ -4,7 +4,6 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Graphics;
-using SmartCropping.Helpers;
 using Syncfusion.Maui.ImageEditor;
 
 namespace SmartCropping.ViewModel;
@@ -586,19 +585,25 @@ public partial class SmartCroppingViewModel : ObservableObject
         IsCropApplied = false;
         IsManualCropping = false;
 
-        originalImageSource = source;
-        originalImageBytes = bytes;
-        // hasImage is set to true AFTER LoadImageAsync completes so that
-        // no other command can act on a half-loaded image.
-        await editorController!.LoadImageAsync(source);
+        try
+        {
+            originalImageSource = source;
+            originalImageBytes = bytes;
 
-        hasImage = true;
+            // hasImage is set to true AFTER LoadImageAsync completes so that
+            // no other command can act on a half-loaded image.
+            await editorController!.LoadImageAsync(source);
 
-        RefreshOverlayGeometry();
-        StatusMessage = string.Empty;
+            hasImage = true;
 
-        IsBusy = false;
-        NotifyCommandsChanged();
+            RefreshOverlayGeometry();
+            StatusMessage = string.Empty;
+        }
+        finally
+        {
+            IsBusy = false;
+            NotifyCommandsChanged();
+        }
     }
 
     private void ClearSuggestion()

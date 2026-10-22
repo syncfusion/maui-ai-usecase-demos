@@ -172,8 +172,9 @@ public partial class SmartCropping : ContentPage, IImageEditorController
                 viewModel.NotifyManualCropCompleted(saved: true);
             }
 
-            viewModel.RefreshOverlayGeometry();
             viewModel.NotifyCommandsChanged();
+
+            _ = RefreshOverlayAfterLayoutAsync();
         }
         finally
         {
@@ -183,7 +184,22 @@ public partial class SmartCropping : ContentPage, IImageEditorController
 
     private void OnEditorSizeChanged(object? sender, EventArgs e)
     {
-        viewModel.RefreshOverlayGeometry();
+        // The editor reports its rendered image size only after layout has
+        // settled, so defer the overlay recomputation by one layout pass.
+        _ = RefreshOverlayAfterLayoutAsync();
+    }
+
+    private async Task RefreshOverlayAfterLayoutAsync()
+    {
+        try
+        {
+            await Task.Yield();
+            viewModel.RefreshOverlayGeometry();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Overlay refresh failed: {ex.Message}");
+        }
     }
 
     private void OnImageSaving(object? sender, ImageSavingEventArgs e)
