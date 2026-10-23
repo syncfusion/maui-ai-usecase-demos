@@ -165,8 +165,16 @@ public sealed class CropOverlayView : GraphicsView
 /// </summary>
 internal sealed class CropOverlayDrawable : IDrawable
 {
-    private static readonly Color DimColor = Color.FromRgba(0, 0, 0, 0.55);
-    private static readonly Color BorderColor = Color.FromArgb("#2563EB");
+    /// <summary>
+    /// Mask over everything outside the crop region. Matches the reference
+    /// design's <c>rgba(0, 0, 0, 0.42)</c> dim layer.
+    /// </summary>
+    private static readonly Color DimColor = Color.FromRgba(0f, 0f, 0f, 0.42f);
+
+    /// <summary>
+    /// Crop region border. Matches the reference's Syncfusion blue border.
+    /// </summary>
+    private static readonly Color BorderColor = Color.FromArgb("#0066F5");
 
     /// <summary>Whether the overlay should be drawn at all.</summary>
     public bool IsVisible { get; set; }
@@ -223,7 +231,8 @@ internal sealed class CropOverlayDrawable : IDrawable
         // Right strip (between top and bottom strips, outside the crop rectangle).
         canvas.FillRectangle(x + width, y, viewWidth - (x + width), height);
 
-        // Blue border tracing the crop region.
+        // Blue border tracing the crop region. 2px to match the reference
+        // design's 2px border around the suggested crop box.
         canvas.StrokeColor = BorderColor;
         canvas.StrokeSize = 2f;
         canvas.DrawRectangle(x, y, width, height);
