@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:til="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:combo="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:vm="clr-namespace:SmartVehicleCare.ViewModels"
+             xmlns:behaviors="clr-namespace:SmartVehicleCare.Behaviors"
+             x:Class="SmartVehicleCare.Views.AddVehiclePanel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SplashBgLight}, Dark={StaticResource BrandNavy}}"
+             x:DataType="vm:AddVehicleViewModel">
+
+    <ContentView.Content>
+        <Grid RowDefinitions="Auto,*,Auto">
+
+            <!-- Header -->
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="*,Auto"
+                  Padding="24,16"
+                  BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyLight}}">
+                <Label Grid.Column="0"
+                       Text="Add new vehicle"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       VerticalOptions="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"/>
+                <Label Grid.Column="1"
+                       Text="Takes less than 2 minutes"
+                       FontSize="12"
+                       TextColor="{AppThemeBinding Light={StaticResource BrandMutedOnLight}, Dark={StaticResource BrandMutedOnDark}}"
+                       VerticalOptions="Center"/>
+            </Grid>
+
+            <!-- Content -->
+            <ScrollView Grid.Row="1"
+                        Padding="24,20"
+                        BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                <StackLayout Spacing="16">
+
+                    <!-- Vehicle Type -->
+                    <StackLayout Spacing="6">
+
+                        <Label Text="Vehicle type"
+                               FontSize="12"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource BrandTextMid},
+                                                              Dark={StaticResource BrandTextOnDarkAlt}}"/>
+
+                        <til:SfTextInputLayout
+                            ContainerType="Outlined"
+                            OutlineCornerRadius="10"
+                            Hint="Select vehicle type"
+                            EnableFloating="False"
+                            FocusedStrokeThickness="1.5"
+                            VerticalOptions="Center"
+                            UnfocusedStrokeThickness="1.5"
+                            InputViewPadding="14,0"
+                            ReserveSpaceForAssistiveLabels="False"
+                            Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                            ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                            <til:SfTextInputLayout.HintLabelStyle>
+                                <til:LabelStyle FontSize="14"
+                                                TextColor="#94A3B8"/>
+                            </til:SfTextInputLayout.HintLabelStyle>
+
+                            <combo:SfComboBox
+                                ItemsSource="{Binding VehicleTypes}"
+                                SelectedItem="{Binding SelectedVehicleType}"
+                                ShowBorder="False"
+                                IsEditable="False"
+                                IsClearButtonVisible="False"
+                                BackgroundColor="Transparent"
+                                TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                DropDownBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandDarkCard}}"
+                                DropDownItemTextColor="{AppThemeBinding Light=#0F172A, Dark=White}"
+                                SelectedDropDownItemBackground="{AppThemeBinding Light=#FEF3C7, Dark=#3D2E24}"
+                                DropDownIconColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}">
+                                <combo:SfComboBox.SelectedDropDownItemTextStyle>
+                                    <combo:DropDownTextStyle TextColor="{AppThemeBinding Light=#B45309, Dark=#F59E0B}"/>
+                                </combo:SfComboBox.SelectedDropDownItemTextStyle>
+                            </combo:SfComboBox>
+
+                        </til:SfTextInputLayout>
+
+                    </StackLayout>
+
+                    <!-- Make + Model -->
+                    <Grid ColumnDefinitions="*,10,*">
+                        <StackLayout Grid.Column="0"
+                                     Spacing="6">
+                            <Label Text="Make"
+                                   FontSize="12"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                            <til:SfTextInputLayout
+                                ContainerType="Outlined"
+                                OutlineCornerRadius="10"
+                                Hint="Eg: Toyota"
+                                EnableFloating="False"
+                                FocusedStrokeThickness="1.5"
+                                VerticalOptions="Center"
+                                UnfocusedStrokeThickness="1.5"
+                                InputViewPadding="14,0"
+                                ReserveSpaceForAssistiveLabels="False"
+                                Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                                <til:SfTextInputLayout.HintLabelStyle>
+                                    <til:LabelStyle FontSize="14"
+                                                    TextColor="#94A3B8"/>
+                                </til:SfTextInputLayout.HintLabelStyle>
+                                <Entry Text="{Binding Make}"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                       BackgroundColor="Transparent"/>
+                            </til:SfTextInputLayout>
+                        </StackLayout>
+                        <StackLayout Grid.Column="2"
+                                     Spacing="6">
+                            <Label Text="Model"
+                                   FontSize="12"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                            <til:SfTextInputLayout
+                                ContainerType="Outlined"
+                                OutlineCornerRadius="10"
+                                EnableFloating="False"
+                                FocusedStrokeThickness="1.5"
+                                UnfocusedStrokeThickness="1.5"
+                                Hint="e.g. Camry"
+                                InputViewPadding="14,0"
+                                ReserveSpaceForAssistiveLabels="False"
+                                Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                                <til:SfTextInputLayout.HintLabelStyle>
+                                    <til:LabelStyle FontSize="14"
+                                                    TextColor="#94A3B8"></til:LabelStyle>
+                                </til:SfTextInputLayout.HintLabelStyle>
+                                <Entry Text="{Binding Model}"
+                                       TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                       BackgroundColor="Transparent"/>
+                            </til:SfTextInputLayout>
+                        </StackLayout>
+                    </Grid>
+
+                    <!-- Variant -->
+                    <StackLayout Spacing="6">
+                        <Label Text="Variant (optional)"
+                               FontSize="12"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                        <til:SfTextInputLayout
+                            ContainerType="Outlined"
+                            OutlineCornerRadius="10"
+                            EnableFloating="False"
+                            FocusedStrokeThickness="1.5"
+                            UnfocusedStrokeThickness="1.5"
+                            Hint="e.g. V6 XSE"
+                            InputViewPadding="14,0"
+                            ReserveSpaceForAssistiveLabels="False"
+                            Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                            ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                            <til:SfTextInputLayout.HintLabelStyle>
+                                <til:LabelStyle FontSize="14"
+                                                TextColor="#94A3B8"></til:LabelStyle>
+                            </til:SfTextInputLayout.HintLabelStyle>
+                            <Entry Text="{Binding Variant}"
+                                   TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                   BackgroundColor="Transparent"/>
+                        </til:SfTextInputLayout>
+                    </StackLayout>
+
+                    <!-- Current Odometer -->
+                    <StackLayout Spacing="6">
+                                <Label Text="Current odometer (km)"
+                               FontSize="12"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                        <til:SfTextInputLayout
+                            ContainerType="Outlined"
+                            OutlineCornerRadius="10"
+                            EnableFloating="False"
+                            FocusedStrokeThickness="1.5"
+                            UnfocusedStrokeThickness="1.5"
+                            Hint="45,280 km"
+                            InputViewPadding="14,0"
+                            ReserveSpaceForAssistiveLabels="False"
+                            Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                            ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                            <til:SfTextInputLayout.HintLabelStyle>
+                                <til:LabelStyle FontSize="14"
+                                                TextColor="#94A3B8"></til:LabelStyle>
+                            </til:SfTextInputLayout.HintLabelStyle>
+                            <Entry Text="{Binding OdaMeterReading}"
+                                   Keyboard="Numeric"
+                                   TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                   BackgroundColor="Transparent">
+                                <Entry.Behaviors>
+                                    <behaviors:NumericOnlyBehavior/>
+                                </Entry.Behaviors>
+                            </Entry>
+                        </til:SfTextInputLayout>
+                    </StackLayout>
+
+                </StackLayout>
+            </ScrollView>
+
+            <!-- Footer -->
+            <Grid Grid.Row="2"
+                  ColumnDefinitions="*,*"
+                  Padding="24,16"
+                  ColumnSpacing="10"
+                  BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyLight}}">
+                <buttons:SfButton Grid.Column="0"
+                                  Text="Cancel"
+                                  Background="Transparent"
+                                  TextColor="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                  Stroke="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                  StrokeThickness="1.5"
+                                  FontSize="14"
+                                  CornerRadius="10"
+                                  HeightRequest="48"
+                                  Command="{Binding CloseCommand}"/>
+                <buttons:SfButton Grid.Column="1"
+                                  Background="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                  TextColor="White"
+                                  FontSize="14"
+                                  FontAttributes="Bold"
+                                  CornerRadius="10"
+                                  HeightRequest="48"
+                                  IsEnabled="{Binding CanAddVehicle}"
+                                  Command="{Binding AddVehicleCommand}">
+                    <buttons:SfButton.Content>
+                        <DataTemplate>
+                            <HorizontalStackLayout Spacing="7" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="+" FontSize="20" FontAttributes="Bold" TextColor="White" VerticalOptions="Center"/>
+                                <Label Text="Add vehicle" FontSize="14" FontAttributes="Bold" TextColor="White" VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </DataTemplate>
+                    </buttons:SfButton.Content>
+                </buttons:SfButton>
+            </Grid>
+        </Grid>
+    </ContentView.Content>
+</ContentView>

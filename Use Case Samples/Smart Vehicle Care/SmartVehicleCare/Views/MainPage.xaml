@@ -1,0 +1,1333 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:charts="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+             xmlns:sf="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:combo="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
+             xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:dataGrid="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
+             xmlns:views="clr-namespace:SmartVehicleCare.Views"
+             xmlns:vm="clr-namespace:SmartVehicleCare.ViewModels"
+             xmlns:converters="clr-namespace:SmartVehicleCare.Converters"
+             xmlns:maps="clr-namespace:Syncfusion.Maui.Maps;assembly=Syncfusion.Maui.Maps"
+             xmlns:models="clr-namespace:SmartVehicleCare.Models"
+             x:Class="SmartVehicleCare.Views.MainPage"
+             x:Name="RootPage"
+             x:DataType="vm:MainViewModel"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light=#FAF9F5, Dark=#111009}">
+
+    <Grid x:Name="RootLayout">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToGridLengthConverter}, ConverterParameter=220}"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToGridLengthConverter}, ConverterParameter=bottom-nav}"/>
+        </Grid.RowDefinitions>
+
+        <!-- ═══ SIDEBAR  (desktop only — Col 0, Row 0+1) ═══ -->
+        <Grid Grid.Column="0" Grid.RowSpan="2"
+              BackgroundColor="{StaticResource BrandNavy}"
+              IsVisible="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToBooleanConverter}, ConverterParameter=desktop}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Logo + app name -->
+            <StackLayout Grid.Row="0" Orientation="Horizontal" Spacing="10" Padding="20,28,20,18">
+                <Border WidthRequest="36" HeightRequest="36" StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="9"/>
+                    </Border.StrokeShape>
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#D97706" Offset="0"/>
+                            <GradientStop Color="#B45309" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Label Text="&#xE531;" FontFamily="MaterialIcons" FontSize="18"
+                           TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+                </Border>
+                <Label Text="Vehicle Care AI" TextColor="White" FontSize="14"
+                       FontAttributes="Bold" VerticalOptions="Center"/>
+            </StackLayout>
+
+            <!-- Separator -->
+<BoxView Grid.Row="2" BackgroundColor="{StaticResource BrandNavyLight}" HeightRequest="1"/>
+
+            <!-- Nav items (main) + Settings pinned at bottom -->
+            <Grid Grid.Row="3" RowDefinitions="*,Auto">
+
+                <StackLayout Grid.Row="0" Padding="0,4,0,0" Spacing="2">
+
+                <!-- Dashboard -->
+                <Grid ColumnDefinitions="4,*" HeightRequest="46">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ShowDashboardCommand}"/>
+                    </Grid.GestureRecognizers>
+                    <BoxView Grid.Column="0" BackgroundColor="Transparent" VerticalOptions="Fill">
+                        <BoxView.Triggers>
+                            <DataTrigger TargetType="BoxView" Binding="{Binding IsDashNavActive}" Value="True">
+                                <Setter Property="BackgroundColor" Value="#B45309"/>
+                            </DataTrigger>
+                        </BoxView.Triggers>
+                    </BoxView>
+                    <Grid Grid.Column="1" ColumnDefinitions="48,*" BackgroundColor="Transparent">
+                        <Grid.Triggers>
+                            <DataTrigger TargetType="Grid" Binding="{Binding IsDashNavActive}" Value="True">
+                                <Setter Property="BackgroundColor" Value="#2D2117"/>
+                            </DataTrigger>
+                        </Grid.Triggers>
+                        <Label Grid.Column="0" Text="&#xE871;" FontFamily="MaterialIcons"
+                               FontSize="18" HorizontalOptions="Center" VerticalOptions="Center"
+                               TextColor="{StaticResource BrandMutedOnDark}">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsDashNavActive}" Value="True">
+                                    <Setter Property="TextColor" Value="#F59E0B"/>
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label Grid.Column="1" Text="Dashboard" FontSize="14"
+                               VerticalOptions="Center" TextColor="{StaticResource BrandMutedOnDark}">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsDashNavActive}" Value="True">
+                                    <Setter Property="TextColor" Value="White"/>
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </Grid>
+                </Grid>
+
+                <!-- Vehicle Center -->
+                <Grid ColumnDefinitions="4,*" HeightRequest="46">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ShowVehicleCenterCommand}"/>
+                    </Grid.GestureRecognizers>
+                    <BoxView Grid.Column="0" BackgroundColor="Transparent" VerticalOptions="Fill">
+                        <BoxView.Triggers>
+                            <DataTrigger TargetType="BoxView" Binding="{Binding IsVehicleNavActive}" Value="True">
+                                <Setter Property="BackgroundColor" Value="#B45309"/>
+                            </DataTrigger>
+                        </BoxView.Triggers>
+                    </BoxView>
+                    <Grid Grid.Column="1" ColumnDefinitions="48,*" BackgroundColor="Transparent">
+                        <Grid.Triggers>
+                            <DataTrigger TargetType="Grid" Binding="{Binding IsVehicleNavActive}" Value="True">
+                                <Setter Property="BackgroundColor" Value="#2D2117"/>
+                            </DataTrigger>
+                        </Grid.Triggers>
+                        <Label Grid.Column="0" Text="&#xE531;" FontFamily="MaterialIcons"
+                               FontSize="18" HorizontalOptions="Center" VerticalOptions="Center"
+                               TextColor="{StaticResource BrandMutedOnDark}">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsVehicleNavActive}" Value="True">
+                                    <Setter Property="TextColor" Value="#F59E0B"/>
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label Grid.Column="1" Text="Vehicle Center" FontSize="14"
+                               VerticalOptions="Center" TextColor="{StaticResource BrandMutedOnDark}">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsVehicleNavActive}" Value="True">
+                                    <Setter Property="TextColor" Value="White"/>
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </Grid>
+                </Grid>
+
+                <!-- AI Assist -->
+                <Grid ColumnDefinitions="4,*" HeightRequest="46">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ShowAIAssistCommand}"/>
+                    </Grid.GestureRecognizers>
+                    <BoxView Grid.Column="0" BackgroundColor="Transparent" VerticalOptions="Fill">
+                        <BoxView.Triggers>
+                            <DataTrigger TargetType="BoxView" Binding="{Binding IsAINavActive}" Value="True">
+                                <Setter Property="BackgroundColor" Value="#B45309"/>
+                            </DataTrigger>
+                        </BoxView.Triggers>
+                    </BoxView>
+                    <Grid Grid.Column="1" ColumnDefinitions="48,*" BackgroundColor="Transparent">
+                        <Grid.Triggers>
+                            <DataTrigger TargetType="Grid" Binding="{Binding IsAINavActive}" Value="True">
+                                <Setter Property="BackgroundColor" Value="#2D2117"/>
+                            </DataTrigger>
+                        </Grid.Triggers>
+                        <Label Grid.Column="0" Text="&#xE65F;" FontFamily="MaterialIcons"
+                               FontSize="18" HorizontalOptions="Center" VerticalOptions="Center"
+                               TextColor="{StaticResource BrandMutedOnDark}">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsAINavActive}" Value="True">
+                                    <Setter Property="TextColor" Value="#F59E0B"/>
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label Grid.Column="1" Text="AI Assist" FontSize="14"
+                               VerticalOptions="Center" TextColor="{StaticResource BrandMutedOnDark}">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsAINavActive}" Value="True">
+                                    <Setter Property="TextColor" Value="White"/>
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </Grid>
+                </Grid>
+
+                </StackLayout>
+                <!-- end main nav items -->
+
+                <!-- Settings pinned at bottom of sidebar -->
+                <StackLayout Grid.Row="1" Spacing="0" Padding="0,0,0,16">
+                    <BoxView HeightRequest="1" BackgroundColor="#3D2E24" Margin="0,0,0,4"/>
+                    <Grid ColumnDefinitions="4,*" HeightRequest="46">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ShowSettingsCommand}"/>
+                        </Grid.GestureRecognizers>
+                        <BoxView Grid.Column="0" BackgroundColor="Transparent" VerticalOptions="Fill">
+                            <BoxView.Triggers>
+                                <DataTrigger TargetType="BoxView" Binding="{Binding IsSettingsNavActive}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="#B45309"/>
+                                </DataTrigger>
+                            </BoxView.Triggers>
+                        </BoxView>
+                        <Grid Grid.Column="1" ColumnDefinitions="48,*" BackgroundColor="Transparent">
+                            <Grid.Triggers>
+                                <DataTrigger TargetType="Grid" Binding="{Binding IsSettingsNavActive}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="#2D2117"/>
+                                </DataTrigger>
+                            </Grid.Triggers>
+                            <Label Grid.Column="0" Text="&#xE8B8;" FontFamily="MaterialIcons"
+                                   FontSize="18" HorizontalOptions="Center" VerticalOptions="Center"
+                                   TextColor="{StaticResource BrandMutedOnDark}">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsSettingsNavActive}" Value="True">
+                                        <Setter Property="TextColor" Value="#F59E0B"/>
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                            <Label Grid.Column="1" Text="Settings" FontSize="14"
+                                   VerticalOptions="Center" TextColor="{StaticResource BrandMutedOnDark}">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsSettingsNavActive}" Value="True">
+                                        <Setter Property="TextColor" Value="White"/>
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </Grid>
+                    </Grid>
+                </StackLayout>
+
+            </Grid>
+            <!-- end sidebar nav grid -->
+
+        </Grid>
+        <!-- end sidebar -->
+
+        <!-- ═══ MAIN CONTENT AREA  (Col 1, Row 0) ═══ -->
+        <Grid Grid.Column="1" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="64" />
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- ─── DESKTOP HEADER BAR ─── -->
+            <Grid Grid.Row="0"
+                  BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark={StaticResource BrandNavy}}"
+                  
+                  IsVisible="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToBooleanConverter}, ConverterParameter=desktop}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Title -->
+                <StackLayout Grid.Column="0" Orientation="Horizontal" Spacing="12" Padding="24,0" VerticalOptions="Center">
+                    <StackLayout.IsVisible>
+                        <Binding Source="{x:Reference RootPage}" Path="Width" Converter="{StaticResource WidthToBooleanConverter}" ConverterParameter="wide"/>
+                    </StackLayout.IsVisible>
+                    <Label Text="{Binding PageTitle}"
+                           Style="{StaticResource PageTitleStyle}"
+                           FontSize="20"
+                           TextColor="{AppThemeBinding Light=#0F172A, Dark=White}"/>
+
+                </StackLayout>
+
+                <!-- Add Vehicle Button (Desktop) -->
+                <buttons:SfButton Grid.Column="1" 
+                    IsVisible="{Binding IsAddVehicleButtonVisible}"
+                    WidthRequest="126"
+                    FontSize="13" 
+                    CornerRadius="8"
+                    HeightRequest="40"
+                    Padding="10,0"
+                    Background="{AppThemeBinding Light=#B45309, Dark=#D97706}"
+                    TextColor="White"
+                    Command="{Binding ShowAddVehicleCommand}"
+                    Margin="0,0,8,0" 
+                    VerticalOptions="Center">
+                    <buttons:SfButton.Content>
+                        <DataTemplate>
+                            <HorizontalStackLayout Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
+                            <Label Text="+" FontSize="18" FontAttributes="Bold" TextColor="White" VerticalOptions="Center"/>
+                            <Label Text="Add vehicle" FontSize="13" FontAttributes="Bold" TextColor="White" VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </DataTemplate>
+                    </buttons:SfButton.Content>
+                </buttons:SfButton>
+                <!-- Vehicle Switcher Pill -->
+                <Border Grid.Column="2" Margin="0,0,16,0"
+                        BackgroundColor="{AppThemeBinding Light=#FAF9F5, Dark=#2D2117}"
+                        Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"
+                        StrokeThickness="1"
+                        Padding="6,0"
+                        WidthRequest="200"
+                        MinimumWidthRequest="200"
+                        HeightRequest="40"
+                        VerticalOptions="Center">
+
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20"/>
+                    </Border.StrokeShape>
+
+                    <Grid ColumnDefinitions="Auto,*">
+
+                        <editors:SfComboBox Grid.Column="1"
+                            WidthRequest="188"
+                            MinimumWidthRequest="188"
+                            HorizontalOptions="Fill"
+                            ItemsSource="{Binding Vehicles}"
+                            SelectedItem="{Binding SelectedVehicle, Mode=TwoWay}"
+                            DisplayMemberPath="MakeModel"
+                            IsClearButtonVisible="False"
+                            IsEditable="False"
+                            Background="Transparent"
+                            ShowBorder="False"
+                            Placeholder="Select Vehicle"
+                            PlaceholderColor="{AppThemeBinding Light=#0F172A, Dark=White}"
+                            SelectedDropDownItemBackground="{AppThemeBinding Light=#EBF5FF, Dark=#3D2E24}"
+                            DropDownPlacement="Bottom"
+                            DropDownBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandDarkCard}}"
+                            DropDownItemTextColor="{AppThemeBinding Light=Black, Dark=White}"
+                            TextColor="{AppThemeBinding Light=#0F172A, Dark=White}"
+                            DropDownIconColor="{AppThemeBinding Light=#64748B, Dark=#64748B}">
+                            <editors:SfComboBox.SelectedDropDownItemTextStyle>
+                                <editors:DropDownTextStyle TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
+                            </editors:SfComboBox.SelectedDropDownItemTextStyle>
+                        </editors:SfComboBox>
+
+                    </Grid>
+                </Border>
+                <BoxView Grid.ColumnSpan="3" BackgroundColor="{AppThemeBinding Light=#E8ECF0, Dark=#3D2E24}"
+                         HeightRequest="1" Margin="0" VerticalOptions="End"/>
+            </Grid>
+
+            <!-- ─── MOBILE HEADER BAR ─── -->
+            <Grid Grid.Row="0"
+                  MinimumHeightRequest="64"
+                  BackgroundColor="{StaticResource BrandNavy}"
+                  Padding="16,0"
+                  IsVisible="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToBooleanConverter}, ConverterParameter=mobile}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" WidthRequest="32" HeightRequest="32" StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8"/>
+                    </Border.StrokeShape>
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#D97706" Offset="0"/>
+                            <GradientStop Color="#B45309" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Label Text="&#xE531;" FontFamily="MaterialIcons" FontSize="16"
+                           TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+                </Border>
+
+                <!-- Title -->
+                <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="8" Margin="10,0,0,0" VerticalOptions="Center">
+                    <Label Text="Vehicle Care AI"
+                           TextColor="White" FontSize="16" FontAttributes="Bold"
+                           VerticalOptions="Center"/>
+
+                </StackLayout>
+
+                <!-- Vehicle Switcher Pill (mobile) -->
+                <Border Grid.Column="2"
+                        BackgroundColor="{AppThemeBinding Light=#FAF9F5, Dark=#2D2117}"
+                        Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"
+                        StrokeThickness="1"
+                        Padding="6,0"
+                    WidthRequest="180"
+                    MinimumWidthRequest="180"
+                        HeightRequest="40"
+                        VerticalOptions="Center">
+
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20"/>
+                    </Border.StrokeShape>
+
+                    <Grid ColumnDefinitions="Auto,*">
+
+                        <editors:SfComboBox Grid.Column="1"
+                                            WidthRequest="168"
+                                            MinimumWidthRequest="168"
+                                            HorizontalOptions="Fill"
+                                            ItemsSource="{Binding Vehicles}"
+                                            SelectedItem="{Binding SelectedVehicle, Mode=TwoWay}"
+                                            DisplayMemberPath="MakeModel"
+                                            IsClearButtonVisible="False"
+                                            IsEditable="False"
+                                            Background="Transparent"
+                                            ShowBorder="False"
+                                            Placeholder="Select Vehicle"
+                                            SelectedDropDownItemBackground="{AppThemeBinding Light=#F8FAFC, Dark=#2D2117}"
+                                            DropDownPlacement="Bottom"
+                                            DropDownBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandDarkCard}}"
+                                            DropDownItemTextColor="{AppThemeBinding Light=#0F172A, Dark=#EDF6FF}"
+                                            TextColor="{AppThemeBinding Light=#0F172A, Dark=White}"
+                                            DropDownIconColor="{AppThemeBinding Light=#64748B, Dark=#64748B}">
+                        </editors:SfComboBox>
+
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- ─── DASHBOARD SECTION ─── -->
+            <ScrollView Grid.Row="1" IsVisible="{Binding IsDashboardVisible}">
+                <StackLayout Spacing="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToDoubleConverter}, ConverterParameter='0,16'}"
+                             Padding="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToThicknessConverter}, ConverterParameter='24,20,24,24|12,16,12,24|16,16,0,20'}">
+
+                    <!-- ═ MAIN 2-COL GRID (desktop) / single col (mobile) ═ -->
+                      <Grid ColumnSpacing="16"
+                          RowSpacing="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToDoubleConverter}, ConverterParameter='16,0'}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToGridLengthConverter}, ConverterParameter=3*}"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- ─── Vehicle Digital Twin Hero Card  Col 0 Row 0 ─── -->
+                        <Border HeightRequest="220"
+                                VerticalOptions="Start"
+                                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2D2117}"
+                                Stroke="{AppThemeBinding Light=#E8ECF0, Dark=Transparent}"
+                                StrokeThickness="1">
+
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="14"/>
+                            </Border.StrokeShape>
+
+                            <Grid Padding="0"
+                                  ColumnSpacing="12"
+                                  ColumnDefinitions="{OnPlatform WinUI='1.3*,2*', MacCatalyst='1.3*,2*', Default='*'}">
+
+                                <!-- Vehicle Image -->
+                                <Border Grid.Column="0"
+                                        StrokeThickness="0"
+                                        BackgroundColor="{AppThemeBinding Light=#F8FAFC, Dark=#201A17}"
+                                        HorizontalOptions="Fill"
+                                        VerticalOptions="Fill"
+                                        MinimumWidthRequest="120">
+
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="0"/>
+                                    </Border.StrokeShape>
+
+                                    <Image Source="{Binding VehicleImageSource}"
+                                           Aspect="AspectFill"
+                                           HorizontalOptions="Fill"
+                                           VerticalOptions="Fill"
+                                           Margin="0"/>
+                                </Border>
+
+                                <!-- Vehicle Details -->
+                                <Grid Margin="{OnPlatform WinUI='4,12,12,0', MacCatalyst='4,12,12,0',Android='14,12,12,0', iOS='14,12,12,0'}" Grid.Column="1"
+                                      RowDefinitions="Auto,Auto,Auto,*">
+
+                                    <!-- Header -->
+                                    <Grid ColumnDefinitions="*,Auto">
+
+                                        <VerticalStackLayout Spacing="4">
+
+                                            <Label Text="{Binding VehicleName}"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           LineBreakMode="TailTruncation"
+                           TextColor="{OnPlatform Default=White, WinUI={AppThemeBinding Light=#0F172A, Dark=White}, MacCatalyst={AppThemeBinding Light=#0F172A, Dark=White}}"/>
+
+                                            <Label Text="{Binding VehicleModel}"
+                           FontSize="13"
+                           TextColor="{OnPlatform Default=#CBD5E1, WinUI={AppThemeBinding Light=#64748B, Dark=#94A3B8}, MacCatalyst={AppThemeBinding Light=#64748B, Dark=#94A3B8}}"/>
+
+                                        </VerticalStackLayout>
+
+                                        <!-- Health Badge -->
+                                        <Border Grid.Column="1"
+                                                Padding="10,6"
+                                                BackgroundColor="{Binding ConditionBackgroundColor}"
+                                                StrokeThickness="0"
+                                                HorizontalOptions="End"
+                                                VerticalOptions="Start">
+
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="8"/>
+                                            </Border.StrokeShape>
+
+                                              <Label Text="{Binding ConditionText}"
+                                                   FontSize="11"
+                                                   FontAttributes="Bold"
+                                                   FontFamily="OpenSansSemibold"
+                                                  TextColor="{Binding ConditionTextColor}"/>
+                                        </Border>
+
+                                    </Grid>
+
+                                    <!-- Odometer -->
+                                    <HorizontalStackLayout Grid.Row="1"
+                                   Margin="0,14,0,0"
+                                   Spacing="6">
+
+                                        <Label Text="&#xE9E4;"
+                                               FontFamily="MaterialIcons"
+                                               FontSize="16"
+                                               VerticalOptions="Center"
+                                               TextColor="{OnPlatform Default=White, WinUI=#3B82F6, MacCatalyst=#3B82F6}"/>
+
+                                        <Label Text="{Binding VehicleOdometer}"
+                                               FontSize="14"
+                                               FontAttributes="Bold"
+                                               VerticalOptions="Center"
+                                               TextColor="{OnPlatform Default=White, WinUI={AppThemeBinding Light=#334155, Dark=#CBD5E1}, MacCatalyst={AppThemeBinding Light=#334155, Dark=#CBD5E1}}"/>
+
+                                    </HorizontalStackLayout>
+
+                                    <!-- Last Service Info -->
+                                    <Border Grid.Row="2"
+                                            Margin="0,14,0,0"
+                                            Padding="10,6"
+                                            HorizontalOptions="Start"
+                                            BackgroundColor="{AppThemeBinding Light=#FEF3C7, Dark=#451A03}"
+                                            StrokeThickness="0">
+
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8"/>
+                                        </Border.StrokeShape>
+
+                                        <HorizontalStackLayout Spacing="6">
+
+                                            <Label Text="{Binding LastServiceText}"
+                                                   FontSize="12"
+                                                   VerticalOptions="Center"
+                                                   TextColor="{AppThemeBinding Light=#92400E, Dark=#FCD34D}"/>
+
+                                        </HorizontalStackLayout>
+
+                                    </Border>
+
+                                    <!-- Quick stats row: Next Service · Reg · Monthly Spend -->
+                                    <Grid Grid.Row="3"
+                                          ColumnDefinitions="*,*,*"
+                                          ColumnSpacing="8"
+                                          Margin="0,14,0,4">
+
+                                        <!-- Next Service -->
+                                        <StackLayout Grid.Column="0" Spacing="2">
+                                            <Label Text="Next service"
+                                                   FontSize="10"
+                                                   FontAttributes="Bold"
+                                                   CharacterSpacing="0.5"
+                                                   TextColor="{OnPlatform Default=#E2E8F0, WinUI={AppThemeBinding Light=#94A3B8, Dark=#4A6482}, MacCatalyst={AppThemeBinding Light=#94A3B8, Dark=#4A6482}}"/>
+                                            <HorizontalStackLayout Spacing="4">
+                                                <Label Text="&#xE8B8;"
+                                                       FontFamily="MaterialIcons"
+                                                       FontSize="13"
+                                                       VerticalOptions="Center"
+                                                       TextColor="{OnPlatform Default=White, WinUI={AppThemeBinding Light=#3B82F6, Dark=#60A5FA}, MacCatalyst={AppThemeBinding Light=#3B82F6, Dark=#60A5FA}}"/>
+                                                <Label Text="{Binding NextServiceDueText}"
+                                                       FontSize="12"
+                                                       FontAttributes="Bold"
+                                                       VerticalOptions="Center"
+                                                       TextColor="{OnPlatform Default=White, WinUI={AppThemeBinding Light=#1E293B, Dark=#E2E8F0}, MacCatalyst={AppThemeBinding Light=#1E293B, Dark=#E2E8F0}}"/>
+                                            </HorizontalStackLayout>
+                                        </StackLayout>
+
+                                        <!-- Monthly Spend -->
+                                        <StackLayout Grid.Column="2" Spacing="2">
+                                            <Label Text="This Month"
+                                                   FontSize="10"
+                                                   FontAttributes="Bold"
+                                                   CharacterSpacing="0.5"
+                                                   TextColor="{OnPlatform Default=#E2E8F0, WinUI={AppThemeBinding Light=#94A3B8, Dark=#4A6482}, MacCatalyst={AppThemeBinding Light=#94A3B8, Dark=#4A6482}}"/>
+                                            <HorizontalStackLayout Spacing="4">
+                                                      <Label Text="&#x20B9;"
+                                                          FontFamily="OpenSansRegular"
+                                                       FontSize="13"
+                                                       VerticalOptions="Center"
+                                                       TextColor="{OnPlatform Default=White, WinUI={AppThemeBinding Light=#3B82F6, Dark=#60A5FA}, MacCatalyst={AppThemeBinding Light=#3B82F6, Dark=#60A5FA}}"/>
+                                                <Label Text="{Binding MonthlySpendText}"
+                                                       FontSize="12"
+                                                       FontAttributes="Bold"
+                                                       VerticalOptions="Center"
+                                                       TextColor="{OnPlatform Default=White, WinUI={AppThemeBinding Light=#1E293B, Dark=#E2E8F0}, MacCatalyst={AppThemeBinding Light=#1E293B, Dark=#E2E8F0}}"/>
+                                            </HorizontalStackLayout>
+                                        </StackLayout>
+
+                                    </Grid>
+                                </Grid>
+
+                            </Grid>
+                        </Border>
+
+                        <!-- ─── Overall Health Card (AI-first) ─── -->
+                        <Border Grid.Column="{OnPlatform WinUI=1, MacCatalyst=1, Default=0}"
+                                Grid.Row="{OnPlatform WinUI=0, MacCatalyst=0, Default=1}"
+                                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2D2117}"
+                                Stroke="{AppThemeBinding Light=#E8ECF0, Dark=Transparent}"
+                                StrokeThickness="1" Padding="12"
+                                Margin="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToThicknessConverter}, ConverterParameter='0,0,0,0|0,0,0,0|0,16,0,0'}"
+                                HeightRequest="220" VerticalOptions="Center">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border"
+                                             Binding="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToBooleanConverter}, ConverterParameter=compact-desktop}"
+                                             Value="True">
+                                    <Setter Property="Grid.Column" Value="0"/>
+                                    <Setter Property="Grid.Row" Value="1"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="14"/>
+                            </Border.StrokeShape>
+                            <StackLayout Spacing="8">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Label Text="&#xE87D;" FontFamily="MaterialIcons" FontSize="16" TextColor="#EF4444" VerticalOptions="Center"/>
+                                            <Label Text="Vehicle health"
+                                               TextColor="{AppThemeBinding Light=#0F172A, Dark=White}"
+                                               FontSize="16" FontAttributes="Bold" VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
+                                    <Border Grid.Column="1" Padding="10,5" StrokeThickness="0"
+                                            IsVisible="{Binding HasVehicles}"
+                                            BackgroundColor="{AppThemeBinding Light=#FEF3C7, Dark=#3D2E24}">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8"/>
+                                        </Border.StrokeShape>
+                                             <Label Text="{Binding HealthScore, StringFormat='{0:0}/100'}"
+                                                 FontSize="11" FontAttributes="Bold"
+                                                   FontFamily="OpenSansSemibold"
+                                                   VerticalOptions="Center"
+                                                 TextColor="{AppThemeBinding Light=#B45309, Dark=#F59E0B}"/>
+                                    </Border>
+                                </Grid>
+
+                                <!-- No-vehicle empty state for health card -->
+                                <StackLayout IsVisible="{Binding IsNoVehiclesPlaceholderVisible}"
+                                             Spacing="4" Padding="0,8,0,8" HorizontalOptions="Center">
+                                    <Label Text="&#xE531;" FontFamily="MaterialIcons" FontSize="28"
+                                           TextColor="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                           HorizontalOptions="Center"/>
+                                    <Label Text="Add a vehicle to see health score"
+                                         FontSize="{OnPlatform Default=13, WinUI=12, MacCatalyst=12}"
+                                         LineBreakMode="WordWrap"
+                                         HorizontalTextAlignment="Center"
+                                           TextColor="{AppThemeBinding Light=#94A3B8, Dark=#4A6482}"/>
+                                </StackLayout>
+
+                                <Border BackgroundColor="{AppThemeBinding Light=#F8FAFF, Dark=#1C1917}"
+                                        IsVisible="{Binding HasVehicles}"
+                                        Stroke="{AppThemeBinding Light=#DBEAFE, Dark=#3D2E24}"
+                                        StrokeThickness="1" Padding="10,8">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10"/>
+                                    </Border.StrokeShape>
+                                    <StackLayout Spacing="4">
+                                        <HorizontalStackLayout Spacing="6">
+                                            <Label Text="&#xE65F;" FontFamily="MaterialIcons" FontSize="11" TextColor="#0EA5E9" VerticalOptions="Center"/>
+                                            <Label Text="AI insight" FontSize="11" FontAttributes="Bold"
+                                                   CharacterSpacing="1.5" TextColor="#0EA5E9" VerticalOptions="Center"/>
+                                            <ActivityIndicator IsRunning="{Binding IsAiHealthLoading}"
+                                                               IsVisible="{Binding IsAiHealthLoading}"
+                                                               Color="#0EA5E9" WidthRequest="12" HeightRequest="12"
+                                                               VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding AiHealthSummary}"
+                                                 FontSize="{OnPlatform Default=13, WinUI=12, MacCatalyst=12}"
+                                               LineBreakMode="WordWrap"
+                                                 HorizontalTextAlignment="Center"
+                                               TextColor="{AppThemeBinding Light=#334155, Dark=#CBD5E1}"
+                                               IsVisible="{Binding IsAiHealthLoading, Converter={StaticResource InvertedBoolConverter}}"/>
+                                    </StackLayout>
+                                </Border>
+
+                                <StackLayout BindableLayout.ItemsSource="{Binding HealthIssueItems}" Spacing="4">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="models:HealthIssueItem">
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="{Binding Prefix}" FontSize="12"
+                                                       TextColor="{Binding PrefixColor}" VerticalOptions="Center"/>
+                                                <Label Text="{Binding Text}" FontSize="12" LineBreakMode="WordWrap"
+                                                       TextColor="{AppThemeBinding Light=#334155, Dark=#CBD5E1}"
+                                                       VerticalOptions="Center"/>
+                                            </HorizontalStackLayout>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </StackLayout>
+
+                            </StackLayout>
+                        </Border>
+
+                        <!-- ─── Active Intelligence Card  (desktop Col 0 Row 1 | mobile Col 0 Row 2) ─── -->
+                        <Border Grid.Column="0"
+                                Grid.Row="{OnPlatform WinUI=1, MacCatalyst=1, Default=2}"
+                                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2D2117}"
+                                Stroke="{AppThemeBinding Light=#E8ECF0, Dark=Transparent}"
+                                Margin="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToThicknessConverter}, ConverterParameter='0,0,0,0|0,0,0,0|0,16,0,0'}"
+                                StrokeThickness="1" Padding="16">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border"
+                                             Binding="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToBooleanConverter}, ConverterParameter=compact-desktop}"
+                                             Value="True">
+                                    <Setter Property="Grid.Row" Value="2"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="14"/>
+                            </Border.StrokeShape>
+                            <StackLayout Spacing="10">
+                                <!-- Header -->
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <HorizontalStackLayout Grid.Column="0" Spacing="8">
+                                        <Label Text="&#xE65F;" FontFamily="MaterialIcons"
+                                               TextColor="#3B82F6" FontSize="18" VerticalOptions="Center"/>
+                                        <Label Text="Active intelligence"
+                                               TextColor="{AppThemeBinding Light=#0F172A, Dark=White}"
+                                               FontSize="16" FontAttributes="Bold" VerticalOptions="Center"/>
+                                        <ActivityIndicator IsRunning="{Binding IsAiInsightsLoading}"
+                                                           IsVisible="{Binding IsAiInsightsLoading}"
+                                                           Color="#3B82F6" WidthRequest="14" HeightRequest="14"
+                                                           VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
+                                    <Border Grid.Column="1"
+                                            BackgroundColor="{AppThemeBinding Light=#FEF3C7, Dark=#3D2E24}"
+                                            StrokeThickness="0" Padding="10,5"
+                                            IsVisible="{Binding HasAiInsights}">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8"/>
+                                        </Border.StrokeShape>
+                                        <Label Text="{Binding AiInsights.Count, StringFormat='{0} Alerts'}"
+                                               TextColor="{AppThemeBinding Light=#B45309, Dark=#F59E0B}"
+                                               FontSize="11" FontAttributes="Bold"
+                                               FontFamily="OpenSansSemibold"/>
+                                    </Border>
+                                </Grid>
+                                <!-- Insight items (data-bound) -->
+                                <StackLayout BindableLayout.ItemsSource="{Binding AiInsights}" Spacing="7">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="models:AiInsightItem">
+                                            <Border BackgroundColor="{AppThemeBinding Light=#F8FAFC, Dark=#1C1917}"
+                                                    Stroke="{AppThemeBinding Light=#E8ECF0, Dark=Transparent}"
+                                                    StrokeThickness="1">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="10"/>
+                                                </Border.StrokeShape>
+                                                <Grid ColumnDefinitions="4,*">
+                                                    <BoxView Grid.Column="0"
+                                                             BackgroundColor="{Binding AccentColor}"
+                                                             VerticalOptions="Fill"/>
+                                                    <StackLayout Grid.Column="1" Padding="12,9" Spacing="2" VerticalOptions="Center">
+                                                        <Label Text="{Binding Title}"
+                                                               TextColor="{AppThemeBinding Light=#0F172A, Dark=#E2E8F0}"
+                                                               FontAttributes="Bold" FontSize="13"
+                                                               LineBreakMode="TailTruncation"/>
+                                                        <Label Text="{Binding Subtitle}"
+                                                               TextColor="{AppThemeBinding Light=#64748B, Dark=#64748B}"
+                                                                                FontSize="{OnPlatform Default=12, WinUI=11, MacCatalyst=11}"
+                                                                                    LineBreakMode="WordWrap"/>
+                                                    </StackLayout>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </StackLayout>
+                            </StackLayout>
+                        </Border>
+
+                        <!-- ─── Expense Intelligence Card  (desktop Col 1 Row 1 | mobile Col 0 Row 3) ─── -->
+                        <Border Grid.Column="{OnPlatform WinUI=1, MacCatalyst=1, Default=0}"
+                                Grid.Row="{OnPlatform WinUI=1, MacCatalyst=1, Default=3}"
+                                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2D2117}"
+                                Stroke="{AppThemeBinding Light=#E8ECF0, Dark=Transparent}"
+                            Margin="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToThicknessConverter}, ConverterParameter='0,0,0,0|0,0,0,0|0,16,0,0'}"
+                                StrokeThickness="1" Padding="16">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border"
+                                             Binding="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToBooleanConverter}, ConverterParameter=compact-desktop}"
+                                             Value="True">
+                                    <Setter Property="Grid.Column" Value="0"/>
+                                    <Setter Property="Grid.Row" Value="3"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="14"/>
+                            </Border.StrokeShape>
+                            <StackLayout Spacing="12">
+
+                                <!-- Header: title + current month name -->
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Label Text="&#xE8B0;" FontFamily="MaterialIcons"
+                                               TextColor="#3B82F6" FontSize="18" VerticalOptions="Center"/>
+                                        <Label Text="Monthly expense"
+                                               TextColor="{AppThemeBinding Light=#0F172A, Dark=White}"
+                                               FontSize="16" FontAttributes="Bold" VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
+                                    <Border Grid.Column="1" Padding="6,2" StrokeThickness="0"
+                                            BackgroundColor="{AppThemeBinding Light=#F1F5F9, Dark=#2D2117}"
+                                            VerticalOptions="Center"
+                                            WidthRequest="150">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8"/>
+                                        </Border.StrokeShape>
+                                        <editors:SfComboBox ItemsSource="{Binding ExpenseMonths}"
+                                                            SelectedItem="{Binding SelectedExpenseMonth, Mode=TwoWay}"
+                                                            IsClearButtonVisible="False"
+                                                            IsEditable="False"
+                                                            Background="Transparent"
+                                                            ShowBorder="False"
+                                                            DropDownPlacement="Bottom"
+                                                            DropDownBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandDarkCard}}"
+                                                            DropDownItemTextColor="{AppThemeBinding Light=#0F172A, Dark=White}"
+                                                            TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}"
+                                                            DropDownIconColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}"
+                                                            FontSize="12"/>
+                                    </Border>
+                                </Grid>
+
+                                <!-- Big amount + vs-avg badge -->
+                                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                                    <Label Text="{Binding CurrentMonthTotal}"
+                                           TextColor="{AppThemeBinding Light=#0F172A, Dark=White}"
+                                           FontSize="28" FontAttributes="Bold" VerticalOptions="Center"/>
+                                    <Border StrokeThickness="0" Padding="8,4" VerticalOptions="Center"
+                                            BackgroundColor="{AppThemeBinding Light=#FAF9F5, Dark=#3D2E24}">
+                                        <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                                        <Label Text="{Binding VsAvgLabel}"
+                                               TextColor="{Binding VsAvgColor}"
+                                               FontSize="11" FontAttributes="Bold"/>
+                                    </Border>
+                                </HorizontalStackLayout>
+
+                                <!-- All-time context: avg/month and cost/km -->
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                                    <StackLayout Grid.Column="0" Spacing="1">
+                                        <Label Text="AVG / Month"
+                                               FontSize="9" FontAttributes="Bold" CharacterSpacing="0.8"
+                                               TextColor="{AppThemeBinding Light=#94A3B8, Dark=#4A6482}"/>
+                                        <Label Text="{Binding AvgMonthlyLabel}"
+                                               FontSize="12" FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light=#475569, Dark=#CBD5E1}"/>
+                                    </StackLayout>
+                                    
+                                </Grid>
+
+                                <Label Text="{Binding ExpenseBreakdownTitle}"
+                                       TextColor="{AppThemeBinding Light=#94A3B8, Dark=#4A6482}"
+                                       FontSize="11" FontAttributes="Bold" CharacterSpacing="1"/>
+
+                                <!-- Fuel row -->
+                                <StackLayout Spacing="5">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                                        <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
+                                            <Border BackgroundColor="#3B82F6" WidthRequest="8" HeightRequest="8"
+                                                    StrokeThickness="0" VerticalOptions="Center">
+                                                <Border.StrokeShape><Ellipse/></Border.StrokeShape>
+                                            </Border>
+                                            <Label Text="Fuel"
+                                                   TextColor="{AppThemeBinding Light=#475569, Dark=#94A3B8}"
+                                                   FontSize="12" FontAttributes="Bold" VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <Label Grid.Column="1" Text="{Binding CurrentMonthFuelLabel}"
+                                               TextColor="{AppThemeBinding Light=#64748B, Dark=#64748B}"
+                                                 FontSize="{OnPlatform Default=12, WinUI=11, MacCatalyst=11}" VerticalOptions="Center"/>
+                                        <Label Grid.Column="2" Text="{Binding CurrentFuelPercent}"
+                                               TextColor="{AppThemeBinding Light=#0F172A, Dark=White}"
+                                               FontSize="11" FontAttributes="Bold" VerticalOptions="Center"/>
+                                    </Grid>
+                                    <progressBar:SfLinearProgressBar Progress="{Binding CurrentFuelProgress}"
+                                        Minimum="0" Maximum="100" ProgressFill="#3B82F6"
+                                        TrackFill="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"
+                                        TrackCornerRadius="3" ProgressCornerRadius="3"
+                                                                     Background="Transparent"
+                                        TrackHeight="7" ProgressHeight="7"/>
+                                </StackLayout>
+
+                                <!-- Maintenance row -->
+                                <StackLayout Spacing="5">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                                        <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
+                                            <Border BackgroundColor="#22D3EE" WidthRequest="8" HeightRequest="8"
+                                                    StrokeThickness="0" VerticalOptions="Center">
+                                                <Border.StrokeShape><Ellipse/></Border.StrokeShape>
+                                            </Border>
+                                            <Label Text="Maintenance"
+                                                   TextColor="{AppThemeBinding Light=#475569, Dark=#94A3B8}"
+                                                   FontSize="12" FontAttributes="Bold" VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <Label Grid.Column="1" Text="{Binding CurrentMonthServiceLabel}"
+                                               TextColor="{AppThemeBinding Light=#64748B, Dark=#64748B}"
+                                                 FontSize="{OnPlatform Default=12, WinUI=11, MacCatalyst=11}" VerticalOptions="Center"/>
+                                        <Label Grid.Column="2" Text="{Binding CurrentServicePercent}"
+                                               TextColor="{AppThemeBinding Light=#0F172A, Dark=White}"
+                                               FontSize="11" FontAttributes="Bold" VerticalOptions="Center"/>
+                                    </Grid>
+                                    <progressBar:SfLinearProgressBar Progress="{Binding CurrentServiceProgress}"
+                                        Minimum="0" Maximum="100" ProgressFill="#22D3EE"
+                                        TrackFill="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"
+                                                                     Background="Transparent"
+                                        TrackCornerRadius="3" ProgressCornerRadius="3"
+                                        TrackHeight="7" ProgressHeight="7"/>
+                                </StackLayout>
+
+                            </StackLayout>
+                        </Border>
+
+                    </Grid>
+                    <!-- end main 2-col grid -->
+
+                    <!-- ═ RECENT ACTIVITY ═ -->
+                    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2D2117}"
+                            Stroke="{AppThemeBinding Light=#E8ECF0, Dark=Transparent}"
+                            HeightRequest="{OnPlatform WinUI=250, MacCatalyst=250, Android=390, iOS=390}"
+                            Margin="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToThicknessConverter}, ConverterParameter='0,-14,-4,0|0,0,20,0|0,0,14,0'}"
+                            StrokeThickness="1" Padding="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="14"/>
+                        </Border.StrokeShape>
+                        <StackLayout Spacing="0">
+                            <Grid ColumnDefinitions="*,Auto" Padding="16,12,16,10" ColumnSpacing="10">
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label Text="&#xE889;" FontFamily="MaterialIcons"
+                                           TextColor="#3B82F6" FontSize="16" VerticalOptions="Center"/>
+                                    <Label Text="Recent activity"
+                                           TextColor="{AppThemeBinding Light=#0F172A, Dark=White}"
+                                           FontSize="14" FontAttributes="Bold" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                                <buttons:SfButton Grid.Column="1"
+                                                  Text="View all"
+                                                  IsVisible="{Binding HasRecentActivity}"
+                                                  Background="Transparent"
+                                                  TextColor="{AppThemeBinding Light={StaticResource BrandBlue}, Dark={StaticResource BrandBlueBright}}"
+                                                  FontSize="14" FontAttributes="Bold"
+                                                  HeightRequest="30" CornerRadius="8"
+                                                  StrokeThickness="0"
+                                                  Command="{Binding ShowRecentActivityAllCommand}"/>
+                            </Grid>
+                            <BoxView BackgroundColor="{AppThemeBinding Light=#E8ECF0, Dark=#3D2E24}" HeightRequest="1"/>
+                            <StackLayout IsVisible="{Binding NoRecentActivity}" Padding="16,28" Spacing="8" HorizontalOptions="Center">
+                                <Label Text="&#xE889;" FontFamily="MaterialIcons" FontSize="32" HorizontalOptions="Center"
+                                       TextColor="{AppThemeBinding Light=#CBD5E1, Dark=#2A3D5C}"/>
+                                <Label Text="No recent activity" FontSize="13" FontAttributes="Bold" HorizontalOptions="Center"
+                                       TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"/>
+                                <Label Text="Add fuel or service records to see them here" FontSize="{OnPlatform Default=12, WinUI=11, MacCatalyst=11}" HorizontalOptions="Center"
+                                       HorizontalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light=#94A3B8, Dark=#64748B}"/>
+                            </StackLayout>
+                            <dataGrid:SfDataGrid ItemsSource="{Binding RecentActivityTableRows}"
+                                                 AutoGenerateColumnsMode="None"
+                                                 SelectionMode="None"
+                                                 AllowEditing="False"
+                                                 ColumnWidthMode="Fill"
+                                                 RowHeight="{OnPlatform WinUI=32, MacCatalyst=32, Android=48, iOS=48}"
+                                                 HeaderRowHeight="{OnPlatform WinUI=34, MacCatalyst=34, Android=46, iOS=46}"
+                                                 GridLinesVisibility="Horizontal"
+                                                 HeaderGridLinesVisibility="Horizontal"
+                                                 VerticalScrollBarVisibility="Never"
+                                                 HorizontalScrollBarVisibility="Never"
+                                                 HeightRequest="{OnPlatform WinUI=320, MacCatalyst=320, Android=390, iOS=390, Default=390}"
+                                                 IsVisible="{Binding HasRecentActivity}">
+                                <dataGrid:SfDataGrid.DefaultStyle>
+                                    <dataGrid:DataGridStyle HeaderRowBackground="{AppThemeBinding Light=#F8FAFC, Dark=#2D2117}"
+                                                            HeaderRowTextColor="{AppThemeBinding Light=#475569, Dark=#9DB7D2}"
+                                                            RowBackground="{AppThemeBinding Light=#FFFFFF, Dark=#1C1917}"
+                                                            RowTextColor="{AppThemeBinding Light=#1E293B, Dark=#EDF6FF}"
+                                                            GridLineColor="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"/>
+                                </dataGrid:SfDataGrid.DefaultStyle>
+                                <dataGrid:SfDataGrid.Columns>
+                                    <dataGrid:DataGridTextColumn MappingName="Date" HeaderText="Date" Width="{OnPlatform WinUI=200, MacCatalyst=200, Android=110, iOS=110}"/>
+                                    <dataGrid:DataGridTextColumn MappingName="Type" HeaderText="Type" Width="{OnPlatform WinUI=210, MacCatalyst=210, Android=110, iOS=110}"/>
+                                    <dataGrid:DataGridTextColumn MappingName="Detail" HeaderText="Details" LineBreakMode="WordWrap" Width="{OnPlatform Android=140, iOS=140}"/>
+                                    <dataGrid:DataGridTemplateColumn MappingName="Status" HeaderText="Summary" Width="{OnPlatform WinUI=160, MacCatalyst=160, Android=90, iOS=90}">
+                                        <dataGrid:DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate x:DataType="models:DashboardTableRow">
+                                                <ContentView HorizontalOptions="Center" VerticalOptions="Center">
+                                                    <Border BackgroundColor="{Binding StatusBgColor}"
+                                                            Padding="8,3" StrokeThickness="0"
+                                                            HorizontalOptions="Center" VerticalOptions="Center">
+                                                        <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                                                        <Label Text="{Binding Status}" TextColor="{Binding StatusColor}" FontSize="10" FontAttributes="Bold"/>
+                                                    </Border>
+                                                </ContentView>
+                                            </DataTemplate>
+                                        </dataGrid:DataGridTemplateColumn.CellTemplate>
+                                    </dataGrid:DataGridTemplateColumn>
+                                </dataGrid:SfDataGrid.Columns>
+                            </dataGrid:SfDataGrid>
+                        </StackLayout>
+                    </Border>
+
+                </StackLayout>
+            </ScrollView>
+
+            <!-- ─── VEHICLE CENTER SECTION ─── -->
+            <!-- IsVisible lives on the wrapper so it keeps resolving against MainViewModel even
+                 though the inner page's BindingContext is reassigned to VehicleCenterViewModel. -->
+            <Grid Grid.Row="1" IsVisible="{Binding IsVehicleCenterVisible}">
+                <views:VehicleCenterPage BindingContext="{Binding VehicleCenterViewModel}"/>
+            </Grid>
+
+            <popup:SfPopup IsOpen="{Binding IsAllRecordsPopupVisible}"
+                           HeaderTitle="{Binding CurrentPopupTitle}"
+                           ShowHeader="True"
+                           ShowFooter="False"
+                           ShowCloseButton="True"
+                           WidthRequest="{OnPlatform WinUI=760, MacCatalyst=760, Android=340, iOS=340}"
+                           HeightRequest="{Binding AllRecordsPopupHeight}"
+                           StaysOpen="False">
+                <popup:SfPopup.PopupStyle>
+                    <popup:PopupStyle HeaderBackground="{AppThemeBinding Light=White, Dark=#2D2117}"
+                                      HeaderTextColor="{AppThemeBinding Light=#0F172A, Dark=#FAF6F0}"
+                                      PopupBackground="{AppThemeBinding Light=#F8FAFC, Dark=#1C1917}"
+                                      Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"
+                                      OverlayColor="{AppThemeBinding Light=#66000000, Dark=#99000000}"/>
+                </popup:SfPopup.PopupStyle>
+                <popup:SfPopup.ContentTemplate>
+                    <DataTemplate x:DataType="vm:MainViewModel">
+                        <Grid Padding="12" RowDefinitions="Auto,*"
+                              BackgroundColor="{AppThemeBinding Light=#F8FAFC, Dark=#1C1917}">
+                            <dataGrid:SfDataGrid Grid.Row="1"
+                                                 ItemsSource="{Binding CurrentPopupRows}"
+                                                 AutoGenerateColumnsMode="None"
+                                                 SelectionMode="None"
+                                                 AllowEditing="False"
+                                                 ColumnWidthMode="Fill"
+                                                 HeaderRowHeight="{OnPlatform MacCatalyst=40, WinUI=40, Android=52, iOS=52}"
+                                                 RowHeight="{OnPlatform WinUI=42, MacCatalyst=42, Android= 46, iOS=46}"
+                                                 GridLinesVisibility="Both"
+                                                 HeaderGridLinesVisibility="Both"
+                                                 VerticalScrollBarVisibility="Always"
+                                                 HorizontalScrollBarVisibility="Never">
+                                <dataGrid:SfDataGrid.DefaultStyle>
+                                    <dataGrid:DataGridStyle HeaderRowBackground="{AppThemeBinding Light=#F8FAFC, Dark=#2D2117}"
+                                                            HeaderRowTextColor="{AppThemeBinding Light=#475569, Dark=#9DB7D2}"
+                                                            RowBackground="{AppThemeBinding Light=#FFFFFF, Dark=#1C1917}"
+                                                            RowTextColor="{AppThemeBinding Light=#1E293B, Dark=#EDF6FF}"
+                                                            GridLineColor="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"/>
+                                </dataGrid:SfDataGrid.DefaultStyle>
+                                <dataGrid:SfDataGrid.Columns>
+                                    <dataGrid:DataGridTextColumn MappingName="Date" HeaderText="Date" Width="120"/>
+                                    <dataGrid:DataGridTextColumn MappingName="Type" HeaderText="Type" Width="140"/>
+                                    <dataGrid:DataGridTextColumn MappingName="Detail" HeaderText="Details" LineBreakMode="WordWrap"/>
+                                    <dataGrid:DataGridTemplateColumn MappingName="Status" HeaderText="Summary" Width="130">
+                                        <dataGrid:DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate x:DataType="models:DashboardTableRow">
+                                                <ContentView HorizontalOptions="Center" VerticalOptions="Center">
+                                                    <Border BackgroundColor="{Binding StatusBgColor}"
+                                                            Padding="8,3" StrokeThickness="0"
+                                                            HorizontalOptions="Center" VerticalOptions="Center">
+                                                        <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                                                        <Label Text="{Binding Status}" TextColor="{Binding StatusColor}" FontSize="10" FontAttributes="Bold"/>
+                                                    </Border>
+                                                </ContentView>
+                                            </DataTemplate>
+                                        </dataGrid:DataGridTemplateColumn.CellTemplate>
+                                    </dataGrid:DataGridTemplateColumn>
+                                </dataGrid:SfDataGrid.Columns>
+                            </dataGrid:SfDataGrid>
+                        </Grid>
+                    </DataTemplate>
+                </popup:SfPopup.ContentTemplate>
+            </popup:SfPopup>
+
+            <!-- ─── AI ASSIST SECTION ─── -->
+            <Grid Grid.Row="1" IsVisible="{Binding IsAIAssistVisible}">
+                <views:AIAssistPage x:Name="AIAssistView" BindingContext="{Binding AIAssistViewModel}"/>
+            </Grid>
+
+            <!-- ─── SETTINGS SECTION ─── -->
+            <Grid Grid.Row="1" IsVisible="{Binding IsSettingsVisible}">
+                <views:SettingsPage BindingContext="{Binding SettingsViewModel}"/>
+            </Grid>
+
+            <buttons:SfButton Grid.Row="1"
+                              IsVisible="{Binding IsMobileAddVehicleButtonVisible}"
+                              Text="&#xE145;"
+                              FontFamily="MaterialIcons"
+                              FontSize="26"
+                              Command="{Binding ShowAddVehicleCommand}"
+                              HorizontalOptions="End"
+                              VerticalOptions="End"
+                              Margin="0,0,18,18"
+                              WidthRequest="56"
+                              HeightRequest="56"
+                              Padding="0"
+                              CornerRadius="28"
+                              Background="{AppThemeBinding Light=#B45309, Dark=#D97706}"
+                              TextColor="White"
+                              ZIndex="10"
+                              Shadow="{Shadow Brush=#66000000, Offset='0,4', Radius=10, Opacity=0.4}"/>
+
+        </Grid>
+        <!-- end main content area -->
+
+        <!-- ═══ BOTTOM NAV  (mobile only — Col 1, Row 1) ═══ -->
+        <Grid Grid.Column="1" Grid.Row="1"
+              BackgroundColor="{StaticResource BrandNavy}"
+              IsVisible="{Binding Source={x:Reference RootPage}, Path=Width, Converter={StaticResource WidthToBooleanConverter}, ConverterParameter=bottom-nav}">
+            <Grid ColumnDefinitions="1*,1*,1*,1*">
+
+                <!-- Dashboard tab -->
+                <StackLayout Grid.Column="0" VerticalOptions="Center" HorizontalOptions="Center" Spacing="2">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ShowDashboardCommand}"/>
+                    </StackLayout.GestureRecognizers>
+                    <Label Text="&#xE871;" FontFamily="MaterialIcons" FontSize="22"
+                           HorizontalOptions="Center" TextColor="{StaticResource BrandMutedOnDark}">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsDashNavActive}" Value="True">
+                                <Setter Property="TextColor" Value="#F59E0B"/>
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                    <Label Text="Dashboard" FontSize="10" HorizontalOptions="Center" TextColor="{StaticResource BrandMutedOnDark}">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsDashNavActive}" Value="True">
+                                <Setter Property="TextColor" Value="#F59E0B"/>
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </StackLayout>
+
+                <!-- Vehicle Center tab -->
+                <StackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Center" Spacing="2">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ShowVehicleCenterCommand}"/>
+                    </StackLayout.GestureRecognizers>
+                    <Label Text="&#xE531;" FontFamily="MaterialIcons" FontSize="22"
+                           HorizontalOptions="Center" TextColor="{StaticResource BrandMutedOnDark}">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsVehicleNavActive}" Value="True">
+                                <Setter Property="TextColor" Value="#F59E0B"/>
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                    <Label Text="Vehicle" FontSize="10" HorizontalOptions="Center" TextColor="{StaticResource BrandMutedOnDark}">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsVehicleNavActive}" Value="True">
+                                <Setter Property="TextColor" Value="#F59E0B"/>
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </StackLayout>
+
+                <!-- AI Assist tab -->
+                <StackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="Center" Spacing="2">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ShowAIAssistCommand}"/>
+                    </StackLayout.GestureRecognizers>
+                    <Label Text="&#xE65F;" FontFamily="MaterialIcons" FontSize="22"
+                           HorizontalOptions="Center" TextColor="{StaticResource BrandMutedOnDark}">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsAINavActive}" Value="True">
+                                <Setter Property="TextColor" Value="#F59E0B"/>
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                    <Label Text="AI Assist" FontSize="10" HorizontalOptions="Center" TextColor="{StaticResource BrandMutedOnDark}">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsAINavActive}" Value="True">
+                                <Setter Property="TextColor" Value="#F59E0B"/>
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </StackLayout>
+
+                <!-- Settings tab -->
+                <StackLayout Grid.Column="3" VerticalOptions="Center" HorizontalOptions="Center" Spacing="2">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ShowSettingsCommand}"/>
+                    </StackLayout.GestureRecognizers>
+                    <Label Text="&#xE8B8;" FontFamily="MaterialIcons" FontSize="22"
+                           HorizontalOptions="Center" TextColor="{StaticResource BrandMutedOnDark}">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsSettingsNavActive}" Value="True">
+                                <Setter Property="TextColor" Value="#F59E0B"/>
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                    <Label Text="Settings" FontSize="10" HorizontalOptions="Center" TextColor="{StaticResource BrandMutedOnDark}">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsSettingsNavActive}" Value="True">
+                                <Setter Property="TextColor" Value="#F59E0B"/>
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </StackLayout>
+
+            </Grid>
+
+        </Grid>
+
+        <!-- ═══ RIGHT DRAWER (desktop only) ═══ -->
+        <Grid Grid.Column="1"
+      Grid.Row="0"
+      IsVisible="{Binding IsAddVehicleDrawerVisible}"
+      ZIndex="1000">
+
+            <!-- Backdrop -->
+            <BoxView
+        BackgroundColor="#B2000000">
+
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer
+                Command="{Binding CloseAddVehicleCommand}"/>
+                </BoxView.GestureRecognizers>
+
+            </BoxView>
+
+            <!-- Drawer -->
+            <Border HorizontalOptions="End"
+            WidthRequest="420"
+            BackgroundColor="{AppThemeBinding Light=#F0F4F8,
+                                               Dark={StaticResource BrandNavy}}">
+
+                <views:AddVehiclePanel BindingContext="{Binding AddVehicleViewModel}"/>
+
+            </Border>
+
+        </Grid>
+
+        <!-- ═══ BOTTOM SHEET (mobile only) ═══ -->
+          <Grid Grid.Column="1"
+              Grid.RowSpan="2"
+              IsVisible="{Binding IsAddVehicleBottomSheetVisible}"
+              ZIndex="1000">
+
+            <!-- backdrop -->
+            <BoxView BackgroundColor="#B2000000">
+
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer
+                Command="{Binding CloseAddVehicleCommand}"/>
+                </BoxView.GestureRecognizers>
+
+            </BoxView>
+
+            <!-- sheet -->
+            <Border VerticalOptions="End"
+            StrokeThickness="0"
+            BackgroundColor="{AppThemeBinding Light=#F0F4F8,
+                                               Dark={StaticResource BrandNavy}}">
+
+                <views:AddVehiclePanel BindingContext="{Binding AddVehicleViewModel}"/>
+
+            </Border>
+
+        </Grid>
+
+        <!-- ═══ API KEY GATE OVERLAY — shown on first Dashboard load when no key is configured ═══ -->
+        <Grid Grid.ColumnSpan="2" Grid.RowSpan="2"
+              IsVisible="{Binding IsApiKeyPromptVisible}"
+              ZIndex="2000"
+              BackgroundColor="#CC1C1412">
+
+            <Border HorizontalOptions="Center" VerticalOptions="Center"
+                    WidthRequest="{OnPlatform WinUI=480, MacCatalyst=480, Default=340}"
+                    MaximumWidthRequest="{OnPlatform Android=360, iOS=360}"
+                    BackgroundColor="{AppThemeBinding Light=#FAF9F5, Dark=#1C1917}"
+                    StrokeThickness="0">
+                <Border.StrokeShape><RoundRectangle CornerRadius="20"/></Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="#AA000000" Offset="0,12" Radius="40" Opacity="0.5"/>
+                </Border.Shadow>
+                <StackLayout Spacing="18" Padding="20,20">
+
+                    <!-- AI icon badge -->
+                    <Border BackgroundColor="{AppThemeBinding Light=#FEF3C7, Dark=#431407}"
+                            WidthRequest="60" HeightRequest="60" StrokeThickness="0"
+                            HorizontalOptions="Center">
+                        <Border.StrokeShape><Ellipse/></Border.StrokeShape>
+                        <Label Text="&#xE65F;" FontFamily="MaterialIcons" FontSize="30"
+                               TextColor="{AppThemeBinding Light=#B45309, Dark=#F59E0B}"
+                               HorizontalOptions="Center" VerticalOptions="Center"/>
+                    </Border>
+
+                    <Label Text="Activate AI features"
+                           FontSize="18" FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light=#1C1412, Dark=#FAF6F0}"/>
+                    <Label Text="Enter your Azure OpenAI API key to enable intelligent insights, health scoring, and the AI Assistant. You can always add it later in Settings."
+                           FontSize="12" LineBreakMode="WordWrap"
+                           HorizontalTextAlignment="Center" LineHeight="1.5"
+                           TextColor="{AppThemeBinding Light=#6B5E55, Dark=#B0A39A}"/>
+
+                    <!-- Key entry -->
+                    <sf:SfTextInputLayout Hint="Paste your Azure OpenAI API key here"
+                                          EnableFloating="False"
+                                          ReserveSpaceForAssistiveLabels="False">
+                        <sf:SfTextInputLayout.HintLabelStyle>
+                            <sf:LabelStyle FontSize="14" TextColor="#94A3B8"/>
+                        </sf:SfTextInputLayout.HintLabelStyle>
+                        <Entry IsPassword="True"
+                               Text="{Binding PromptApiKeyEntry, Mode=TwoWay}"
+                               TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                               BackgroundColor="Transparent"/>
+                    </sf:SfTextInputLayout>
+
+                    <!-- Action buttons -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Border Grid.Column="0" StrokeThickness="1" Padding="0,13"
+                                Stroke="{AppThemeBinding Light=#E5E0D8, Dark=#3D2E24}"
+                                BackgroundColor="Transparent">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding PromptSkipApiKeyCommand}"/>
+                            </Border.GestureRecognizers>
+                            <Label Text="Skip for now" FontSize="13" FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="{AppThemeBinding Light=#6B5E55, Dark=#B0A39A}"/>
+                        </Border>
+                        <Border Grid.Column="1" StrokeThickness="0" Padding="0,13"
+                                BackgroundColor="{AppThemeBinding Light=#B45309, Dark=#D97706}">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="12"/></Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding PromptSaveApiKeyCommand}"/>
+                            </Border.GestureRecognizers>
+                            <Label Text="Activate AI" FontSize="13" FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center" TextColor="White"/>
+                        </Border>
+                    </Grid>
+
+                </StackLayout>
+            </Border>
+        </Grid>
+
+    </Grid>
+</ContentPage>
