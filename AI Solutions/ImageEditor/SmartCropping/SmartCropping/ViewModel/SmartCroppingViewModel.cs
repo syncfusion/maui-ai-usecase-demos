@@ -140,6 +140,12 @@ public partial class SmartCroppingViewModel : ObservableObject
     /// Loads the bundled sample image. Invoked once by the view after the
     /// editor has been wired up so the page starts in a usable state.
     /// </summary>
+    /// <remarks>
+    /// Failures during the initial sample load are intentionally silent: the
+    /// sample image is an optional convenience, not a prerequisite. The user
+    /// can still click Open Image to load their own file. Showing an error
+    /// banner on first launch would be misleading.
+    /// </remarks>
     [RelayCommand]
     public async Task LoadSampleImageAsync()
     {
@@ -155,7 +161,7 @@ public partial class SmartCroppingViewModel : ObservableObject
 
             if (bytes.Length == 0)
             {
-                ShowError("Unable to load the sample image.");
+                Debug.WriteLine("Bundled sample image not found; user can still click Open Image.");
                 return;
             }
 
@@ -164,7 +170,6 @@ public partial class SmartCroppingViewModel : ObservableObject
         catch (Exception ex)
         {
             Debug.WriteLine($"Failed to load sample image: {ex.Message}");
-            ShowError("Unable to load the sample image.");
         }
     }
 
@@ -419,7 +424,7 @@ public partial class SmartCroppingViewModel : ObservableObject
         }
     }
 
-    private bool CanReset() => !IsBusy && (hasImage || IsSuggestionAvailable || IsCropApplied || IsError) && editorController is not null;
+    private bool CanReset() => !IsBusy && (IsSuggestionAvailable || IsCropApplied || IsManualCropping || IsError) && editorController is not null;
 
     /// <summary>
     /// Saves the cropped image to disk using the operating system save dialog.
