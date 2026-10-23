@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 using Syncfusion.Maui.ImageEditor;
@@ -60,7 +60,35 @@ public partial class SmartCropping : ContentPage, IImageEditorController
     /// <inheritdoc />
     public void ApplyCrop(Rect cropRectangle)
     {
-        ImageEditor.Crop(cropRectangle, false);
+        // Syncfusion's SfImageEditor.Crop(Rect, bool) interprets the rect
+        // in RENDERED-image coordinate space (the same space as
+        // ImageRenderedSize / imageLayout.Frame), NOT in original-pixel
+        // space. The view model gives us original-pixel coordinates, so
+        // convert them using the editor's current scale factor before the
+        // call. See Syncfusion.Maui.ImageEditor 35.1.41 ImageEditLayout.
+        // InitializeCrop / SaveCrop for the exact semantics.
+        Size original = ImageEditor.OriginalImageSize;
+        Size rendered = ImageEditor.ImageRenderedSize;
+
+        if (original.Width <= 0 || original.Height <= 0 ||
+            rendered.Width <= 0 || rendered.Height <= 0)
+        {
+            return;
+        }
+
+        double scale = Math.Min(rendered.Width / original.Width, rendered.Height / original.Height);
+        if (scale <= 0)
+        {
+            return;
+        }
+
+        Rect renderedRect = new Rect(
+            cropRectangle.X * scale,
+            cropRectangle.Y * scale,
+            cropRectangle.Width * scale,
+            cropRectangle.Height * scale);
+
+        ImageEditor.Crop(renderedRect, false);
     }
 
     /// <inheritdoc />
@@ -70,14 +98,20 @@ public partial class SmartCropping : ContentPage, IImageEditorController
     }
 
     /// <inheritdoc />
-    public async Task ResetEditorAsync()
+    public Task ResetEditorAsync()
     {
+        // Reset must feel instantaneous in the UI: the command clears
+        // suggestion/applied flags synchronously, and the editor's Reset()
+        // call returns immediately. The ImageLoaded event will still fire
+        // later as the original image re-renders, and the existing
+        // OnImageLoaded handler refreshes overlay geometry when that
+        // happens. We deliberately do NOT await ImageLoaded here — that was
+        // the source of the multi-second freeze users saw after pressing
+        // Reset.
         if (ImageEditor.Source is null)
         {
-            return;
+            return Task.CompletedTask;
         }
-
-        imageLoadedTaskSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         try
         {
@@ -88,14 +122,7 @@ public partial class SmartCropping : ContentPage, IImageEditorController
             // Reset can throw when no image is loaded.
         }
 
-        // Wait a short period for the ImageLoaded event to fire after the reset.
-        var timeoutTask = Task.Delay(TimeSpan.FromSeconds(5));
-        var completedTask = await Task.WhenAny(imageLoadedTaskSource.Task, timeoutTask);
-
-        if (completedTask == timeoutTask)
-        {
-            imageLoadedTaskSource.TrySetResult(false);
-        }
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
