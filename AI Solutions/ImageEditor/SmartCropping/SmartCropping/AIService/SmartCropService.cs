@@ -22,25 +22,42 @@ public sealed class SmartCropService : AzureBaseService, ISmartCropService
     """
 You are an image cropping assistant.
 
-Analyze the supplied image and identify its most important visual content.
+Analyze the supplied image and identify its most important visual content
+(the main subject: a person, animal, object, or focal element). Then suggest
+ONE rectangular crop region around that subject.
 
-Suggest one rectangular crop region that:
+CRITICAL — the crop rectangle MUST:
 
-- Keeps the important content visible.
-- Removes unnecessary surrounding space.
-- Preserves a balanced composition.
-- Uses the original image dimensions.
-- Remains within image boundaries.
+1. Fully contain the entire main subject, including any extremities
+   (animal tails and ears, human hands and feet, antennas, accessories,
+   overhanging branches, handles, etc.). Never crop into a limb, tail,
+   edge, or appendage.
+2. Leave a comfortable safety margin (roughly 5 to 15 percent of the
+   subject's longer dimension) of surrounding context on ALL four sides.
+   Prefer a slightly loose frame over a tight one.
+3. Remove obviously empty surrounding space (solid sky, plain wall,
+   background gradient) while still keeping enough breathing room so the
+   subject does not touch the crop edge.
+4. Preserve a balanced composition. If the subject is off-centre, recentre
+   the crop so the subject sits comfortably inside the new frame.
+5. Use the original image's pixel dimensions (top-left origin).
+6. Stay strictly inside the image boundary on every side.
 
-Return only valid JSON matching the schema.
+If the image has no clear single subject (for example a landscape, a
+pattern, or a scene with no dominant object), return the largest
+rectangle that still removes the most empty or repeated border area
+while keeping the most visually dense region fully visible.
+
+Return ONLY valid JSON with no commentary, no markdown fences, and no
+extra keys. Schema:
 
 {
-  "framing": "Main subject with reduced surrounding space",
+  "framing": "Short description of what the crop keeps visible",
   "cropRegion": {
-    "x": 140,
-    "y": 80,
-    "width": 760,
-    "height": 620
+    "x": <integer>,
+    "y": <integer>,
+    "width": <integer>,
+    "height": <integer>
   }
 }
 """;

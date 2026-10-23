@@ -1,4 +1,4 @@
-﻿using Microsoft.Maui.Graphics;
+using Microsoft.Maui.Graphics;
 using Syncfusion.Maui.ImageEditor;
 
 namespace SmartCropping.ViewModel;
@@ -34,10 +34,11 @@ public interface IImageEditorController
 
     /// <summary>
     /// Applies the supplied crop rectangle to the editor using original-image
-    /// coordinates. Does not commit the change; call <see cref="SaveEdits"/>
-    /// afterwards.
+    /// coordinates. The controller converts to the editor's rendered-image
+    /// coordinate space internally. Does not commit the change; call
+    /// <see cref="SaveEdits"/> afterwards.
     /// </summary>
-    /// <param name="cropRectangle">The rectangle to crop to.</param>
+    /// <param name="cropRectangle">The rectangle to crop to, in original-image pixels.</param>
     void ApplyCrop(Rect cropRectangle);
 
     /// <summary>
@@ -47,9 +48,14 @@ public interface IImageEditorController
     void StartManualCrop(ImageCropType cropType);
 
     /// <summary>
-    /// Cancels any active editing, restores the originally loaded image, and
-    /// waits for it to render.
+    /// Cancels any active editing and restores the originally loaded image.
     /// </summary>
+    /// <remarks>
+    /// Implementations must return promptly so the UI state machine can reset
+    /// without blocking on the editor's re-render. The editor signals the
+    /// completed re-render through its own <c>ImageLoaded</c> event, which the
+    /// view handles separately to refresh overlay geometry.
+    /// </remarks>
     Task ResetEditorAsync();
 
     /// <summary>

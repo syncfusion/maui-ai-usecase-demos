@@ -1,5 +1,4 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.Maui.Devices;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Devices;
 using Microsoft.Maui.Graphics;
@@ -262,7 +261,11 @@ public partial class SmartCroppingViewModel : ObservableObject
                 return;
             }
 
-            suggestedRegion = region;
+            // Apply a safety margin so a slightly tight AI bounding box
+            // (e.g. one that clips an animal's tail or a person's hand) gets
+            // a few percent of breathing room on every side. The expansion
+            // is clamped to the image so we never escape it.
+            suggestedRegion = region.ExpandedBy(0.08, originalSize.Width, originalSize.Height);
 
             RefreshOverlayGeometry();
 
@@ -424,13 +427,28 @@ public partial class SmartCroppingViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanSave))]
     public async Task SaveAsync()
     {
-        if (!IsCropApplied || editorController is null)
+        // Allow save once we are in a state where the editor's current
+        // bitmap represents the result the user wants to keep: either a
+        // committed crop (IsCropApplied) or an active manual crop session
+        // (IsManualCropping), where any small adjustment the user makes is
+        // implicitly accepted on Save.
+        if ((!IsCropApplied && !IsManualCropping) || editorController is null)
         {
             return;
         }
 
         try
         {
+            // If the user is still in the built-in crop UI, commit any
+            // pending crop before exporting so the saved image reflects
+            // their latest adjustment.
+            if (IsManualCropping && !IsCropApplied)
+            {
+                editorController.SaveEdits();
+                IsCropApplied = true;
+                IsManualCropping = false;
+            }
+
             await editorController.SaveImageAsync();
             StatusMessage = "Image saved.";
         }
@@ -441,7 +459,7 @@ public partial class SmartCroppingViewModel : ObservableObject
         }
     }
 
-    private bool CanSave() => IsCropApplied && !IsBusy && editorController is not null;
+    private bool CanSave() => (IsCropApplied || IsManualCropping) && !IsBusy && editorController is not null;
 
     /// <summary>
     /// Clears the error state and re-enables Smart Crop so the user can try
@@ -716,7 +734,9 @@ public partial class SmartCroppingViewModel : ObservableObject
         height = region.Height * scale;
 
         return true;
-    }private static byte[] LoadAssetBytes(string fileName)
+    }
+
+    private static byte[] LoadAssetBytes(string fileName)
     {
         using Stream? stream = FileSystem.OpenAppPackageFileAsync(fileName).GetAwaiter().GetResult();
         if (stream is null)

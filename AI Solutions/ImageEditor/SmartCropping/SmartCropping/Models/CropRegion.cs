@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace SmartCropping;
 
@@ -75,5 +75,72 @@ public sealed class CropRegion
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Returns a copy of this region expanded outward by the given fraction
+    /// of the region's own width and height, then clamped to the supplied
+    /// image bounds.
+    /// </summary>
+    /// <remarks>
+    /// This is used as a safety net on top of the AI suggestion so that a
+    /// slightly tight AI bounding box — one that clips an animal's tail or
+    /// a person's hand — gets a few percent of breathing room on every side
+    /// before the preview is shown to the user. The expanded region is
+    /// clamped so it never escapes the image.
+    /// </remarks>
+    /// <param name="fraction">
+    /// Fraction of the current width and height to add on every side.
+    /// Use a small positive value like 0.05–0.10 for a margin of a few
+    /// percent of the subject's size. Must be non-negative.
+    /// </param>
+    /// <param name="imageWidth">Width of the original image in pixels.</param>
+    /// <param name="imageHeight">Height of the original image in pixels.</param>
+    /// <returns>A new <see cref="CropRegion"/> with the expanded bounds.</returns>
+    public CropRegion ExpandedBy(double fraction, double imageWidth, double imageHeight)
+    {
+        if (double.IsNaN(fraction) || fraction < 0)
+        {
+            fraction = 0;
+        }
+
+        double padX = Width * fraction;
+        double padY = Height * fraction;
+
+        double newX = X - padX;
+        double newY = Y - padY;
+        double newWidth = Width + (padX * 2);
+        double newHeight = Height + (padY * 2);
+
+        // Clamp to image bounds.
+        if (newX < 0)
+        {
+            newWidth += newX;        // shrink width by the overdraw on the left
+            newX = 0;
+        }
+
+        if (newY < 0)
+        {
+            newHeight += newY;
+            newY = 0;
+        }
+
+        if (newX + newWidth > imageWidth)
+        {
+            newWidth = Math.Max(0, imageWidth - newX);
+        }
+
+        if (newY + newHeight > imageHeight)
+        {
+            newHeight = Math.Max(0, imageHeight - newY);
+        }
+
+        return new CropRegion
+        {
+            X = newX,
+            Y = newY,
+            Width = newWidth,
+            Height = newHeight
+        };
     }
 }
