@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui.Devices;
 using Microsoft.Maui.Graphics;
 using Syncfusion.Maui.ImageEditor;
 
@@ -62,74 +63,74 @@ public partial class SmartCroppingViewModel : ObservableObject
     /// performing another long-running operation.
     /// </summary>
     [ObservableProperty]
-    private bool isBusy;
+    public partial bool IsBusy { get; set; }
 
     /// <summary>
     /// Gets or sets whether an AI crop suggestion is available and waiting
     /// for the user to apply, adjust, or reset.
     /// </summary>
     [ObservableProperty]
-    private bool isSuggestionAvailable;
+    public partial bool IsSuggestionAvailable { get; set; }
 
     /// <summary>
     /// Gets or sets whether the AI or manual crop has been applied to the
     /// image and the result can be saved.
     /// </summary>
     [ObservableProperty]
-    private bool isCropApplied;
+    public partial bool IsCropApplied { get; set; }
 
     /// <summary>
     /// Gets or sets whether the most recent AI request failed and the retry
     /// banner should be shown.
     /// </summary>
     [ObservableProperty]
-    private bool isError;
+    public partial bool IsError { get; set; }
 
     /// <summary>
     /// Gets or sets whether the built-in manual crop UI is currently open.
     /// </summary>
     [ObservableProperty]
-    private bool isManualCropping;
+    public partial bool IsManualCropping { get; set; }
 
     /// <summary>
     /// Gets or sets the text shown in the status banner above the editor.
     /// </summary>
     [ObservableProperty]
-    private string statusMessage = string.Empty;
+    public partial string StatusMessage { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets whether the AI crop preview overlay is visible.
     /// </summary>
     [ObservableProperty]
-    private bool isOverlayVisible;
+    public partial bool IsOverlayVisible { get; set; }
 
     /// <summary>
     /// Gets or sets the X position of the AI crop preview rectangle in
     /// display-space pixels relative to the editor view.
     /// </summary>
     [ObservableProperty]
-    private double overlayX;
+    public partial double OverlayX { get; set; }
 
     /// <summary>
     /// Gets or sets the Y position of the AI crop preview rectangle in
     /// display-space pixels relative to the editor view.
     /// </summary>
     [ObservableProperty]
-    private double overlayY;
+    public partial double OverlayY { get; set; }
 
     /// <summary>
     /// Gets or sets the width of the AI crop preview rectangle in
     /// display-space pixels.
     /// </summary>
     [ObservableProperty]
-    private double overlayWidth;
+    public partial double OverlayWidth { get; set; }
 
     /// <summary>
     /// Gets or sets the height of the AI crop preview rectangle in
     /// display-space pixels.
     /// </summary>
     [ObservableProperty]
-    private double overlayHeight;
+    public partial double OverlayHeight { get; set; }
 
     #endregion
 
@@ -184,7 +185,7 @@ public partial class SmartCroppingViewModel : ObservableObject
             FileResult? result = await FilePicker.Default.PickAsync(new PickOptions
             {
                 PickerTitle = "Select an image",
-                FileTypes = FilePickerFileType.ImageAll
+                FileTypes = ImageFileTypes
             });
 
             if (result is null)
@@ -203,7 +204,7 @@ public partial class SmartCroppingViewModel : ObservableObject
                 return;
             }
 
-            ImageSource source = ImageSource.FromBytes(bytes);
+            ImageSource source = CreateImageSourceFromBytes(bytes);
 
             await LoadImageInternalAsync(source, bytes);
         }
@@ -563,16 +564,6 @@ public partial class SmartCroppingViewModel : ObservableObject
         }
     }
 
-    partial void OnIsBusyChanged(bool value) { }
-
-    partial void OnIsSuggestionAvailableChanged(bool value) { }
-
-    partial void OnIsCropAppliedChanged(bool value) { }
-
-    partial void OnIsErrorChanged(bool value) { }
-
-    partial void OnIsManualCroppingChanged(bool value) { }
-
     #endregion
 
     #region Helpers
@@ -691,6 +682,39 @@ public partial class SmartCroppingViewModel : ObservableObject
         height = region.Height * scale;
 
         return true;
+    }
+
+    /// <summary>
+    /// Image MIME types accepted by the picker. These are declared explicitly
+    /// rather than via a built-in image constant so the picker returns only the
+    /// formats the editor and Azure OpenAI can both decode.
+    /// </summary>
+    private static readonly FilePickerFileType ImageFileTypes = new(
+    new Dictionary<DevicePlatform, IEnumerable<string>>
+    {
+        [DevicePlatform.iOS] = new[] { "public.image" },
+        [DevicePlatform.Android] = new[] { "image/png", "image/jpeg" },
+        [DevicePlatform.WinUI] = new[] { ".png", ".jpg", ".jpeg" },
+        [DevicePlatform.macOS] = new[] { "png", "jpg", "jpeg" }
+    });
+
+    /// <summary>
+    /// Creates an <see cref="ImageSource"/> over raw image bytes.
+    /// </summary>
+    /// <remarks>
+    /// <c>ImageSource.FromBytes</c> is an extension method on
+    /// <c>IImageLoadingService</c> in .NET 9+, so it cannot be called statically
+    /// from a view model. <c>FromStream</c> is a genuine static factory and needs
+    /// no receiver, so it is used instead. The bytes are captured in a local so
+    /// the array stays alive for the lifetime of the source, because the factory
+    /// only accepts a stream factory and is free to invoke it later.
+    /// </remarks>
+    /// <param name="bytes">The encoded image bytes.</param>
+    /// <returns>An <see cref="ImageSource"/> over the supplied bytes.</returns>
+    private static ImageSource CreateImageSourceFromBytes(byte[] bytes)
+    {
+        var captured = bytes;
+        return ImageSource.FromStream(() => new MemoryStream(captured));
     }
 
     private static byte[] LoadAssetBytes(string fileName)

@@ -1,4 +1,4 @@
-﻿using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 
 namespace SmartCropping.Helpers;
@@ -79,7 +79,6 @@ public sealed class CropOverlayView : GraphicsView
         _drawable = new CropOverlayDrawable();
         Drawable = _drawable;
         InputTransparent = true;
-        IsClippedToBounds = false;
     }
 
     #region Properties
