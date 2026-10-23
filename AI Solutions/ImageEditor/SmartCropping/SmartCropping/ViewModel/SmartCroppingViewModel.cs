@@ -716,42 +716,7 @@ public partial class SmartCroppingViewModel : ObservableObject
         height = region.Height * scale;
 
         return true;
-    }
-
-    /// <summary>
-    /// Image MIME types accepted by the picker. These are declared explicitly
-    /// rather than via a built-in image constant so the picker returns only the
-    /// formats the editor and Azure OpenAI can both decode.
-    /// </summary>
-    private static readonly FilePickerFileType ImageFileTypes = new(
-    new Dictionary<DevicePlatform, IEnumerable<string>>
-    {
-        [DevicePlatform.iOS] = new[] { "public.image" },
-        [DevicePlatform.Android] = new[] { "image/png", "image/jpeg" },
-        [DevicePlatform.WinUI] = new[] { ".png", ".jpg", ".jpeg" },
-        [DevicePlatform.macOS] = new[] { "png", "jpg", "jpeg" }
-    });
-
-    /// <summary>
-    /// Creates an <see cref="ImageSource"/> over raw image bytes.
-    /// </summary>
-    /// <remarks>
-    /// <c>ImageSource.FromBytes</c> is an extension method on
-    /// <c>IImageLoadingService</c> in .NET 9+, so it cannot be called statically
-    /// from a view model. <c>FromStream</c> is a genuine static factory and needs
-    /// no receiver, so it is used instead. The bytes are captured in a local so
-    /// the array stays alive for the lifetime of the source, because the factory
-    /// only accepts a stream factory and is free to invoke it later.
-    /// </remarks>
-    /// <param name="bytes">The encoded image bytes.</param>
-    /// <returns>An <see cref="ImageSource"/> over the supplied bytes.</returns>
-    private static ImageSource CreateImageSourceFromBytes(byte[] bytes)
-    {
-        var captured = bytes;
-        return ImageSource.FromStream(() => new MemoryStream(captured));
-    }
-
-    private static byte[] LoadAssetBytes(string fileName)
+    }private static byte[] LoadAssetBytes(string fileName)
     {
         using Stream? stream = FileSystem.OpenAppPackageFileAsync(fileName).GetAwaiter().GetResult();
         if (stream is null)
