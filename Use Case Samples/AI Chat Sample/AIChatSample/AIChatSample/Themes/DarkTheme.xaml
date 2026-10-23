@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                 x:Class="AIChatSample.Themes.DarkTheme"
+                 >
+
+    <!--
+        Dark-mode additions. Only keys with a "Dark" suffix (or that
+        are dark-only, e.g. GrayBorderBackgroundColor) live here so the
+        keys don't collide with LightTheme.xaml — previously duplicate
+        keys caused the dark values to override the light ones because
+        DarkTheme was merged last in App.xaml.
+    -->
+
+    <Color x:Key="PrimaryColorDark">#8D4CF5</Color>
+    <Color x:Key="SecondaryTextColorDark">#929092</Color>
+    <Color x:Key="PlaceholderTextColorDark">#878386</Color>
+    <Color x:Key="SeparatorColorDark">#474648</Color>
+    <Color x:Key="PrimaryTextColorDark">#FFFFFF</Color>
+    <Color x:Key="BackgroundColorDark">#1C1B1D</Color>
+    <Color x:Key="SentMessageColorDark">#313032</Color>
+    <Color x:Key="ReceivedMessageColorDark">#35303C</Color>
+    <Color x:Key="SelectionBackgroundDark">#2e2e2e</Color>
+    <Color x:Key="ContentTextColorDark">#C9C6C8</Color>
+    <Color x:Key="DataVisualizationDark">#36323B</Color>
+    <Color x:Key="UnSelectedDotDark">#3C3B3D</Color>
+    <Color x:Key="HoverBackgroundColorDark">#35303C</Color>
+
+    <!-- Dark-only shadow / border colors. -->
+    <Color x:Key="GrayBorderBackgroundColor">#3C3B3D</Color>
+
+</ResourceDictionary>

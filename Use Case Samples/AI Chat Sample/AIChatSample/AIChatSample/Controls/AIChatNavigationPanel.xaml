@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
+    xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+    xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:model="clr-namespace:AIChatSample"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Toolkit.Buttons;assembly=Syncfusion.Maui.Toolkit"
+    xmlns:converters="clr-namespace:AIChatSample.Converters" ZIndex="100"
+    x:Class="AIChatSample.Controls.AIChatNavigationPanel" x:Name="Root">
+
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <converters:InverseBooleanConverter x:Key="InverseBoolean" />
+            <converters:StringNotEmptyConverter x:Key="StringNotEmpty" />
+            <converters:StringToImageSourceConverter x:Key="StringToImageSource" />
+        </ResourceDictionary>
+        <Style TargetType="Border">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <Setter.Value>
+                    <VisualStateGroupList>
+                        <VisualStateGroup Name="CommonStates">
+                            <VisualState Name="Normal" />
+                            <VisualState Name="PointerOver">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor"
+                                            Value="{AppThemeBinding Light=#F3EFF4, Dark=#35303C}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+        <Style TargetType="expander:SfExpander">
+            <Setter Property="HeaderBackground" Value="Transparent" />
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <Setter.Value>
+                    <VisualStateGroupList>
+                        <VisualStateGroup Name="CommonStates">
+                            <VisualState Name="Normal" />
+                            <VisualState Name="PointerOver">
+                                <VisualState.Setters>
+                                    <Setter Property="HeaderBackground"
+                                            Value="{AppThemeBinding Light=#F3EFF4, Dark=#35303C}" />
+                                    <Setter Property="BackgroundColor" Value="Transparent" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+    </ContentView.Resources>
+
+    <Grid
+        BackgroundColor="{AppThemeBinding Light={DynamicResource BackgroundColorLight}, Dark={DynamicResource BackgroundColorDark}}"
+        RowDefinitions="56,*,Auto">
+        <Grid Grid.Row="0" Margin="18,0,0,0" HeightRequest="56"
+            BackgroundColor="{AppThemeBinding Light={DynamicResource BackgroundColorLight}, Dark={DynamicResource BackgroundColorDark}}"
+            Padding="0">
+            <Grid ColumnDefinitions="18,10,*">
+                <Label Text="{DynamicResource BurgerMenu}" FontFamily="FontIcons" FontSize="18" HorizontalOptions="End"
+                    HorizontalTextAlignment="End"
+                    TextColor="{AppThemeBinding Light={DynamicResource ContentTextColorLight}, Dark={DynamicResource ContentTextColorDark}}"
+                    VerticalOptions="Center" VerticalTextAlignment="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="MenuTapped" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </Grid>
+        </Grid>
+
+        <BoxView Grid.Row="0" HeightRequest="1" HorizontalOptions="Fill" VerticalOptions="End"
+            BackgroundColor="{AppThemeBinding Light={DynamicResource SeparatorColorLight}, Dark={DynamicResource SeparatorColorDark}}"
+            InputTransparent="True" ZIndex="2" />
+
+        <Grid Grid.Row="1" RowDefinitions="*" RowSpacing="0">
+
+            <ScrollView Grid.Row="0" VerticalScrollBarVisibility="Never"
+                BackgroundColor="{AppThemeBinding Light={DynamicResource BackgroundColorLight}, Dark={DynamicResource BackgroundColorDark}}">
+                <VerticalStackLayout Padding="0" Spacing="0">
+
+                    <listView:SfListView ItemsSource="{Binding chatVM.PrimaryItems}"
+                                         ItemSize="44"
+                                         SelectionBackground="Transparent"
+                                         Background="Transparent"
+                                         SelectionMode="None"
+                                         ItemTapped="PrimaryItemTapped"
+                                         Margin="0,4,0,0">
+                        <listView:SfListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border HeightRequest="44" BackgroundColor="{Binding BackgroundColor}"
+                                        InputTransparent="False"
+                                    StrokeThickness="0">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10" />
+                                    </Border.StrokeShape>
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroupList>
+                                            <VisualStateGroup Name="CommonStates">
+                                                <VisualState Name="Normal" />
+                                                <VisualState Name="PointerOver">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="BackgroundColor"
+                                                            Value="{AppThemeBinding Light={DynamicResource HoverBackgroundColorLight}, Dark={DynamicResource HoverBackgroundColorDark}}" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                            </VisualStateGroup>
+                                        </VisualStateGroupList>
+                                    </VisualStateManager.VisualStateGroups>
+                                    <Grid Margin="16,0,16,0" ColumnDefinitions="18,*,Auto" ColumnSpacing="12">
+                                        <Label Grid.Column="0" Text="{Binding Icon}" FontFamily="{Binding IconFontFamily}"
+                                            FontSize="18" VerticalOptions="Center"
+                                            TextColor="{AppThemeBinding Light={DynamicResource ContentTextColorLight}, Dark={DynamicResource ContentTextColorDark}}" />
+                                        <Label Grid.Column="1" Text="{Binding Title}" FontSize="16" FontFamily="Roboto-Regular"
+                                                Style="{DynamicResource SimpleLabelStyle}"
+                                                TextColor="{AppThemeBinding Light={DynamicResource PrimaryTextColorLight}, Dark={DynamicResource PrimaryTextColorDark}}"
+                                                IsVisible="{Binding Source={x:Reference Root}, Path=IsFull}"
+                                                VerticalOptions="Center" VerticalTextAlignment="Center" />
+                                    </Grid>
+                                    <!--<Border.GestureRecognizers>
+                                        <PointerGestureRecognizer PointerEntered="PrimaryItemPointerEntered"
+                                            PointerExited="PrimaryItemPointerExited" />
+                                    </Border.GestureRecognizers>-->
+                                </Border>
+                            </DataTemplate>
+                        </listView:SfListView.ItemTemplate>
+                    </listView:SfListView>
+
+                    <expander:SfExpander IsVisible="{Binding IsAgentSectionVisible, Source={x:Reference Root}}"
+                        IsExpanded="False" Margin="0,8,0,0" Expanded="AgentExpanded" Collapsed="AgentCollapsed"
+                        BackgroundColor="Transparent" AnimationEasing="None"
+                        HeaderIconColor="{AppThemeBinding Light={DynamicResource ContentTextColorLight}, Dark={DynamicResource ContentTextColorDark}}">
+                        <expander:SfExpander.Header>
+                            <Border HeightRequest="44" BackgroundColor="Transparent" StrokeThickness="0">
+                                <Grid Padding="16,0" ColumnDefinitions="*,18">
+                                    <Label Text="Agent" FontSize="16" Style="{DynamicResource SimpleLabelStyle}"
+                                        TextColor="{AppThemeBinding Light={DynamicResource PrimaryTextColorLight}, Dark={DynamicResource PrimaryTextColorDark}}"
+                                        VerticalTextAlignment="Center" />
+                                </Grid>
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+                            </Border>
+                        </expander:SfExpander.Header>
+                        <expander:SfExpander.Content>
+                            <VerticalStackLayout Spacing="0" BackgroundColor="Transparent">
+                                <listView:SfListView ItemsSource="{Binding Agents}" SelectionMode="Single"
+                                    BackgroundColor="Transparent" SelectionBackground="Transparent"
+                                    ItemTapped="AgentItemTapped">
+                                    <listView:SfListView.ItemTemplate>
+                                        <DataTemplate x:DataType="model:AgentItem">
+                                            <Grid HeightRequest="42" Padding="36,0,0,0" ColumnDefinitions="28,*" ColumnSpacing="10">
+                                                <Border WidthRequest="28" HeightRequest="28" StrokeThickness="0" StrokeShape="RoundRectangle 14" BackgroundColor="{Binding Color}">
+                                                    <Grid>
+                                                        <Image Source="{Binding AvatarSource, Converter={StaticResource StringToImageSource}}" Aspect="AspectFill" IsVisible="{Binding AvatarSource, Converter={StaticResource StringNotEmpty}}" />
+                                                        <Image Source="{Binding IconAvatar}" WidthRequest="16" HeightRequest="16" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding ShowIconAvatar}" />
+                                                    </Grid>
+                                                </Border>
+                                                <Label Grid.Column="1" Style="{StaticResource DrawerSubItemLabel}"
+                                                    Text="{Binding Name}" VerticalOptions="Center" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </listView:SfListView.ItemTemplate>
+                                </listView:SfListView>
+
+                                <buttons:SfButton Style="{StaticResource NewAgentButton}"
+                                    Background="{AppThemeBinding Light=white, Dark=#1C1B1D}"
+                                    Clicked="NewAgentButtonClicked">
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="18,*" ColumnSpacing="10" HorizontalOptions="Start"
+                                            VerticalOptions="Center" Margin="-4,0,0,0">
+                                            <Label Grid.Column="0" Text="&#xe70d;" FontFamily="MaterialAssets"
+                                                WidthRequest="18" Margin="5,5,0,0" HeightRequest="18"
+                                                VerticalOptions="Center" />
+                                            <Label Grid.Column="1" FontFamily="Roboto-Regular" FontSize="16"
+                                                TextColor="{AppThemeBinding Light=#313032, Dark=#FFFFFF}"
+                                                Text="New agent" VerticalOptions="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </buttons:SfButton>
+                            </VerticalStackLayout>
+                        </expander:SfExpander.Content>
+                    </expander:SfExpander>
+
+                    <expander:SfExpander IsVisible="{Binding IsRecentChatsSectionVisible, Source={x:Reference Root}}"
+                        IsExpanded="True" Margin="0,8,0,0" Expanded="RecentChatsExpanded"
+                        Collapsed="RecentChatsCollapsed" BackgroundColor="Transparent"
+                        HeaderIconColor="{AppThemeBinding Light={DynamicResource ContentTextColorLight}, Dark={DynamicResource ContentTextColorDark}}">
+                        <expander:SfExpander.Header>
+                            <Border HeightRequest="44" BackgroundColor="Transparent" StrokeThickness="0">
+                                <Grid Padding="16,0" ColumnDefinitions="*,18">
+                                    <Label Text="Recent chats" FontSize="16" Style="{DynamicResource SimpleLabelStyle}"
+                                        TextColor="{AppThemeBinding Light={DynamicResource PrimaryTextColorLight}, Dark={DynamicResource PrimaryTextColorDark}}"
+                                        VerticalTextAlignment="Center" />
+                                </Grid>
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+                            </Border>
+                        </expander:SfExpander.Header>
+                        <expander:SfExpander.Content>
+                            <listView:SfListView ItemsSource="{Binding RecentChats}" BackgroundColor="Transparent" SelectionBackground="Transparent"
+                                ItemTapped="RecentChatItemTapped">
+                                <listView:SfListView.ItemTemplate>
+                                    <DataTemplate x:DataType="model:RecentChatItem">
+                                        <Grid HeightRequest="42" ColumnDefinitions="Auto,*,Auto" Padding="16,0,16,0"
+                                            ColumnSpacing="10">
+                                            <Label Grid.Column="1" Style="{StaticResource DrawerSubItemLabel}"
+                                                Text="{Binding Title}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </listView:SfListView.ItemTemplate>
+                            </listView:SfListView>
+                        </expander:SfExpander.Content>
+                    </expander:SfExpander>
+                </VerticalStackLayout>
+            </ScrollView>
+        </Grid>
+
+        <Border Grid.Row="2" HeightRequest="65" Margin="8,0" Padding="12,8"
+            BackgroundColor="{AppThemeBinding Light={DynamicResource BackgroundColorLight}, Dark={DynamicResource BackgroundColorDark}}"
+            IsVisible="{Binding IsProfileSectionVisible, Source={x:Reference Root}}" StrokeThickness="0">
+            <Grid HeightRequest="56" BackgroundColor="Transparent"
+                ColumnDefinitions="28,*" ColumnSpacing="10" Padding="12,0" RowDefinitions="*,1">
+                <core:SfAvatarView Grid.Row="0" Grid.Column="0" ContentType="Custom"
+                    ImageSource="userprofile.png" AvatarShape="Circle" AvatarSize="Small" WidthRequest="28"
+                    HeightRequest="28" VerticalOptions="Center" />
+                <Label Grid.Row="0" Grid.Column="1" Text="{Binding UserName}" FontFamily="Roboto-Regular"
+                    FontSize="16" TextColor="{AppThemeBinding Light=#313032, Dark=#FFFFFF}"
+                    VerticalOptions="Center" HorizontalOptions="Start" Margin="10,0,0,0" />
+            </Grid>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Tapped="NavigationItemTapped" CommandParameter="Profile" />
+            </Border.GestureRecognizers>
+        </Border>
+
+        <BoxView Grid.RowSpan="3" WidthRequest="1" HorizontalOptions="End" VerticalOptions="Fill"
+                BackgroundColor="{AppThemeBinding Light={DynamicResource SeparatorColorLight}, Dark={DynamicResource SeparatorColorDark}}"
+                InputTransparent="True" ZIndex="100" />
+    </Grid>
+</ContentView>

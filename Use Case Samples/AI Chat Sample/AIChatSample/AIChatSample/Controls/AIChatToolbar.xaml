@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Toolkit.Buttons;assembly=Syncfusion.Maui.Toolkit"
+    xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
+    xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+    x:Class="AIChatSample.Controls.AIChatToolbar" x:Name="Root">
+    <Grid RowDefinitions="56, *">
+        <!-- Toolbar -->
+        <Grid Grid.Row="0"
+            BackgroundColor="{AppThemeBinding Light={DynamicResource BackgroundColorLight}, Dark={DynamicResource BackgroundColorDark}}"
+            HeightRequest="56" ColumnDefinitions="Auto,Auto,Auto,*,Auto"
+            ColumnSpacing="{OnIdiom Phone=24, Default=10}"
+            Padding="{OnIdiom Phone='28,0,16,0', Default='16,0,16,0'}">
+            
+            <Label Grid.Column="0" Text="{DynamicResource BurgerMenu}" FontFamily="FontIcons" FontSize="18"
+                TextColor="{AppThemeBinding Light={DynamicResource ContentTextColorLight}, Dark={DynamicResource ContentTextColorDark}}"
+                IsVisible="{OnIdiom Desktop='False', Phone={Binding IsNavigationMenuVisible, Source={x:Reference Root}}}" VerticalOptions="Center"
+                VerticalTextAlignment="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnNavigationMenuTapped" />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <!-- Temp Chat Icon -->
+            <Label Grid.Column="4" x:Name="TempChatIcon" Text="&#xe745;" FontFamily="FontIcons"
+                TextColor="{AppThemeBinding Light={DynamicResource ContentTextColorLight}, Dark={DynamicResource ContentTextColorDark}}"
+                FontSize="15" Margin="0,0,12,0" VerticalOptions="Center" VerticalTextAlignment="Center"
+                AutomationId="TemporaryChatButton" SemanticProperties.Description="Open temporary chat">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="TempChatTapped" />
+                </Label.GestureRecognizers>
+            </Label>
+
+        </Grid>
+
+        <BoxView Grid.Row="0" HeightRequest="1" HorizontalOptions="Fill" VerticalOptions="End"
+            BackgroundColor="{AppThemeBinding Light={DynamicResource SeparatorColorLight}, Dark={DynamicResource SeparatorColorDark}}"
+            InputTransparent="True" ZIndex="2" />
+
+    </Grid>
+</ContentView>

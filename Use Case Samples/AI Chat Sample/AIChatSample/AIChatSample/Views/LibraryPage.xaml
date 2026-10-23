@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="AIChatSample.LibraryPage"
+            xmlns:buttons="clr-namespace:Syncfusion.Maui.Toolkit.Buttons;assembly=Syncfusion.Maui.Toolkit"
+            xmlns:aiassist="clr-namespace:Syncfusion.Maui.AIAssistView;assembly=Syncfusion.Maui.AIAssistView"
+            xmlns:syncTheme="clr-namespace:Syncfusion.Maui.Themes;assembly=Syncfusion.Maui.Core"
+            xmlns:chatViews="clr-namespace:AIChatSample"
+            xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+            xmlns:controls="clr-namespace:AIChatSample.Controls"
+            xmlns:local="clr-namespace:AIChatSample"
+            xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+            xmlns:model="clr-namespace:AIChatSample" 
+            xmlns:viewModel="clr-namespace:AIChatSample">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="IL_PageTitle" TargetType="Label">
+                <Setter Property="Text" Value="Library" />
+                <Setter Property="FontFamily" Value="Roboto-Medium" />
+                <Setter Property="FontSize" Value="36" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=#313032, Dark=#FFFFFF}" />
+                <Setter Property="VerticalOptions" Value="Center" />
+
+            </Style>
+            <FontImageSource x:Key="IL_SearchGlyph" Glyph="{DynamicResource Search}" FontFamily="FontIcons"
+                Color="{AppThemeBinding Light=#313032, Dark=#FFFFFF}" Size="18" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid x:Name="RootGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{Binding NavigationColumnWidth, Source={x:Reference AIChatNavigationPanel}}" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- CONTENT -->
+
+        <Grid Grid.Column="{Binding ContentColumn, Source={x:Reference AIChatNavigationPanel}}"
+            Grid.ColumnSpan="{Binding ContentColumnSpan, Source={x:Reference AIChatNavigationPanel}}"
+            x:Name="ContentGrid" RowDefinitions="56, *">
+
+            <controls:AIChatToolbar x:Name="AIChatToolbar" Grid.Row="0"
+                IsNavigationMenuVisible="{Binding IsNavigationMenuVisible, Source={x:Reference AIChatNavigationPanel}}"
+                NavigationMenuTapped="OnNavigationMenuTapped" />
+
+            <!-- AssistView -->
+            <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
+                <Grid HorizontalOptions="Center" Background="{AppThemeBinding Light=#FAF8FA,Dark=#313032}">
+                    <VerticalStackLayout Spacing="0" Padding="32">
+
+                        <!-- TOP HEADER : Title on left + Search on right -->
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" Margin="0,0,0,24">
+                            <Label Grid.Column="0" Style="{StaticResource IL_PageTitle}" />
+
+                            <core:SfTextInputLayout Hint="Search" Grid.Column="1" ContainerType="Outlined"
+                                OutlineCornerRadius="28" HorizontalOptions="End" FocusedStrokeThickness="1"
+                                UnfocusedStrokeThickness="1" ReserveSpaceForAssistiveLabels="False"
+                                InputViewPadding="16, 0, 16, 0" EnableFloating="False" Margin="0" ShowHelperText="False"
+                                ShowHint="True"
+                                Stroke="{AppThemeBinding Light={DynamicResource ContentTextColorDark}, Dark={DynamicResource SecondaryTextColorLight}}"
+                                VerticalOptions="Fill">
+                                <core:SfTextInputLayout.LeadingView>
+                                    <Image Source="{StaticResource IL_SearchGlyph}" WidthRequest="14" HeightRequest="14"
+                                        VerticalOptions="Center" Margin="12,5,0,0" />
+                                </core:SfTextInputLayout.LeadingView>
+                                <core:SfTextInputLayout.HintLabelStyle>
+                                    <core:LabelStyle FontSize="14" FontFamily="Roboto-Regular"
+                                        TextColor="{AppThemeBinding Light={DynamicResource PlaceholderTextColorLight}, Dark={DynamicResource PlaceholderTextColorDark}}" />
+                                </core:SfTextInputLayout.HintLabelStyle>
+                                <Entry Text="{Binding ImageLibraryVM.SearchText, Mode=TwoWay}"
+                                    FontFamily="Roboto-Regular" FontSize="14" />
+                            </core:SfTextInputLayout>
+                        </Grid>
+
+                        <!-- IMAGE GRID -->
+                        <listView:SfListView x:Name="ImageGrid" 
+                                            ItemsSource="{Binding ImageLibraryVM.ImageLibraryItems}"
+                                            SelectionMode="Single" ItemSpacing="16" ItemSize="{OnIdiom Default=200,Phone=150}"
+                                            BackgroundColor="Transparent" AutoFitMode="DynamicHeight" HeightRequest="570"
+                                            ScrollBarVisibility="Never"
+                                            SelectionChangedCommand="{Binding ImageLibraryVM.ImageSelectedCommand}"
+                                            SelectionChangedCommandParameter="{Binding Source={x:Reference ImageGrid}, Path=SelectedItem}">
+
+                            <listView:SfListView.ItemsLayout>
+                                <listView:GridLayout SpanCount="{OnIdiom Phone=2, Tablet=3, Desktop=4}" />
+                            </listView:SfListView.ItemsLayout>
+
+                            <listView:SfListView.ItemTemplate>
+                                <DataTemplate x:DataType="model:ImageItemModel">
+                                    <Border Stroke="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 16"
+                                        BackgroundColor="Transparent" Padding="0" Margin="0" HorizontalOptions="Fill">
+
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}"
+                                                Value="True">
+                                                <Setter Property="Stroke" Value="{StaticResource IL_Primary}" />
+                                                <Setter Property="StrokeThickness" Value="2" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+
+                                        <Image Source="{Binding ImagePath}" Aspect="AspectFill" HeightRequest="{OnIdiom Default=190,Phone=140}"
+                                            HorizontalOptions="Fill" VerticalOptions="Fill" />
+                                    </Border>
+                                </DataTemplate>
+                            </listView:SfListView.ItemTemplate>
+                        </listView:SfListView>
+
+                    </VerticalStackLayout>
+                </Grid>
+            </ScrollView>
+
+        </Grid>
+
+        <controls:AIChatNavigationPanel Grid.Column="0" x:Name="AIChatNavigationPanel" HorizontalOptions="Start"
+            InitialSelectedItem="NewChat" ZIndex="2" />
+
+    </Grid>
+
+</ContentPage>
