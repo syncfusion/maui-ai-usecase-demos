@@ -22,6 +22,8 @@ namespace SmartCropping
 
             builder.Services.AddTransient<SmartCroppingViewModel>();
             builder.Services.AddTransient<SmartCropping>();
+            builder.Services.AddSingleton<AppShell>();
+
 
 #if DEBUG
             builder.Logging.AddDebug();
