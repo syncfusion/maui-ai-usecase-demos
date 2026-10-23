@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using SmartCropping.ViewModel;
 using Syncfusion.Maui.Core.Hosting;
 
 namespace SmartCropping

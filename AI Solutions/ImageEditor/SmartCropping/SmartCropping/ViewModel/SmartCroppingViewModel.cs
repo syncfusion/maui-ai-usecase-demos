@@ -1,10 +1,11 @@
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Maui.Devices;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Graphics;
 using Syncfusion.Maui.ImageEditor;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Windows.Input;
 
 namespace SmartCropping.ViewModel;
 
@@ -184,7 +185,7 @@ public partial class SmartCroppingViewModel : ObservableObject
             FileResult? result = await FilePicker.Default.PickAsync(new PickOptions
             {
                 PickerTitle = "Select an image",
-                FileTypes = FilePickerFileType.ImageAll
+                FileTypes = ImageFileTypes
             });
 
             if (result is null)
@@ -203,7 +204,7 @@ public partial class SmartCroppingViewModel : ObservableObject
                 return;
             }
 
-            ImageSource source = ImageSource.FromBytes(bytes);
+            ImageSource source = CreateImageSourceFromBytes(bytes);
 
             await LoadImageInternalAsync(source, bytes);
         }
@@ -458,6 +459,39 @@ public partial class SmartCroppingViewModel : ObservableObject
     }
 
     private bool CanRetry() => IsError && !IsBusy;
+
+    /// <summary>
+    /// Image MIME types accepted by the picker. These are declared explicitly
+    /// rather than using a built-in image constant so the picker returns only
+    /// formats the editor and Azure OpenAI can both decode.
+    /// </summary>
+    private static readonly FilePickerFileType ImageFileTypes = new(
+        new Dictionary<DevicePlatform, IEnumerable<string>>
+        {
+            [DevicePlatform.iOS] = new[] { "public.image" },
+            [DevicePlatform.Android] = new[] { "image/png", "image/jpeg" },
+            [DevicePlatform.WinUI] = new[] { ".png", ".jpg", ".jpeg" },
+            [DevicePlatform.macOS] = new[] { "png", "jpg", "jpeg" }
+        });
+
+    /// <summary>
+    /// Creates an <see cref="ImageSource"/> from raw image bytes.
+    /// </summary>
+    /// <remarks>
+    /// <c>ImageSource.FromBytes</c> is an extension method on
+    /// <c>IImageLoadingService</c> in .NET 9+, so it cannot be called
+    /// statically from a view model. <c>FromStream</c> is a genuine static
+    /// factory and needs no receiver, so it is used instead. The bytes are
+    /// captured in a local so the array stays alive for the lifetime of the
+    /// source, since the factory only takes a stream factory.
+    /// </remarks>
+    /// <param name="bytes">The encoded image bytes.</param>
+    /// <returns>An <see cref="ImageSource"/> over the supplied bytes.</returns>
+    private static ImageSource CreateImageSourceFromBytes(byte[] bytes)
+    {
+        var captured = bytes;
+        return ImageSource.FromStream(() => new MemoryStream(captured));
+    }
 
     #endregion
 
