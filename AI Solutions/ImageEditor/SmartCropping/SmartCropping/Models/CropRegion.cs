@@ -78,6 +78,18 @@ public sealed class CropRegion
     }
 
     /// <summary>
+    /// Returns a copy of this region clipped to the image bounds.
+    /// </summary>
+    public CropRegion ClampedTo(double imageWidth, double imageHeight)
+    {
+        double x = Math.Clamp(X, 0, imageWidth);
+        double y = Math.Clamp(Y, 0, imageHeight);
+        double right = Math.Clamp(X + Width, 0, imageWidth);
+        double bottom = Math.Clamp(Y + Height, 0, imageHeight);
+        return new CropRegion { X = x, Y = y, Width = right - x, Height = bottom - y };
+    }
+
+    /// <summary>
     /// Returns a copy of this region expanded outward by the given fraction
     /// of the region's own width and height, then clamped to the supplied
     /// image bounds.

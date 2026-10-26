@@ -249,7 +249,11 @@ public partial class SmartCroppingViewModel : ObservableObject
                 await editorController.LoadImageAsync(originalImageSource);
             }
 
-            SmartCropResponse? response = await aiService.SuggestCropAsync(originalImageBytes, SelectedIntent);
+            SmartCropResponse? response = await aiService.SuggestCropAsync(
+                originalImageBytes,
+                SelectedIntent,
+                (int)Math.Round(editorController.OriginalImageSize.Width),
+                (int)Math.Round(editorController.OriginalImageSize.Height));
 
             if (response?.CropRegion is null)
             {
@@ -264,7 +268,9 @@ public partial class SmartCroppingViewModel : ObservableObject
                 return;
             }
 
-            CropRegion region = response.CropRegion;
+            // Models often overshoot the border by a few pixels; clamp to the
+            // image before validating so a near-miss is not treated as a failure.
+            CropRegion region = response.CropRegion.ClampedTo(originalSize.Width, originalSize.Height);
             if (!region.IsValid(originalSize.Width, originalSize.Height))
             {
                 Debug.WriteLine($"Invalid crop region: ({region.X},{region.Y}) {region.Width}x{region.Height} for image {originalSize.Width}x{originalSize.Height}");

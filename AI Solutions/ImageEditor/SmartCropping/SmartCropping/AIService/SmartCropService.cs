@@ -157,6 +157,17 @@ Return only valid JSON matching the schema.
 """
     };
 
+    /// <summary>
+    /// Tells the model the exact pixel size so returned coordinates are in the
+    /// image's own pixel space rather than a guessed or resized one.
+    /// </summary>
+    internal static string BuildSizeNote(int width, int height) =>
+        width > 0 && height > 0
+            ? $"\n\nThe image is exactly {width} pixels wide and {height} pixels tall. " +
+              $"All crop coordinates must be integers in this pixel space with the origin at the top-left: " +
+              $"x + width must be <= {width}, y + height must be <= {height}, and x and y must be >= 0."
+            : string.Empty;
+
     /// <summary>Builds the user prompt for the selected crop intent.</summary>
     internal static string BuildIntentPrompt(string intent) =>
         IntentPrompts.TryGetValue(intent, out string? prompt) ? prompt : DefaultIntentPrompt;
@@ -168,13 +179,15 @@ Return only valid JSON matching the schema.
     /// </summary>
     /// <param name="imageBytes">The encoded image (PNG/JPEG) to analyze.</param>
     /// <param name="intent">The selected crop intent that shapes the prompt.</param>
+    /// <param name="imageWidth">Width of the image in pixels.</param>
+    /// <param name="imageHeight">Height of the image in pixels.</param>
     /// <param name="cancellationToken">Token used to cancel the request.</param>
     /// <returns>
     /// A <see cref="SmartCropResponse"/> containing the proposed framing and
     /// crop region, or <see langword="null"/> when the service could not
     /// produce a valid suggestion.
     /// </returns>
-    public async Task<SmartCropResponse?> SuggestCropAsync(byte[] imageBytes, string intent, CancellationToken cancellationToken = default)
+    public async Task<SmartCropResponse?> SuggestCropAsync(byte[] imageBytes, string intent, int imageWidth, int imageHeight, CancellationToken cancellationToken = default)
     {
         if (imageBytes.Length == 0)
         {
@@ -194,7 +207,7 @@ Return only valid JSON matching the schema.
 
                 new UserChatMessage(
                 [
-                    ChatMessageContentPart.CreateTextPart(BuildIntentPrompt(intent)),
+                    ChatMessageContentPart.CreateTextPart(BuildIntentPrompt(intent) + BuildSizeNote(imageWidth, imageHeight)),
 
                     ChatMessageContentPart.CreateImagePart(imageBinary, "image/png", ChatImageDetailLevel.High)
                 ])
