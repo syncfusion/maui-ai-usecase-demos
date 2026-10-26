@@ -135,11 +135,16 @@
                                FontSize="12"
                                FontAttributes="Bold"
                                TextColor="#64748B" />
-                        <inputs:SfComboBox ItemsSource="{Binding CropIntents}"
-                                           SelectedItem="{Binding SelectedIntent, Mode=TwoWay}"
-                                           Placeholder="Select an intent..."
-                                           HeightRequest="40"
-                                           WidthRequest="220" />
+                        <Border Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="#FFFFFF"
+                                HeightRequest="40" WidthRequest="220"
+                                StrokeShape="RoundRectangle 4">
+                            <inputs:SfComboBox ItemsSource="{Binding CropIntents}"
+                                               SelectedItem="{Binding SelectedIntent, Mode=TwoWay}"
+                                               Placeholder="Select an intent..."
+                                               ShowBorder="False"
+                                               IsClearButtonVisible="False"
+                                               VerticalOptions="Fill" />
+                        </Border>
                     </VerticalStackLayout>
 
                     <Button Text="Smart Crop"

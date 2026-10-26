@@ -12,11 +12,13 @@ public interface ISmartCropService
     /// </summary>
     /// <param name="imageBytes">The encoded image (PNG/JPEG) to analyze.</param>
     /// <param name="intent">The selected crop intent (e.g. Profile Photo, Hero Banner).</param>
+    /// <param name="imageWidth">Width of the image in pixels.</param>
+    /// <param name="imageHeight">Height of the image in pixels.</param>
     /// <param name="cancellationToken">Token used to cancel the request.</param>
     /// <returns>
     /// A <see cref="SmartCropResponse"/> containing the proposed framing and
     /// crop region, or <see langword="null"/> when the service could not
     /// produce a valid suggestion.
     /// </returns>
-    Task<SmartCropResponse?> SuggestCropAsync(byte[] imageBytes, string intent, CancellationToken cancellationToken = default);
+    Task<SmartCropResponse?> SuggestCropAsync(byte[] imageBytes, string intent, int imageWidth, int imageHeight, CancellationToken cancellationToken = default);
 }
