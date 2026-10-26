@@ -1,4 +1,4 @@
-﻿namespace SmartCropping;
+namespace SmartCropping;
 
 /// <summary>
 /// Defines the contract for AI services that suggest a single crop region
@@ -11,11 +11,12 @@ public interface ISmartCropService
     /// region. Coordinates are returned in the original image pixel space.
     /// </summary>
     /// <param name="imageBytes">The encoded image (PNG/JPEG) to analyze.</param>
+    /// <param name="intent">The selected crop intent (e.g. Profile Photo, Hero Banner).</param>
     /// <param name="cancellationToken">Token used to cancel the request.</param>
     /// <returns>
     /// A <see cref="SmartCropResponse"/> containing the proposed framing and
     /// crop region, or <see langword="null"/> when the service could not
     /// produce a valid suggestion.
     /// </returns>
-    Task<SmartCropResponse?> SuggestCropAsync(byte[] imageBytes, CancellationToken cancellationToken = default);
+    Task<SmartCropResponse?> SuggestCropAsync(byte[] imageBytes, string intent, CancellationToken cancellationToken = default);
 }

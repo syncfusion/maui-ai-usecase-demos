@@ -4,6 +4,7 @@ using Microsoft.Maui.Devices;
 using Microsoft.Maui.Graphics;
 using Syncfusion.Maui.ImageEditor;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
 
@@ -27,12 +28,10 @@ public partial class SmartCroppingViewModel : ObservableObject
 {
     private readonly ISmartCropService aiService;
     private IImageEditorController? editorController;
-    private CancellationTokenSource? manualCropTimeoutCts;
 
     private ImageSource? originalImageSource;
     private byte[]? originalImageBytes;
     private CropRegion? suggestedRegion;
-    private bool hasImage;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SmartCroppingViewModel"/> class.
@@ -73,11 +72,51 @@ public partial class SmartCroppingViewModel : ObservableObject
     public partial bool IsSuggestionAvailable { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the AI or manual crop has been applied to the
-    /// image and the result can be saved.
+    /// Gets or sets whether the AI crop has been applied to the image and the
+    /// result can be saved or reset.
     /// </summary>
     [ObservableProperty]
     public partial bool IsCropApplied { get; set; }
+
+    /// <summary>Gets or sets whether an image is loaded in the editor.</summary>
+    [ObservableProperty]
+    public partial bool IsImageLoaded { get; set; }
+
+    /// <summary>Gets or sets the crop intent chosen by the user.</summary>
+    [ObservableProperty]
+    public partial string? SelectedIntent { get; set; }
+
+    /// <summary>Gets the crop intents offered to the user.</summary>
+    public ObservableCollection<string> CropIntents { get; } = new()
+    {
+        "Profile Photo",
+        "Product Image",
+        "Pet Portrait",
+        "Food Photography",
+        "Hero Banner",
+        "Object Focus"
+    };
+
+    /// <summary>Gets whether an intent has been selected.</summary>
+    public bool IsIntentSelected => !string.IsNullOrEmpty(SelectedIntent);
+
+    /// <summary>Gets whether a suggestion is waiting to be applied.</summary>
+    public bool IsSuggestionReady => IsSuggestionAvailable;
+
+    /// <summary>Gets whether the Smart Crop action is relevant (image + intent).</summary>
+    public bool CanGenerateCrop => IsImageLoaded && IsIntentSelected;
+
+    /// <summary>Gets whether the Apply Crop action is relevant.</summary>
+    public bool CanApplyCrop => IsSuggestionReady || IsCropApplied;
+
+    /// <summary>Gets whether the Reset action is relevant.</summary>
+    public bool CanReset => IsCropApplied;
+
+    /// <summary>Gets whether the Save action is relevant.</summary>
+    public bool CanSave => IsCropApplied;
+
+    /// <summary>Gets whether a status message should be displayed.</summary>
+    public bool HasStatusMessage => !IsBusy && !IsError && !string.IsNullOrEmpty(StatusMessage);
 
     /// <summary>
     /// Gets or sets whether the most recent AI request failed and the retry
@@ -85,12 +124,6 @@ public partial class SmartCroppingViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     public partial bool IsError { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether the built-in manual crop UI is currently open.
-    /// </summary>
-    [ObservableProperty]
-    public partial bool IsManualCropping { get; set; }
 
     /// <summary>
     /// Gets or sets the text shown in the status banner above the editor.
@@ -135,43 +168,6 @@ public partial class SmartCroppingViewModel : ObservableObject
     #endregion
 
     #region Commands
-
-    /// <summary>
-    /// Loads the bundled sample image. Invoked once by the view after the
-    /// editor has been wired up so the page starts in a usable state.
-    /// </summary>
-    /// <remarks>
-    /// Failures during the initial sample load are intentionally silent: the
-    /// sample image is an optional convenience, not a prerequisite. The user
-    /// can still click Open Image to load their own file. Showing an error
-    /// banner on first launch would be misleading.
-    /// </remarks>
-    [RelayCommand]
-    public async Task LoadSampleImageAsync()
-    {
-        if (hasImage || editorController is null)
-        {
-            return;
-        }
-
-        try
-        {
-            ImageSource source = ImageSource.FromFile("sample_image.png");
-            byte[] bytes = LoadAssetBytes("sample_image.png");
-
-            if (bytes.Length == 0)
-            {
-                Debug.WriteLine("Bundled sample image not found; user can still click Open Image.");
-                return;
-            }
-
-            await LoadImageInternalAsync(source, bytes);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to load sample image: {ex.Message}");
-        }
-    }
 
     /// <summary>
     /// Opens the file picker and loads the selected image as the new
@@ -229,10 +225,12 @@ public partial class SmartCroppingViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanSmartCrop))]
     public async Task SmartCropAsync()
     {
-        if (IsBusy || !hasImage || originalImageBytes is null || editorController is null)
+        if (IsBusy || !CanGenerateCrop || originalImageBytes is null || editorController is null || SelectedIntent is null)
         {
             return;
         }
+
+        bool restoreOriginal = IsCropApplied;
 
         try
         {
@@ -241,9 +239,17 @@ public partial class SmartCroppingViewModel : ObservableObject
             IsSuggestionAvailable = false;
             IsCropApplied = false;
             IsOverlayVisible = false;
-            StatusMessage = "Finding the best crop...";
+            suggestedRegion = null;
+            StatusMessage = "Finding the best crop for the selected intent...";
 
-            SmartCropResponse? response = await aiService.SuggestCropAsync(originalImageBytes);
+            // Smart Crop stays available after a crop is applied; restore the
+            // original image first so coordinates match the bytes sent to the AI.
+            if (restoreOriginal && originalImageSource is not null)
+            {
+                await editorController.LoadImageAsync(originalImageSource);
+            }
+
+            SmartCropResponse? response = await aiService.SuggestCropAsync(originalImageBytes, SelectedIntent);
 
             if (response?.CropRegion is null)
             {
@@ -277,7 +283,7 @@ public partial class SmartCroppingViewModel : ObservableObject
             if (IsOverlayVisible)
             {
                 IsSuggestionAvailable = true;
-                StatusMessage = "Suggested crop is ready. Apply it or adjust manually.";
+                StatusMessage = $"Suggested crop generated for: {SelectedIntent}";
             }
             else
             {
@@ -299,12 +305,12 @@ public partial class SmartCroppingViewModel : ObservableObject
         }
     }
 
-    private bool CanSmartCrop() => !IsBusy && hasImage && !IsCropApplied && !IsManualCropping && editorController is not null;
+    private bool CanSmartCrop() => !IsBusy && CanGenerateCrop && editorController is not null;
 
     /// <summary>
     /// Applies the AI-suggested crop to the image and commits the change.
     /// </summary>
-    [RelayCommand(CanExecute = nameof(CanApplyCrop))]
+    [RelayCommand(CanExecute = nameof(CanApplyCropNow))]
     public void ApplyCrop()
     {
         if (!IsSuggestionAvailable || suggestedRegion is null || editorController is null)
@@ -315,6 +321,7 @@ public partial class SmartCroppingViewModel : ObservableObject
         try
         {
             CropRegion region = suggestedRegion;
+            suggestedRegion = null;
             IsOverlayVisible = false;
             IsSuggestionAvailable = false;
 
@@ -322,7 +329,7 @@ public partial class SmartCroppingViewModel : ObservableObject
             editorController.SaveEdits();
 
             IsCropApplied = true;
-            StatusMessage = "Crop applied. Save the result or reset to start over.";
+            StatusMessage = "Crop applied successfully.";
         }
         catch (Exception ex)
         {
@@ -331,52 +338,13 @@ public partial class SmartCroppingViewModel : ObservableObject
         }
     }
 
-    private bool CanApplyCrop() => IsSuggestionAvailable && !IsBusy && editorController is not null;
-
-    /// <summary>
-    /// Discards the AI suggestion and opens the editor's built-in crop UI
-    /// for manual adjustment.
-    /// </summary>
-    [RelayCommand(CanExecute = nameof(CanAdjustManually))]
-    public void AdjustManually()
-    {
-        if (!IsSuggestionAvailable || editorController is null)
-        {
-            return;
-        }
-
-        try
-        {
-            suggestedRegion = null;
-            IsOverlayVisible = false;
-            IsSuggestionAvailable = false;
-            IsManualCropping = true;
-
-            editorController.StartManualCrop(ImageCropType.Free);
-            StatusMessage = "Adjust the crop manually, then save or cancel.";
-
-            // Start a safety timeout. Syncfusion's built-in crop UI does not
-            // expose a completion event, so the view detects a saved manual
-            // crop via ImageLoaded. This timeout resets the flag if the user
-            // cancels (no ImageLoaded) and walks away.
-            manualCropTimeoutCts?.Cancel();
-            manualCropTimeoutCts = new CancellationTokenSource();
-            _ = RunManualCropTimeoutAsync(manualCropTimeoutCts.Token);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Manual crop failed: {ex.Message}");
-            ShowError("Unable to start manual crop.");
-        }
-    }
-
-    private bool CanAdjustManually() => IsSuggestionAvailable && !IsBusy && editorController is not null;
+    private bool CanApplyCropNow() => IsSuggestionAvailable && !IsBusy && editorController is not null;
 
     /// <summary>
     /// Fully restores the editor to the originally loaded image and clears
     /// any AI suggestion or applied crop.
     /// </summary>
-    [RelayCommand(CanExecute = nameof(CanReset))]
+    [RelayCommand(CanExecute = nameof(CanResetNow))]
     public async Task ResetAsync()
     {
         if (IsBusy || editorController is null)
@@ -387,8 +355,6 @@ public partial class SmartCroppingViewModel : ObservableObject
         try
         {
             IsBusy = true;
-
-            CancelManualCropTimeout();
 
             ClearSuggestion();
 
@@ -408,10 +374,9 @@ public partial class SmartCroppingViewModel : ObservableObject
             }
 
             IsCropApplied = false;
-            IsManualCropping = false;
-            StatusMessage = hasImage
-                ? string.Empty
-                : "Open an image to start.";
+            IsError = false;
+            SelectedIntent = null;
+            StatusMessage = StageMessage();
         }
         catch (Exception ex)
         {
@@ -424,36 +389,21 @@ public partial class SmartCroppingViewModel : ObservableObject
         }
     }
 
-    private bool CanReset() => !IsBusy && (IsSuggestionAvailable || IsCropApplied || IsManualCropping || IsError) && editorController is not null;
+    private bool CanResetNow() => !IsBusy && IsCropApplied && editorController is not null;
 
     /// <summary>
     /// Saves the cropped image to disk using the operating system save dialog.
     /// </summary>
-    [RelayCommand(CanExecute = nameof(CanSave))]
+    [RelayCommand(CanExecute = nameof(CanSaveNow))]
     public async Task SaveAsync()
     {
-        // Allow save once we are in a state where the editor's current
-        // bitmap represents the result the user wants to keep: either a
-        // committed crop (IsCropApplied) or an active manual crop session
-        // (IsManualCropping), where any small adjustment the user makes is
-        // implicitly accepted on Save.
-        if ((!IsCropApplied && !IsManualCropping) || editorController is null)
+        if (!IsCropApplied || editorController is null)
         {
             return;
         }
 
         try
         {
-            // If the user is still in the built-in crop UI, commit any
-            // pending crop before exporting so the saved image reflects
-            // their latest adjustment.
-            if (IsManualCropping && !IsCropApplied)
-            {
-                editorController.SaveEdits();
-                IsCropApplied = true;
-                IsManualCropping = false;
-            }
-
             await editorController.SaveImageAsync();
             StatusMessage = "Image saved.";
         }
@@ -464,7 +414,7 @@ public partial class SmartCroppingViewModel : ObservableObject
         }
     }
 
-    private bool CanSave() => (IsCropApplied || IsManualCropping) && !IsBusy && editorController is not null;
+    private bool CanSaveNow() => IsCropApplied && !IsBusy && editorController is not null;
 
     /// <summary>
     /// Clears the error state and re-enables Smart Crop so the user can try
@@ -479,7 +429,7 @@ public partial class SmartCroppingViewModel : ObservableObject
         }
 
         IsError = false;
-        StatusMessage = hasImage ? string.Empty : "Open an image to start.";
+        StatusMessage = StageMessage();
     }
 
     private bool CanRetry() => IsError && !IsBusy;
@@ -556,35 +506,6 @@ public partial class SmartCroppingViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Notifies the view model that the user has finished a manual crop
-    /// (either saving or cancelling). The view wires this to the editor's
-    /// <c>ImageLoaded</c> event after a manual crop commit.
-    /// </summary>
-    public void NotifyManualCropCompleted(bool saved)
-    {
-        CancelManualCropTimeout();
-
-        if (!IsManualCropping)
-        {
-            return;
-        }
-
-        IsManualCropping = false;
-
-        if (saved)
-        {
-            IsCropApplied = true;
-            StatusMessage = "Crop applied. Save the result or reset to start over.";
-        }
-        else
-        {
-            StatusMessage = hasImage ? string.Empty : "Open an image to start.";
-        }
-
-        NotifyCommandsChanged();
-    }
-
-    /// <summary>
     /// Forwards property-changed notifications to the command set so that
     /// <c>CanExecute</c> is re-evaluated when relevant state changes.
     /// </summary>
@@ -593,7 +514,6 @@ public partial class SmartCroppingViewModel : ObservableObject
         OpenImageCommand.NotifyCanExecuteChanged();
         SmartCropCommand.NotifyCanExecuteChanged();
         ApplyCropCommand.NotifyCanExecuteChanged();
-        AdjustManuallyCommand.NotifyCanExecuteChanged();
         ResetCommand.NotifyCanExecuteChanged();
         SaveCommand.NotifyCanExecuteChanged();
         RetryCommand.NotifyCanExecuteChanged();
@@ -615,7 +535,15 @@ public partial class SmartCroppingViewModel : ObservableObject
             case nameof(IsCropApplied):
             case nameof(IsError):
             case nameof(IsOverlayVisible):
-            case nameof(IsManualCropping):
+                NotifyCommandsChanged();
+                NotifyStageChanged();
+                break;
+            case nameof(StatusMessage):
+            case nameof(IsImageLoaded):
+                NotifyStageChanged();
+                break;
+            case nameof(SelectedIntent):
+                NotifyStageChanged();
                 NotifyCommandsChanged();
                 break;
         }
@@ -625,13 +553,55 @@ public partial class SmartCroppingViewModel : ObservableObject
 
     #region Helpers
 
+    partial void OnSelectedIntentChanged(string? value)
+    {
+        if (!IsImageLoaded || IsBusy)
+        {
+            return;
+        }
+
+        // A new intent invalidates any pending suggestion for the old one.
+        if (IsSuggestionAvailable)
+        {
+            ClearSuggestion();
+        }
+
+        if (!IsCropApplied && !IsError)
+        {
+            StatusMessage = StageMessage();
+        }
+    }
+
+    private string StageMessage()
+    {
+        if (!IsImageLoaded)
+        {
+            return string.Empty;
+        }
+
+        return IsIntentSelected
+            ? "Generate an AI-powered crop suggestion."
+            : "Select how you want to use this image.";
+    }
+
+    private void NotifyStageChanged()
+    {
+        OnPropertyChanged(nameof(IsIntentSelected));
+        OnPropertyChanged(nameof(IsSuggestionReady));
+        OnPropertyChanged(nameof(CanGenerateCrop));
+        OnPropertyChanged(nameof(CanApplyCrop));
+        OnPropertyChanged(nameof(CanReset));
+        OnPropertyChanged(nameof(CanSave));
+        OnPropertyChanged(nameof(HasStatusMessage));
+    }
+
     private async Task LoadImageInternalAsync(ImageSource source, byte[] bytes)
     {
         IsBusy = true;
         IsError = false;
         ClearSuggestion();
         IsCropApplied = false;
-        IsManualCropping = false;
+        SelectedIntent = null;
 
         try
         {
@@ -642,10 +612,10 @@ public partial class SmartCroppingViewModel : ObservableObject
             // no other command can act on a half-loaded image.
             await editorController!.LoadImageAsync(source);
 
-            hasImage = true;
+            IsImageLoaded = true;
 
             RefreshOverlayGeometry();
-            StatusMessage = string.Empty;
+            StatusMessage = StageMessage();
         }
         finally
         {
@@ -666,35 +636,9 @@ public partial class SmartCroppingViewModel : ObservableObject
         suggestedRegion = null;
         IsOverlayVisible = false;
         IsSuggestionAvailable = false;
-        IsCropApplied = false;
-        IsManualCropping = false;
         IsError = true;
         StatusMessage = message;
         NotifyCommandsChanged();
-    }
-
-    private void CancelManualCropTimeout()
-    {
-        manualCropTimeoutCts?.Cancel();
-        manualCropTimeoutCts = null;
-    }
-
-    private async Task RunManualCropTimeoutAsync(CancellationToken cancellationToken)
-    {
-        try
-        {
-            await Task.Delay(TimeSpan.FromMinutes(2), cancellationToken);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        // No save was detected within the timeout. Assume the user cancelled.
-        if (IsManualCropping)
-        {
-            MainThread.BeginInvokeOnMainThread(() => NotifyManualCropCompleted(saved: false));
-        }
     }
 
     private static bool ComputeOverlayPosition(
@@ -739,19 +683,6 @@ public partial class SmartCroppingViewModel : ObservableObject
         height = region.Height * scale;
 
         return true;
-    }
-
-    private static byte[] LoadAssetBytes(string fileName)
-    {
-        using Stream? stream = FileSystem.OpenAppPackageFileAsync(fileName).GetAwaiter().GetResult();
-        if (stream is null)
-        {
-            return Array.Empty<byte>();
-        }
-
-        using var memoryStream = new MemoryStream();
-        stream.CopyTo(memoryStream);
-        return memoryStream.ToArray();
     }
 
     #endregion

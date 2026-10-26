@@ -92,12 +92,6 @@ public partial class SmartCropping : ContentPage, IImageEditorController
     }
 
     /// <inheritdoc />
-    public void StartManualCrop(ImageCropType cropType)
-    {
-        ImageEditor.Crop(cropType);
-    }
-
-    /// <inheritdoc />
     public Task ResetEditorAsync()
     {
         // Reset must feel instantaneous in the UI: the command clears
@@ -191,14 +185,6 @@ public partial class SmartCropping : ContentPage, IImageEditorController
     {
         try
         {
-            // When a manual crop is committed by the built-in UI, the editor
-            // commits the change and re-renders the cropped image, which
-            // re-fires ImageLoaded. Surface that completion to the VM.
-            if (viewModel.IsManualCropping)
-            {
-                viewModel.NotifyManualCropCompleted(saved: true);
-            }
-
             viewModel.NotifyCommandsChanged();
 
             _ = RefreshOverlayAfterLayoutAsync();
@@ -242,25 +228,4 @@ public partial class SmartCropping : ContentPage, IImageEditorController
 
     #endregion
 
-    #region Lifecycle
-
-    /// <inheritdoc />
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-
-        if (ImageEditor.Source is null)
-        {
-            try
-            {
-                await viewModel.LoadSampleImageCommand.ExecuteAsync(null);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Failed to load sample image on appearing: {ex.Message}");
-            }
-        }
-    }
-
-    #endregion
 }

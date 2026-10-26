@@ -20,33 +20,15 @@ public sealed class SmartCropService : AzureBaseService, ISmartCropService
 {
     private const string SystemPrompt =
     """
-You are an image cropping assistant.
+You are an image cropping assistant. You will be told how the image will be
+used (the crop intent). Let that intent drive how tight or wide the crop is.
 
-Analyze the supplied image and identify its most important visual content
-(the main subject: a person, animal, object, or focal element). Then suggest
-ONE rectangular crop region around that subject.
+Rules that always apply:
 
-CRITICAL — the crop rectangle MUST:
-
-1. Fully contain the entire main subject, including any extremities
-   (animal tails and ears, human hands and feet, antennas, accessories,
-   overhanging branches, handles, etc.). Never crop into a limb, tail,
-   edge, or appendage.
-2. Leave a comfortable safety margin (roughly 5 to 15 percent of the
-   subject's longer dimension) of surrounding context on ALL four sides.
-   Prefer a slightly loose frame over a tight one.
-3. Remove obviously empty surrounding space (solid sky, plain wall,
-   background gradient) while still keeping enough breathing room so the
-   subject does not touch the crop edge.
-4. Preserve a balanced composition. If the subject is off-centre, recentre
-   the crop so the subject sits comfortably inside the new frame.
-5. Use the original image's pixel dimensions (top-left origin).
-6. Stay strictly inside the image boundary on every side.
-
-If the image has no clear single subject (for example a landscape, a
-pattern, or a scene with no dominant object), return the largest
-rectangle that still removes the most empty or repeated border area
-while keeping the most visually dense region fully visible.
+1. Suggest exactly ONE rectangular crop region.
+2. Use the original image's pixel dimensions (top-left origin).
+3. Stay strictly inside the image boundary on every side.
+4. Never cut through the main subject the intent refers to.
 
 Return ONLY valid JSON with no commentary, no markdown fences, and no
 extra keys. Schema:
@@ -62,19 +44,137 @@ extra keys. Schema:
 }
 """;
 
+    private const string DefaultIntentPrompt =
+    """
+Analyze the supplied image.
+
+Suggest one crop region that:
+
+- Keeps the most important content fully visible.
+- Removes unnecessary surrounding space.
+- Preserves a balanced composition.
+
+Return only valid JSON matching the schema.
+""";
+
+    private static readonly Dictionary<string, string> IntentPrompts = new()
+    {
+        ["Profile Photo"] =
+        """
+Analyze the supplied image.
+
+The image will be used as a professional profile photograph.
+
+Suggest one crop region that:
+
+- Keeps the most prominent person visible.
+- Prioritizes the face and upper body.
+- Centers the subject.
+- Removes unnecessary background.
+- Maintains balanced spacing around the subject.
+- Works well as a profile photo, avatar, or LinkedIn-style photograph.
+
+Return only valid JSON matching the schema.
+""",
+        ["Product Image"] =
+        """
+Analyze the supplied image.
+
+The image will be used as a product showcase.
+
+Suggest one crop region that:
+
+- Keeps the complete product visible.
+- Removes unnecessary surrounding space.
+- Preserves product details.
+- Maintains professional product framing.
+- Avoids clipping any portion of the product.
+
+Return only valid JSON matching the schema.
+""",
+        ["Pet Portrait"] =
+        """
+Analyze the supplied image.
+
+The image will be used as a pet portrait.
+
+Suggest one crop region that:
+
+- Keeps the pet fully visible.
+- Prioritizes the pet's face and body.
+- Centers the animal.
+- Removes unnecessary surrounding space.
+- Preserves natural visual balance.
+
+Return only valid JSON matching the schema.
+""",
+        ["Food Photography"] =
+        """
+Analyze the supplied image.
+
+The image will be used for food photography.
+
+Suggest one crop region that:
+
+- Keeps the food item fully visible.
+- Highlights presentation and texture.
+- Reduces distracting background elements.
+- Maintains appetizing composition.
+- Preserves the primary dish as the focal point.
+
+Return only valid JSON matching the schema.
+""",
+        ["Hero Banner"] =
+        """
+Analyze the supplied image.
+
+The image will be used as a website hero banner.
+
+Suggest one crop region that:
+
+- Preserves the primary subject.
+- Maintains surrounding context.
+- Supports a wide landscape composition.
+- Provides strong visual balance.
+- Leaves suitable whitespace for potential banner content.
+
+Return only valid JSON matching the schema.
+""",
+        ["Object Focus"] =
+        """
+Analyze the supplied image.
+
+The image will be used to highlight the primary object.
+
+Suggest one crop region that:
+
+- Focuses tightly on the most important object.
+- Removes as much unnecessary surrounding space as possible.
+- Keeps the object fully visible.
+- Preserves a visually balanced composition.
+
+Return only valid JSON matching the schema.
+"""
+    };
+
+    /// <summary>Builds the user prompt for the selected crop intent.</summary>
+    internal static string BuildIntentPrompt(string intent) =>
+        IntentPrompts.TryGetValue(intent, out string? prompt) ? prompt : DefaultIntentPrompt;
+
     private static readonly JsonSerializerOptions SerializerOptions = new() { PropertyNameCaseInsensitive = true };
 
     /// <summary>
     /// Sends the supplied image to Azure OpenAI and returns the suggested crop region.
     /// </summary>
     /// <param name="imageBytes">The encoded image (PNG/JPEG) to analyze.</param>
+    /// <param name="intent">The selected crop intent that shapes the prompt.</param>
     /// <param name="cancellationToken">Token used to cancel the request.</param>
     /// <returns>
     /// A <see cref="SmartCropResponse"/> containing the proposed framing and
     /// crop region, or <see langword="null"/> when the service could not
     /// produce a valid suggestion.
     /// </returns>
-    public async Task<SmartCropResponse?> SuggestCropAsync(byte[] imageBytes, CancellationToken cancellationToken = default)
+    public async Task<SmartCropResponse?> SuggestCropAsync(byte[] imageBytes, string intent, CancellationToken cancellationToken = default)
     {
         if (imageBytes.Length == 0)
         {
@@ -94,12 +194,7 @@ extra keys. Schema:
 
                 new UserChatMessage(
                 [
-                    ChatMessageContentPart.CreateTextPart(
-                        "Analyze the supplied image and identify its most important visual content. " +
-                        "Suggest one rectangular crop region that keeps the important content visible, " +
-                        "removes unnecessary surrounding space, preserves a balanced composition, " +
-                        "uses the original image dimensions, and remains within image boundaries. " +
-                        "Return only valid JSON matching the schema."),
+                    ChatMessageContentPart.CreateTextPart(BuildIntentPrompt(intent)),
 
                     ChatMessageContentPart.CreateImagePart(imageBinary, "image/png", ChatImageDetailLevel.High)
                 ])
