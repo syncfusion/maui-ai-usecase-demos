@@ -417,11 +417,11 @@ public partial class SmartCroppingViewModel : ObservableObject
     private bool CanSaveNow() => IsCropApplied && !IsBusy && editorController is not null;
 
     /// <summary>
-    /// Clears the error state and re-enables Smart Crop so the user can try
-    /// again on the same image.
+    /// Clears the error state and immediately re-runs Smart Crop for the
+    /// currently selected intent.
     /// </summary>
     [RelayCommand(CanExecute = nameof(CanRetry))]
-    public void Retry()
+    public async Task RetryAsync()
     {
         if (!IsError)
         {
@@ -429,7 +429,7 @@ public partial class SmartCroppingViewModel : ObservableObject
         }
 
         IsError = false;
-        StatusMessage = StageMessage();
+        await SmartCropAsync();
     }
 
     private bool CanRetry() => IsError && !IsBusy;
