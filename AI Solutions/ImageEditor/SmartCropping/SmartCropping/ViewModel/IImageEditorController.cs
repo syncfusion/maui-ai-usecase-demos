@@ -42,12 +42,6 @@ public interface IImageEditorController
     void ApplyCrop(Rect cropRectangle);
 
     /// <summary>
-    /// Opens the built-in interactive crop mode with the specified crop type.
-    /// </summary>
-    /// <param name="cropType">The crop shape the user can choose.</param>
-    void StartManualCrop(ImageCropType cropType);
-
-    /// <summary>
     /// Cancels any active editing and restores the originally loaded image.
     /// </summary>
     /// <remarks>

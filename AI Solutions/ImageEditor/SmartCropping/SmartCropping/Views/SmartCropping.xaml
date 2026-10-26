@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:sf="clr-namespace:Syncfusion.Maui.ImageEditor;assembly=Syncfusion.Maui.ImageEditor"
+             xmlns:inputs="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
              xmlns:helpers="clr-namespace:SmartCropping.Helpers"
              xmlns:viewModel="clr-namespace:SmartCropping.ViewModel"
              x:Class="SmartCropping.SmartCropping"
@@ -114,130 +115,93 @@
                    FontSize="24"
                    FontAttributes="Bold"
                    TextColor="#0F172A" />
-            <Label Text="Let AI suggest a crop around the important content in an image."
+            <Label Text="Choose how you will use the image and let AI suggest the right crop."
                   
                    FontSize="14"
                    TextColor="#64748B" />
         </VerticalStackLayout>
 
-        <!-- ====== ROW 1: ACTIONS ====== -->
-        <ScrollView Grid.Row="1"
-                    Orientation="Horizontal"
-                    HorizontalScrollBarVisibility="Never">
-            <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                <Button Text="Open Image"
-                        Style="{StaticResource ActionButtonStyle}"
-                        Command="{Binding OpenImageCommand}" />
-                <Button Text="Smart Crop"
-                        Style="{StaticResource PrimaryActionButtonStyle}"
-                        Command="{Binding SmartCropCommand}" />
-                <Button Text="Apply Crop"
-                        Style="{StaticResource ActionButtonStyle}"
-                        Command="{Binding ApplyCropCommand}" />
-                <Button Text="Adjust Manually"
-                        Style="{StaticResource ActionButtonStyle}"
-                        Command="{Binding AdjustManuallyCommand}" />
-                <Button Text="Reset"
-                        Style="{StaticResource ActionButtonStyle}"
-                        Command="{Binding ResetCommand}" />
-                <Button Text="Save"
-                        Style="{StaticResource ActionButtonStyle}"
-                        Command="{Binding SaveCommand}" />
-            </HorizontalStackLayout>
-        </ScrollView>
+        <!-- ====== ROW 1: ACTIONS (progressive visibility) ====== -->
+        <VerticalStackLayout Grid.Row="1" Spacing="12">
+            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                <HorizontalStackLayout Spacing="8" VerticalOptions="End">
+                    <Button Text="Open Image"
+                            Style="{StaticResource ActionButtonStyle}"
+                            Command="{Binding OpenImageCommand}" />
+
+                    <VerticalStackLayout Spacing="4" IsVisible="{Binding IsImageLoaded}">
+                        <Label Text="Crop Intent"
+                               FontSize="12"
+                               FontAttributes="Bold"
+                               TextColor="#64748B" />
+                        <inputs:SfComboBox ItemsSource="{Binding CropIntents}"
+                                           SelectedItem="{Binding SelectedIntent, Mode=TwoWay}"
+                                           Placeholder="Select an intent..."
+                                           HeightRequest="40"
+                                           WidthRequest="220" />
+                    </VerticalStackLayout>
+
+                    <Button Text="Smart Crop"
+                            VerticalOptions="End"
+                            IsVisible="{Binding CanGenerateCrop}"
+                            Style="{StaticResource PrimaryActionButtonStyle}"
+                            Command="{Binding SmartCropCommand}" />
+                    <Button Text="Apply Crop"
+                            VerticalOptions="End"
+                            IsVisible="{Binding CanApplyCrop}"
+                            Style="{StaticResource ActionButtonStyle}"
+                            Command="{Binding ApplyCropCommand}" />
+                    <Button Text="Reset"
+                            VerticalOptions="End"
+                            IsVisible="{Binding CanReset}"
+                            Style="{StaticResource ActionButtonStyle}"
+                            Command="{Binding ResetCommand}" />
+                    <Button Text="Save"
+                            VerticalOptions="End"
+                            IsVisible="{Binding CanSave}"
+                            Style="{StaticResource ActionButtonStyle}"
+                            Command="{Binding SaveCommand}" />
+                </HorizontalStackLayout>
+            </ScrollView>
+        </VerticalStackLayout>
 
         <!-- ====== ROW 2: STATE MESSAGE ====== -->
-        <!-- One neutral container that restyles per state, mirroring the
-             reference's single #stateMessageBox. Nothing renders in the
-             initial state because all four flags are false. -->
         <Grid Grid.Row="2">
-            <!-- Loading -->
             <Border IsVisible="{Binding IsBusy}"
-                    BackgroundColor="#F8FAFC"
-                    Stroke="#E2E8F0"
-                    StrokeThickness="1"
-                    StrokeShape="RoundRectangle 4"
-                    Padding="10,8">
+                    BackgroundColor="#F8FAFC" Stroke="#E2E8F0" StrokeThickness="1"
+                    StrokeShape="RoundRectangle 4" Padding="10,8">
                 <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
                     <ActivityIndicator IsRunning="{Binding IsBusy}"
                                        IsVisible="{Binding IsBusy}"
                                        Color="#0066F5"
-                                       WidthRequest="16"
-                                       HeightRequest="16"
+                                       WidthRequest="16" HeightRequest="16"
                                        VerticalOptions="Center" />
-                    <Label Text="Finding the best crop..."
-                          
-                           TextColor="#1E293B"
-                           FontSize="14"
-                           VerticalOptions="Center" />
+                    <Label Text="{Binding StatusMessage}"
+                           TextColor="#1E293B" FontSize="14" VerticalOptions="Center" />
                 </HorizontalStackLayout>
             </Border>
 
-            <!-- Suggestion ready -->
-            <Border IsVisible="{Binding IsSuggestionAvailable}"
-                    BackgroundColor="#F8FAFC"
-                    Stroke="#E2E8F0"
-                    StrokeThickness="1"
-                    StrokeShape="RoundRectangle 4"
-                    Padding="10,8">
+            <Border IsVisible="{Binding HasStatusMessage}"
+                    BackgroundColor="#F8FAFC" Stroke="#E2E8F0" StrokeThickness="1"
+                    StrokeShape="RoundRectangle 4" Padding="10,8">
                 <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
                     <Label Text="&#8505;"
-                          
-                           TextColor="#0066F5"
-                           FontSize="14"
-                           VerticalOptions="Center" />
-                    <Label Text="Suggested crop is ready. Apply it or adjust manually."
-                          
-                           TextColor="#1E293B"
-                           FontSize="14"
-                           VerticalOptions="Center" />
+                           TextColor="#0066F5" FontSize="14" VerticalOptions="Center" />
+                    <Label Text="{Binding StatusMessage}"
+                           TextColor="#1E293B" FontSize="14" VerticalOptions="Center" />
                 </HorizontalStackLayout>
             </Border>
 
-            <!-- Crop applied -->
-            <Border IsVisible="{Binding IsCropApplied}"
-                    BackgroundColor="#F8FAFC"
-                    Stroke="#E2E8F0"
-                    StrokeThickness="1"
-                    StrokeShape="RoundRectangle 4"
-                    Padding="10,8">
-                <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                    <Label Text="&#10003;"
-                          
-                           TextColor="#059669"
-                           FontSize="14"
-                           VerticalOptions="Center" />
-                    <Label Text="Crop applied. You can save or adjust manually."
-                          
-                           TextColor="#1E293B"
-                           FontSize="14"
-                           VerticalOptions="Center" />
-                </HorizontalStackLayout>
-            </Border>
-
-            <!-- Error. The message binds to StatusMessage so it always reflects
-                 the actual failure reason instead of a hardcoded string. -->
             <Border IsVisible="{Binding IsError}"
-                    BackgroundColor="#F8FAFC"
-                    Stroke="#E2E8F0"
-                    StrokeThickness="1"
-                    StrokeShape="RoundRectangle 4"
-                    Padding="10,8">
+                    BackgroundColor="#F8FAFC" Stroke="#E2E8F0" StrokeThickness="1"
+                    StrokeShape="RoundRectangle 4" Padding="10,8">
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                     <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
-                        <Label Text="&#9888;"
-                              
-                               TextColor="#E11D48"
-                               FontSize="14"
-                               VerticalOptions="Center" />
+                        <Label Text="&#9888;" TextColor="#E11D48" FontSize="14" VerticalOptions="Center" />
                         <Label Text="{Binding StatusMessage}"
-                              
-                               TextColor="#1E293B"
-                               FontSize="14"
-                               VerticalOptions="Center" />
+                               TextColor="#1E293B" FontSize="14" VerticalOptions="Center" />
                     </HorizontalStackLayout>
-                    <Button Grid.Column="1"
-                            Text="Retry"
+                    <Button Grid.Column="1" Text="Retry"
                             Style="{StaticResource RetryButtonStyle}"
                             Command="{Binding RetryCommand}"
                             VerticalOptions="Center" />
