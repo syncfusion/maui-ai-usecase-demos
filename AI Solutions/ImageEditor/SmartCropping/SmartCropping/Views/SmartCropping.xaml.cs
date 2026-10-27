@@ -64,9 +64,15 @@ public partial class SmartCropping : ContentPage, IImageEditorController
         // in RENDERED-image coordinate space (the same space as
         // ImageRenderedSize / imageLayout.Frame), NOT in original-pixel
         // space. The view model gives us original-pixel coordinates, so
-        // convert them using the editor's current scale factor before the
-        // call. See Syncfusion.Maui.ImageEditor 35.1.41 ImageEditLayout.
-        // InitializeCrop / SaveCrop for the exact semantics.
+        // convert them to rendered-image space before the call. The
+        // conversion must use the per-axis scale: the editor's crop
+        // pipeline uses renderedSize/originalSize on each axis
+        // independently when it maps the rect back to the source bitmap,
+        // so using Math.Min would shift the crop on whichever axis is not
+        // the limiting one. For a portrait (taller-than-wide) image with
+        // a head at the top, a single-axis scale on Y is what keeps the
+        // crop where the AI asked for it. See Syncfusion.Maui.ImageEditor
+        // 35.1.41 ImageEditLayout.CropImageView.
         Size original = ImageEditor.OriginalImageSize;
         Size rendered = ImageEditor.ImageRenderedSize;
 
@@ -76,17 +82,18 @@ public partial class SmartCropping : ContentPage, IImageEditorController
             return;
         }
 
-        double scale = Math.Min(rendered.Width / original.Width, rendered.Height / original.Height);
-        if (scale <= 0)
+        double scaleX = rendered.Width / original.Width;
+        double scaleY = rendered.Height / original.Height;
+        if (scaleX <= 0 || scaleY <= 0)
         {
             return;
         }
 
         Rect renderedRect = new Rect(
-            cropRectangle.X * scale,
-            cropRectangle.Y * scale,
-            cropRectangle.Width * scale,
-            cropRectangle.Height * scale);
+            cropRectangle.X * scaleX,
+            cropRectangle.Y * scaleY,
+            cropRectangle.Width * scaleX,
+            cropRectangle.Height * scaleY);
 
         ImageEditor.Crop(renderedRect, false);
     }

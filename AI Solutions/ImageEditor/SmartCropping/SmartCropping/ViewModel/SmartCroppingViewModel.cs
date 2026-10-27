@@ -674,8 +674,9 @@ public partial class SmartCroppingViewModel : ObservableObject
             return false;
         }
 
-        double scale = Math.Min(renderedWidth / originalWidth, renderedHeight / originalHeight);
-        if (scale <= 0)
+        double scaleX = renderedWidth / originalWidth;
+        double scaleY = renderedHeight / originalHeight;
+        if (scaleX <= 0 || scaleY <= 0)
         {
             return false;
         }
@@ -683,10 +684,10 @@ public partial class SmartCroppingViewModel : ObservableObject
         double imageOffsetX = (controlWidth - renderedWidth) / 2d;
         double imageOffsetY = (controlHeight - renderedHeight) / 2d;
 
-        x = imageOffsetX + region.X * scale;
-        y = imageOffsetY + region.Y * scale;
-        width = region.Width * scale;
-        height = region.Height * scale;
+        x = imageOffsetX + region.X * scaleX;
+        y = imageOffsetY + region.Y * scaleY;
+        width = region.Width * scaleX;
+        height = region.Height * scaleY;
 
         return true;
     }
