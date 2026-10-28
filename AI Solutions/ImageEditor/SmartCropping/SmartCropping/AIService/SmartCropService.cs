@@ -74,31 +74,30 @@ The image will be used as a profile photo.
 
 Identify the primary subject.
 
-If the primary subject contains a face:
-
-- Prioritize the face.
-- Include head and upper portion of the subject.
-- Center the face.
-- Reduce unnecessary background.
+If a face is visible:
+- Keep the entire face visible.
+- Include the head, neck, and upper body.
+- Avoid cropping too tightly around the face.
+- Maintain balanced margins around the subject.
+- Center the subject.
 
 If no face is visible:
+- Focus on the most recognizable upper portion of the subject.
 
-- Focus on the most recognizable portion of the subject.
+The resulting crop should resemble a professional profile photograph
+suitable for:
+- LinkedIn
+- Microsoft Teams
+- Outlook
+- GitHub
+- User avatars
 
-The crop should:
+Prefer square or portrait-oriented framing.
 
-- Work well as an avatar.
-- Work well in professional profile systems.
-- Prefer square or portrait-oriented framing.
-- Minimize background.
+The subject should occupy approximately 50–65% of the crop area.
 
-The primary subject should occupy approximately 50–70% of the crop area.
-
-Examples:
-
-- Human: face and shoulders.
-- Pet: face and upper body.
-- Object: main recognizable portion.
+Do not generate face-only crops unless the original image contains only
+a face.
 
 Return JSON only.
 """,
