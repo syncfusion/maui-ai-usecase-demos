@@ -180,12 +180,17 @@
             <Border IsVisible="{Binding HasStatusMessage}"
                     BackgroundColor="#F8FAFC" Stroke="#E2E8F0" StrokeThickness="1"
                     StrokeShape="RoundRectangle 4" Padding="10,8">
-                <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                    <Label Text="&#8505;"
-                           TextColor="#0066F5" FontSize="14" VerticalOptions="Center" />
-                    <Label Text="{Binding StatusMessage}"
-                           TextColor="#1E293B" FontSize="14" VerticalOptions="Center" />
-                </HorizontalStackLayout>
+                <VerticalStackLayout Spacing="6">
+                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                        <Label Text="&#8505;"
+                               TextColor="#0066F5" FontSize="14" VerticalOptions="Center" />
+                        <Label Text="{Binding StatusMessage}"
+                               TextColor="#1E293B" FontSize="14" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <Label Text="{Binding SuggestionReason}"
+                           IsVisible="{Binding HasSuggestionReason}"
+                           TextColor="#475569" FontSize="12" LineBreakMode="WordWrap" />
+                </VerticalStackLayout>
             </Border>
 
             <Border IsVisible="{Binding IsError}"

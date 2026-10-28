@@ -132,6 +132,17 @@ public partial class SmartCroppingViewModel : ObservableObject
     public partial string StatusMessage { get; set; } = string.Empty;
 
     /// <summary>
+    /// Gets or sets the AI-provided explanation of why it chose this crop,
+    /// shown under the status headline so users can see how the intent
+    /// influenced the framing.
+    /// </summary>
+    [ObservableProperty]
+    public partial string SuggestionReason { get; set; } = string.Empty;
+
+    /// <summary>Whether the framing reason should be displayed.</summary>
+    public bool HasSuggestionReason => IsSuggestionAvailable && !string.IsNullOrWhiteSpace(SuggestionReason);
+
+    /// <summary>
     /// Gets or sets whether the AI crop preview overlay is visible.
     /// </summary>
     [ObservableProperty]
@@ -290,6 +301,7 @@ public partial class SmartCroppingViewModel : ObservableObject
             {
                 IsSuggestionAvailable = true;
                 StatusMessage = $"Suggested crop generated for: {SelectedIntent}";
+                SuggestionReason = response.Framing;
             }
             else
             {
@@ -545,6 +557,7 @@ public partial class SmartCroppingViewModel : ObservableObject
                 NotifyStageChanged();
                 break;
             case nameof(StatusMessage):
+            case nameof(SuggestionReason):
             case nameof(IsImageLoaded):
                 NotifyStageChanged();
                 break;
@@ -635,6 +648,7 @@ public partial class SmartCroppingViewModel : ObservableObject
         suggestedRegion = null;
         IsOverlayVisible = false;
         IsSuggestionAvailable = false;
+        SuggestionReason = string.Empty;
     }
 
     private void ShowError(string message)
