@@ -20,8 +20,9 @@ public sealed class SmartCropService : AzureBaseService, ISmartCropService
 {
     private const string SystemPrompt =
     """
-You are an image cropping assistant. You will be told how the image will be
-used (the crop intent). Let that intent drive how tight or wide the crop is.
+You are an image cropping assistant. The user will tell you how the image
+will be used (the crop intent) and you must let that intent drive how
+tight or wide the crop is. Crops that ignore the intent are wrong.
 
 Rules that always apply:
 
@@ -30,11 +31,19 @@ Rules that always apply:
 3. Stay strictly inside the image boundary on every side.
 4. Never cut through the main subject the intent refers to.
 
+The "framing" field MUST explain how the crop satisfies the intent in one
+or two sentences, and the crop region MUST match the subject-prominence
+percentage called for by the intent. Different intents must produce
+visibly different rectangles: a Profile Photo crop must be much tighter
+and more face-centred than a Hero Banner crop, an Object Focus crop must
+be tighter and more aggressive than a Pet Portrait crop, a Pet Portrait
+crop must show the entire pet while an Object Focus crop zooms in.
+
 Return ONLY valid JSON with no commentary, no markdown fences, and no
 extra keys. Schema:
 
 {
-  "framing": "Short description of what the crop keeps visible",
+  "framing": "Short description of how the crop satisfies the intent",
   "cropRegion": {
     "x": <integer>,
     "y": <integer>,
@@ -61,99 +70,160 @@ Return only valid JSON matching the schema.
     {
         ["Profile Photo"] =
         """
-Analyze the supplied image.
+The image will be used as a profile photo.
 
-The image will be used as a professional profile photograph.
+Identify the primary subject.
 
-Suggest one crop region that:
+If the primary subject contains a face:
 
-- Keeps the most prominent person visible.
-- Prioritizes the face and upper body.
-- Centers the subject.
-- Removes unnecessary background.
-- Maintains balanced spacing around the subject.
-- Works well as a profile photo, avatar, or LinkedIn-style photograph.
+- Prioritize the face.
+- Include head and upper portion of the subject.
+- Center the face.
+- Reduce unnecessary background.
 
-Return only valid JSON matching the schema.
+If no face is visible:
+
+- Focus on the most recognizable portion of the subject.
+
+The crop should:
+
+- Work well as an avatar.
+- Work well in professional profile systems.
+- Prefer square or portrait-oriented framing.
+- Minimize background.
+
+The primary subject should occupy approximately 50–70% of the crop area.
+
+Examples:
+
+- Human: face and shoulders.
+- Pet: face and upper body.
+- Object: main recognizable portion.
+
+Return JSON only.
 """,
         ["Product Image"] =
         """
-Analyze the supplied image.
-
 The image will be used as a product showcase.
 
-Suggest one crop region that:
+Identify the primary product.
 
-- Keeps the complete product visible.
-- Removes unnecessary surrounding space.
-- Preserves product details.
-- Maintains professional product framing.
-- Avoids clipping any portion of the product.
+The crop should:
 
-Return only valid JSON matching the schema.
+- Keep the entire product visible.
+- Never clip the product.
+- Maintain balanced spacing on all sides.
+- Reduce unnecessary background.
+- Preserve product details.
+
+The product should occupy approximately 60–80% of the crop area.
+
+This crop should look suitable for:
+
+- E-commerce
+- Marketplaces
+- Catalogs
+
+Return JSON only.
 """,
         ["Pet Portrait"] =
         """
-Analyze the supplied image.
-
 The image will be used as a pet portrait.
 
-Suggest one crop region that:
+Identify the primary pet.
 
-- Keeps the pet fully visible.
-- Prioritizes the pet's face and body.
-- Centers the animal.
-- Removes unnecessary surrounding space.
-- Preserves natural visual balance.
+The crop should:
 
-Return only valid JSON matching the schema.
+- Keep the entire pet visible.
+- Preserve natural spacing around the pet.
+- Avoid cutting off the tail, ears, head, or legs.
+- Include limited environmental context.
+
+The pet should occupy approximately 40–60% of the crop area.
+
+This crop should feel natural and balanced.
+
+Return JSON only.
 """,
         ["Food Photography"] =
         """
-Analyze the supplied image.
-
 The image will be used for food photography.
 
-Suggest one crop region that:
+Identify the primary dish or food item.
 
-- Keeps the food item fully visible.
-- Highlights presentation and texture.
-- Reduces distracting background elements.
-- Maintains appetizing composition.
-- Preserves the primary dish as the focal point.
+The crop should:
 
-Return only valid JSON matching the schema.
+- Keep the food fully visible.
+- Highlight presentation and texture.
+- Remove distracting background elements.
+- Preserve appealing composition.
+
+The food should occupy approximately 60–75% of the crop area.
+
+This crop should feel suitable for:
+
+- Menus
+- Food blogs
+- Delivery apps
+
+Return JSON only.
 """,
         ["Hero Banner"] =
         """
-Analyze the supplied image.
-
 The image will be used as a website hero banner.
 
-Suggest one crop region that:
+Identify the primary subject.
 
-- Preserves the primary subject.
-- Maintains surrounding context.
-- Supports a wide landscape composition.
-- Provides strong visual balance.
-- Leaves suitable whitespace for potential banner content.
+The crop should:
 
-Return only valid JSON matching the schema.
+- Preserve substantial surrounding context.
+- Retain scenery and environmental details.
+- Maintain visual balance.
+- Avoid tight crops.
+
+Prefer a wide landscape composition.
+
+The primary subject should occupy approximately 20–40% of the crop area.
+
+Examples:
+
+- Human: include surroundings.
+- Pet: include landscape and scenery.
+- Object: include supporting context.
+
+The crop should feel suitable for:
+
+- Website banners
+- Landing pages
+- Marketing headers
+
+Return JSON only.
 """,
         ["Object Focus"] =
         """
-Analyze the supplied image.
+The image will be used to emphasize the primary subject.
 
-The image will be used to highlight the primary object.
+Identify the primary subject.
 
-Suggest one crop region that:
+The crop should:
 
-- Focuses tightly on the most important object.
-- Removes as much unnecessary surrounding space as possible.
-- Keeps the object fully visible.
-- Preserves a visually balanced composition.
+- Focus tightly on the subject.
+- Remove as much surrounding content as possible.
+- Keep the subject fully visible.
+- Aggressively reduce background space.
 
-Return only valid JSON matching the schema.
+The subject should occupy approximately 75–85% of the crop area.
+
+Examples:
+
+- Human: subject dominates crop.
+- Pet: pet dominates crop.
+- Product: product dominates crop.
+- Object: object dominates crop.
+
+This should be the most aggressive crop among all intents.
+
+Return JSON only.
 """
     };
 
