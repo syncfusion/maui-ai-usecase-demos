@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HomeInventoryManager.Views.AIAdvisorPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="White">
+    <Grid Padding="24" RowDefinitions="Auto,Auto" RowSpacing="12">
+        <Label Text="AI Advisor"
+               FontAttributes="Bold"
+               FontSize="28"
+               TextColor="Black" />
+        <Label Grid.Row="1"
+               Text="This demo route is wired for the sample's AI recommendations and can be extended with a full advisory experience."
+               FontSize="16"
+               TextColor="#475569" />
+    </Grid>
+</ContentPage>
