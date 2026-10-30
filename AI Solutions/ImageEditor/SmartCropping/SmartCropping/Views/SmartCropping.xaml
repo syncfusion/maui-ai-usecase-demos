@@ -130,12 +130,8 @@
                             Command="{Binding OpenImageCommand}" />
 
                     <VerticalStackLayout IsVisible="{Binding IsImageLoaded}" Spacing="4">
-                        <Label Text="Crop Intent"
-                               FontSize="12"
-                               FontAttributes="Bold"
-                               TextColor="#64748B" />
                         <Border Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="#FFFFFF"
-                                HeightRequest="40" WidthRequest="220"
+                                HeightRequest="45" WidthRequest="220"
                                 StrokeShape="RoundRectangle 4"
                                 VerticalOptions="End">
                             <inputs:SfComboBox ItemsSource="{Binding CropIntents}"

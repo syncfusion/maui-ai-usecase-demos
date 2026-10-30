@@ -145,13 +145,13 @@ public sealed class AzureVisionSmartCropService : ISmartCropService
 
             CropRegion crop = intent switch
             {
-                "Profile Photo"    => FrameProfilePhoto(subject, imageWidth, imageHeight),
-                "Pet Portrait"     => FramePetPortrait(subject, imageWidth, imageHeight),
-                "Product Image"    => FrameProduct(subject, imageWidth, imageHeight),
+                "Profile Photo" => FrameProfilePhoto(subject, imageWidth, imageHeight),
+                "Pet Portrait" => FramePetPortrait(subject, imageWidth, imageHeight),
+                "Product Image" => FrameProduct(subject, imageWidth, imageHeight),
                 "Food Photography" => FrameFood(subject, imageWidth, imageHeight),
-                "Hero Banner"      => FrameHeroBanner(analysis, subject, imageWidth, imageHeight),
-                "Object Focus"     => FrameObjectFocus(subject, imageWidth, imageHeight),
-                _                  => FrameDefault(subject, imageWidth, imageHeight),
+                "Hero Banner" => FrameHeroBanner(analysis, subject, imageWidth, imageHeight),
+                "Object Focus" => FrameObjectFocus(subject, imageWidth, imageHeight),
+                _ => FrameDefault(subject, imageWidth, imageHeight),
             };
 
             crop = crop.ClampedTo(imageWidth, imageHeight);
@@ -198,13 +198,13 @@ public sealed class AzureVisionSmartCropService : ISmartCropService
 
         return intent switch
         {
-            "Profile Photo"    => SelectForProfilePhoto(people, objects),
-            "Pet Portrait"     => SelectForPetPortrait(people, objects),
-            "Product Image"    => SelectForProduct(objects),
+            "Profile Photo" => SelectForProfilePhoto(people, objects),
+            "Pet Portrait" => SelectForPetPortrait(people, objects),
+            "Product Image" => SelectForProduct(objects),
             "Food Photography" => SelectForFood(objects),
-            "Hero Banner"      => SelectForHeroBanner(people, objects, analysis),
-            "Object Focus"     => SelectForObjectFocus(objects, people),
-            _                  => SelectDefault(people, objects, analysis),
+            "Hero Banner" => SelectForHeroBanner(people, objects, analysis),
+            "Object Focus" => SelectForObjectFocus(objects, people),
+            _ => SelectDefault(people, objects, analysis),
         };
     }
 
@@ -220,10 +220,6 @@ public sealed class AzureVisionSmartCropService : ISmartCropService
         if (people is { Count: > 0 })
         {
             return LargestPerson(people);
-        }
-        if (objects is { Count: > 0 })
-        {
-            return LargestObject(objects);
         }
         return NoSubject();
     }
@@ -495,44 +491,47 @@ public sealed class AzureVisionSmartCropService : ISmartCropService
     /// cropping, the dedicated Azure Face service would be required.
     /// </remarks>
     private static CropRegion FrameProfilePhoto(
-        DetectedSubject subject,
-        int imageWidth,
-        int imageHeight)
+    DetectedSubject subject,
+    int imageWidth,
+    int imageHeight)
     {
         if (subject.Kind == SubjectKind.None)
         {
             return CentredSquare(imageWidth, imageHeight);
         }
 
-        CropRegion personBox = subject.Box;
+        CropRegion box = subject.Box;
 
-        // Estimate head region from the top of the person box.
-        double estimatedHeadHeight = personBox.Height * 0.25;
-        double estimatedHeadWidth = personBox.Width * 0.50;
+        // Use the upper half of whatever Azure detected.
+        // This works for:
+        // - full-body photos
+        // - half-body photos
+        // - portrait photos
+        // much better than guessing head size.
 
-        // Head centre: top-centre of the person box.
-        double headCenterX = personBox.X + personBox.Width / 2.0;
-        double headCenterY = personBox.Y + estimatedHeadHeight * 0.5;
+        double visibleUpperBodyHeight = box.Height * 0.25;
 
-        // Build the crop around the estimated head.
-        // Height: ~2.8x head height so neck and shoulders fit.
-        // Width: ~2.4x head width so both shoulders fit.
-        double cropHeight = estimatedHeadHeight * 2.8;
-        double cropWidth = estimatedHeadWidth * 2.4;
+        double centerX = box.X + box.Width / 2.0;
 
-        // Force square or slight portrait (profile-photo standard).
-        if (cropWidth > cropHeight)
-        {
-            cropWidth = cropHeight;
-        }
+        // Portrait crop.
+        double cropWidth = box.Width * 1.15;
+        double cropHeight = visibleUpperBodyHeight * 1.25;
 
-        // Centre horizontally on the head.
-        double x = headCenterX - cropWidth / 2.0;
+        // Keep square avatars looking good.
+        cropWidth = Math.Max(cropWidth, cropHeight * 0.90);
 
-        // Place the head in the upper third so shoulders fit below.
-        double y = headCenterY - cropHeight * 0.30;
+        double x = centerX - cropWidth / 2.0;
 
-        return Clamp(imageWidth, imageHeight, x, y, cropWidth, cropHeight);
+        // Focus on upper body.
+        double y = box.Y - (visibleUpperBodyHeight * 0.10);
+
+        return Clamp(
+            imageWidth,
+            imageHeight,
+            x,
+            y,
+            cropWidth,
+            cropHeight);
     }
 
     /// <summary>
@@ -850,13 +849,13 @@ public sealed class AzureVisionSmartCropService : ISmartCropService
 
         return intent switch
         {
-            "Profile Photo"    => $"Estimated the head region from the {subjectDesc} and framed head, neck, and shoulders with the head centred horizontally (subject occupies {prominence:P0} of the crop). Head position is approximated because Azure AI Vision People detection does not provide face landmarks.",
-            "Pet Portrait"     => $"Kept the full {subjectDesc} visible with generous margins so ears, tail, and paws are not clipped (subject occupies {prominence:P0} of the crop).",
-            "Product Image"    => $"Framed the {subjectDesc} with balanced margins so the product dominates without edge clipping (subject occupies {prominence:P0} of the crop).",
+            "Profile Photo" => $"Estimated the head region from the {subjectDesc} and framed head, neck, and shoulders with the head centred horizontally (subject occupies {prominence:P0} of the crop). Head position is approximated because Azure AI Vision People detection does not provide face landmarks.",
+            "Pet Portrait" => $"Kept the full {subjectDesc} visible with generous margins so ears, tail, and paws are not clipped (subject occupies {prominence:P0} of the crop).",
+            "Product Image" => $"Framed the {subjectDesc} with balanced margins so the product dominates without edge clipping (subject occupies {prominence:P0} of the crop).",
             "Food Photography" => $"Highlighted the {subjectDesc} with presentation-focused margins (subject occupies {prominence:P0} of the crop).",
-            "Hero Banner"      => $"Picked a wide landscape crop that includes the {subjectDesc} so surrounding context is preserved (subject occupies {prominence:P0} of the crop).",
-            "Object Focus"     => $"Tightened the crop around the {subjectDesc} with minimal margins so the subject dominates the frame (subject occupies {prominence:P0} of the crop).",
-            _                  => $"Balanced crop around the {subjectDesc} (subject occupies {prominence:P0} of the crop).",
+            "Hero Banner" => $"Picked a wide landscape crop that includes the {subjectDesc} so surrounding context is preserved (subject occupies {prominence:P0} of the crop).",
+            "Object Focus" => $"Tightened the crop around the {subjectDesc} with minimal margins so the subject dominates the frame (subject occupies {prominence:P0} of the crop).",
+            _ => $"Balanced crop around the {subjectDesc} (subject occupies {prominence:P0} of the crop).",
         };
     }
 
