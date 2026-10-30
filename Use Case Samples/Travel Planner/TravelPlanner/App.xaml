@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:TravelPlanner"
+             xmlns:ai="clr-namespace:Syncfusion.Maui.AIAssistView;assembly=Syncfusion.Maui.AIAssistView"
+             xmlns:syncTheme="clr-namespace:Syncfusion.Maui.Themes;assembly=Syncfusion.Maui.Core"
+             xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
+             x:Class="TravelPlanner.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Single source of truth for Syncfusion AIAssistView theme colors.
+                 Implemented as a global dictionary so every SfAIAssistView in the app
+                 resolves these tokens (editor chrome, request/response bubbles, etc.). -->
+            <syncTheme:SyncfusionThemeDictionary>
+                <syncTheme:SyncfusionThemeDictionary.MergedDictionaries>
+                    <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+                        <x:String x:Key="SfAIAssistViewTheme">CustomTheme</x:String>
+
+                        <!--  Editor  -->
+                        <Color x:Key="SfAIAssistViewEditorPlaceholderTextColor">#73623c</Color>
+                        <Color x:Key="SfAIAssistViewEditorTextColor">#73623c</Color>
+                        <Color x:Key="SfAIAssistViewEditorBackground">#fff7e7</Color>
+                        <Color x:Key="SfAIAssistViewEditorStroke">#73623c</Color>
+                        <FontAttributes x:Key="SfAIAssistViewEditorFontAttributes">Bold</FontAttributes>
+                        <x:Double x:Key="SfAIAssistViewEditorFontSize">16</x:Double>
+
+                        <!--  Request Bubble  -->
+                        <Color x:Key="SfAIAssistViewRequestItemBackground">#ffeac3</Color>
+                        <Color x:Key="SfAIAssistViewRequestItemTextColor">#73623c</Color>
+
+                        <!--  Response Bubble  -->
+                        <Color x:Key="SfAIAssistViewResponseItemBackground">#fff7e7</Color>
+                        <Color x:Key="SfAIAssistViewResponseItemTextColor">#73623c</Color>
+
+                        <!--  Suggestion Chips  -->
+                        <Color x:Key="SfAIAssistViewSuggestionItemBackground">#ffeac3</Color>
+
+                        <!--  Action Buttons  -->
+                        <Color x:Key="SfAIAssistViewActionButtonBackground">#ffeac3</Color>
+                        <Color x:Key="SfAIAssistViewActionButtonIconColor">#b7a27a</Color>
+                        <Color x:Key="SfAIAssistViewActionButtonViewTextColor">#b7a27a</Color>
+                        <Color x:Key="SfAIAssistViewActionButtonsPopupBackground">#ffeac3</Color>
+                        <Color x:Key="SfAIAssistViewNormalActionViewColor">#fff7e7</Color>
+                        <Color x:Key="SfAIAssistViewHoverActionViewColor">#fff7e7</Color>
+                        <Color x:Key="SfAIAssistViewPressedActionViewColor">DarkGray</Color>
+                        <Color x:Key="SfAIAssistViewNormalActionViewIconColor">Black</Color>
+                        <Color x:Key="SfAIAssistViewSelectedLikeIconColor">#73623c</Color>
+                        <Color x:Key="SfAIAssistViewSelectedDisLikeIconColor">#73623c</Color>
+                    </ResourceDictionary>
+                </syncTheme:SyncfusionThemeDictionary.MergedDictionaries>
+            </syncTheme:SyncfusionThemeDictionary>
+
+            <!-- Implicit style for the ResponseLoaderView so the control inside SfAIAssistView picks it up automatically -->
+            <Style TargetType="ai:ResponseLoaderView">
+                <Setter Property="ControlTemplate">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Grid ColumnDefinitions="Auto, *" HeightRequest="40" HorizontalOptions="Start" VerticalOptions="Center">
+                                <Label FontAttributes="Bold" FontFamily="MauiSampleFontIcon" FontSize="32" HorizontalOptions="Center" Text="&#xe7e1;" TextColor="#73623c" VerticalOptions="Center" />
+                                <HorizontalStackLayout Grid.Column="1" Padding="16,0,0,0" Spacing="4">
+                                    <shapes:Ellipse x:Name="dot1" HeightRequest="10" WidthRequest="10" />
+                                    <shapes:Ellipse x:Name="dot2" HeightRequest="10" WidthRequest="10" />
+                                    <shapes:Ellipse x:Name="dot3" HeightRequest="10" WidthRequest="10" />
+                                    <shapes:Ellipse x:Name="dot4" HeightRequest="10" WidthRequest="10" />
+                                    <HorizontalStackLayout.Behaviors>
+                                        <local:DotAnimationBehavior />
+                                    </HorizontalStackLayout.Behaviors>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

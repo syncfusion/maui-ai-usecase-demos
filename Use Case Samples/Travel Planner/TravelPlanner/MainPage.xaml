@@ -1,0 +1,1474 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="TravelPlanner.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:ai="clr-namespace:Syncfusion.Maui.AIAssistView;assembly=Syncfusion.Maui.AIAssistView"
+    xmlns:bottom="clr-namespace:Syncfusion.Maui.Toolkit.BottomSheet;assembly=Syncfusion.Maui.Toolkit"
+    xmlns:button="clr-namespace:Syncfusion.Maui.Toolkit.Buttons;assembly=Syncfusion.Maui.Toolkit"
+    xmlns:calendar="clr-namespace:Syncfusion.Maui.Calendar;assembly=Syncfusion.Maui.Calendar"
+    xmlns:chips="clr-namespace:Syncfusion.Maui.Toolkit.Chips;assembly=Syncfusion.Maui.Toolkit"
+    xmlns:conv="clr-namespace:TravelPlanner.Converters"
+    xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+    xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+    xmlns:local="clr-namespace:TravelPlanner"
+    xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
+    xmlns:sfmaps="clr-namespace:Syncfusion.Maui.Maps;assembly=Syncfusion.Maui.Maps"
+    xmlns:models="clr-namespace:TravelPlanner.Models"
+    xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
+    xmlns:syncTheme="clr-namespace:Syncfusion.Maui.Themes;assembly=Syncfusion.Maui.Core"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+    xmlns:viewModels="clr-namespace:TravelPlanner.ViewModels"
+    x:Name="RootPage"
+    x:DataType="viewModels:TravelPlannerViewModel"
+    SafeAreaEdges="All">
+
+    <ContentPage.Resources>
+        <DataTemplate x:Key="CustomSuggestionTemplate">
+            <chips:SfChip
+                Text="{Binding Text}"
+                CornerRadius="12"
+                Padding="8,4"
+                BackgroundColor="{StaticResource SfAIAssistViewSuggestionItemBackground}">
+                <chips:SfChip.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnSuggestionTapped"
+                                          CommandParameter="{Binding Text}"/>
+                </chips:SfChip.GestureRecognizers>
+            </chips:SfChip>
+        </DataTemplate>
+
+        <DataTemplate x:Key="Location">
+            <StackLayout HorizontalOptions="Start"
+                         VerticalOptions="Center">
+                <Image Source="location.png"
+                       HeightRequest="30"
+                       WidthRequest="30" />
+            </StackLayout>
+        </DataTemplate>
+
+        <!--  Marker tooltip - Simple text tooltip for maps  -->
+        <DataTemplate x:Key="LocationTooltip">
+            <Label Padding="8,6"
+                   BackgroundColor="#333333"
+                   FontSize="12"
+                   FontAttributes="Bold"
+                   TextColor="#FFFFFF"
+                   LineBreakMode="TailTruncation"
+                   MaxLines="1"
+                   Text="{Binding Latitude, FallbackValue='Location'}" />
+        </DataTemplate>
+
+        <!--  Enhanced Marker Tooltip Template with Name, Category, and Description  -->
+        <DataTemplate x:Key="MarkerTooltipTemplate">
+                <!-- Marker Name (Primary) -->
+            <Label
+                    Grid.Row="1"
+                    FontSize="14"
+                    FontAttributes="Bold"
+                    TextColor="#FFFFFF"
+                    LineBreakMode="WordWrap"
+                    MaxLines="2"
+                    Text="{Binding DataItem.Name}" />
+        </DataTemplate>
+
+        <!--  Custom Editor Template for AIAssistView  -->
+        <DataTemplate x:Key="CustomEditorTemplate">
+            <Grid Padding="8">
+                <Border
+                    Padding="8"
+                    StrokeShape="RoundRectangle 20"
+                    BackgroundColor="#fff7e7"
+                    Stroke="#e0d2b8">
+                    <Grid ColumnDefinitions="*,Auto"
+                          VerticalOptions="Center"
+                          HorizontalOptions="Fill">
+                        <Editor
+                            x:Name="editor"
+                            BackgroundColor="Transparent"
+                            FontSize="16"
+                            Placeholder="Type Message..."
+                            PlaceholderColor="#b7a27a"
+                            TextColor="#73623c"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Fill"
+                            Margin="0"
+                            MaximumHeightRequest="100"
+                            />
+                        <!-- Send button -->
+                        <Button
+                            Grid.Column="1"
+                            BackgroundColor="#73623c"
+                            Padding="8"
+                            Margin="8,0,0,0"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Center"
+                            FontSize="18"
+                            FontFamily="MauiSampleFontIcon"
+                            Text="&#xe809;"
+                            TextColor="#fff7e7"
+                            CornerRadius="18"
+                            WidthRequest="40"
+                            HeightRequest="40"
+                            Command="{Binding Source={x:Reference RootPage}, Path=AssistRequestCommand}"
+                            CommandParameter="{x:Reference editor}"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </DataTemplate>
+        <Style x:Key="ResponseLoader"
+               TargetType="ai:ResponseLoaderView">
+            <Setter Property="ControlTemplate">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Grid
+                            ColumnDefinitions="Auto, *"
+                            HeightRequest="40"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Center">
+
+                            <Label
+                                FontAttributes="Bold"
+                                FontFamily="MauiSampleFontIcon"
+                                FontSize="32"
+                                HorizontalOptions="Center"
+                                Text="&#xe7e1;"
+                                TextColor="#73623c"
+                                VerticalOptions="Center"/>
+                            <HorizontalStackLayout
+                                Grid.Column="1"
+                                Padding="16,0,0,0"
+                                Spacing="4">
+                                <shapes:Ellipse
+                                    x:Name="dot1"
+                                    HeightRequest="10"
+                                    WidthRequest="10"/>
+                                <shapes:Ellipse
+                                    x:Name="dot2"
+                                    HeightRequest="10"
+                                    WidthRequest="10"/>
+                                <shapes:Ellipse
+                                    x:Name="dot3"
+                                    HeightRequest="10"
+                                    WidthRequest="10"/>
+                                <shapes:Ellipse
+                                    x:Name="dot4"
+                                    HeightRequest="10"
+                                    WidthRequest="10"/>
+                                <HorizontalStackLayout.Behaviors>
+                                    <local:DotAnimationBehavior/>
+                                </HorizontalStackLayout.Behaviors>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <conv:EqualsConverter x:Key="EqualsConverter"/>
+        <conv:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        <conv:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter"/>
+        <LinearGradientBrush x:Key="AiGradient"
+                             StartPoint="0,0"
+                             EndPoint="1,1">
+            <GradientStop Offset="0"
+                          Color="#7B61FF"/>
+            <GradientStop Offset="1"
+                          Color="#00B3FF"/>
+        </LinearGradientBrush>
+        <Style x:Key="CardFrameStyle"
+               TargetType="Frame">
+            <Setter Property="CornerRadius"
+                    Value="16"/>
+            <Setter Property="HasShadow"
+                    Value="True"/>
+            <Setter Property="Margin"
+                    Value="0,8"/>
+            <Setter Property="Padding"
+                    Value="12"/>
+            <Setter Property="BackgroundColor"
+                    Value="White"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>
+        <OnIdiom x:TypeArguments="View">
+            <OnIdiom.Phone>
+                <Grid>
+                    <!--  Phone: Fullscreen map  -->
+                    <sfmaps:SfMaps
+                        x:Name="MainMap"
+                        HorizontalOptions="Fill"
+                        VerticalOptions="Fill">
+                        <sfmaps:SfMaps.Layer>
+                            <sfmaps:MapTileLayer x:Name="MainMapLayer" UrlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png" MarkerTemplate="{StaticResource Location}"
+                                ShowMarkerTooltip="True"
+                                MarkerTooltipTemplate="{StaticResource MarkerTooltipTemplate}">
+                                <sfmaps:MapTileLayer.ZoomPanBehavior>
+                                    <sfmaps:MapZoomPanBehavior ZoomLevel="4" />
+                                </sfmaps:MapTileLayer.ZoomPanBehavior>
+                            </sfmaps:MapTileLayer>
+                        </sfmaps:SfMaps.Layer>
+                    </sfmaps:SfMaps>
+
+                    <!--  Drawer toggle  -->
+                    <Border
+                        x:Name="HamburgerFrame"
+                        Margin="12"
+                        StrokeThickness="0"
+                        HorizontalOptions="End"
+                        VerticalOptions="Start"
+                        ZIndex="15">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="15"/>
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="Black"
+                                Offset="5,5"
+                                Radius="10"
+                                Opacity="0.3" />
+                        </Border.Shadow>
+                        <Button
+                            WidthRequest="40"
+                            HeightRequest="40"
+                            BackgroundColor="#73623c"
+                            TextColor="#fff7e7"
+                            Padding="10"
+                            IsVisible="{Binding Step, Converter={StaticResource EqualsConverter}, ConverterParameter=Done}"
+                            CornerRadius="15"
+                            Clicked="OnDrawerButtonClicked"
+                            ImageSource="flight_icon.png"/>
+                    </Border>
+
+                    <!--  Floating AI button  -->
+                    <Border
+                        x:Name="AiButton"
+                        Margin="20"
+                        Padding="16,12"
+                        HorizontalOptions="Center"
+                        BackgroundColor="#73623c"
+                        TranslationY="0"
+                        StrokeThickness="0"
+                        VerticalOptions="End"
+                        ZIndex="10">
+                        <Label
+                            FontAttributes="Bold"
+                            Text="Build trip with AI ✨"
+                            TextColor="#fff7e7"/>
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="15" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="Black"
+                                Offset="5,5"
+                                Radius="10"
+                                Opacity="0.3" />
+                        </Border.Shadow>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnAiButtonTapped"/>
+                        </Border.GestureRecognizers>
+                    </Border>
+
+                    <!--  BottomSheet (persistent)  -->
+                    <bottom:SfBottomSheet
+                        x:Name="BottomSheet"
+                        AllowedState="All"
+                        Background="#fff7e7"
+                        ContentPadding="15"
+                        CornerRadius="24,24,0,0"
+                        IsOpen="False"
+                        ShowGrabber="True"
+                        StateChanged="OnStateChanged"
+                        ZIndex="21">
+                        <bottom:SfBottomSheet.BottomSheetContent>
+                            <Grid Padding="12"
+                                  RowDefinitions="Auto,*">
+                                <!--  Header with restart button  -->
+                                <Grid
+                                    Grid.Row="0"
+                                    ColumnDefinitions="*,Auto"
+                                    ZIndex="2">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontFamily="ChangaOneRegular"
+                                        FontSize="24"
+                                        Text="Trip Assistant"
+                                        TextColor="#73623c"
+                                        VerticalOptions="Center"/>
+                                    <Button
+                                        Grid.Column="1"
+                                        BackgroundColor="#73623c"
+                                        Clicked="OnRestartTripClicked"
+                                        CornerRadius="18"
+                                        FontFamily="MaterialAssets"
+                                        FontSize="18"
+                                        HeightRequest="20"
+                                        HorizontalOptions="End"
+                                        IsVisible="{Binding Step, Converter={StaticResource EqualsConverter}, ConverterParameter=Done}"
+                                        Text="&#xe756;"
+                                        TextColor="#fff7e7"
+                                        VerticalOptions="Center"
+                                        WidthRequest="30"/>
+                                </Grid>
+
+                                <!--  Conversation  -->
+                                <Border
+                                    Grid.Row="1"
+                                    Margin="0,16,0,0"
+                                    Padding="0"
+                                    BackgroundColor="#fff7e7"
+                                    StrokeThickness="0">
+                                    <ai:SfAIAssistView
+                                        x:Name="AssistView"
+                                        Grid.Row="0"
+                                        AssistItems="{Binding AssistItems}"
+                                        Background="#fff7e7"
+                                        EnableConversationHistory="False"
+                                        EnableStopResponding="False"
+                                        HeaderText="Let's plan your trip step by step."
+                                        InputTransparent="{Binding Step, Converter={StaticResource EqualsConverter}, ConverterParameter=Done}"
+                                        RequestCommand="{Binding Source={x:Reference RootPage}, Path=AssistRequestCommand}"
+                                        SuggestionTemplate="{StaticResource CustomSuggestionTemplate}"
+                                        ShowHeader="False"
+                                        ShowResponseLoader="True"
+                                        Suggestions="{Binding Suggestions}"
+                                        ShowToolbar="False"
+                                        EditorViewTemplate="{StaticResource CustomEditorTemplate}">
+                                        <ai:SfAIAssistView.RequestButtonIcon>
+                                            <FontImageSource
+                                                FontFamily="MauiSampleFontIcon"
+                                                Glyph="&#xe809;"
+                                                Color="Black"/>
+                                        </ai:SfAIAssistView.RequestButtonIcon>
+                                    </ai:SfAIAssistView>
+                                </Border>
+                            </Grid>
+                        </bottom:SfBottomSheet.BottomSheetContent>
+                    </bottom:SfBottomSheet>
+
+                    <!--  Right Drawer (slides over)  -->
+                    <Grid
+                        x:Name="RightDrawer"
+                        Padding="16"
+                        Background="#fff7e7"
+                        HorizontalOptions="End"
+                        TranslationX="{Binding Source={x:Reference RootPage}, Path=PixelWidth}"
+                        VerticalOptions="Fill"
+                        WidthRequest="{Binding Source={x:Reference RootPage}, Path=PixelWidth}"
+                        ZIndex="200">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid
+                            Grid.Row="0"
+                            Padding="4,0"
+                            ColumnDefinitions="Auto,*">
+                            <Button
+                                Grid.Column="0"
+                                BackgroundColor="Transparent"
+                                Clicked="OnDrawerButtonClicked"
+                                FontSize="24"
+                                Text="➤"
+                                TextColor="#73623c"
+                                VerticalOptions="Start"/>
+                            <Label
+                                Grid.Column="1"
+                                Padding="-24,6,10,6"
+                                FontAttributes="Bold"
+                                FontFamily="LobsterRegular"
+                                FontSize="18"
+                                HorizontalOptions="Center"
+                                Text="Trip Summary"
+                                TextColor="#73623c"
+                                VerticalOptions="Start"/>
+                        </Grid>
+                        <Label
+                            Grid.Row="1"
+                            Margin="0,8,0,0"
+                            FontAttributes="Bold"
+                            FontSize="22"
+                            HorizontalOptions="Center"
+                            Text="{Binding Destination}"
+                            TextColor="#73623c"/>
+                        <Grid
+                            Grid.Row="2"
+                            Margin="0,8,0,8"
+                            HeightRequest="220">
+                            <sfmaps:SfMaps
+                                    x:Name="SummaryMap"
+                                    HorizontalOptions="Fill"
+                                    VerticalOptions="Fill">
+                                <sfmaps:SfMaps.Layer>
+                                    <sfmaps:MapTileLayer x:Name="SummaryMapLayer" UrlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png" MarkerTemplate="{StaticResource Location}"
+                                        ShowMarkerTooltip="True"
+                                        MarkerTooltipTemplate="{StaticResource MarkerTooltipTemplate}">
+                                        <sfmaps:MapTileLayer.ZoomPanBehavior>
+                                            <sfmaps:MapZoomPanBehavior ZoomLevel="2" />
+                                        </sfmaps:MapTileLayer.ZoomPanBehavior>
+                                    </sfmaps:MapTileLayer>
+                                </sfmaps:SfMaps.Layer>
+                            </sfmaps:SfMaps>
+                        </Grid>
+                        <ScrollView Grid.Row="3"
+                                    Background="#fff7e7"
+                                    VerticalScrollBarVisibility="Never"
+                                    HorizontalScrollBarVisibility="Never">
+                            <VerticalStackLayout Spacing="8">
+                                <ScrollView Grid.Row="3"
+                                            IsVisible="{Binding Step, Converter={StaticResource EqualsConverter}, ConverterParameter=Done}"
+                                            VerticalScrollBarVisibility="Never"
+                                            HorizontalScrollBarVisibility="Never">
+                                    <VerticalStackLayout Spacing="12">
+                                        <Label
+                                            FontAttributes="Bold"
+                                            Text="{Binding DestinationSummary}"
+                                            TextColor="#73623c"/>
+                                        <BoxView
+                                            Margin="0,10"
+                                            HeightRequest="1"
+                                            HorizontalOptions="Fill"
+                                            Color="#efe8d6"/>
+                                        <Label
+                                            Padding="10"
+                                            FontAttributes="Bold"
+                                            FontFamily="ChangaOneRegular"
+                                            FontSize="20"
+                                            HorizontalOptions="Center"
+                                            Text="Top Places"
+                                            TextColor="#73623c"/>
+                                        <listView:SfListView
+                                            ItemSize="120"
+                                            ItemsSource="{Binding TopPlaces}"
+                                            SelectionBackground="#ffeac3">
+                                            <listView:SfListView.ItemTemplate>
+                                                <DataTemplate x:DataType="models:PlaceCard">
+                                                    <Grid
+                                                        Padding="8"
+                                                        ColumnDefinitions="120,*,Auto"
+                                                        ColumnSpacing="8">
+                                                        <Grid.GestureRecognizers>
+                                                            <TapGestureRecognizer Tapped="OnPlaceTapped"/>
+                                                        </Grid.GestureRecognizers>
+                                                        <Image
+                                                            Grid.Column="0"
+                                                            Aspect="AspectFill"
+                                                            HeightRequest="100"
+                                                            Source="{Binding ImageUrl}"
+                                                            WidthRequest="120"/>
+                                                        <VerticalStackLayout Grid.Column="1"
+                                                                             Spacing="4">
+                                                            <Label
+                                                                FontAttributes="Bold"
+                                                                FontSize="18"
+                                                                Text="{Binding Name}"
+                                                                TextColor="#73623c"/>
+                                                            <Label
+                                                                LineBreakMode="TailTruncation"
+                                                                MaxLines="2"
+                                                                Text="{Binding Address}"
+                                                                TextColor="#73623c"/>
+                                                            <editors:SfRating
+                                                                IsReadOnly="True"
+                                                                ItemSize="16"
+                                                                Value="{Binding Rating}">
+                                                                <editors:SfRating.RatingSettings>
+                                                                    <editors:RatingSettings
+                                                                        RatedFill="Yellow"
+                                                                        RatedStroke="Orange"
+                                                                        RatedStrokeThickness="2"
+                                                                        UnratedFill="Gray"
+                                                                        UnratedStroke="Gray"
+                                                                        UnratedStrokeThickness="2"/>
+                                                                </editors:SfRating.RatingSettings>
+                                                            </editors:SfRating>
+                                                        </VerticalStackLayout>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </listView:SfListView.ItemTemplate>
+                                        </listView:SfListView>
+                                        <BoxView
+                                            Margin="0,10"
+                                            HeightRequest="1"
+                                            HorizontalOptions="Fill"
+                                            Color="#efe8d6"/>
+                                        <Label
+                                            Padding="10"
+                                            FontAttributes="Bold"
+                                            FontFamily="ChangaOneRegular"
+                                            FontSize="20"
+                                            HorizontalOptions="Center"
+                                            Text="Hotels"
+                                            TextColor="#73623c"/>
+                                        <listView:SfListView ItemSize="120"
+                                                             ItemsSource="{Binding Hotels}">
+                                            <listView:SfListView.ItemTemplate>
+                                                <DataTemplate x:DataType="models:PlaceCard">
+                                                    <Grid
+                                                        Padding="8"
+                                                        ColumnDefinitions="120,*,Auto"
+                                                        ColumnSpacing="8">
+                                                        <Image
+                                                            Grid.Column="0"
+                                                            Aspect="AspectFill"
+                                                            HeightRequest="100"
+                                                            Source="{Binding ImageUrl}"
+                                                            WidthRequest="120"/>
+                                                        <VerticalStackLayout Grid.Column="1"
+                                                                             Spacing="4">
+                                                            <Label
+                                                                FontAttributes="Bold"
+                                                                FontSize="18"
+                                                                Text="{Binding Name}"
+                                                                TextColor="#73623c"/>
+                                                            <Label
+                                                                LineBreakMode="TailTruncation"
+                                                                MaxLines="2"
+                                                                Text="{Binding Address}"
+                                                                TextColor="#73623c"/>
+                                                            <editors:SfRating
+                                                                IsReadOnly="True"
+                                                                ItemSize="16"
+                                                                Value="{Binding Rating}">
+                                                                <editors:SfRating.RatingSettings>
+                                                                    <editors:RatingSettings
+                                                                        RatedFill="Yellow"
+                                                                        RatedStroke="Orange"
+                                                                        RatedStrokeThickness="2"
+                                                                        UnratedFill="Gray"
+                                                                        UnratedStroke="Gray"
+                                                                        UnratedStrokeThickness="2"/>
+                                                                </editors:SfRating.RatingSettings>
+                                                            </editors:SfRating>
+                                                        </VerticalStackLayout>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </listView:SfListView.ItemTemplate>
+                                        </listView:SfListView>
+                                        <BoxView
+                                            Margin="0,10"
+                                            HeightRequest="1"
+                                            HorizontalOptions="Fill"
+                                            Color="#efe8d6"/>
+                                        <Label
+                                            Padding="10"
+                                            FontAttributes="Bold"
+                                            FontFamily="ChangaOneRegular"
+                                            FontSize="20"
+                                            HorizontalOptions="Center"
+                                            Text="Food Spots"
+                                            TextColor="#73623c"/>
+                                        <listView:SfListView ItemSize="120"
+                                                             ItemsSource="{Binding FoodSpots}">
+                                            <listView:SfListView.ItemTemplate>
+                                                <DataTemplate x:DataType="models:PlaceCard">
+                                                    <Grid
+                                                        Padding="8"
+                                                        ColumnDefinitions="120,*,Auto"
+                                                        ColumnSpacing="8">
+                                                        <Image
+                                                            Grid.Column="0"
+                                                            Aspect="AspectFill"
+                                                            HeightRequest="100"
+                                                            Source="{Binding ImageUrl}"
+                                                            WidthRequest="120"/>
+                                                        <VerticalStackLayout Grid.Column="1"
+                                                                             Spacing="4">
+                                                            <Label
+                                                                FontAttributes="Bold"
+                                                                FontSize="18"
+                                                                Text="{Binding Name}"
+                                                                TextColor="#73623c"/>
+                                                            <Label
+                                                                LineBreakMode="TailTruncation"
+                                                                MaxLines="2"
+                                                                Text="{Binding Address}"
+                                                                TextColor="#73623c"/>
+                                                            <editors:SfRating
+                                                                IsReadOnly="True"
+                                                                ItemSize="16"
+                                                                Value="{Binding Rating}">
+                                                                <editors:SfRating.RatingSettings>
+                                                                    <editors:RatingSettings
+                                                                        RatedFill="Yellow"
+                                                                        RatedStroke="Orange"
+                                                                        RatedStrokeThickness="2"
+                                                                        UnratedFill="Gray"
+                                                                        UnratedStroke="Gray"
+                                                                        UnratedStrokeThickness="2"/>
+                                                                </editors:SfRating.RatingSettings>
+                                                            </editors:SfRating>
+                                                        </VerticalStackLayout>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </listView:SfListView.ItemTemplate>
+                                        </listView:SfListView>
+                                    </VerticalStackLayout>
+                                </ScrollView>
+                                <Label Text="{Binding ConsolidatedDetails}"
+                                       TextColor="#73623c"/>
+                            </VerticalStackLayout>
+                        </ScrollView>
+                    </Grid>
+
+                    <!--  Date Range Popup Overlay  -->
+                    <Grid
+                        x:Name="DatePopupOverlay"
+                        BackgroundColor="#80000000"
+                        HorizontalOptions="Fill"
+                        IsVisible="{Binding Step, Converter={StaticResource EqualsConverter}, ConverterParameter=Dates}"
+                        VerticalOptions="Fill"
+                        ZIndex="99">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer/>
+                        </Grid.GestureRecognizers>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border
+                            Padding="16"
+                            BackgroundColor="#fff7e7"
+                            StrokeShape="RoundRectangle 16"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            WidthRequest="360"
+                            ZIndex="50">
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Offset="5,5" Opacity="0.5" Radius="3"/>
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="8">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    Text="Select your trip dates"/>
+                                <Label
+                                    FontSize="12"
+                                    Text="Start date must be after today; end date must be after start date."
+                                    TextColor="#666"/>
+                                <calendar:SfCalendar
+                                    x:Name="TripCalendar"
+                                    Grid.Row="1"
+                                    Margin="0,16,0,16"
+                                    Background="#ffeac3"
+                                    EnablePastDates="False"
+                                    EndRangeSelectionBackground="#73623c"
+                                    HeightRequest="360"
+                                    HorizontalOptions="Center"
+                                    MinimumDate="{x:Static sys:DateTime.Today}"
+                                    SelectionBackground="#b7a27a"
+                                    SelectionChanged="OnCalendarSelectionChanged"
+                                    SelectionMode="Range"
+                                    StartRangeSelectionBackground="#73623c"
+                                    TodayHighlightBrush="#73623c"
+                                    VerticalOptions="Center"
+                                    WidthRequest="320">
+                                    <calendar:SfCalendar.MonthView>
+                                        <calendar:CalendarMonthView DisabledDatesBackground="#efe8d6"
+                                                                    TodayBackground="#b7a27a"/>
+                                    </calendar:SfCalendar.MonthView>
+                                </calendar:SfCalendar>
+                                <Grid Margin="0,8,0,0"
+                                      ColumnDefinitions="*,*">
+                                    <Button
+                                        Grid.Column="0"
+                                        Margin="10,0"
+                                        CornerRadius="20"
+                                        BackgroundColor="#e0d2b8"
+                                        Clicked="OnCalendarCancelClicked"
+                                        Text="Cancel"
+                                        TextColor="#73623c"/>
+                                    <Button
+                                        Grid.Column="1"
+                                        Margin="10,0"
+                                        CornerRadius="20"
+                                        BackgroundColor="#73623c"
+                                        Clicked="OnCalendarOkClicked"
+                                        Text="OK"
+                                        TextColor="#fff7e7"/>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                    <!-- Interests Popup Overlay (mobile) -->
+                    <Grid
+                        x:Name="InterestsPopupOverlay"
+                        BackgroundColor="#80000000"
+                        HorizontalOptions="Fill"
+                        IsVisible="{Binding IsInterestsPopupVisible}"
+                        VerticalOptions="Fill"
+                        ZIndex="199">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer/>
+                        </Grid.GestureRecognizers>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border
+                            Padding="16"
+                            BackgroundColor="#fff7e7"
+                            StrokeShape="RoundRectangle 16"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            WidthRequest="360"
+                            ZIndex="200">
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Offset="5,5" Opacity="0.5" Radius="3"/>
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="8">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="18"
+                                    FontFamily="RobotoBold"
+                                    Text="Select interests"/>
+                                <Label
+                                    FontSize="12"
+                                    FontFamily="RobotoBold"
+                                    Text="Tap chips to toggle selection. Confirm to apply."/>
+                                <Border BackgroundColor="#e0d2b8" StrokeThickness="0">
+                                    <chips:SfChipGroup x:Name="InterestsChips"
+                                                       ShowIcon="False"
+                                                       Margin="12,20"
+                                                       SelectionIndicatorColor="#fff7e7"
+                                                       ChipType="Filter"
+                                                       ChipStrokeThickness="3"
+                                                       ChipStroke="#73623c"
+                                                       SelectedChipTextColor="#fff7e7"
+                                                       SelectedChipBackground="#73623c"
+                                                       ChipBackground="#fff7e7"
+                                                       ChipTextColor="#73623c"
+                                                       ItemsSource="{Binding InterestOptions}"
+                                                       SelectionChanged="OnChipsSelectionChanged">
+                                        <chips:SfChipGroup.ChipLayout>
+                                            <FlexLayout Wrap="Wrap"/>
+                                        </chips:SfChipGroup.ChipLayout>
+                                    </chips:SfChipGroup>
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="15" />
+                                    </Border.StrokeShape>
+                                </Border>
+                                <Label
+                                    x:Name="ErrorText"
+                                    FontSize="12"
+                                    TextColor="#cc3333"
+                                    Margin="8,6,8,0"
+                                    IsVisible="{Binding InterestsErrorMessage, Converter={StaticResource StringNotNullOrEmptyConverter}}"
+                                    Text="{Binding InterestsErrorMessage}"/>
+                                <Grid Margin="0,8,0,0"
+                                      ColumnDefinitions="*,*">
+                                    <Button
+                                        Grid.Column="0"
+                                        Margin="10,0"
+                                        CornerRadius="20"
+                                        BackgroundColor="#e0d2b8"
+                                        FontFamily="RobotoBold"
+                                        Clicked="OnInterestsCancelClicked"
+                                        Text="Cancel"
+                                        TextColor="#73623c"/>
+                                    <Button
+                                        Grid.Column="1"
+                                        Margin="10,0"
+                                        CornerRadius="20"
+                                        BackgroundColor="#73623c"
+                                        FontFamily="RobotoBold"
+                                        Clicked="OnInterestsConfirmClicked"
+                                        Text="Confirm"
+                                        TextColor="#fff7e7"/>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <!--  Global loading overlay (toggled by ViewModel.IsBusy)  -->
+                    <Grid
+                        x:Name="BusyOverlay"
+                        BackgroundColor="#80000000"
+                        IsVisible="{Binding IsBusy}"
+                        ZIndex="100">
+                        <VerticalStackLayout
+                            HorizontalOptions="Center"
+                            Spacing="12"
+                            VerticalOptions="Center">
+                            <ActivityIndicator
+                                Color="#fff7e7"
+                                HeightRequest="48"
+                                IsRunning="{Binding IsBusy}"
+                                WidthRequest="48"/>
+                            <Label
+                                FontAttributes="Bold"
+                                HorizontalOptions="Center"
+                                Text="Building your trip..."
+                                TextColor="#fff7e7"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Grid>
+            </OnIdiom.Phone>
+
+            <OnIdiom.Desktop>
+                <Grid ColumnDefinitions="*,600"
+                      RowDefinitions="*">
+                    <!--  Map spans rows  -->
+                    <sfmaps:SfMaps
+                        x:Name="MainMapDesktop"
+                        Grid.RowSpan="2"
+                        Grid.Column="0"
+                        HorizontalOptions="Fill"
+                        VerticalOptions="Fill">
+                        <sfmaps:SfMaps.Layer>
+                            <sfmaps:MapTileLayer x:Name="MainMapDesktopLayer" UrlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"  MarkerTemplate="{StaticResource Location}"
+                                ShowMarkerTooltip="True">
+                                <sfmaps:MapTileLayer.ZoomPanBehavior>
+                                    <sfmaps:MapZoomPanBehavior ZoomLevel="4" />
+                                </sfmaps:MapTileLayer.ZoomPanBehavior>
+                                <sfmaps:MapTileLayer.MarkerTooltipTemplate>
+                                    <DataTemplate>
+                                            <!-- Marker Name (Primary) -->
+                                        <Label
+                                                Grid.Row="1"
+                                                FontSize="12"
+                                                TextColor="#FFFFFF"
+                                                LineBreakMode="WordWrap"
+                                                MaxLines="2"
+                                                Text="{Binding DataItem.Name}" />
+                                    </DataTemplate>
+                                </sfmaps:MapTileLayer.MarkerTooltipTemplate>
+                                <sfmaps:MapTileLayer.Markers>
+                                    <sfmaps:MapMarkerCollection x:Name="MapMarkerList"/>
+                                </sfmaps:MapTileLayer.Markers>
+                            </sfmaps:MapTileLayer>
+                        </sfmaps:SfMaps.Layer>
+                    </sfmaps:SfMaps>
+                    <!--<sfmaps:SfMaps x:Name="sfMapsDesktop"
+                        Grid.Column="0"
+                        IsVisible="{OnPlatform WinUI=true, Default=false}">
+                        <sfmaps:SfMaps.Layer>
+                            <sfmaps:MapTileLayer x:Name="sfMapsDesktopLayer" UrlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png">
+                                <sfmaps:MapTileLayer.ZoomPanBehavior>
+                                    <sfmaps:MapZoomPanBehavior ZoomLevel="4" />
+                                </sfmaps:MapTileLayer.ZoomPanBehavior>
+                            </sfmaps:MapTileLayer>
+                        </sfmaps:SfMaps.Layer>
+                    </sfmaps:SfMaps>-->
+
+                    <!--  Desktop AI Panel - Right side permanent panel  -->
+                    <Grid
+                        x:Name="DesktopAiPanel"
+                        Grid.RowSpan="2"
+                        Grid.Column="1"
+                        Padding="16"
+                        Background="#fff7e7">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid
+                            Grid.Row="0"
+                            Padding="0,0,0,18"
+                            ColumnDefinitions="*,Auto">
+                            <Label
+                                FontAttributes="Bold"
+                                FontFamily="LobsterRegular"
+                                FontSize="30"
+                                Text="Trip Assistant"
+                                TextColor="#73623c"
+                                VerticalOptions="Center"/>
+                            <Button
+                                Grid.Column="1"
+                                Padding="5"
+                                BackgroundColor="#73623c"
+                                Clicked="OnRestartTripClicked"
+                                CornerRadius="18"
+                                FontFamily="MaterialAssets"
+                                FontSize="18"
+                                HeightRequest="40"
+                                HorizontalOptions="End"
+                                IsVisible="{Binding Step, Converter={StaticResource EqualsConverter}, ConverterParameter=Done}"
+                                Text="&#xe756;"
+                                TextColor="#fff7e7"
+                                VerticalOptions="Center"
+                                WidthRequest="40"/>
+                        </Grid>
+                        <Border
+                            Grid.Row="1"
+                            Padding="0"
+                            BackgroundColor="#fff7e7"
+                            StrokeThickness="0">
+                            <ai:SfAIAssistView
+                                x:Name="DesktopAssistView"
+                                AssistItems="{Binding AssistItems}"
+                                Background="#fff7e7"
+                                EnableStopResponding="False"
+                                EnableConversationHistory="False"
+                                ShowToolbar="False"
+                                HeaderText="Let's plan your trip step by step."
+                                InputTransparent="{Binding Step, Converter={StaticResource EqualsConverter}, ConverterParameter=Done}"
+                                RequestCommand="{Binding Source={x:Reference RootPage}, Path=AssistRequestCommand}"
+                                SuggestionTemplate="{StaticResource CustomSuggestionTemplate}"
+                                Suggestions="{Binding Suggestions}"
+                                ShowHeader="False"
+                                ShowResponseLoader="True"
+                                EditorViewTemplate="{StaticResource CustomEditorTemplate}">
+                                <ai:SfAIAssistView.RequestButtonIcon>
+                                    <FontImageSource
+                                        FontFamily="MauiSampleFontIcon"
+                                        Glyph="&#xe809;"
+                                        Color="Black"/>
+                                </ai:SfAIAssistView.RequestButtonIcon>
+                            </ai:SfAIAssistView>
+                        </Border>
+                    </Grid>
+
+                    <!--  Right Drawer aligned to panel  -->
+                    <Grid
+                        x:Name="RightDrawerDesktop"
+                        Grid.RowSpan="2"
+                        Grid.Column="1"
+                        Padding="12"
+                        Background="#fff7e7"
+                        HorizontalOptions="End"
+                        TranslationX="600"
+                        VerticalOptions="Fill"
+                        WidthRequest="600"
+                        ZIndex="50">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid
+                            Grid.Row="0"
+                            ColumnDefinitions="Auto,*">
+                            <Button
+                                Grid.Column="0"
+                                Padding="0"
+                                BackgroundColor="Transparent"
+                                Clicked="OnDrawerButtonClicked"
+                                FontSize="24"
+                                Text="➤"
+                                TextColor="#73623c"
+                                VerticalOptions="Start"/>
+                            <Label
+                                Grid.Column="1"
+                                Padding="-24,6,10,6"
+                                FontAttributes="Bold"
+                                FontFamily="LobsterRegular"
+                                FontSize="32"
+                                HorizontalOptions="Center"
+                                Text="Trip Summary"
+                                TextColor="#73623c"
+                                VerticalOptions="Start"/>
+                        </Grid>
+                        <Label
+                            Grid.Row="1"
+                            Margin="0,8,0,0"
+                            FontAttributes="Bold"
+                            FontFamily="ChangaOneRegular"
+                            FontSize="30"
+                            HorizontalOptions="Center"
+                            Text="{Binding Destination}"
+                            TextColor="#73623c"/>
+                        <Grid
+                            Grid.Row="2"
+                            Margin="0,8,0,8"
+                            HeightRequest="200">
+                            <sfmaps:SfMaps
+                                x:Name="SummaryMapDesktop"
+                                HorizontalOptions="Fill"
+                                VerticalOptions="Fill">
+                                <sfmaps:SfMaps.Layer>
+                                    <sfmaps:MapTileLayer x:Name="SummaryMapDesktopLayer" UrlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"  MarkerTemplate="{StaticResource Location}"
+                                        ShowMarkerTooltip="True"
+                                        MarkerTooltipTemplate="{StaticResource MarkerTooltipTemplate}">
+                                        <sfmaps:MapTileLayer.ZoomPanBehavior>
+                                            <sfmaps:MapZoomPanBehavior ZoomLevel="2" />
+                                        </sfmaps:MapTileLayer.ZoomPanBehavior>
+                                    </sfmaps:MapTileLayer>
+                                </sfmaps:SfMaps.Layer>
+                            </sfmaps:SfMaps>
+                            <!--<sfmaps:SfMaps x:Name="sfSummaryMap"
+                                IsVisible="{OnPlatform WinUI=true, Default=false}">
+                                <sfmaps:SfMaps.Layer>
+                                    <sfmaps:MapTileLayer x:Name="sfSummaryMapLayer" UrlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png">
+                                        <sfmaps:MapTileLayer.ZoomPanBehavior>
+                                            <sfmaps:MapZoomPanBehavior ZoomLevel="2" />
+                                        </sfmaps:MapTileLayer.ZoomPanBehavior>
+                                    </sfmaps:MapTileLayer>
+                                </sfmaps:SfMaps.Layer>
+                            </sfmaps:SfMaps>-->
+                        </Grid>
+                        <ScrollView Grid.Row="3"
+                                    Background="#fff7e7"
+                                    VerticalScrollBarVisibility="Never"
+                                    HorizontalScrollBarVisibility="Never">
+                            <VerticalStackLayout Spacing="8">
+                                <ScrollView Grid.Row="3"
+                                            IsVisible="{Binding Step, Converter={StaticResource EqualsConverter}, ConverterParameter=Done}"
+                                            VerticalScrollBarVisibility="Never"
+                                            HorizontalScrollBarVisibility="Never">
+                                    <VerticalStackLayout Spacing="12">
+                                        <Label
+                                            Padding="0,20"
+                                            FontAttributes="Bold"
+                                            FontSize="18"
+                                            Text="{Binding DestinationSummary}"
+                                            TextColor="#73623c"/>
+                                        <BoxView
+                                            Margin="0,10"
+                                            HeightRequest="1"
+                                            HorizontalOptions="Fill"
+                                            Color="#efe8d6"/>
+                                        <Label
+                                            Padding="10"
+                                            FontAttributes="Bold"
+                                            FontFamily="ChangaOneRegular"
+                                            FontSize="28"
+                                            HorizontalOptions="Center"
+                                            Text="Top Places"
+                                            TextColor="#73623c"/>
+                                        <listView:SfListView
+                                            ItemSize="140"
+                                            ItemsSource="{Binding TopPlaces}"
+                                            SelectionBackground="#ffeac3">
+                                            <listView:SfListView.ItemTemplate>
+                                                <DataTemplate x:DataType="models:PlaceCard">
+                                                    <Border
+                                                        Margin="8"
+                                                        Padding="5"
+                                                        BackgroundColor="#FFF7e7"
+                                                        Stroke="#e0d2b8"
+                                                        StrokeShape="RoundRectangle 12"
+                                                        StrokeThickness="1">
+                                                        <Border.Shadow>
+                                                            <Shadow
+                                                                Brush="Black"
+                                                                Opacity="0.3"
+                                                                Radius="8"
+                                                                Offset="4,4"/>
+                                                        </Border.Shadow>
+                                                        <Grid
+                                                            Padding="8,12"
+                                                            ColumnDefinitions="120,*,Auto"
+                                                            ColumnSpacing="8">
+                                                            <Grid.GestureRecognizers>
+                                                                <TapGestureRecognizer Tapped="OnPlaceTapped"/>
+                                                            </Grid.GestureRecognizers>
+                                                            <Image
+                                                                Grid.Column="0"
+                                                                Aspect="AspectFill"
+                                                                HeightRequest="100"
+                                                                Source="{Binding ImageUrl}"
+                                                                WidthRequest="120"/>
+                                                            <VerticalStackLayout Grid.Column="1"
+                                                                                 Spacing="4">
+                                                                <Label
+                                                                    FontAttributes="Bold"
+                                                                    FontSize="18"
+                                                                    Text="{Binding Name}"
+                                                                    TextColor="#73623c"/>
+                                                                <Label
+                                                                    LineBreakMode="TailTruncation"
+                                                                    MaxLines="2"
+                                                                    Text="{Binding Address}"
+                                                                    TextColor="#73623c"/>
+                                                                <editors:SfRating
+                                                                    IsReadOnly="True"
+                                                                    ItemSize="16"
+                                                                    Value="{Binding Rating}">
+                                                                    <editors:SfRating.RatingSettings>
+                                                                        <editors:RatingSettings
+                                                                            RatedFill="Yellow"
+                                                                            RatedStroke="Orange"
+                                                                            RatedStrokeThickness="2"
+                                                                            UnratedFill="Gray"
+                                                                            UnratedStroke="Gray"
+                                                                            UnratedStrokeThickness="2"/>
+                                                                    </editors:SfRating.RatingSettings>
+                                                                </editors:SfRating>
+                                                            </VerticalStackLayout>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </listView:SfListView.ItemTemplate>
+                                        </listView:SfListView>
+                                        <BoxView
+                                            Margin="0,10"
+                                            HeightRequest="1"
+                                            HorizontalOptions="Fill"
+                                            Color="#efe8d6"/>
+                                        <Label
+                                            Padding="10"
+                                            FontAttributes="Bold"
+                                            FontFamily="ChangaOneRegular"
+                                            FontSize="28"
+                                            HorizontalOptions="Center"
+                                            Text="Hotels"
+                                            TextColor="#73623c"/>
+                                        <listView:SfListView
+                                            ItemSize="140"
+                                            ItemsSource="{Binding Hotels}"
+                                            SelectionBackground="#ffeac3">
+                                            <listView:SfListView.ItemTemplate>
+                                                <DataTemplate x:DataType="models:PlaceCard">
+                                                    <Border
+                                                        Margin="8"
+                                                        Padding="5"
+                                                        BackgroundColor="#FFF7e7"
+                                                        Stroke="#e0d2b8"
+                                                        StrokeShape="RoundRectangle 12"
+                                                        StrokeThickness="1">
+                                                        <Border.Shadow>
+                                                            <Shadow
+                                                                Brush="Black"
+                                                                Opacity="0.3"
+                                                                Radius="8"
+                                                                Offset="4,4"/>
+                                                        </Border.Shadow>
+                                                        <Grid
+                                                            Padding="8"
+                                                            ColumnDefinitions="120,*,Auto"
+                                                            ColumnSpacing="8">
+                                                            <Image
+                                                                Grid.Column="0"
+                                                                Aspect="AspectFill"
+                                                                HeightRequest="100"
+                                                                Source="{Binding ImageUrl}"
+                                                                WidthRequest="120"/>
+                                                            <VerticalStackLayout Grid.Column="1"
+                                                                                 Spacing="4">
+                                                                <Label
+                                                                    FontAttributes="Bold"
+                                                                    FontSize="18"
+                                                                    Text="{Binding Name}"
+                                                                    TextColor="#73623c"/>
+                                                                <Label
+                                                                    LineBreakMode="TailTruncation"
+                                                                    MaxLines="2"
+                                                                    Text="{Binding Address}"
+                                                                    TextColor="#73623c"/>
+                                                                <editors:SfRating
+                                                                    IsReadOnly="True"
+                                                                    ItemSize="16"
+                                                                    Value="{Binding Rating}">
+                                                                    <editors:SfRating.RatingSettings>
+                                                                        <editors:RatingSettings
+                                                                            RatedFill="Yellow"
+                                                                            RatedStroke="Orange"
+                                                                            RatedStrokeThickness="2"
+                                                                            UnratedFill="Gray"
+                                                                            UnratedStroke="Gray"
+                                                                            UnratedStrokeThickness="2"/>
+                                                                    </editors:SfRating.RatingSettings>
+                                                                </editors:SfRating>
+                                                            </VerticalStackLayout>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </listView:SfListView.ItemTemplate>
+                                        </listView:SfListView>
+                                        <BoxView
+                                            Margin="0,10"
+                                            HeightRequest="1"
+                                            HorizontalOptions="Fill"
+                                            Color="#efe8d6"/>
+                                        <Label
+                                            Padding="10"
+                                            FontAttributes="Bold"
+                                            FontFamily="ChangaOneRegular"
+                                            FontSize="28"
+                                            HorizontalOptions="Center"
+                                            Text="Food Spots"
+                                            TextColor="#73623c"/>
+                                        <listView:SfListView
+                                            ItemSize="140"
+                                            ItemsSource="{Binding FoodSpots}"
+                                            SelectionBackground="#ffeac3">
+                                            <listView:SfListView.ItemTemplate>
+                                                <DataTemplate x:DataType="models:PlaceCard">
+                                                    <Border
+                                                        Margin="8"
+                                                        Padding="5"
+                                                        BackgroundColor="#FFF7e7"
+                                                        Stroke="#e0d2b8"
+                                                        StrokeShape="RoundRectangle 12"
+                                                        StrokeThickness="1">
+                                                        <Border.Shadow>
+                                                            <Shadow
+                                                                Brush="Black"
+                                                                Opacity="0.3"
+                                                                Radius="8"
+                                                                Offset="4,4"/>
+                                                        </Border.Shadow>
+                                                        <Grid
+                                                            Padding="8"
+                                                            ColumnDefinitions="120,*,Auto"
+                                                            ColumnSpacing="8">
+                                                            <Image
+                                                                Grid.Column="0"
+                                                                Aspect="AspectFill"
+                                                                HeightRequest="100"
+                                                                Source="{Binding ImageUrl}"
+                                                                WidthRequest="120"/>
+                                                            <VerticalStackLayout Grid.Column="1"
+                                                                                 Spacing="4">
+                                                                <Label
+                                                                    FontAttributes="Bold"
+                                                                    FontSize="18"
+                                                                    Text="{Binding Name}"
+                                                                    TextColor="#73623c"/>
+                                                                <Label
+                                                                    LineBreakMode="TailTruncation"
+                                                                    MaxLines="2"
+                                                                    Text="{Binding Address}"
+                                                                    TextColor="#73623c"/>
+                                                                <editors:SfRating
+                                                                    IsReadOnly="True"
+                                                                    ItemSize="16"
+                                                                    Value="{Binding Rating}">
+                                                                    <editors:SfRating.RatingSettings>
+                                                                        <editors:RatingSettings
+                                                                            RatedFill="Yellow"
+                                                                            RatedStroke="Orange"
+                                                                            RatedStrokeThickness="2"
+                                                                            UnratedFill="Gray"
+                                                                            UnratedStroke="Gray"
+                                                                            UnratedStrokeThickness="2"/>
+                                                                    </editors:SfRating.RatingSettings>
+                                                                </editors:SfRating>
+                                                            </VerticalStackLayout>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </listView:SfListView.ItemTemplate>
+                                        </listView:SfListView>
+                                    </VerticalStackLayout>
+                                </ScrollView>
+                                <Label Text="{Binding ConsolidatedDetails}"
+                                       TextColor="#73623c"/>
+                            </VerticalStackLayout>
+                        </ScrollView>
+                    </Grid>
+
+                    <!--  Drawer toggle (adjusted margin for panel)  -->
+                    <Border
+                        x:Name="HamburgerFrameDesktop"
+                        Margin="0,12,12,0"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 5"
+                        HorizontalOptions="End"
+                        VerticalOptions="Start"
+                        ZIndex="15">
+                        <Border.Shadow>
+                            <Shadow Brush="Black"
+                                Offset="5,5"
+                                Radius="10"
+                                Opacity="0.3" />
+                        </Border.Shadow>
+                        <Button
+                            WidthRequest="50"
+                            HeightRequest="50"
+                            Padding="10"
+                            BackgroundColor="#73623c"
+                            TextColor="#fff7e7"
+                            IsVisible="{Binding Step, Converter={StaticResource EqualsConverter}, ConverterParameter=Done}"
+                            Clicked="OnDrawerButtonClicked"
+                            ImageSource="flight_icon.png"/>
+                    </Border>
+
+                    <!--  Date Range Popup Overlay  -->
+                    <Grid
+                        x:Name="DatePopupOverlayDesktop"
+                        BackgroundColor="#80000000"
+                        HorizontalOptions="Fill"
+                        IsVisible="{Binding Step, Converter={StaticResource EqualsConverter}, ConverterParameter=Dates}"
+                        VerticalOptions="Fill"
+                        ZIndex="99">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer/>
+                        </Grid.GestureRecognizers>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border
+                            Padding="16"
+                            BackgroundColor="#fff7e7"
+                            StrokeShape="RoundRectangle 16"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            WidthRequest="520">
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Offset="5,5" Opacity="0.5" Radius="3"/>
+                            </Border.Shadow>
+                            <Grid RowDefinitions="Auto,*,Auto"
+                                  VerticalOptions="Center">
+                                <Label
+                                    Grid.Row="0"
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    Text="Select your trip dates"/>
+                                <Label
+                                    Grid.Row="0"
+                                    Margin="0,20,0,0"
+                                    FontSize="12"
+                                    Text="Start date must be after today; end date must be after start date."
+                                    TextColor="#666"/>
+                                <calendar:SfCalendar
+                                    x:Name="TripCalendarDesktop"
+                                    Grid.Row="1"
+                                    Margin="0,16,0,16"
+                                    Background="#ffeac3"
+                                    EnablePastDates="False"
+                                    EndRangeSelectionBackground="#73623c"
+                                    HeightRequest="360"
+                                    HorizontalOptions="Center"
+                                    MinimumDate="{x:Static sys:DateTime.Today}"
+                                    SelectionBackground="#b7a27a"
+                                    SelectionChanged="OnCalendarSelectionChanged"
+                                    SelectionMode="Range"
+                                    StartRangeSelectionBackground="#73623c"
+                                    TodayHighlightBrush="#73623c"
+                                    VerticalOptions="Center"
+                                    WidthRequest="480">
+                                    <calendar:SfCalendar.MonthView>
+                                        <calendar:CalendarMonthView DisabledDatesBackground="#efe8d6"
+                                                                    TodayBackground="#b7a27a"/>
+                                    </calendar:SfCalendar.MonthView>
+                                </calendar:SfCalendar>
+                                <Grid Grid.Row="2"
+                                      ColumnDefinitions="*,*">
+                                    <Button
+                                        Grid.Column="0"
+                                        Margin="10,0"
+                                        CornerRadius="20"
+                                        BackgroundColor="#e0d2b8"
+                                        Clicked="OnCalendarCancelClicked"
+                                        Text="Cancel"
+                                        TextColor="#73623c"/>
+                                    <Button
+                                        Grid.Column="1"
+                                        Margin="10,0"
+                                        CornerRadius="20"
+                                        BackgroundColor="#73623c"
+                                        Clicked="OnCalendarOkClicked"
+                                        Text="OK"
+                                        TextColor="#fff7e7"/>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <!-- Interests Popup Overlay (desktop) -->
+                    <Grid
+                        x:Name="InterestsPopupOverlayDesktop"
+                        BackgroundColor="#80000000"
+                        HorizontalOptions="Fill"
+                        IsVisible="{Binding IsInterestsPopupVisible}"
+                        VerticalOptions="Fill"
+                        ZIndex="199">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer/>
+                        </Grid.GestureRecognizers>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border
+                            Padding="16"
+                            BackgroundColor="#fff7e7"
+                            StrokeShape="RoundRectangle 16"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            WidthRequest="480">
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Offset="5,5" Opacity="0.5" Radius="3"/>
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="8">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    FontFamily="RobotoBold"
+                                    Text="Select interests"/>
+                                <Label
+                                    FontSize="12"
+                                    FontFamily="RobotoBold"
+                                    Text="Tap chips to toggle selection. Confirm to apply."/>
+                                <Border BackgroundColor="#e0d2b8" StrokeThickness="0">
+                                    <chips:SfChipGroup x:Name="InterestsChipsDesktop"
+                                                       ShowIcon="False"
+                                                       Margin="12,20"
+                                                       SelectionIndicatorColor="#fff7e7"
+                                                       ChipType="Filter"
+                                                       ChipStrokeThickness="3"
+                                                       ChipStroke="#73623c"
+                                                       SelectedChipTextColor="#fff7e7"
+                                                       SelectedChipBackground="#73623c"
+                                                       ChipBackground="#fff7e7"
+                                                       ChipTextColor="#73623c"
+                                                       ChipPadding="5,0,0,5"
+                                                       ItemsSource="{Binding InterestOptions}"
+                                                       SelectionChanged="OnChipsSelectionChanged">
+                                        <chips:SfChipGroup.ChipLayout>
+                                            <FlexLayout Wrap="Wrap"/>
+                                        </chips:SfChipGroup.ChipLayout>
+                                    </chips:SfChipGroup>
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="15" />
+                                    </Border.StrokeShape>
+                                </Border>
+                                <Label
+                                    x:Name="ErrorTextDesktop"
+                                    FontSize="12"
+                                    TextColor="#cc3333"
+                                    IsVisible="{Binding InterestsErrorMessage, Converter={StaticResource StringNotNullOrEmptyConverter}}"
+                                    Text="{Binding InterestsErrorMessage}"/>
+                                <Grid Margin="10,8,0,0"
+                                      ColumnDefinitions="*,*">
+                                    <Button
+                                        Grid.Column="0"
+                                        Margin="10,0"
+                                        BackgroundColor="#e0d2b8"
+                                        CornerRadius="15"
+                                        Clicked="OnInterestsCancelClicked"
+                                        FontFamily="RobotoBold"
+                                        Text="Cancel"
+                                        TextColor="#73623c"/>
+                                    <Button
+                                        Grid.Column="1"
+                                        Margin="10,0"
+                                        CornerRadius="15"
+                                        BackgroundColor="#73623c"
+                                        FontFamily="RobotoBold"
+                                        Clicked="OnInterestsConfirmClicked"
+                                        Text="Confirm"
+                                        TextColor="#fff7e7"/>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <!--  Global loading overlay (toggled by ViewModel.IsBusy)  -->
+                    <Grid
+                        x:Name="BusyOverlayDesktop"
+                        BackgroundColor="#80000000"
+                        IsVisible="{Binding IsBusy}"
+                        ZIndex="100">
+                        <VerticalStackLayout
+                            HorizontalOptions="Center"
+                            Spacing="12"
+                            VerticalOptions="Center">
+                            <ActivityIndicator
+                                Color="#fff7e7"
+                                HeightRequest="48"
+                                IsRunning="{Binding IsBusy}"
+                                WidthRequest="48"/>
+                            <Label
+                                FontAttributes="Bold"
+                                HorizontalOptions="Center"
+                                Text="Building your trip..."
+                                TextColor="#fff7e7"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Grid>
+            </OnIdiom.Desktop>
+        </OnIdiom>
+    </ContentPage.Content>
+</ContentPage>
