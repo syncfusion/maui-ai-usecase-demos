@@ -23,7 +23,6 @@ namespace TravelPlanner;
 public partial class MainPage : ContentPage
 {
     private readonly TravelPlannerViewModel _vm;
-    private TravelPlanner.Services.OpenAIServices? _openAI;
     private bool _drawerOpen = false;
     private double AssistViewHeight;
     private readonly IKeyboardService? _keyboardService;
@@ -160,10 +159,6 @@ public partial class MainPage : ContentPage
         // When the ViewModel resets trip state, clear view-only state (calendar selection,
         // map pins, interests picker selection).
         _vm.TripRestarted += OnVmTripRestarted;
-
-        // Resolve OpenAI service from DI (fallback to direct instance if DI not ready)
-        _openAI = Application.Current?.Handler?.MauiContext?.Services?.GetService<TravelPlanner.Services.OpenAIServices>()
-                  ?? new TravelPlanner.Services.OpenAIServices();
 
         // Ensure drawer is initially closed and off-screen
         _drawerOpen = false;
@@ -575,15 +570,8 @@ public partial class MainPage : ContentPage
             }
 
             // Otherwise, fall back to generic AI chat for ad-hoc questions
-            var systemPrompt = "You are a helpful travel assistant. Reply concisely.";
-
-            _openAI ??= Application.Current?.Handler?.MauiContext?.Services?.GetService<TravelPlanner.Services.OpenAIServices>()
-                       ?? new TravelPlanner.Services.OpenAIServices();
-
-            var reply = await _openAI.GetRawResponseAsync(systemPrompt, text);
-            if (string.IsNullOrWhiteSpace(reply)) reply = "Sorry, I couldn't find an answer.";
-
-            _vm?.AssistItems.Add(new AssistItem { Text = reply, IsRequested = false });
+            if (_vm.FallbackAiQueryCommand.CanExecute(text))
+                _vm.FallbackAiQueryCommand.Execute(text);
         }
         catch (Exception ex)
         {
