@@ -1,0 +1,398 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:inputs="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:chips="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:models="clr-namespace:WardrobeAI.Models"
+             xmlns:vm="clr-namespace:WardrobeAI.ViewModels"
+             x:Class="WardrobeAI.Views.Closet.ClosetPage"
+             x:Name="ClosetRoot"
+             x:DataType="vm:ClosetViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Background}, Dark={StaticResource BackgroundDark}}">
+    <Grid RowDefinitions="Auto, Auto, *, Auto" RowSpacing="0" BackgroundColor="Transparent"
+          x:Name="RootGrid">
+        <Grid.Resources>
+            <Style TargetType="buttons:SfButton" x:Key="FilterChip">
+                <Setter Property="CornerRadius" Value="20"/>
+                <Setter Property="FontFamily" Value="OpenSansSemibold"/>
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="Padding" Value="16,8"/>
+                <Setter Property="MinimumHeightRequest" Value="36"/>
+            </Style>
+            <Style TargetType="inputs:SfComboBox" x:Key="PopupComboBox">
+                <Setter Property="BackgroundColor" Value="Transparent"/>
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"/>
+                <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                <Setter Property="FontFamily" Value="OpenSansRegular"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="HeightRequest" Value="44"/>
+                <Setter Property="IsEditable" Value="False"/>
+                <Setter Property="ShowBorder" Value="False"/>
+                <Setter Property="TextSearchMode" Value="Contains"/>
+                <Setter Property="IsClearButtonVisible" Value="True"/>
+            </Style>
+            <Style TargetType="Label" x:Key="FieldLabel">
+                <Setter Property="FontFamily" Value="OpenSansSemibold"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+            </Style>
+            <Style TargetType="Border" x:Key="ClosetCard">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource Gray950}}"/>
+                <Setter Property="StrokeShape" Value="RoundRectangle 12"/>
+                <Setter Property="StrokeThickness" Value="0"/>
+                <Setter Property="Padding" Value="6"/>
+            </Style>
+            <Style TargetType="Border" x:Key="FieldSurface">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource Gray950}}"/>
+                <Setter Property="StrokeShape" Value="RoundRectangle 12"/>
+                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource Gray900}}"/>
+                <Setter Property="StrokeThickness" Value="1"/>
+                <Setter Property="Padding" Value="12,6"/>
+            </Style>
+        </Grid.Resources>
+
+        <!-- Top App Bar (Phone only) — overlays the top of the page, does not take a row -->
+        <Grid Grid.Row="0"
+              IsVisible="{OnIdiom Phone=True, Default=False}"
+              ColumnDefinitions="Auto,*" HorizontalOptions="Fill" VerticalOptions="Start"
+              Padding="20,0,20,20"
+              HeightRequest="64"
+              BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}">
+            <syncfusion:SfAvatarView ImageSource="ai.png" ContentType="Default" WidthRequest="40" HeightRequest="40" VerticalOptions="Center" Background="Transparent"/>
+            <Label Grid.Column="1" Style="{StaticResource TitleLarge}" Text="Wardrobe AI" VerticalOptions="Center" HorizontalOptions="Center" FontSize="24" Padding="-20,0,0,0"/>
+        </Grid>
+
+        <!-- Sticky top region: search + filter chips share one surface
+             and sit above the scrolling cards. The inner padding/margin
+             keeps them visually "in the same place" while the
+             ClothingScroll below is the only region that scrolls. -->
+        <Border Grid.Row="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Background}, Dark={StaticResource BackgroundDark}}"
+                StrokeThickness="0"
+                Padding="20,8,20,8">
+            <VerticalStackLayout Spacing="8">
+                <!-- Search bar -->
+                <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainer}, Dark={StaticResource Gray900}}"
+                            StrokeShape="RoundRectangle 12" Padding="16,0" StrokeThickness="0"
+                            HeightRequest="48">
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10">
+                        <Label Grid.Column="0" Text="&#xe715;" FontFamily="MaterialAssets" FontSize="20"
+                                   TextColor="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource Gray300}}"
+                                   VerticalOptions="Center"/>
+                        <Entry Grid.Column="1" Placeholder="Search your closet..."
+                                   Text="{Binding SearchQuery}"
+                                   PlaceholderColor="#787773"
+                                   BackgroundColor="Transparent"
+                                   ReturnType="Search"
+                                   VerticalOptions="Center"
+                                   ReturnCommand="{Binding SearchCommand}"/>
+                    </Grid>
+                </Border>
+
+                <!-- Filter chip group (Choice type: single-select) -->
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                    <chips:SfChipGroup ItemsSource="{Binding Filters}"
+                                           DisplayMemberPath="Label"
+                                           ChipType="Choice"
+                                           ChipPadding="10,10,0,0"
+                                           ChipStrokeThickness="0"
+                                           ChipBackground="#F3F0EB"
+                                           SelectedChipBackground="#001A42"
+                                           ChipTextColor="#001A42"
+                                           SelectedChipTextColor="#F3F0EB"
+                                           SelectionIndicatorColor="#001A42"
+                                           ChipCornerRadius="18"
+                                           SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"
+                                           SelectionChanged="OnFilterSelectionChanged">
+                    </chips:SfChipGroup>
+                </ScrollView>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Scrollable content area (cards only) -->
+        <Grid Grid.Row="2" Padding="20,0,20,16"
+              HorizontalOptions="Fill"
+              VerticalOptions="Fill"
+              RowDefinitions="*">
+            <!-- Empty state -->
+            <Border IsVisible="{Binding HasClothing, Converter={StaticResource InverseBoolConverter}}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource Gray950}}"
+                        StrokeShape="RoundRectangle 16" StrokeThickness="0"
+                        Padding="24" Margin="0,12,0,0"
+                        VerticalOptions="Fill">
+                <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="" FontSize="44" Opacity="0.45"
+                               TextColor="{StaticResource OutlineVariant}"
+                               HorizontalOptions="Center"/>
+                    <Label Style="{StaticResource SubtitleMedium}" Text="Your closet is empty"
+                               HorizontalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                    <Label Style="{StaticResource BodySmall}" Text="{Binding EmptyStateMessage}"
+                               HorizontalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Closet grid (only scrollable part). Pinned to the Grid row,
+                 VerticalOptions=Fill prevents the inner ScrollView from
+                 asking the parent (SfTabView's tab content area) for
+                 more vertical space, which is what was making the
+                 search bar + chips scroll out of view when the cards
+                 overflowed the row. -->
+            <ScrollView x:Name="ClothingScroll"
+                        Orientation="Vertical"
+                        VerticalOptions="Fill"
+                        HorizontalOptions="Fill"
+                        IsClippedToBounds="True"
+                        VerticalScrollBarVisibility="Never"
+                        IsVisible="{Binding HasClothing}">
+                <FlexLayout x:Name="ClothingFlex"
+                            BindableLayout.ItemsSource="{Binding FilteredClothing}"
+                            Wrap="Wrap" JustifyContent="Start" AlignItems="Start" Direction="Row">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:ClothingItem">
+                        <Border Style="{StaticResource ClosetCard}" Margin="4"
+                                WidthRequest="{Binding Source={RelativeSource AncestorType={x:Type vm:ClosetViewModel}}, Path=ClosetCardWidth}"
+                                HeightRequest="{Binding Source={RelativeSource AncestorType={x:Type vm:ClosetViewModel}}, Path=ClosetCardHeight}"
+                                VerticalOptions="Fill">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ClosetViewModel}}, Path=AnalyzeCommand}"
+                                                     CommandParameter="{Binding}"/>
+                            </Border.GestureRecognizers>
+                            <Grid RowDefinitions="*, Auto" RowSpacing="4">
+                                <Border StrokeShape="RoundRectangle 8" StrokeThickness="0"
+                                        BackgroundColor="{StaticResource SurfaceContainer}"
+                                        Margin="0"
+                                        HeightRequest="{Binding Source={RelativeSource AncestorType={x:Type vm:ClosetViewModel}}, Path=ClosetImageHeight}">
+                                    <Grid>
+                                        <Image Source="{Binding ImageUrl, Converter={StaticResource Base64ToImageSourceConverter}}"
+                                               Aspect="AspectFill"
+                                               HeightRequest="{Binding Source={RelativeSource AncestorType={x:Type vm:ClosetViewModel}}, Path=ClosetImageHeight}">
+                                            <Image.GestureRecognizers>
+                                                <PointerGestureRecognizer
+                                                    PointerEntered="OnPointerEntered"
+                                                    PointerExited="OnPointerExited" />
+                                                <TapGestureRecognizer Tapped="ImageTapped"/>
+                                            </Image.GestureRecognizers>
+                                        </Image>
+                                    </Grid>
+                                </Border>
+                                <VerticalStackLayout Grid.Row="1" Spacing="4">
+                                    <Label Style="{StaticResource SubtitleMedium}" Text="{Binding Name}"
+                                           TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                           Margin="6,2,6,0" LineBreakMode="TailTruncation"/>
+                                    <HorizontalStackLayout Spacing="4" Margin="6,0,6,8">
+                                        <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerHigh}, Dark={StaticResource Gray600}}"
+                                                StrokeShape="RoundRectangle 8" Padding="6,2" StrokeThickness="0">
+                                            <Label Style="{StaticResource LabelCaps}" Text="{Binding Category}"
+                                                   TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                                   FontSize="10"/>
+                                        </Border>
+                                        <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerHigh}, Dark={StaticResource Gray600}}"
+                                                StrokeShape="RoundRectangle 8" Padding="6,2" StrokeThickness="0"
+                                                IsVisible="{Binding Color, Converter={StaticResource StringIsNotNullOrEmptyConverter}}">
+                                            <Label Style="{StaticResource LabelCaps}" Text="{Binding Color}"
+                                                   TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                                   FontSize="10"/>
+                                        </Border>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+            </ScrollView>
+        </Grid>
+
+        <!-- FAB — placed directly in the parent Grid so its hit‑test
+             region is only the 56×56 button area. The previous wrapper
+             Grid used Horizontal/VerticalOptions=Fill to span rows 1‑2,
+             so its empty space consumed touches and blocked the
+             ClothingScroll unless InputTransparent=True was set. -->
+        <buttons:SfButton Grid.Row="2" Grid.RowSpan="2"
+                          Text="&#xe70d;" Background="{StaticResource Primary}"
+                          TextColor="{StaticResource OnPrimary}" FontSize="24" CornerRadius="16"
+                          WidthRequest="56" HeightRequest="56" Padding="0"
+                          HorizontalOptions="End" VerticalOptions="End" Margin="0,0,20,16"
+                          AutomationId="ClosetAddFab"
+                          FontFamily="MaterialAssets"
+                          ToolTipProperties.Text="Add clothing"
+                          Command="{Binding OpenAddClothingPopupCommand}"
+                          IsVisible="{Binding IsAddClothingPopupOpen, Converter={StaticResource InverseBoolConverter}}"/>
+
+        <!-- Add-Clothing popup: image (gallery / camera) + name + 7 chip groups -->
+        <popup:SfPopup x:Name="AddClothingPopup"
+                       Grid.Row="0" Grid.RowSpan="3"
+                       IsOpen="{Binding IsAddClothingPopupOpen, Mode=TwoWay}"
+                       HeaderTitle="Add to closet"
+                       AppearanceMode="TwoButton"
+                       ShowHeader="True"
+                       ShowFooter="True"
+                       AcceptButtonText="Save"
+                       DeclineButtonText="Cancel"
+                       WidthRequest="380"
+                       HeightRequest="700"
+                       MinimumWidthRequest="300"
+                       MaximumWidthRequest="420"
+                       MinimumHeightRequest="600"
+                       MaximumHeightRequest="760"
+                       StaysOpen="False"
+                       AcceptCommand="{Binding SaveNewClothingCommand}"
+                       DeclineCommand="{Binding CloseAddClothingPopupCommand}">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle AcceptButtonBackground="#001A42"
+                                  DeclineButtonBackground="#E9F1FF"
+                                  FooterBackground="{StaticResource BeigeCard}"
+                                  HeaderBackground="{StaticResource BeigeCard}"
+                                  MessageBackground="{StaticResource BeigeCard}"
+                                  AcceptButtonTextColor="#E9F1FF"
+                                  DeclineButtonTextColor="#001A42"/>
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:ClosetViewModel">
+                    <ScrollView Padding="20,12,20,4">
+                        <VerticalStackLayout Spacing="14">
+
+                            <!-- Validation error -->
+                            <Label Text="{Binding NewItemValidationError}"
+                                   TextColor="{StaticResource Error}"
+                                   FontSize="13"
+                                   FontFamily="OpenSansSemibold"
+                                   IsVisible="{Binding NewItemValidationError, Converter={StaticResource StringIsNotNullOrEmptyConverter}}" />
+
+                            <!-- Image picker -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Style="{StaticResource FieldLabel}" Text="Photo" />
+                                <Border Style="{StaticResource FieldSurface}"
+                                        StrokeShape="RoundRectangle 12"
+                                        HeightRequest="180"
+                                        Padding="0">
+                                    <Grid>
+                                        <Image Source="{Binding NewItemImageBase64, Converter={StaticResource Base64ToImageSourceConverter}}"
+                                               Aspect="AspectFit"/>
+                                        <Label Text=""
+                                               FontSize="44" Opacity="0.3"
+                                               TextColor="{StaticResource OutlineVariant}"
+                                               HorizontalOptions="Center" VerticalOptions="Center"
+                                               IsVisible="{Binding NewItemImageBase64, Converter={StaticResource StringIsNotNullOrEmptyConverter}}"/>
+                                    </Grid>
+                                </Border>
+                                <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                                    <buttons:SfButton Grid.Column="0"
+                                                      Text="From Gallery"
+                                                      Style="{StaticResource FilterChip}"
+                                                      Background="#001A42"
+                                                      TextColor="#E9F1FF"
+                                                      Command="{Binding PickFromGalleryCommand}"/>
+                                    <buttons:SfButton Grid.Column="1"
+                                                      Text="Use Camera"
+                                                      Style="{StaticResource FilterChip}"
+                                                      Background="#001A42"
+                                                      TextColor="#E9F1FF"
+                                                      Command="{Binding CaptureFromCameraCommand}"/>
+                                </Grid>
+                            </VerticalStackLayout>
+
+                            <!-- Name -->
+                            <VerticalStackLayout Spacing="6">
+                                <Label Style="{StaticResource FieldLabel}" Text="Name" />
+                                <Border Style="{StaticResource FieldSurface}">
+                                    <Entry Text="{Binding NewItemName, Mode=TwoWay}"
+                                           Placeholder="e.g. Navy Oxford Shirt"
+                                           BackgroundColor="Transparent"
+                                           TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                           PlaceholderColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                           FontFamily="OpenSansRegular"
+                                           FontSize="15"
+                                           MaxLength="160" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <!-- Category (required) -->
+                            <VerticalStackLayout Spacing="6">
+                                <Label Style="{StaticResource FieldLabel}" Text="Category" />
+                                <Border Style="{StaticResource FieldSurface}">
+                                    <inputs:SfComboBox Style="{StaticResource PopupComboBox}"
+                                                       ItemsSource="{Binding CategoryOptions}"
+                                                       Placeholder="Select category"
+                                                       SelectedItem="{Binding NewItemCategory, Mode=TwoWay}" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <!-- Occasion -->
+                            <VerticalStackLayout Spacing="6">
+                                <Label Style="{StaticResource FieldLabel}" Text="Occasion" />
+                                <Border Style="{StaticResource FieldSurface}">
+                                    <inputs:SfComboBox Style="{StaticResource PopupComboBox}"
+                                                       ItemsSource="{Binding OccasionOptions}"
+                                                       Placeholder="Select occasion"
+                                                       SelectedItem="{Binding NewItemOccasion, Mode=TwoWay}" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <!-- Style -->
+                            <VerticalStackLayout Spacing="6">
+                                <Label Style="{StaticResource FieldLabel}" Text="Style" />
+                                <Border Style="{StaticResource FieldSurface}">
+                                    <inputs:SfComboBox Style="{StaticResource PopupComboBox}"
+                                                       ItemsSource="{Binding StyleOptions}"
+                                                       Placeholder="Select style"
+                                                       SelectedItem="{Binding NewItemStyle, Mode=TwoWay}" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <!-- Color (required) -->
+                            <VerticalStackLayout Spacing="6">
+                                <Label Style="{StaticResource FieldLabel}" Text="Color" />
+                                <Border Style="{StaticResource FieldSurface}">
+                                    <inputs:SfComboBox Style="{StaticResource PopupComboBox}"
+                                                       ItemsSource="{Binding ColorOptions}"
+                                                       Placeholder="Select color"
+                                                       SelectedItem="{Binding NewItemColor, Mode=TwoWay}" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <!-- Material -->
+                            <VerticalStackLayout Spacing="6">
+                                <Label Style="{StaticResource FieldLabel}" Text="Material" />
+                                <Border Style="{StaticResource FieldSurface}">
+                                    <inputs:SfComboBox Style="{StaticResource PopupComboBox}"
+                                                       ItemsSource="{Binding MaterialOptions}"
+                                                       Placeholder="Select material"
+                                                       SelectedItem="{Binding NewItemMaterial, Mode=TwoWay}" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <!-- Season -->
+                            <VerticalStackLayout Spacing="6">
+                                <Label Style="{StaticResource FieldLabel}" Text="Season" />
+                                <Border Style="{StaticResource FieldSurface}">
+                                    <inputs:SfComboBox Style="{StaticResource PopupComboBox}"
+                                                       ItemsSource="{Binding SeasonOptions}"
+                                                       Placeholder="Select season"
+                                                       SelectedItem="{Binding NewItemSeason, Mode=TwoWay}" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <!-- Pattern -->
+                            <VerticalStackLayout Spacing="6">
+                                <Label Style="{StaticResource FieldLabel}" Text="Pattern" />
+                                <Border Style="{StaticResource FieldSurface}">
+                                    <inputs:SfComboBox Style="{StaticResource PopupComboBox}"
+                                                       ItemsSource="{Binding PatternOptions}"
+                                                       Placeholder="Select pattern"
+                                                       SelectedItem="{Binding NewItemPattern, Mode=TwoWay}" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+                    </ScrollView>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+    </Grid>
+</ContentPage>

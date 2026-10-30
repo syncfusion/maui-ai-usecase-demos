@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:accordion="clr-namespace:Syncfusion.Maui.Accordion;assembly=Syncfusion.Maui.Expander"
+             xmlns:vm="clr-namespace:WardrobeAI.ViewModels"
+             xmlns:svc="clr-namespace:WardrobeAI.Services"
+             x:Class="WardrobeAI.Views.Shopping.ShoppingPage"
+             x:Name="ShoppingRoot"
+             x:DataType="vm:ShoppingViewModel">
+
+    <Grid RowDefinitions="Auto, *" RowSpacing="0"
+          HorizontalOptions="Fill" Background="White">
+        <Grid.Resources>
+            <Style TargetType="buttons:SfButton" x:Key="PrimaryCta">
+                <Setter Property="Background" Value="{StaticResource Primary}"/>
+                <Setter Property="TextColor" Value="{StaticResource OnPrimary}"/>
+                <Setter Property="CornerRadius" Value="12"/>
+                <Setter Property="FontFamily" Value="OpenSansSemibold"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Padding" Value="24,12"/>
+            </Style>
+            <Style TargetType="buttons:SfButton" x:Key="OutlineCta">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                <Setter Property="Stroke" Value="{StaticResource Outline}"/>
+                <Setter Property="StrokeThickness" Value="1"/>
+                <Setter Property="CornerRadius" Value="12"/>
+                <Setter Property="Padding" Value="24,12"/>
+            </Style>
+            <Style TargetType="Border" x:Key="GlassPanel">
+                <Setter Property="BackgroundColor" Value="#FFFFFF"/>
+                <Setter Property="StrokeShape" Value="RoundRectangle 24"/>
+                <Setter Property="Stroke" Value="{StaticResource OnTertiaryContainer}"/>
+                <Setter Property="StrokeThickness" Value="1"/>
+                <Setter Property="Padding" Value="16"/>
+            </Style>
+            <Style TargetType="Border" x:Key="BeigePanel">
+                <Setter Property="BackgroundColor" Value="{StaticResource BeigeCard}"/>
+                <Setter Property="StrokeShape" Value="RoundRectangle 24"/>
+                <Setter Property="StrokeThickness" Value="1"/>
+                <Setter Property="Padding" Value="16"/>
+            </Style>
+        </Grid.Resources>
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" HorizontalOptions="Fill" IsVisible="{OnIdiom Phone=True, Default=False}"
+              Padding="{OnIdiom Phone='20,0,20,20', Tablet='24,0,24,40', Default='32,0,32,40'}"
+              BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}">
+            <syncfusion:SfAvatarView ImageSource="ai.png" ContentType="Default" WidthRequest="40" HeightRequest="40" VerticalOptions="Center" Background="Transparent"/>
+            <Label Grid.Column="1" Style="{StaticResource TitleLarge}" Text="Wardrobe AI" VerticalOptions="Center" HorizontalOptions="Center" FontSize="24" Padding="-20,0,0,0"/>
+        </Grid>
+
+        <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never" HorizontalOptions="Fill">
+            <!-- Centered, width-capped container. MaxWidth caps on ultrawide, MinWidth prevents cramped layout; inner padding scales with actual width. -->
+            <Grid x:Name="ContentContainer"
+                  HorizontalOptions="Center"
+                  VerticalOptions="Fill"
+                  MinimumWidthRequest="320"
+                  MaximumWidthRequest="1200"
+                  Padding="40,16,40,24">
+                <VerticalStackLayout Spacing="24" HorizontalOptions="Fill" VerticalOptions="Fill">
+
+                    <!-- Header -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Style="{StaticResource DisplayLarge}" Text="Smart Shopping" FontSize="24"/>
+                        <Label Style="{StaticResource BodyLarge}" Text="AI-driven recommendations to complete your wardrobe."
+                           TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" FontSize="16"/>
+                    </VerticalStackLayout>
+
+                    <!-- Fallback status shown only if the default user is unavailable. -->
+                    <Border IsVisible="{Binding IsUnavailable}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
+                        StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="16">
+                        <VerticalStackLayout Spacing="6">
+                            <Label Style="{StaticResource SubtitleMedium}" Text="Wardrobe data is unavailable"
+                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                            <Label Style="{StaticResource BodySmall}" Text="The shopping analysis cannot be loaded right now. Try reopening this page."
+                               LineBreakMode="WordWrap"
+                               TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                               FontSize="13"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Top Bento: Wardrobe Analysis + Budget -->
+                    <Grid RowDefinitions="*,*"
+                      ColumnDefinitions="*"
+                      ColumnSpacing="12" RowSpacing="30">
+                        <!-- Wardrobe Analysis (glass) -->
+                        <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource GlassPanel}" StrokeShape="RoundRectangle 16" StrokeThickness="0">
+                            <Border.Shadow>
+                                <Shadow Offset="2,7" Radius="5" Opacity="0.1"/>
+                            </Border.Shadow>
+                            <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="14">
+                                <!-- Header row: icon + title/subtitle on the left, large % on the right -->
+                                <Grid Grid.Row="0" ColumnDefinitions="*, Auto" ColumnSpacing="12" HorizontalOptions="Fill">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                        <HorizontalStackLayout Spacing="8">
+                                            <Label Text="&#xe71d;" FontFamily="MaterialAssets" FontSize="20"
+                                               TextColor="{StaticResource OnTertiaryContainer}" VerticalOptions="Center"/>
+                                            <Label Text="Wardrobe Analysis" FontSize="16" FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                               VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                        <Label Style="{StaticResource BodySmall}" Text="Based on your professional style profile."
+                                           FontSize="13" LineBreakMode="WordWrap"
+                                           TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="End" Spacing="0">
+                                        <Label Style="{StaticResource DisplayLarge}" Text="{Binding CompletionScore, StringFormat='{0}%'}" FontSize="32"
+                                           TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                           HorizontalOptions="End"/>
+                                        <Label Style="{StaticResource LabelCaps}" Text="COMPLETION SCORE" FontSize="10"
+                                           TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                           HorizontalOptions="End"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+
+                                <!-- Items Owned / Target row -->
+                                <Grid Grid.Row="1" ColumnDefinitions="*, *" ColumnSpacing="8" HorizontalOptions="Fill">
+                                    <Label Grid.Column="0" Style="{StaticResource BodySmall}" Text="{Binding ItemsOwned, StringFormat='Items Owned: {0}'}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                       FontSize="12" HorizontalOptions="Start"/>
+                                    <Label Grid.Column="1" Style="{StaticResource BodySmall}" Text="{Binding ItemsTarget, StringFormat='Target: {0} Core Pieces'}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                       FontSize="12" HorizontalOptions="End"/>
+                                </Grid>
+
+                                <!-- Progress bar: filled width is owned/target ratio -->
+                                <ProgressBar Grid.Row="2"
+                                         Progress="{Binding CompletionScore, Converter={StaticResource DoubleDivideConverter}, ConverterParameter=100}"
+                                         ProgressColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                         HorizontalOptions="Fill" HeightRequest="6"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Budget Widget (beige) -->
+                        <Border Grid.Row="1"
+                            Grid.Column="0"
+                            StrokeThickness="0"
+                            BackgroundColor="#f8f5f0"
+                            Style="{StaticResource BeigePanel}">
+                            <VerticalStackLayout Spacing="10">
+                                <HorizontalStackLayout Spacing="10">
+                                    <Label Text="&#xe722;" FontFamily="UiKitIcons" VerticalOptions="Center" FontSize="18"/>
+                                    <Label Style="{StaticResource SubtitleMedium}" Text="Budget" FontSize="18"
+                                    TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                                </HorizontalStackLayout>
+                                <Label Style="{StaticResource DisplayLarge}" Text="{Binding MonthlyBudget}" FontSize="30"
+                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                                <Label Style="{StaticResource SubtitleMedium}" Text="MONTHLY ALLOWANCE"
+                                   TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" FontSize="12"/>
+                                <!-- Budget advice (glass) -->
+                                <BoxView/>
+                                <Border BackgroundColor="#B3FFFFFF" StrokeShape="RoundRectangle 12" StrokeThickness="1" Stroke="#80FFFFFF" Padding="16">
+                                    <Label Style="{StaticResource BodySmall}" Text="{Binding BudgetAdvice}"
+                                    TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                    LineBreakMode="WordWrap"/>
+                                </Border>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <!-- Essential Items (curated 21-item closet cards from wardrobe.json) -->
+                    <VerticalStackLayout Spacing="12" IsVisible="{Binding HasEssentialCards}">
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Style="{StaticResource SubtitleMedium}" Text="Missing Essential"
+                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                                <Label Style="{StaticResource BodySmall}" Text="Curated must-haves from your wardrobe essentials, ranked by how many outfits they unlock."
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding EssentialCards}" Spacing="12">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="svc:EssentialItemCard">
+                                    <Border BackgroundColor="{StaticResource BeigeCard}" StrokeShape="RoundRectangle 24"
+                                        StrokeThickness="0" Padding="12">
+                                        <Grid RowSpacing="12" ColumnSpacing="16"
+                                          RowDefinitions="320,Auto">
+
+                                            <!-- Product image container.
+                                             Primary Image binds the resolved
+                                             ImageSource for the curated asset;
+                                             a secondary Image underneath it
+                                             shows a generic placeholder when
+                                             the curated asset is missing
+                                             (wardrobe.json references a name
+                                             that wasn't shipped in
+                                             Resources/Images/shopping/). -->
+                                            <Border Grid.Row="0"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                                                StrokeShape="RoundRectangle 16"
+                                                StrokeThickness="0"
+                                                VerticalOptions="Start">
+                                                <Grid HorizontalOptions="Fill" VerticalOptions="Fill">
+                                                    <Image Source="{Binding ImageSource}"
+                                                       Aspect="AspectFit"
+                                                       HeightRequest="{OnIdiom Phone=300, Tablet=360, Desktop=400}"
+                                                       HorizontalOptions="Center" VerticalOptions="Center"/>
+                                                    <!-- Fallback placeholder: only
+                                                     shown when the curated image
+                                                     could not be resolved.
+                                                     Bundled shop.png is always
+                                                     present in
+                                                     Resources/Images. -->
+                                                    <Image Source="shop.png"
+                                                       Aspect="AspectFit"
+                                                       Opacity="0.35"
+                                                       HeightRequest="{OnIdiom Phone=300, Tablet=360, Desktop=400}"
+                                                       HorizontalOptions="Center" VerticalOptions="Center"
+                                                       IsVisible="{Binding ImageSource, Converter={StaticResource ImageSourceIsNullConverter}}"/>
+                                                </Grid>
+                                            </Border>
+
+                                            <!-- Right/content column (always column 1; row adapts by idiom) -->
+                                            <Grid RowDefinitions="*,*,*,*" Grid.Row="1"
+                                                             RowSpacing="6">
+                                                <!-- Brand + title + price row -->
+                                                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12" Padding="4,0">
+                                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                                        <Label FontSize="12" FontAttributes="Bold" CharacterSpacing="2.5"
+                                                           Text="{Binding Category}" TextTransform="Uppercase"
+                                                           TextColor="{AppThemeBinding Light={StaticResource OnTertiaryContainer}, Dark={StaticResource OnTertiaryContainer}}"/>
+                                                        <Label FontAttributes="Bold" Text="{Binding Name}" FontSize="24"
+                                                           LineBreakMode="WordWrap"
+                                                           TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                                                    </VerticalStackLayout>
+                                                    <Label Grid.Column="1" Style="{StaticResource SubtitleMedium}"
+                                                       Text="{Binding Price}" FontSize="Medium"
+                                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                                       VerticalOptions="Center"/>
+                                                </Grid>
+
+                                                <!-- "Pairs with N" chip -->
+                                                <HorizontalStackLayout Grid.Row="1" Spacing="8" Padding="4,0">
+                                                    <Border BackgroundColor="#B3FFFFFF"
+                                                        StrokeShape="RoundRectangle 8"
+                                                        StrokeThickness="0.5" Stroke="SkyBlue"
+                                                        Padding="10,6"
+                                                        HorizontalOptions="Start" VerticalOptions="Center">
+                                                        <HorizontalStackLayout Spacing="6">
+                                                            <Image Source="ai.png" WidthRequest="16" HeightRequest="16" VerticalOptions="Center"/>
+                                                            <Label FontAttributes="Bold" VerticalOptions="Center"
+                                                               Text="{Binding PairsWithCount, StringFormat='Pairs with {0} existing outfits'}"
+                                                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                                               FontSize="14"/>
+                                                        </HorizontalStackLayout>
+                                                    </Border>
+                                                </HorizontalStackLayout>
+
+                                                <!-- Reason (why this essential) -->
+                                                <Label Grid.Row="2" Style="{StaticResource BodySmall}" Text="{Binding Reason}"
+                                                   FontSize="14"
+                                                   LineBreakMode="WordWrap" Padding="4,4"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+
+                                                <!-- Shop Now + heart action row -->
+                                                <Grid Grid.Row="3" ColumnDefinitions="*, Auto" ColumnSpacing="8" Padding="4,8,4,0" VerticalOptions="End">
+                                                    <buttons:SfButton Grid.Column="0" Text="Shop Now" Style="{StaticResource PrimaryCta}"
+                                                                  CommandParameter="{Binding}"
+                                                                  HorizontalOptions="Fill" FontSize="13"
+                                                                  Command="{Binding Path=BindingContext.OpenEssentialLinkCommand, Source={x:Reference ShoppingRoot}}">
+                                                    </buttons:SfButton>
+                                                    <Border Grid.Column="1" WidthRequest="56" HeightRequest="48"
+                                                        BackgroundColor="Transparent"
+                                                        Stroke="{StaticResource Outline}" StrokeShape="RoundRectangle 12" StrokeThickness="1"
+                                                        HorizontalOptions="End" VerticalOptions="Center">
+                                                        <Label Text="&#xe719;" FontSize="22"
+                                                           HorizontalOptions="Center" VerticalOptions="Center" FontFamily="UiKitIcons"
+                                                           TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                                                    </Border>
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+
+                    <!-- Why these recommendations? (overall methodology) -->
+                    <accordion:SfAccordion ExpandMode="Single">
+                        <accordion:AccordionItem>
+                            <accordion:AccordionItem.Header>
+                                <Grid Padding="16,12">
+                                    <Label Style="{StaticResource SubtitleMedium}" Text="How we picked these"
+                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                       VerticalOptions="Center"/>
+                                </Grid>
+                            </accordion:AccordionItem.Header>
+                            <accordion:AccordionItem.Content>
+                                <VerticalStackLayout Padding="16" Spacing="8">
+                                    <Label Style="{StaticResource BodyLarge}"
+                                       Text="We scan your closet for missing core categories, then match the highest-priority gaps against your real pieces. Each pick shows its compatibility score, what it pairs with, and why it's the best value for your monthly budget."
+                                       TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                       LineBreakMode="WordWrap"/>
+                                </VerticalStackLayout>
+                            </accordion:AccordionItem.Content>
+                        </accordion:AccordionItem>
+                    </accordion:SfAccordion>
+
+                </VerticalStackLayout>
+            </Grid>
+        </ScrollView>
+    </Grid>
+</ContentPage>

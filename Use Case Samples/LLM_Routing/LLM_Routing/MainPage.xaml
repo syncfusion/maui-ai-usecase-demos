@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+   xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+   xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+   xmlns:syncfusion="clr-namespace:Syncfusion.Maui.AIAssistView;assembly=Syncfusion.Maui.AIAssistView"
+   xmlns:syncTheme="clr-namespace:Syncfusion.Maui.Themes;assembly=Syncfusion.Maui.Core"
+   xmlns:markdown="clr-namespace:Syncfusion.Maui.MarkdownViewer;assembly=Syncfusion.Maui.MarkdownViewer"
+   xmlns:models="clr-namespace:LLM_Routing.Models"
+   xmlns:local="clr-namespace:LLM_Routing.Services"
+   xmlns:converters="clr-namespace:LLM_Routing.Converters"
+   x:Class="LLM_Routing.MainPage"
+   BackgroundColor="#faf9fd">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:InverseBoolConverter x:Key="InverseBool" />
+
+            <!-- MD3 light palette (matches the desktop/mobile HTML) -->
+            <Color x:Key="Surface">#faf9fd</Color>
+            <Color x:Key="SurfaceContainerLow">#f4f3f8</Color>
+            <Color x:Key="SurfaceContainer">#eeedf2</Color>
+            <Color x:Key="SurfaceContainerHigh">#e8e8ec</Color>
+            <Color x:Key="SurfaceContainerHighest">#e2e2e7</Color>
+            <Color x:Key="OnSurface">#1a1c1f</Color>
+            <Color x:Key="OnSurfaceVariant">#464652</Color>
+            <Color x:Key="Outline">#777684</Color>
+            <Color x:Key="OutlineVariant">#c7c5d4</Color>
+            <Color x:Key="Primary">#4246ad</Color>
+            <Color x:Key="OnPrimary">#ffffff</Color>
+            <Color x:Key="PrimaryContainer">#5b5fc7</Color>
+            <Color x:Key="OnPrimaryContainer">#eceaff</Color>
+            <Color x:Key="PrimaryFixed">#e1e0ff</Color>
+            <Color x:Key="OnPrimaryFixedVariant">#3639a1</Color>
+            <Color x:Key="Secondary">#0060ab</Color>
+            <Color x:Key="Tertiary">#00602f</Color>
+            <Color x:Key="TertiaryFixed">#96f7af</Color>
+            <Color x:Key="OnTertiaryFixedVariant">#005228</Color>
+
+            <DataTemplate x:Key="ModelMarkdownResponseTemplate" x:DataType="models:AIAssistResponseItem">
+                <Grid Margin="8,6,8,10" ColumnSpacing="8" ColumnDefinitions="Auto,*">
+                    <!-- Avatar -->
+                    <Border Grid.Column="0" WidthRequest="36" HeightRequest="36"
+                            BackgroundColor="{StaticResource Primary}"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 18"
+                            VerticalOptions="Start" Margin="0,4,0,0">
+                        <Label Text="✦" TextColor="White" FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="6">
+                        <!-- Assistant identity bar with model pill -->
+                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                            <Label Text="Copilot Assistant"
+                                   TextColor="{StaticResource OnSurface}"
+                                   FontSize="14" FontAttributes="Bold"
+                                   VerticalOptions="Center" />
+                            <Border Padding="8,2"
+                                    BackgroundColor="{StaticResource PrimaryFixed}"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 10">
+                                <Label Text="{Binding ModelHeader}"
+                                       TextColor="{StaticResource OnPrimaryFixedVariant}"
+                                       FontSize="11" FontAttributes="Bold"
+                                       VerticalOptions="Center" />
+                            </Border>
+                        </HorizontalStackLayout>
+
+                        <!-- Response card -->
+                        <Border BackgroundColor="{StaticResource SurfaceContainerLowest}"
+                                Stroke="{StaticResource OutlineVariant}" StrokeThickness="1"
+                                StrokeShape="RoundRectangle 14" Padding="14">
+                            <VerticalStackLayout Spacing="10">
+                                <!-- While the model is working, show the live status text in a plain
+                                     Label (so "Routed to X. Generating response..." reads as plain text,
+                                     not markdown) plus a spinning indicator. The SfMarkdownViewer below
+                                     is hidden during this phase and only takes over once IsGenerating
+                                     flips to false. -->
+                                <HorizontalStackLayout Spacing="8"
+                                                       VerticalOptions="Center"
+                                                       IsVisible="{Binding IsGenerating}">
+                                    <Label Text="{Binding Text}"
+                                           TextColor="{StaticResource OnSurfaceVariant}"
+                                           FontSize="13"
+                                           VerticalOptions="Center" />
+                                    <ActivityIndicator IsRunning="{Binding IsGenerating}"
+                                                       Color="{StaticResource Primary}"
+                                                       WidthRequest="16"
+                                                       HeightRequest="16"
+                                                       VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+
+                                <markdown:SfMarkdownViewer Source="{Binding Text}"
+                                                           IsVisible="{Binding IsGenerating, Converter={StaticResource InverseBool}}"
+                                                           EnableAutoHeight="True"
+                                                           BackgroundColor="White">
+                                    <markdown:SfMarkdownViewer.Settings>
+                                        <markdown:MarkdownStyleSettings CssStyleRules="
+                                            p { color: #1a1c1f; }
+                                            code { background-color: #f4f3f8; padding: 2px 4px; border-radius: 4px; }
+                                            pre { background-color: #f4f3f8; padding: 10px; border-radius: 8px; }
+                                        " />
+                                    </markdown:SfMarkdownViewer.Settings>
+                                </markdown:SfMarkdownViewer>
+
+                                <BoxView HeightRequest="1" Color="{StaticResource OutlineVariant}" />
+
+                                <!-- Token + cost readout -->
+                                <HorizontalStackLayout Spacing="6">
+                                    <Border Padding="8,3"
+                                            BackgroundColor="{StaticResource SurfaceContainerLow}"
+                                            StrokeThickness="0" StrokeShape="RoundRectangle 8">
+                                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                            <Label Text="↑"
+                                                   TextColor="{StaticResource OnSurfaceVariant}"
+                                                   FontSize="10"
+                                                   FontAttributes="Bold"
+                                                   VerticalOptions="Center" />
+                                            <Label Text="In"
+                                                   TextColor="{StaticResource OnSurfaceVariant}"
+                                                   FontSize="10"
+                                                   VerticalOptions="Center" />
+                                            <Label Text="{Binding InputTokenText}"
+                                                   TextColor="{StaticResource OnSurface}"
+                                                   FontSize="10"
+                                                   FontAttributes="Bold"
+                                                   VerticalOptions="Center" />
+                                            <Label Text="tok"
+                                                   TextColor="{StaticResource OnSurfaceVariant}"
+                                                   FontSize="10"
+                                                   VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                    <Border Padding="8,3"
+                                            BackgroundColor="{StaticResource SurfaceContainerLow}"
+                                            StrokeThickness="0" StrokeShape="RoundRectangle 8">
+                                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                            <Label Text="↓"
+                                                   TextColor="{StaticResource OnSurfaceVariant}"
+                                                   FontSize="10"
+                                                   FontAttributes="Bold"
+                                                   VerticalOptions="Center" />
+                                            <Label Text="Out"
+                                                   TextColor="{StaticResource OnSurfaceVariant}"
+                                                   FontSize="10"
+                                                   VerticalOptions="Center" />
+                                            <Label Text="{Binding OutputTokenText}"
+                                                   TextColor="{StaticResource OnSurface}"
+                                                   FontSize="10"
+                                                   FontAttributes="Bold"
+                                                   VerticalOptions="Center" />
+                                            <Label Text="tok"
+                                                   TextColor="{StaticResource OnSurfaceVariant}"
+                                                   FontSize="10"
+                                                   VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                    <Border Padding="8,3"
+                                            BackgroundColor="{StaticResource PrimaryFixed}"
+                                            StrokeThickness="0" StrokeShape="RoundRectangle 8">
+                                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                            <Label Text="$"
+                                                   TextColor="{StaticResource OnPrimaryFixedVariant}"
+                                                   FontSize="10"
+                                                   FontAttributes="Bold"
+                                                   VerticalOptions="Center" />
+                                            <Label Text="{Binding CostText}"
+                                                   TextColor="{StaticResource OnPrimaryFixedVariant}"
+                                                   FontSize="10"
+                                                   FontAttributes="Bold"
+                                                   VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
+            </DataTemplate>
+
+            <syncTheme:SyncfusionThemeDictionary>
+                <syncTheme:SyncfusionThemeDictionary.MergedDictionaries>
+                    <ResourceDictionary>
+                        <x:String x:Key="SfAIAssistViewTheme">CustomTheme</x:String>
+                        <Color x:Key="SfAIAssistViewBackground">#faf9fd</Color>
+                        <Color x:Key="SfAIAssistViewRequestItemBackground">#4246ad</Color>
+                        <Color x:Key="SfAIAssistViewRequestItemTextColor">#FFFFFF</Color>
+                        <Color x:Key="SfAIAssistViewResponseItemBackground">#faf9fd</Color>
+                        <Color x:Key="SfAIAssistViewResponseItemTextColor">#1a1c1f</Color>
+                        <Color x:Key="SfAIAssistViewInputViewBackground">#faf9fd</Color>
+                        <Color x:Key="SfAIAssistViewEditorBackground">#ffffff</Color>
+                        <Color x:Key="SfAIAssistViewEditorTextColor">#1a1c1f</Color>
+                        <Color x:Key="SfAIAssistViewEditorPlaceholderTextColor">#777684</Color>
+                        <Color x:Key="SfAIAssistViewEditorStroke">#c7c5d4</Color>
+                        <Color x:Key="SfAIAssistViewNormalActionViewIconColor">#464652</Color>
+                        <Color x:Key="SfAIAssistViewSelectedLikeIconColor">#00602f</Color>
+                    </ResourceDictionary>
+                </syncTheme:SyncfusionThemeDictionary.MergedDictionaries>
+            </syncTheme:SyncfusionThemeDictionary>
+
+            <local:AIAssistTemplateSelector x:Key="RouterResponseTemplateSelector"
+                                            ResponseTemplate="{StaticResource ModelMarkdownResponseTemplate}" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*,Auto" BackgroundColor="{StaticResource Surface}">
+
+        <!-- =================== HEADER =================== -->
+        <Grid Grid.Row="0" Padding="16,12" BackgroundColor="{StaticResource Surface}"
+              ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+            <VerticalStackLayout Grid.Column="0" Spacing="0" VerticalOptions="Center">
+                <Border WidthRequest="36" HeightRequest="36"
+                        BackgroundColor="{StaticResource PrimaryFixed}"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 10">
+                    <Label Text="✦" TextColor="{StaticResource OnPrimaryFixedVariant}"
+                           FontSize="18" FontAttributes="Bold"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                    <Label Text="AI Model Router"
+                           TextColor="{StaticResource OnSurface}"
+                           FontSize="16" FontAttributes="Bold"
+                           VerticalOptions="Center" />
+                    <Border Padding="8,2" BackgroundColor="{StaticResource SurfaceContainerHigh}"
+                            StrokeThickness="0" StrokeShape="RoundRectangle 10"
+                            IsVisible="{OnIdiom Phone=False, Default=True}">
+                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                            <Ellipse Fill="{StaticResource Tertiary}"
+                                     WidthRequest="6" HeightRequest="6"
+                                     VerticalOptions="Center" />
+                            <Label Text="Azure OpenAI Active"
+                                   TextColor="{StaticResource OnSurfaceVariant}"
+                                   FontSize="10" FontAttributes="Bold"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Border>
+                </HorizontalStackLayout>
+                <Label Text="Automatic GPT model selection"
+                       TextColor="{StaticResource OnSurfaceVariant}"
+                       FontSize="11" />
+            </VerticalStackLayout>
+
+            <!-- Right side: nav (desktop) or avatar (mobile) -->
+            <HorizontalStackLayout Grid.Column="2" Spacing="10" VerticalOptions="Center">
+                <HorizontalStackLayout Spacing="14" VerticalOptions="Center"
+                                       IsVisible="{OnIdiom Phone=False, Default=True}">
+                    <Label Text="Router Console"
+                           TextColor="{StaticResource OnSurface}"
+                           FontSize="13" FontAttributes="Bold"
+                           VerticalOptions="Center" />
+                    <Label Text="Policies"
+                           TextColor="{StaticResource OnSurfaceVariant}"
+                           FontSize="13"
+                           VerticalOptions="Center" />
+                    <Label Text="Logs"
+                           TextColor="{StaticResource OnSurfaceVariant}"
+                           FontSize="13"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+                <Border WidthRequest="32" HeightRequest="32"
+                        BackgroundColor="{StaticResource Primary}"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 16">
+                    <Label Text="Y" TextColor="{StaticResource OnPrimary}"
+                           FontAttributes="Bold" FontSize="13"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </HorizontalStackLayout>
+        </Grid>
+
+        <!-- =================== CHAT =================== -->
+        <syncfusion:SfAIAssistView Grid.Row="1"
+                                   x:Name="assistView"
+                                   AssistItems="{Binding AssistItems}"
+                                   Attachments="{Binding Attachments}"
+                                   InputText="{Binding ComposerText, Mode=TwoWay}"
+                                   ActionButtonType="AttachmentButton"
+                                   EnableConversationHistory="False"
+                                   EnableVoiceInput="True"
+                                   ShowHeader="False"
+                                   ShowToolbar="False"
+                                   AutoScrollBehavior="ScrollToLastResponse"
+                                   ShowScrollToBottomButton="True"
+                                   ResponseItemTemplate="{StaticResource RouterResponseTemplateSelector}"
+                                   Background="Transparent" />
+
+        <!-- =================== STATUS PILL =================== -->
+        <HorizontalStackLayout Grid.Row="2" Padding="16,6" Spacing="6"
+                               BackgroundColor="{StaticResource Surface}"
+                               HorizontalOptions="Center" VerticalOptions="Center">
+            <Ellipse Fill="{StaticResource Primary}"
+                     WidthRequest="6" HeightRequest="6"
+                     VerticalOptions="Center" />
+            <Label Text="Auto-Routing: Active"
+                   TextColor="{StaticResource OnSurfaceVariant}"
+                   FontSize="11"
+                   VerticalOptions="Center" />
+        </HorizontalStackLayout>
+    </Grid>
+</ContentPage>

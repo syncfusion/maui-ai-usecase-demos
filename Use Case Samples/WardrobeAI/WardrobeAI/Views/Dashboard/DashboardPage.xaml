@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:rotator="clr-namespace:Syncfusion.Maui.Rotator;assembly=Syncfusion.Maui.Rotator"
+             xmlns:gauge="clr-namespace:Syncfusion.Maui.Gauges;assembly=Syncfusion.Maui.Gauges"
+             xmlns:vm="clr-namespace:WardrobeAI.ViewModels"
+             xmlns:app="clr-namespace:WardrobeAI;assembly=WardrobeAI"
+             x:Class="WardrobeAI.Views.Dashboard.DashboardPage"
+             x:Name="DashboardRoot"
+             x:DataType="vm:DashboardViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Background}, Dark={StaticResource BackgroundDark}}"
+             Title="Wardrobe AI">
+    <NavigationPage.TitleView>
+        <Grid HorizontalOptions="Fill">
+            <Label Text="Wardrobe AI"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   TextColor="Black"/>
+        </Grid>
+    </NavigationPage.TitleView>
+
+    <Grid RowDefinitions="Auto, *" RowSpacing="0">
+        <Grid.Resources>
+            <Style TargetType="buttons:SfButton" x:Key="QuickActionButton">
+                <Setter Property="Background" Value="{StaticResource BeigeCard}"/>
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                <Setter Property="CornerRadius" Value="20"/>
+                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource Gray900}}"/>
+                <Setter Property="StrokeThickness" Value="0"/>
+                <Setter Property="FontFamily" Value="OpenSansSemibold"/>
+                <Setter Property="FontSize" Value="15"/>
+                <Setter Property="Padding" Value="12"/>
+                <Setter Property="MinimumHeightRequest" Value="120"/>
+                <Setter Property="HorizontalOptions" Value="Fill"/>
+                <Setter Property="VerticalOptions" Value="Fill"/>
+            </Style>
+            <Style TargetType="buttons:SfButton" x:Key="PrimaryCta">
+                <Setter Property="Background" Value="{StaticResource Primary}"/>
+                <Setter Property="TextColor" Value="{StaticResource OnPrimary}"/>
+                <Setter Property="CornerRadius" Value="12"/>
+                <Setter Property="FontFamily" Value="OpenSansSemibold"/>
+                <Setter Property="FontSize" Value="15"/>
+                <Setter Property="Padding" Value="20,14"/>
+                <Setter Property="HorizontalOptions" Value="Fill"/>
+            </Style>
+            <Style TargetType="Label" x:Key="GhostLink">
+                <Setter Property="BackgroundColor" Value="Transparent"/>
+                <Setter Property="TextColor" Value="#004395"/>
+                <Setter Property="FontFamily" Value="OpenSansRegular"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Padding" Value="0,4"/>
+                <Setter Property="HorizontalOptions" Value="Start"/>
+            </Style>
+        </Grid.Resources>
+
+        <!-- Top App Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" HorizontalOptions="Fill" Padding="20,0,20,20" IsVisible="{OnIdiom Phone=True, Default=False}"
+              BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}">
+            <syncfusion:SfAvatarView ImageSource="ai.png" ContentType="Default" WidthRequest="40" HeightRequest="40" VerticalOptions="Center" Background="Transparent"/>
+            <Label Grid.Column="1" Style="{StaticResource TitleLarge}" Text="Wardrobe AI" VerticalOptions="Center" HorizontalOptions="Center" FontSize="24" Padding="-20,0,0,0"/>
+        </Grid>
+
+        <!-- Main scrollable canvas -->
+        <ScrollView Grid.Row="1" Padding="20,8,20,32">
+            <VerticalStackLayout Spacing="24">
+
+                <!-- Greeting & context -->
+                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                    <StackLayout Orientation="{OnIdiom Phone='Vertical', Default='Horizontal'}" Grid.Column="0" Spacing="12">
+                        <Label  Text="{Binding Greeting}"
+                                Style="{StaticResource SubtitleMedium}"
+                               TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" VerticalOptions="Center"/>
+                        <Label FontSize="24" FontAttributes="Bold" Text="{x:Static app:AppConstants.DefaultUserName}" VerticalOptions="Center"/>
+                    </StackLayout>
+                    <Grid Grid.Column="1" ColumnDefinitions="*,Auto" RowDefinitions="Auto, Auto" HorizontalOptions="End" ColumnSpacing="12" RowSpacing="12">
+                        <Label Style="{StaticResource BodySmall}"
+                               Text="{Binding TodayDate}"
+                               TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" VerticalOptions="Center"/>
+                        <Border Grid.Row="{OnIdiom Phone=1, Default=0}" Grid.Column="{OnIdiom Phone=0, Default=1}" StrokeShape="RoundRectangle 16" Padding="10,5" StrokeThickness="0"
+                                Background="#13000000"
+                                HorizontalOptions="End"
+                                 VerticalOptions="Center">
+                            <HorizontalStackLayout Spacing="6">
+                                <Image Source="{Binding WeatherImage}"
+                                       WidthRequest="14" HeightRequest="14"
+                                       Aspect="AspectFit"
+                                       VerticalOptions="Center"
+                                       SemanticProperties.Description="Weather icon"/>
+                                <Label Text="{Binding Weather}"
+                                       FontSize="14"
+                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                            </HorizontalStackLayout>
+                        </Border>
+                    </Grid>
+                </Grid>
+
+                <!-- Hero: Today's Suggestion (P2.8 — AI-curated from closet + weather + occasion) -->
+                <BoxView/>
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*,*" HorizontalOptions="Fill">
+                        <Label Grid.Column="0" Text="Today's Suggestion" HorizontalOptions="Start" Style="{StaticResource SubtitleMedium}"/>
+                        <Border Grid.Column="1" BackgroundColor="{StaticResource PrimaryFixed}"
+                                StrokeShape="RoundRectangle 10" Padding="8,3"
+                                HorizontalOptions="End" StrokeThickness="0">
+                            <Label Style="{StaticResource LabelCaps}" Text="AI Curated" VerticalOptions="Center"
+                                   TextColor="DarkBlue"/>
+                        </Border>
+                    </Grid>
+
+                    <Border StrokeShape="RoundRectangle 20" StrokeThickness="0"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainer}, Dark={StaticResource Gray900}}"
+                            Padding="6">
+                        <Grid>
+                            <!-- PHONE (small screens): single-column rotator + floating
+                             glass panel. Unchanged behaviour from the original card. -->
+                            <Grid RowDefinitions="Auto, 1*, Auto" RowSpacing="0" MinimumHeightRequest="{OnIdiom Phone=380, Tablet=480, Desktop=520}"
+                              IsVisible="{OnIdiom Phone=True, Desktop=False, Tablet=False}">
+                                <Border Grid.Row="1"
+                                    StrokeShape="RoundRectangle 18" StrokeThickness="0"
+                                    Padding="0">
+                                    <Grid>
+                                        <VerticalStackLayout Spacing="12"
+                                                             HorizontalOptions="Center"
+                                                             VerticalOptions="Center"
+                                                             Padding="24"
+                                                             IsVisible="{Binding HasOutfitItems, Converter={StaticResource InverseBoolConverter}}">
+                                            <Image Aspect="AspectFit"
+                                                   Source="ai.png"
+                                                   WidthRequest="120" HeightRequest="120"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"
+                                                   IsVisible="{Binding IsOutfitLoading, Converter={StaticResource InverseBoolConverter}}"/>
+                                            <ActivityIndicator IsRunning="{Binding IsOutfitLoading}"
+                                                               IsVisible="{Binding IsOutfitLoading}"
+                                                               HorizontalOptions="Center"/>
+                                            <Label Text="{Binding OutfitDescription}"
+                                                   HorizontalTextAlignment="Center"
+                                                   LineBreakMode="WordWrap"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                                        </VerticalStackLayout>
+                                        <rotator:SfRotator ItemsSource="{Binding OutfitItems}"
+                                                       IsVisible="{Binding HasOutfitItems}"
+                                                       NavigationStripMode="Dots"
+                                                       NavigationStripPosition="Bottom"
+                                                       NavigationDirection="Horizontal"
+                                                       NavigationDelay="3000"
+                                                       EnableAutoPlay="True"
+                                                       EnableLooping="True"
+                                                       EnableSwiping="True"
+                                                       SelectedDotColor="Transparent"
+                                                       UnselectedDotColor="Transparent"
+                                                       ShowNavigationButton="True"
+                                                       BackgroundColor="Transparent">
+                                            <rotator:SfRotator.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:DashboardViewModel+OutfitItemCard">
+                                                    <Border StrokeShape="RoundRectangle 14" StrokeThickness="0"
+                                                        BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource Gray950}}"
+                                                        Padding="6">
+                                                        <Grid>
+                                                            <Image Aspect="AspectFit"
+                                                                       Source="{Binding ImageBase64, Converter={StaticResource Base64ToImageSourceConverter}}"
+                                                                       HorizontalOptions="Fill" VerticalOptions="Fill"
+                                                                       IsVisible="{Binding ImageBase64, Converter={StaticResource StringIsNotNullOrEmptyConverter}}"/>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </rotator:SfRotator.ItemTemplate>
+                                        </rotator:SfRotator>
+
+                                        <Border Margin="16,10,16,10"
+                                            BackgroundColor="#B3FFFFFF"
+                                            StrokeShape="RoundRectangle 14"
+                                            StrokeThickness="1"
+                                            Stroke="#80FFFFFF"
+                                            IsVisible="{Binding HasOutfitItems}"
+                                            VerticalOptions="End"
+                                            HorizontalOptions="Fill"
+                                            Padding="16">
+                                            <VerticalStackLayout Spacing="10">
+                                                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                                                    <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                                                        <Label Style="{StaticResource SubtitleMedium}" Text="Matches"
+                                                       LineBreakMode="TailTruncation"
+                                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                                                    </VerticalStackLayout>
+                                                    <Border Grid.Column="1"
+                                                    BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource Gray600}}"
+                                                    StrokeShape="RoundRectangle 16" Padding="8,2" StrokeThickness="0">
+                                                        <HorizontalStackLayout Spacing="6">
+                                                            <Label Text="&#xe723;" FontFamily="UiKitIcons" FontSize="16"
+                                                           FontAttributes="Bold"
+                                                           TextColor="#091523" VerticalOptions="Center"/>
+                                                            <Label FontSize="18"
+                                                           FontAttributes="Bold"
+                                                           Text="{Binding OutfitMatchScoreFormatted}"
+                                                           TextColor="#091523"/>
+                                                        </HorizontalStackLayout>
+                                                    </Border>
+                                                </Grid>
+                                                <Label Style="{StaticResource BodySmall}" Text="{Binding OutfitDescription}"
+                                               TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                               LineBreakMode="WordWrap" MaxLines="3"/>
+                                                <buttons:SfButton Text="Generate New" Style="{StaticResource PrimaryCta}"
+                                                          Command="{Binding GenerateNewCommand}"
+                                                          IsEnabled="{Binding IsOutfitLoading, Converter={StaticResource InverseBoolConverter}}"
+                                                          Background="#091523"
+                                                          HorizontalOptions="Fill"/>
+                                            </VerticalStackLayout>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                                <Label Grid.Row="2" Margin="0,6,0,0"
+                                   HorizontalOptions="Center"
+                                   Style="{StaticResource LabelCaps}"
+                                   Text="Curating your look…"
+                                   IsVisible="{Binding IsOutfitLoading}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                            </Grid>
+
+                            <!-- DESKTOP / TABLET: two-pane hero card matching the design mockup.
+                             Left column: featured outfit photo + title block + feature chips.
+                             Right column: glassmorphic insight card with match badge,
+                             weather insight, Generate CTA, and "Get another outfit" link. -->
+                            <Border StrokeThickness="0" StrokeShape="RoundRectangle 16" BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource Gray950}}"
+                                    IsVisible="{OnIdiom Phone=False, Desktop=True, Tablet=True}">
+                                <Grid ColumnDefinitions="1.05*, 0.95*" ColumnSpacing="20" Padding="6"
+                              IsVisible="{OnIdiom Phone=False, Desktop=True, Tablet=True}">
+                                    <!-- LEFT pane: featured outfit image + product title + feature chips -->
+                                    <Grid Grid.Column="0" RowDefinitions="*, Auto, Auto" RowSpacing="14">
+                                        <Grid Grid.Row="0">
+                                            <!-- Empty closet / not-configured placeholder -->
+                                            <VerticalStackLayout Spacing="12"
+                                                                 HorizontalOptions="Center"
+                                                                 VerticalOptions="Center"
+                                                                 Padding="24"
+                                                                 IsVisible="{Binding HasOutfitItems, Converter={StaticResource InverseBoolConverter}}">
+                                                <Image Aspect="AspectFit"
+                                                       Source="ai.png"
+                                                       WidthRequest="160" HeightRequest="160"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       IsVisible="{Binding IsOutfitLoading, Converter={StaticResource InverseBoolConverter}}"/>
+                                                <ActivityIndicator IsRunning="{Binding IsOutfitLoading}"
+                                                                   IsVisible="{Binding IsOutfitLoading}"
+                                                                   HorizontalOptions="Center"/>
+                                                <Label Text="{Binding OutfitDescription}"
+                                                       HorizontalTextAlignment="Center"
+                                                       LineBreakMode="WordWrap"
+                                                       TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                                            </VerticalStackLayout>
+                                            <!-- Featured item photo (first card from the rotator list).
+                                             SfRotator gives us a single-item carousel that still
+                                             supports swipe / auto-play / looping on the desktop. -->
+                                            <rotator:SfRotator ItemsSource="{Binding OutfitItems}"
+                                                       IsVisible="{Binding HasOutfitItems}"
+                                                       NavigationStripMode="Dots"
+                                                       NavigationStripPosition="Bottom"
+                                                       NavigationDirection="Horizontal"
+                                                       NavigationDelay="3000"
+                                                       EnableAutoPlay="True"
+                                                       EnableLooping="True"
+                                                       EnableSwiping="True"
+                                                       ShowNavigationButton="False"
+                                                       SelectedDotColor="Transparent"
+                                                       UnselectedDotColor="Transparent"
+                                                       BackgroundColor="Transparent"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       WidthRequest="{OnIdiom Phone=320, Tablet=380, Desktop=420}"
+                                                       HeightRequest="{OnIdiom Phone=320, Tablet=380, Desktop=420}">
+                                                <rotator:SfRotator.ItemTemplate>
+                                                    <DataTemplate x:DataType="vm:DashboardViewModel+OutfitItemCard">
+                                                        <Grid WidthRequest="{OnIdiom Phone=300, Tablet=360, Desktop=400}"
+                                                      HeightRequest="{OnIdiom Phone=300, Tablet=360, Desktop=400}">
+                                                            <Image Aspect="AspectFit"
+                                                           Source="{Binding ImageBase64, Converter={StaticResource Base64ToImageSourceConverter}}"
+                                                           HorizontalOptions="Fill"
+                                                           VerticalOptions="Fill"
+                                                           IsVisible="{Binding ImageBase64, Converter={StaticResource StringIsNotNullOrEmptyConverter}}"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </rotator:SfRotator.ItemTemplate>
+                                            </rotator:SfRotator>
+                                        </Grid>
+
+                                        <!-- Product title block (featured item name + subtitle) +
+                                     3 feature chips ("Lightweight / Breathable / Soft Touch"). -->
+                                        <!--<VerticalStackLayout Grid.Row="1" Spacing="6" HorizontalOptions="Center">
+                                    <Label Style="{StaticResource TitleMedium}"
+                                           FontSize="22"
+                                           HorizontalOptions="Center"
+                                           Text="{Binding FeaturedItem.DisplayName, FallbackValue='Today\u2019s Look'}"
+                                           TextColor="Black"/>
+                                    <Label Style="{StaticResource BodyMedium}"
+                                           HorizontalOptions="Center"
+                                           Text="{Binding FeaturedItem.Subtitle, FallbackValue='Casual Essential'}"
+                                           TextColor="Black"/>
+                                </VerticalStackLayout>-->
+
+                                        <!-- Feature chips row.  ItemsSource = FeaturedItem.FeatureTags so it auto-updates per item. -->
+                                        <!--<HorizontalStackLayout Grid.Row="2" Spacing="32" HorizontalOptions="Center">
+                                    <Border StrokeShape="RoundRectangle 14" Padding="12,8" StrokeThickness="0"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource Gray900}}"
+                                            IsVisible="{Binding FeaturedItem, Converter={StaticResource StringIsNotNullOrEmptyConverter}}">
+                                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                            <Label Text="&#xe715;" FontFamily="UiKitIcons" FontSize="16"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                                   VerticalOptions="Center"/>
+                                            <Label FontFamily="OpenSansRegular" FontSize="13"
+                                                   Text="Lightweight"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                    <Border StrokeShape="RoundRectangle 14" Padding="12,8" StrokeThickness="0"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource Gray900}}"
+                                            IsVisible="{Binding FeaturedItem, Converter={StaticResource StringIsNotNullOrEmptyConverter}}">
+                                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                            <Label Text="&#xe760;" FontFamily="UiKitIcons" FontSize="16"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                                   VerticalOptions="Center"/>
+                                            <Label FontFamily="OpenSansRegular" FontSize="13"
+                                                   Text="Breathable"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                    <Border StrokeShape="RoundRectangle 14" Padding="12,8" StrokeThickness="0"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource Gray900}}"
+                                            IsVisible="{Binding FeaturedItem, Converter={StaticResource StringIsNotNullOrEmptyConverter}}">
+                                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                            <Label Text="&#xe701;" FontFamily="UiKitIcons" FontSize="16"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                                   VerticalOptions="Center"/>
+                                            <Label FontFamily="OpenSansRegular" FontSize="13"
+                                                   Text="Soft Touch"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </HorizontalStackLayout>-->
+                                    </Grid>
+
+                                    <!-- RIGHT pane: glassmorphic insight card -->
+                                    <Border Grid.Column="1"
+                                    StrokeShape="RoundRectangle 22"
+                                    StrokeThickness="1"
+                                    Stroke="#1AFFFFFF"
+                                    BackgroundColor="#CCFFFFFF"
+                                    Padding="24">
+                                        <Grid RowDefinitions="Auto, Auto, *, Auto, Auto" RowSpacing="16">
+
+                                            <!-- 95% Match badge — circular progress ring + label -->
+                                            <Border Grid.Row="0"
+                                            StrokeShape="RoundRectangle 16"
+                                            BackgroundColor="#E8F5EE"
+                                            Padding="18,12"
+                                            StrokeThickness="0">
+                                                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
+                                                    <!-- Circular match ring built with SfRadialGauge. A full
+                                                 360° RadialAxis draws the light grey track; a single
+                                                 RangePointer sweeps from 0…OutfitMatchScore (0–100)
+                                                 in the brand green. An annotation in the centre
+                                                 shows the formatted percentage. WidthUnit="Factor"
+                                                 makes PointerWidth render as a fraction of radius
+                                                 instead of pixels. -->
+                                                    <gauge:SfRadialGauge WidthRequest="50" HeightRequest="50" HorizontalOptions="Center" VerticalOptions="Center" Background="Transparent">
+                                                        <gauge:SfRadialGauge.Axes>
+                                                            <gauge:RadialAxis Minimum="0" Maximum="100"
+                                                                          StartAngle="270" EndAngle="265"
+                                                                          ShowLabels="False" ShowTicks="False"
+                                                                          RadiusFactor="0.9">
+                                                                <gauge:RadialAxis.AxisLineStyle>
+                                                                    <gauge:RadialLineStyle Thickness="0.15" ThicknessUnit="Factor" Fill="#ABE8C0"/>
+                                                                </gauge:RadialAxis.AxisLineStyle>
+                                                                <gauge:RadialAxis.Pointers>
+                                                                    <gauge:RangePointer Value="{Binding OutfitMatchScore}"
+                                                                                    Fill="#149712"
+                                                                                    PointerWidth="0.15"
+                                                                                    WidthUnit="Factor"/>
+                                                                </gauge:RadialAxis.Pointers>
+                                                            </gauge:RadialAxis>
+                                                        </gauge:SfRadialGauge.Axes>
+                                                    </gauge:SfRadialGauge>
+                                                    <Grid Grid.Column="1" RowDefinitions="*,*">
+                                                        <HorizontalStackLayout Spacing="10">
+                                                            <Label Text="{Binding OutfitMatchScoreFormatted}"  
+                                                           FontAttributes="Bold" 
+                                                           FontSize="30" 
+                                                           FontFamily="RobotoMedium"
+                                                           HorizontalOptions="Center" 
+                                                           VerticalOptions="Center" 
+                                                           TextColor="#149712"/>
+                                                            <Label FontAttributes="Bold" 
+                                                           FontSize="16" 
+                                                           Text="Match" 
+                                                           FontFamily="RobotoMedium"
+                                                           TextColor="#149712" 
+                                                           VerticalOptions="End"/>
+                                                        </HorizontalStackLayout>
+
+                                                        <Label Grid.Row="1" 
+                                                           FontFamily="RobotoMedium"
+                                                           FontSize="12" 
+                                                           Text="Excellent Match" 
+                                                           TextColor="#149712"/>
+                                                    </Grid>
+                                                </Grid>
+                                            </Border>
+                                            <BoxView Grid.Row="1" HeightRequest="1" Margin="10,5" Color="#C8C6C2"/>
+                                            <!-- Weather insight: sun icon + heading + body -->
+                                            <VerticalStackLayout Grid.Row="2" Spacing="10">
+                                                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                                                    <Image Source="{Binding WeatherImage}" 
+                                                   WidthRequest="18" HeightRequest="18" 
+                                                   Aspect="AspectFit" 
+                                                   VerticalOptions="Center" 
+                                                   SemanticProperties.Description="Weather icon"/>
+                                                    <Label FontFamily="OpenSansSemibold"
+                                                   FontAttributes="Bold"
+                                                   FontSize="18"
+                                                   Text="Perfect for Today's Weather"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                                   VerticalOptions="Center"/>
+                                                </HorizontalStackLayout>
+                                                <BoxView Color="Transparent" HeightRequest="10"/>
+                                                <Label Style="{StaticResource BodyMedium}"
+                                               LineBreakMode="WordWrap"
+                                               MaxLines="5"
+                                               FontFamily="OpenSansRegular"
+                                               FontSize="15"
+                                               Text="{Binding OutfitDescription}"
+                                               TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                                            </VerticalStackLayout>
+                                            <BoxView Grid.Row="3" HeightRequest="1" Margin="10,5" Color="#C8C6C2"/>
+                                            <!-- CTA + ghost link stacked at the bottom -->
+                                            <VerticalStackLayout Grid.Row="4" Spacing="10">
+                                                <buttons:SfButton Text="Generate New Outfit"
+                                                          Style="{StaticResource PrimaryCta}"
+                                                          Command="{Binding GenerateNewCommand}"
+                                                          IsEnabled="{Binding IsOutfitLoading, Converter={StaticResource InverseBoolConverter}}"
+                                                          Background="#091523"
+                                                          FontAttributes="Bold"
+                                                          HorizontalOptions="Fill"
+                                                          HeightRequest="56"/>
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Quick Actions (Bento) -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Style="{StaticResource SubtitleMedium}" Text="Quick Actions"/>
+                    <Grid RowDefinitions="*, *" ColumnDefinitions="{OnIdiom Phone='*,*', Default='*, *, *'}" ColumnSpacing="12" RowSpacing="12">
+                        <buttons:SfButton Grid.Row="0" Grid.Column="0" Text="Add Clothing"
+                                          Style="{StaticResource QuickActionButton}"
+                                          Command="{Binding SelectQuickActionCommand}" CommandParameter="add">
+                            <buttons:SfButton.Content>
+                                <DataTemplate>
+                                    <Grid RowDefinitions="Auto, Auto" VerticalOptions="Center" RowSpacing="10">
+                                        <Label FontAttributes="Bold" Text="&#xe70d;" FontSize="18" FontFamily="MaterialAssets" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                        <Label Grid.Row="1" FontAttributes="Bold" Text="Add Clothing" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </buttons:SfButton.Content>
+                        </buttons:SfButton>
+                        <buttons:SfButton Grid.Row="0" Grid.Column="1" Text="Plan Outfit"
+                                          Style="{StaticResource QuickActionButton}"
+                                         Command="{Binding SelectQuickActionCommand}" CommandParameter="plan">
+                            <buttons:SfButton.Content>
+                                <DataTemplate>
+                                    <Grid RowDefinitions="Auto, Auto" VerticalOptions="Center" RowSpacing="10">
+                                        <Label FontAttributes="Bold" Text="&#xe71d;" FontSize="18" FontFamily="MaterialAssets" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                        <Label Grid.Row="1" FontAttributes="Bold" Text="Plan Outfit" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </buttons:SfButton.Content>
+                        </buttons:SfButton>
+                        <buttons:SfButton Grid.Row="{OnIdiom Phone=1, Default=0}" Grid.Column="{OnIdiom Phone=0, Default=2}" Text="Shop Similar" TextColor="White"
+                                          Style="{StaticResource QuickActionButton}"
+                                          Command="{Binding SelectQuickActionCommand}" CommandParameter="shop">
+                            <buttons:SfButton.Content>
+                                <DataTemplate>
+                                    <Grid RowDefinitions="Auto, Auto" VerticalOptions="Center" RowSpacing="10">
+                                        <Label FontAttributes="Bold" Text="&#xe726;" FontSize="18" FontFamily="UiKitIcons" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                        <Label Grid.Row="1" FontAttributes="Bold" Text="Shop Similar" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </buttons:SfButton.Content>
+                        </buttons:SfButton>
+                    </Grid>
+                </VerticalStackLayout>
+
+                <!-- AI Insight Card -->
+                <Border BackgroundColor="{AppThemeBinding Light={StaticResource SecondaryContainer}, Dark={StaticResource Gray900}}"
+                        StrokeShape="RoundRectangle 16" Padding="20" StrokeThickness="0">
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="16">
+                            <Image Source="ai.png" WidthRequest="22" HeightRequest="22"
+                                   VerticalOptions="Start" HorizontalOptions="Center" Margin="0,2,0,0"/>
+                        <VerticalStackLayout  Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                            <Label Style="{StaticResource SubtitleMedium}" Text="{Binding AiInsightTitle}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                        <Label Style="{StaticResource BodyLarge}"
+                            Text="{Binding AiInsightBody}"
+                            LineBreakMode="WordWrap"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Start"
+                            TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- Upcoming Plans (horizontal scroll, card view, bound to ViewModel) -->
+                <Grid RowDefinitions="Auto, *" RowSpacing="12">
+                    <Label Style="{StaticResource SubtitleMedium}" Text="Upcoming Plans"/>
+                    <CollectionView Grid.Row="1" ItemsSource="{Binding UpcomingPlans}"
+                                    BackgroundColor="Transparent"
+                                    SelectionMode="None"
+                                    HorizontalScrollBarVisibility="Never">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Horizontal"
+                                ItemSpacing="12" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:DashboardViewModel+UpcomingPlanCard">
+                                <Border Style="{StaticResource CardSurface}"
+                                        StrokeShape="RoundRectangle 20"
+                                        Background="#E5E2DD"
+                                        WidthRequest="-1"
+                                        StrokeThickness="0">
+                                    <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="10" Padding="5">
+                                        <!-- Date / icon header -->
+                                        <HorizontalStackLayout Grid.Row="0" Spacing="8" VerticalOptions="Center">
+                                            <Label Text="&#xe71d;" FontFamily="UiKitIcons" FontSize="16"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                                   VerticalOptions="Center"/>
+                                            <Label Style="{StaticResource LabelCaps}" Text="{Binding ShortWhen}"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                                   VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+
+                                        <!-- Title block: occasion + outfit name -->
+                                        <VerticalStackLayout Grid.Row="1" Spacing="4" VerticalOptions="Start">
+                                            <Label Style="{StaticResource SubtitleMedium}" Text="{Binding OutfitName}"
+                                                   LineBreakMode="TailTruncation"
+                                                   FontSize="18"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                                        </VerticalStackLayout>
+
+                                        <!-- Action link — bind to the page-root's BindingContext (the dashboard VM),
+                                             since the template's BindingContext is UpcomingPlanCard. Walking the
+                                             visual tree with RelativeSource AncestorType=vm:DashboardViewModel never
+                                             matches (the ancestor elements are Borders / Grids, not the VM type),
+                                             which silently leaves the Open Plan action without a command.
+                                             TapGestureRecognizer invokes the same command with the same parameter
+                                             as the previous SfButton. -->
+                                        <VerticalStackLayout Grid.Row="2">
+                                            <BoxView HeightRequest="10" Background="Transparent"/>
+                                            <Label Text="Plan Outfit  →" Style="{StaticResource GhostLink}" Padding="0" Margin="0" FontSize="16">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer
+                                                    Command="{Binding BindingContext.OpenPlanCommand, Source={x:Reference DashboardRoot}}"
+                                                    CommandParameter="{Binding .}"/>
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <!-- Empty state -->
+                    <Label Grid.Row="1" Style="{StaticResource BodySmall}"
+                           Text="{Binding EmptyStateMessage}"
+                           IsVisible="{Binding HasUpcomingPlans, Converter={StaticResource InverseBoolConverter}}"
+                           TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                           Padding="4,0"/>
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Loading overlay -->
+        <syncfusion:SfBusyIndicator Grid.Row="0" Grid.RowSpan="2"
+                                     IsRunning="{Binding IsLoading}"
+                                     AnimationType="CircularMaterial"/>
+    </Grid>
+</ContentPage>

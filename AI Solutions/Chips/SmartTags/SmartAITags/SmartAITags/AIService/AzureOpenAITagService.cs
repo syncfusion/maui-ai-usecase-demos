@@ -20,13 +20,13 @@ namespace SmartAITags;
 public sealed class AzureOpenAITagService : IAzureTagService
 {
     // ── Same endpoint + deployment + key as the working SmartAIDatePicker sample.
-    private const string Endpoint =
-        "Your Endpoint";
+    private static readonly string Endpoint =
+        Environment.GetEnvironmentVariable("AZURE_API_BASE") ?? "";
 
-    private const string DeploymentName = "Your Deployment Name";
+    private const string DeploymentName = "gpt-4.1-mini";
 
-    private const string ApiKey =
-        "Your API Key";
+    private static readonly string ApiKey =
+        Environment.GetEnvironmentVariable("AZURE_API_KEY") ?? "";
 
     // Curated vocabulary. The AI may ONLY return tags from this list,
     //    which guarantees chips are always valid single-word keywords.
