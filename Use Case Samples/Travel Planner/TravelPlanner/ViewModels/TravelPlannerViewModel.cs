@@ -121,6 +121,7 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
     private static readonly System.Random _rng = new System.Random();
     public ICommand StartConversationCommand { get; }
     public ICommand HandleUserInputCommand { get; }
+    public ICommand FallbackAiQueryCommand { get; }
     public ICommand RestartTripCommand { get; }
     public ICommand CommitDateRangeCommand { get; }
     public ICommand CancelDateRangeCommand { get; }
@@ -149,6 +150,8 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
 
         HandleUserInputCommand = new Command<string>(async text => await HandleUserInputAsync(text));
 
+        FallbackAiQueryCommand = new Command<string>(async text => await ExecuteFallbackAiQueryAsync(text));
+
         RestartTripCommand = new Command(RestartTrip);
 
         CommitDateRangeCommand = new Command(() =>
@@ -163,7 +166,7 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
             EndDate = PendingEndDate.Value;
 
             // Advance the state machine to TripType so the guided flow continues.
-            AddUserText($"Schedule a trip between from {sText} \n to {eText}");
+            AddUserText($"Schedule a trip from {sText} \n to {eText}");
             Step = ConversationStep.TripType;
             AddBotTextWithSuggestions(
                 "What kind of trip is this? Pick a suggestion below.",
@@ -269,6 +272,25 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
 
         InterestsErrorMessage = string.Empty;
         SelectedInterests.Clear();
+    }
+
+    public async Task ExecuteFallbackAiQueryAsync(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return;
+
+        try
+        {
+            var systemPrompt = "You are a helpful travel assistant. Reply concisely.";
+            var reply = await _aiService.GetRawResponseAsync(systemPrompt, text);
+            if (string.IsNullOrWhiteSpace(reply))
+                reply = "Sorry, I couldn't find an answer.";
+
+            AddBotText(reply);
+        }
+        catch (Exception ex)
+        {
+            AddBotText($"Error: {ex.Message}");
+        }
     }
 
     public async Task HandleUserInputAsync(string? userText)
