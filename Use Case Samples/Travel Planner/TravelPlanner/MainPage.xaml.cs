@@ -788,9 +788,15 @@ public partial class MainPage : ContentPage
             if (string.IsNullOrWhiteSpace(text))
                 return;
 
-            // The custom suggestion template bypasses SfAIAssistView's default request insertion.
             if (vm.Step == ConversationStep.TripType)
-                vm.AssistItems.Add(new AssistItem { Text = text, IsRequested = true });
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    if (vm.HandleUserInputCommand.CanExecute(text))
+                        vm.HandleUserInputCommand.Execute(text);
+                });
+                return;
+            }
 
             if (vm.HandleUserInputCommand.CanExecute(text))
                 vm.HandleUserInputCommand.Execute(text);
