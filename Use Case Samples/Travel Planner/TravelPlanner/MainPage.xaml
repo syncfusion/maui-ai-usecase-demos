@@ -606,8 +606,6 @@
                                         </listView:SfListView>
                                     </VerticalStackLayout>
                                 </ScrollView>
-                                <Label Text="{Binding ConsolidatedDetails}"
-                                       TextColor="#73623c"/>
                             </VerticalStackLayout>
                         </ScrollView>
                     </Grid>
@@ -1243,8 +1241,6 @@
                                         </listView:SfListView>
                                     </VerticalStackLayout>
                                 </ScrollView>
-                                <Label Text="{Binding ConsolidatedDetails}"
-                                       TextColor="#73623c"/>
                             </VerticalStackLayout>
                         </ScrollView>
                     </Grid>
