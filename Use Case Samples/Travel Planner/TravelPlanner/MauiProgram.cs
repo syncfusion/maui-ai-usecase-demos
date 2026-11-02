@@ -43,13 +43,16 @@ public static class MauiProgram
 		builder.Services.AddSingleton<OpenAIServices>();
 		builder.Services.AddTransient<TravelPlannerViewModel>();
 		builder.Services.AddTransient<MainPage>();
-		builder.Services.AddTransient<AppShell>();
 #if ANDROID
 		EditorHandler.Mapper.AppendToMapping("NoUnderline", (handler, view) =>
         {
             handler.PlatformView.BackgroundTintList =
                 Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
         });
+#endif
+
+#if DEBUG
+		builder.Logging.AddDebug();
 #endif
 
 		return builder.Build();

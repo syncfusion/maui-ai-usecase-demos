@@ -65,6 +65,8 @@
     <PackageReference Include="Syncfusion.Maui.Calendar" Version="34.2.9" />
     <PackageReference Include="Syncfusion.Maui.Maps" Version="34.2.9" />
 
+    <!--Hot Reload-->
+    <PackageReference Include="DotNetMeteor.HotReload.Plugin" Version="3.*" />
   </ItemGroup>
 
 </Project>

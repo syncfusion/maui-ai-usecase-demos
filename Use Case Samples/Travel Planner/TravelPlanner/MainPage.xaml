@@ -32,7 +32,7 @@
                 Padding="8,4"
                 BackgroundColor="{StaticResource SfAIAssistViewSuggestionItemBackground}">
                 <chips:SfChip.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectSuggestionCommand}"
+                    <TapGestureRecognizer Tapped="OnSuggestionTapped"
                                           CommandParameter="{Binding Text}"/>
                 </chips:SfChip.GestureRecognizers>
             </chips:SfChip>
@@ -111,7 +111,7 @@
                             WidthRequest="40"
                             HeightRequest="40"
                             Command="{Binding Source={x:Reference RootPage}, Path=AssistRequestCommand}"
-                            CommandParameter="{Binding Source={x:Reference editor}, Path=Text}"/>
+                            CommandParameter="{x:Reference editor}"/>
                     </Grid>
                 </Border>
             </Grid>
@@ -326,7 +326,7 @@
                                         EnableStopResponding="False"
                                         HeaderText="Let's plan your trip step by step."
                                         InputTransparent="{Binding Step, Converter={StaticResource EqualsConverter}, ConverterParameter=Done}"
-                                        RequestCommand="{Binding Source={x:Reference RootPage}, Path=BindingContext.SubmitAssistInputCommand}"
+                                        RequestCommand="{Binding Source={x:Reference RootPage}, Path=AssistRequestCommand}"
                                         SuggestionTemplate="{StaticResource CustomSuggestionTemplate}"
                                         ShowHeader="False"
                                         ShowResponseLoader="True"
@@ -805,10 +805,8 @@
             </OnIdiom.Phone>
 
             <OnIdiom.Desktop>
-                <Grid x:Name="DesktopLayoutGrid"
-                      ColumnDefinitions="*,600"
-                      RowDefinitions="*"
-                      SizeChanged="OnDesktopLayoutSizeChanged">
+                <Grid ColumnDefinitions="*,600"
+                      RowDefinitions="*">
                     <!--  Map spans rows  -->
                     <sfmaps:SfMaps
                         x:Name="MainMapDesktop"
@@ -904,7 +902,7 @@
                                 ShowToolbar="False"
                                 HeaderText="Let's plan your trip step by step."
                                 InputTransparent="{Binding Step, Converter={StaticResource EqualsConverter}, ConverterParameter=Done}"
-                                RequestCommand="{Binding Source={x:Reference RootPage}, Path=BindingContext.SubmitAssistInputCommand}"
+                                RequestCommand="{Binding Source={x:Reference RootPage}, Path=AssistRequestCommand}"
                                 SuggestionTemplate="{StaticResource CustomSuggestionTemplate}"
                                 Suggestions="{Binding Suggestions}"
                                 ShowHeader="False"
@@ -928,6 +926,7 @@
                         Padding="12"
                         Background="#fff7e7"
                         HorizontalOptions="End"
+                        TranslationX="600"
                         VerticalOptions="Fill"
                         WidthRequest="600"
                         ZIndex="50">
