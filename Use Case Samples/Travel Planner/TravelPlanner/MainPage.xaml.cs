@@ -107,9 +107,12 @@ public partial class MainPage : ContentPage
 
     public MainPage(TravelPlannerViewModel vm)
     {
-        AssistRequestCommand = new Command<string>(async text =>
+        AssistRequestCommand = new Command<object>(async parameter =>
         {
-            if (string.IsNullOrWhiteSpace(text)) return;
+            if (parameter is not Editor editor || string.IsNullOrWhiteSpace(editor.Text)) return;
+            var text = editor.Text;
+            editor.Text = string.Empty;
+            editor.Unfocus();
             await _vm.SubmitAssistInputAsync(text);
         });
         // Set BindingContext BEFORE InitializeComponent so bindings resolve during XAML load
