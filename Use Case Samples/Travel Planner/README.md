@@ -33,7 +33,7 @@ The AIAssistView showcases a custom **`EditorViewTemplate`**, a custom **`Sugges
 
 ## AI / API setup
 
-Configure the following environment variables **before** running the sample. The app reads them on startup; missing values fall back to placeholder strings and the sample generates local mock data instead of calling Azure OpenAI.
+Configure the following environment variables **before** running the sample. Missing or invalid Azure OpenAI settings produce a visible error; the app does not substitute a fake itinerary.
 
 | Variable                       | Required | Example                                            | Notes                                            |
 |--------------------------------|----------|----------------------------------------------------|--------------------------------------------------|
@@ -43,7 +43,7 @@ Configure the following environment variables **before** running the sample. The
 | `AZURE_OPENAI_API_VERSION`     | No       | `2024-08-01-preview`                               | Defaults to `2024-08-01-preview`                 |
 | `UNSPLASH_ACCESS_KEY`          | No       | `…`                                                | When missing the sample shows a placeholder image |
 
-\* When `AZURE_OPENAI_ENDPOINT` / `AZURE_OPENAI_KEY` are unset (or still `YOUR_AZURE_OPENAI_*`) the sample still builds and runs — the trip plan is generated from local mock data so you can preview the UI without a deployment.
+\* When `AZURE_OPENAI_ENDPOINT` or `AZURE_OPENAI_KEY` is missing or invalid, the app reports that trip generation failed. A real Azure OpenAI deployment is required to create an itinerary.
 
 Example (PowerShell):
 
@@ -67,7 +67,7 @@ The Syncfusion license key is **not** committed to this repository. Set the `SYN
 
 ### Windows-only: Bing Maps key
 
-On Windows, `MauiProgram.cs` reads a `BING_MAPS_KEY` environment variable and passes it to the Community Toolkit Maps initializer. On non-Windows platforms the OS-native maps provider is used and no key is required.
+On Windows, `BING_MAPS_KEY` is required for the Community Toolkit map to render. `MauiProgram.cs` reads it from the environment and passes it to the maps initializer. Without the key, the Windows map will not render. On non-Windows platforms the OS-native maps provider is used and no key is required.
 
 ```powershell
 $env:BING_MAPS_KEY = "..."
@@ -116,7 +116,7 @@ TravelPlanner/
     └── TravelPlannerViewModel.cs # All conversation/business logic and commands
 ```
 
-The ViewModel owns the conversation state machine, the `OpenAIServices` call, the suggestions, the calendar pending range, the interests picker state, and exposes `ICommand`s for every user action. `MainPage.xaml.cs` only handles pure view concerns (drawer animation, marker rendering, current-location permissions).
+The ViewModel owns the conversation state machine, the `OpenAIServices` call, suggestions, calendar state, interests, and commands for user input. `MainPage.xaml.cs` handles control-specific work such as map rendering, drawer animation, and current-location permissions.
 
 ---
 
@@ -124,4 +124,4 @@ The ViewModel owns the conversation state machine, the `OpenAIServices` call, th
 
 - The conversation flow is implemented as a `switch` on `ConversationStep` in `TravelPlannerViewModel.HandleUserInputAsync`. To add a new step, add an enum value, handle the case, and add the corresponding `ICommand`.
 - The map uses OpenStreetMap tile servers — no key required for development, but please respect the [tile usage policy](https://operations.osmfoundation.org/policies/tiles/).
-- Mock data (`GenerateFallbackPlaces`) is used when the AI call fails or returns empty so the UI is always demonstrable.
+- The app does not generate a mock itinerary when the AI call fails or returns incomplete data; it shows the failure in the conversation and summary drawer.

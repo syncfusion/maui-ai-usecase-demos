@@ -58,7 +58,16 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
 
     // Conversation
     public ObservableCollection<IAssistItem> AssistItems { get; } = new();
-    public ConversationStep Step { get => _step; set { _step = value; OnPropertyChanged(); } }
+    public ConversationStep Step
+    {
+        get => _step;
+        set
+        {
+            _step = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsInputEnabled));
+        }
+    }
     private ConversationStep _step = ConversationStep.None;
 
     // Inputs
@@ -102,11 +111,16 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
     public string DestinationSummary { get => _destinationSummary; set { _destinationSummary = value; OnPropertyChanged(); } }
     private string _destinationSummary = string.Empty;
 
-    public string ConsolidatedDetails { get => _consolidatedDetails; set { _consolidatedDetails = value; OnPropertyChanged(); } }
-    private string _consolidatedDetails = string.Empty;
+    public string ErrorMessage { get => _errorMessage; set { _errorMessage = value; OnPropertyChanged(); } }
+    private string _errorMessage = string.Empty;
+
+    public bool IsDatePopupVisible { get => _isDatePopupVisible; set { _isDatePopupVisible = value; OnPropertyChanged(); } }
+    private bool _isDatePopupVisible;
 
     public bool IsBusy { get => _isBusy; set { _isBusy = value; OnPropertyChanged(); } }
     private bool _isBusy;
+
+    public bool IsInputEnabled => Step != ConversationStep.Done;
 
     // Date range staged by the SfCalendar popup; committed to StartDate/EndDate only on OK.
     public DateTime? PendingStartDate { get => _pendingStartDate; set { _pendingStartDate = value; OnPropertyChanged(); } }
@@ -115,16 +129,16 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
     public DateTime? PendingEndDate { get => _pendingEndDate; set { _pendingEndDate = value; OnPropertyChanged(); } }
     private DateTime? _pendingEndDate;
 
-    public bool HasPendingDateRange => PendingStartDate.HasValue && PendingEndDate.HasValue;
 
-    // Random generator for fallback sample data
-    private static readonly System.Random _rng = new System.Random();
     public ICommand StartConversationCommand { get; }
     public ICommand HandleUserInputCommand { get; }
     public ICommand FallbackAiQueryCommand { get; }
     public ICommand RestartTripCommand { get; }
     public ICommand CommitDateRangeCommand { get; }
     public ICommand CancelDateRangeCommand { get; }
+    public ICommand SubmitAssistInputCommand { get; }
+    public ICommand SelectSuggestionCommand { get; }
+    public ICommand ToggleInterestCommand { get; }
     public ICommand ConfirmInterestsCommand { get; }
     public ICommand CancelInterestsCommand { get; }
 
@@ -133,6 +147,7 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
 
     // Raised when a new date range should be reflected in the conversation.
     public event EventHandler<DateTimeRangeCommitted>? DateRangeCommitted;
+    public event EventHandler? TripPlanReady;
 
     public TravelPlannerViewModel(OpenAIServices aiService)
     {
@@ -149,6 +164,9 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
         });
 
         HandleUserInputCommand = new Command<string>(async text => await HandleUserInputAsync(text));
+        SubmitAssistInputCommand = new Command<string>(async text => await SubmitAssistInputAsync(text));
+        SelectSuggestionCommand = new Command<string>(async text => await SelectSuggestionAsync(text));
+        ToggleInterestCommand = new Command<string>(ToggleInterest);
 
         FallbackAiQueryCommand = new Command<string>(async text => await ExecuteFallbackAiQueryAsync(text));
 
@@ -174,10 +192,15 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
             );
 
             ClearPendingDateRange();
+            IsDatePopupVisible = false;
             DateRangeCommitted?.Invoke(this, new DateTimeRangeCommitted(StartDate, EndDate));
         });
 
-        CancelDateRangeCommand = new Command(() => ClearPendingDateRange());
+        CancelDateRangeCommand = new Command(() =>
+        {
+            ClearPendingDateRange();
+            IsDatePopupVisible = false;
+        });
 
         ConfirmInterestsCommand = new Command(async () => await ConfirmInterestsAsync());
 
@@ -210,14 +233,12 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
 
         PendingStartDate = start.Value.Date;
         PendingEndDate = end.Value.Date;
-        OnPropertyChanged(nameof(HasPendingDateRange));
     }
 
     void ClearPendingDateRange()
     {
         PendingStartDate = null;
         PendingEndDate = null;
-        OnPropertyChanged(nameof(HasPendingDateRange));
     }
 
     /// <summary>
@@ -237,7 +258,8 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
         Interests.Clear();
         SelectedInterests.Clear();
         DestinationSummary = string.Empty;
-        ConsolidatedDetails = string.Empty;
+        ErrorMessage = string.Empty;
+        IsDatePopupVisible = false;
         InterestsErrorMessage = string.Empty;
         IsInterestsPopupVisible = false;
         ClearPendingDateRange();
@@ -250,9 +272,8 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
 
     async Task ConfirmInterestsAsync()
     {
-        var texts = SelectedInterests.ToList();
-
-        if (texts.Count == 0)
+        SelectedInterestsToInterests();
+        if (Interests.Count == 0)
         {
             InterestsErrorMessage = "Please select at least one interest.";
             IsInterestsPopupVisible = true;
@@ -261,7 +282,7 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
 
         IsInterestsPopupVisible = false;
 
-        var input = string.Join(", ", texts);
+        var input = string.Join(", ", Interests);
 
         AddUserText(input);
         await HandleUserInputAsync(input);
@@ -282,15 +303,49 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
         {
             var systemPrompt = "You are a helpful travel assistant. Reply concisely.";
             var reply = await _aiService.GetRawResponseAsync(systemPrompt, text);
-            if (string.IsNullOrWhiteSpace(reply))
-                reply = "Sorry, I couldn't find an answer.";
-
             AddBotText(reply);
         }
         catch (Exception ex)
         {
-            AddBotText($"Error: {ex.Message}");
+            AddBotText($"The assistant request failed: {ex.Message}");
         }
+    }
+
+    public async Task SubmitAssistInputAsync(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return;
+        AddUserText(text.Trim());
+        await RouteUserInputAsync(text.Trim());
+    }
+
+    public async Task SelectSuggestionAsync(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return;
+        AddUserText(text.Trim());
+        await RouteUserInputAsync(text.Trim());
+    }
+
+    public void ToggleInterest(string? interest)
+    {
+        if (string.IsNullOrWhiteSpace(interest)) return;
+        if (SelectedInterests.Contains(interest)) SelectedInterests.Remove(interest);
+        else SelectedInterests.Add(interest);
+        InterestsErrorMessage = string.Empty;
+    }
+
+    void SelectedInterestsToInterests()
+    {
+        Interests.Clear();
+        foreach (var item in SelectedInterests)
+            Interests.Add(item);
+    }
+
+    async Task RouteUserInputAsync(string text)
+    {
+        if (Step is ConversationStep.Destination or ConversationStep.Dates or ConversationStep.TripType or ConversationStep.Interests)
+            await HandleUserInputAsync(text);
+        else
+            await ExecuteFallbackAiQueryAsync(text);
     }
 
     public async Task HandleUserInputAsync(string? userText)
@@ -304,19 +359,26 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
             case ConversationStep.Destination:
                 Destination = userText.Trim();
                 Step = ConversationStep.Dates;
+                IsDatePopupVisible = true;
                 Suggestions.Clear();
-                AddBotText("Please pick your dates using the calendar popup. Start date must be after today.");
+                AddBotText("Choose your trip dates in the calendar, or cancel the calendar and type a future start date followed by an end date.");
                 break;
             case ConversationStep.Dates:
                 if (!StartDate.HasValue)
                 {
-                    if (TryParseFutureDate(userText, out var s)) { StartDate = s; }
+                    if (TryParseFutureDate(userText, out var s))
+                    {
+                        StartDate = s;
+                        AddBotText("Now enter an end date after your start date.");
+                    }
+                    else AddBotText("Enter a valid future start date.");
                 }
                 else if (!EndDate.HasValue)
                 {
                     if (TryParseFutureDate(userText, out var e) && e > StartDate)
                     {
                         EndDate = e;
+                        IsDatePopupVisible = false;
                         Step = ConversationStep.TripType;
 
                         // Show trip-type choices as suggestions attached to this bot response
@@ -375,11 +437,13 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
                         }
 
                         Step = ConversationStep.Building;
-                        await BuildTripAsync();
+                        if (!await BuildTripAsync())
+                            break;
                         Step = ConversationStep.Done;
                         Suggestions.Clear();
                         _interestsPromptItem = null;
-                        AddBotText("Trip plan generated. Open the drawer to view consolidated details.");
+                        AddBotText("Trip plan generated. Open the drawer to view the itinerary.");
+                        TripPlanReady?.Invoke(this, EventArgs.Empty);
                         break;
                     }
 
@@ -435,7 +499,7 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
         return item;
     }
 
-    async Task BuildTripAsync()
+    async Task<bool> BuildTripAsync()
     {
         IsBusy = true;
         try
@@ -449,10 +513,14 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
                 Interests = Interests.ToList()
             };
 
+            ErrorMessage = string.Empty;
             var rec = await _aiService.GetTripRecommendationsAsync(input);
+            if (rec.TopPlaces == null || rec.Hotels == null || rec.FoodSpots == null ||
+                rec.TopPlaces.Count == 0 || rec.Hotels.Count == 0 || rec.FoodSpots.Count == 0)
+                throw new InvalidOperationException("The AI response did not include a complete itinerary. Please try again.");
 
             // Defensive normalization to guarantee UI text presence
-            async Task NormalizeList(List<PlaceCard>? list, string fallback)
+            void NormalizeList(List<PlaceCard>? list, string fallback)
             {
                 if (list == null) return;
                 foreach (var it in list)
@@ -460,36 +528,18 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
                     if (it == null) continue;
                     if (string.IsNullOrWhiteSpace(it.Name)) it.Name = fallback;
                     if (string.IsNullOrWhiteSpace(it.Address)) it.Address = "Address not available";
-                    if (!await IsValidLink(it.ImageUrl)) it.ImageUrl = "image_not_available.png";
+                    if (string.IsNullOrWhiteSpace(it.ImageUrl) || !Uri.TryCreate(it.ImageUrl, UriKind.Absolute, out var imageUri) || (imageUri.Scheme != Uri.UriSchemeHttps && imageUri.Scheme != Uri.UriSchemeHttp)) it.ImageUrl = "image_not_available.png";
                     if (it.Rating <= 0) it.Rating = 4.2;
                 }
             }
 
-            // Helper to generate fallback sample data when API returns none
-            List<PlaceCard> GenerateFallbackPlaces(string kind, int count)
-            {
-                var list = new List<PlaceCard>();
-                for (int i = 1; i <= count; i++)
-                {
-                    list.Add(new PlaceCard
-                    {
-                        Name = $"{kind} {i} in {(!string.IsNullOrWhiteSpace(Destination) ? Destination : "Destination")}",
-                        Address = $"{i} {kind} Street",
-                        ImageUrl = "image_not_available.png",
-                        Rating = Math.Round(3.5 + _rng.NextDouble() * 1.5, 1)
-                    });
-                }
-                return list;
-            }
+            var topPlaces = rec.TopPlaces;
+            var hotels = rec.Hotels;
+            var foods = rec.FoodSpots;
 
-            // Use API data when present, otherwise generate fallback samples
-            var topPlaces = (rec?.TopPlaces != null && rec.TopPlaces.Count > 0) ? rec.TopPlaces : GenerateFallbackPlaces("Attraction", 5);
-            var hotels = (rec?.Hotels != null && rec.Hotels.Count > 0) ? rec.Hotels : GenerateFallbackPlaces("Hotel", 4);
-            var foods = (rec?.FoodSpots != null && rec.FoodSpots.Count > 0) ? rec.FoodSpots : GenerateFallbackPlaces("Food Spot", 5);
-
-            await NormalizeList(topPlaces, "Attraction");
-            await NormalizeList(hotels, "Hotel");
-            await NormalizeList(foods, "Food Spot");
+            NormalizeList(topPlaces, "Attraction");
+            NormalizeList(hotels, "Hotel");
+            NormalizeList(foods, "Food Spot");
 
             DestinationSummary = string.IsNullOrWhiteSpace(rec?.DestinationSummary)
                 ? $"Trip to {Destination}"
@@ -497,31 +547,19 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
 
             ReplaceItems(TopPlaces, topPlaces ?? new());
             ReplaceItems(Hotels, hotels ?? new());
-            ReplaceItems(FoodSpots, foods ?? new());
-
-            ConsolidatedDetails = $"Destination: {Destination}\nDates: {StartDate:yyyy-MM-dd} - {EndDate:yyyy-MM-dd}\nTrip Type: {TripType}\nInterests: {string.Join(", ", Interests)}\n\nTop Places: {string.Join(", ", TopPlaces.Select(p => p.Name))}\nHotels: {string.Join(", ", Hotels.Select(h => h.Name))}\nFood: {string.Join(", ", FoodSpots.Select(f => f.Name))}";
+            ReplaceItems(FoodSpots, foods);
+            return true;
         }
         catch (Exception ex)
         {
-            AddBotText($"Something went wrong: {ex.Message}");
+            ErrorMessage = ex.Message;
+            AddBotText($"Trip plan generation failed: {ex.Message}");
+            Step = ConversationStep.Interests;
+            return false;
         }
         finally
         {
             IsBusy = false;
-        }
-    }
-
-    public async Task<bool> IsValidLink(string url)
-    {
-        try
-        {
-            using var httpClient = new HttpClient();
-            var response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
-            return response.IsSuccessStatusCode;
-        }
-        catch
-        {
-            return false;
         }
     }
 

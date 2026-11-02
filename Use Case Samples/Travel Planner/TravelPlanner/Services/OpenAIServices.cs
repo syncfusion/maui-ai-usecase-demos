@@ -17,7 +17,7 @@ namespace TravelPlanner.Services
             PropertyNameCaseInsensitive = true
         };
 
-        private static readonly HttpClient _httpClient = new HttpClient();
+        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
 
         private static readonly string _endpoint = (Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? string.Empty).TrimEnd('/');
         private static readonly string _apiKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_KEY") ?? string.Empty;
@@ -45,7 +45,7 @@ namespace TravelPlanner.Services
             ArgumentNullException.ThrowIfNull(input);
 
             if (!HasAzureCredentials)
-                return new TripRecommendation();
+                throw new InvalidOperationException("Azure OpenAI is not configured. Set AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_KEY.");
 
             string? content = null;
 
@@ -99,20 +99,13 @@ namespace TravelPlanner.Services
                 if (string.IsNullOrWhiteSpace(content))
                     return new TripRecommendation();
             }
-            catch (System.Net.Sockets.SocketException)
+            catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
-                // Skip if network/socket error (invalid credentials, wrong endpoint, etc.)
-                return new TripRecommendation();
+                throw;
             }
-            catch (HttpRequestException)
+            catch (Exception ex) when (ex is System.Net.Sockets.SocketException or HttpRequestException or JsonException or InvalidOperationException)
             {
-                // Skip if HTTP error (invalid credentials, bad endpoint, etc.)
-                return new TripRecommendation();
-            }
-            catch
-            {
-                // Skip on any other error
-                return new TripRecommendation();
+                throw new InvalidOperationException($"The trip plan could not be generated: {ex.Message}", ex);
             }
 
             if (content.StartsWith("```"))
@@ -142,13 +135,9 @@ namespace TravelPlanner.Services
                 result.Hotels = hotelTask.Result;
                 result.FoodSpots = foodTask.Result;
             }
-            catch
+            catch (JsonException ex)
             {
-                // Fallback to plain deserialize if strict parse fails
-                result = JsonSerializer.Deserialize<TripRecommendation>(content, JsonOptions) ?? new TripRecommendation();
-                result.TopPlaces ??= new();
-                result.Hotels ??= new();
-                result.FoodSpots ??= new();
+                throw new InvalidOperationException("The AI response was not valid itinerary JSON.", ex);
             }
 
             // Normalize and provide fallbacks so UI always shows name and address
@@ -179,7 +168,7 @@ namespace TravelPlanner.Services
         public async Task<string> GetRawResponseAsync(string systemPrompt, string userPrompt, CancellationToken ct = default)
         {
             if (!HasAzureCredentials)
-                return string.Empty;
+                throw new InvalidOperationException("Azure OpenAI is not configured. Set AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_KEY.");
 
             try
             {
@@ -217,20 +206,13 @@ namespace TravelPlanner.Services
                     .GetString();
                 return content ?? string.Empty;
             }
-            catch (System.Net.Sockets.SocketException)
+            catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
-                // Skip on network error
-                return string.Empty;
+                throw;
             }
-            catch (HttpRequestException)
+            catch (Exception ex) when (ex is System.Net.Sockets.SocketException or HttpRequestException or JsonException or InvalidOperationException)
             {
-                // Skip on HTTP error (invalid credentials, bad endpoint, etc.)
-                return string.Empty;
-            }
-            catch
-            {
-                // Skip on any other error
-                return string.Empty;
+                throw new InvalidOperationException($"The assistant request failed: {ex.Message}", ex);
             }
         }
 

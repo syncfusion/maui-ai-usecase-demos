@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Devices.Sensors;
@@ -24,19 +23,15 @@ public partial class MainPage : ContentPage
 {
     private readonly TravelPlannerViewModel _vm;
     private bool _drawerOpen = false;
-    private double AssistViewHeight;
     private readonly IKeyboardService? _keyboardService;
 
-    private bool _isDesktop = DeviceInfo.Idiom == DeviceIdiom.Desktop || DeviceInfo.Idiom == DeviceIdiom.Tablet;
+    private readonly bool _isDesktop = DeviceInfo.Idiom == DeviceIdiom.Desktop || DeviceInfo.Idiom == DeviceIdiom.Tablet;
 
-    // Tracks whether we've disabled the custom composer after the first send
-    private bool _composerDisabledAfterFirstSend;
     // Helpers to resolve device-specific elements (Phone vs Desktop)
     private SfMaps? MainMapControl => _isDesktop ? MainMapDesktop : MainMap;
     private Grid? RightDrawerControl => _isDesktop ? RightDrawerDesktop : RightDrawer;
     private Border? HamburgerFrameControl => _isDesktop ? HamburgerFrameDesktop : HamburgerFrame;
     private SfMaps? SummaryMapControl => _isDesktop ? SummaryMapDesktop : SummaryMap;
-    private Grid? DatePopupOverlayControl => _isDesktop ? DatePopupOverlayDesktop : DatePopupOverlay;
     private SfCalendar? TripCalendarControl => _isDesktop ? TripCalendarDesktop : TripCalendar;
 
     // Helpers to resolve active MapTileLayer for main and summary maps
@@ -101,6 +96,7 @@ public partial class MainPage : ContentPage
     }
 
     public double PixelWidth { get; private set; }
+    public ICommand AssistRequestCommand { get; }
     public double pixelHeight;
 
     // Track the currently-added pin for a selected place so we can remove/update it
@@ -108,27 +104,17 @@ public partial class MainPage : ContentPage
     // Track the pin used for the device current location
     private MapMarker? _currentLocationMarker;
 
-    public ICommand AssistRequestCommand { get; }
-
-    // Parameterless constructor to support XAML instantiation (Shell DataTemplates)
-    public MainPage() : this(ResolveViewModel()) { }
-
-    private static TravelPlannerViewModel ResolveViewModel()
-    {
-        var services = Application.Current?.Handler?.MauiContext?.Services;
-        if (services == null)
-            throw new InvalidOperationException("Service provider is not available.");
-        var vm = services.GetService<TravelPlannerViewModel>();
-        if (vm == null)
-            throw new InvalidOperationException("TravelPlannerViewModel is not registered.");
-        return vm;
-    }
 
     public MainPage(TravelPlannerViewModel vm)
     {
-        // Initialize command BEFORE InitializeComponent so XAML binding has a valid command instance
-        AssistRequestCommand = new Command<object>(async param => await ExecuteAssistRequestAsync(param));
-
+        AssistRequestCommand = new Command<object>(async parameter =>
+        {
+            if (parameter is not Editor editor || string.IsNullOrWhiteSpace(editor.Text)) return;
+            var text = editor.Text;
+            editor.Text = string.Empty;
+            editor.Unfocus();
+            await _vm.SubmitAssistInputAsync(text);
+        });
         // Set BindingContext BEFORE InitializeComponent so bindings resolve during XAML load
         _vm = vm;
         BindingContext = _vm;
@@ -159,6 +145,7 @@ public partial class MainPage : ContentPage
         // When the ViewModel resets trip state, clear view-only state (calendar selection,
         // map pins, interests picker selection).
         _vm.TripRestarted += OnVmTripRestarted;
+        _vm.TripPlanReady += OnTripPlanReady;
 
         // Ensure drawer is initially closed and off-screen
         _drawerOpen = false;
@@ -218,6 +205,12 @@ public partial class MainPage : ContentPage
         try { await TryShowCurrentLocationAsync(); } catch { }
     }
 
+    private async void OnTripPlanReady(object? sender, EventArgs e)
+    {
+        await EnsureDrawerOpenAsync();
+        await UpdateSummaryMapPinsAsync();
+    }
+
     private void OnTopPlacesChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         try
@@ -248,69 +241,6 @@ public partial class MainPage : ContentPage
             _ = TryShowCurrentLocationAsync();
         }
         catch { }
-    }
-
-    private DataTemplate CreateDisabledEditorTemplate()
-    {
-        return new DataTemplate(() =>
-        {
-            // Editor
-            var editor = new Editor
-            {
-                BackgroundColor = Microsoft.Maui.Graphics.Colors.Transparent,
-                FontSize = 16,
-                Placeholder = "Type Message...",
-                PlaceholderColor = Microsoft.Maui.Graphics.Color.FromArgb("#b7a27a"),
-                TextColor = Microsoft.Maui.Graphics.Color.FromArgb("#73623c"),
-                VerticalOptions = LayoutOptions.Center,
-                HorizontalOptions = LayoutOptions.Fill,
-                Margin = new Thickness(0),
-                MaximumHeightRequest = 100
-            };
-
-            // Send button (wired but the whole template will be input-transparent)
-            var sendButton = new Button
-            {
-                BackgroundColor = Microsoft.Maui.Graphics.Color.FromArgb("#73623c"),
-                Padding = 8,
-                Margin = new Thickness(8, 0, 0, 0),
-                VerticalOptions = LayoutOptions.Center,
-                HorizontalOptions = LayoutOptions.Center,
-                FontSize = 18,
-                FontFamily = "MauiSampleFontIcon",
-                Text = "",
-                TextColor = Microsoft.Maui.Graphics.Color.FromArgb("#fff7e7"),
-                CornerRadius = 18,
-                WidthRequest = 40,
-                HeightRequest = 40
-            };
-            try { sendButton.Command = AssistRequestCommand; sendButton.CommandParameter = editor; } catch { }
-
-            var innerGrid = new Grid { VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.Fill };
-            innerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
-            innerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            innerGrid.Children.Add(editor);
-            Grid.SetColumn(editor, 0);
-            innerGrid.Children.Add(sendButton);
-            Grid.SetColumn(sendButton, 1);
-
-            var frame = new Frame
-            {
-                HasShadow = false,
-                Padding = 8,
-                CornerRadius = 20,
-                BackgroundColor = Microsoft.Maui.Graphics.Color.FromArgb("#fff7e7"),
-                BorderColor = Microsoft.Maui.Graphics.Color.FromArgb("#e0d2b8"),
-                Content = innerGrid
-            };
-
-            // Disable interaction at the template level
-            frame.InputTransparent = true;
-
-            var root = new Grid { Padding = 8, InputTransparent = true };
-            root.Children.Add(frame);
-            return root;
-        });
     }
 
     private async Task UpdateSummaryMapPinsAsync()
@@ -405,35 +335,12 @@ public partial class MainPage : ContentPage
             {
                 await UpdateMainMapForDestinationAsync();
             }
-            else if (e.PropertyName == nameof(TravelPlannerViewModel.Step))
-            {
-                if (BindingContext is not TravelPlannerViewModel vm)
-                    return;
-
-                bool isDone = vm.Step == ConversationStep.Done;
-
-                // Disable both mobile and desktop AssistViews once the plan is generated.
-                if (AssistView != null)
-                    AssistView.IsEnabled = !isDone;
-                if (DesktopAssistView != null)
-                    DesktopAssistView.IsEnabled = !isDone;
-
-                if (isDone)
-                {
-                    // Open the right drawer to show the summary automatically
-                    await EnsureDrawerOpenAsync();
-
-                    // Update the summary map pins now that data is finalized
-                    try { await UpdateSummaryMapPinsAsync(); } catch { }
-                }
-            }
         }
         catch { }
     }
 
     private void OnStateChanged(object sender, StateChangedEventArgs args)
     {
-        Console.WriteLine($"Dynamic height while dragging: {args.NewState}");
         if (args.NewState == BottomSheetState.HalfExpanded)
         {
             // Hide the floating AI button while the sheet is half-expanded
@@ -458,7 +365,6 @@ public partial class MainPage : ContentPage
                 AiButton.TranslateToAsync(0, -100, 250, Easing.CubicOut);
             }
         }
-        AssistViewHeight = BottomSheet.Bounds.Height;
         _ = UpdateSummaryMapPinsAsync();
     }
 
@@ -488,97 +394,6 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private async void OnAssistRequest(object sender, RequestEventArgs e)
-    {
-        await ExecuteAssistRequestAsync(null);
-    }
-
-    private void OnKeyboardVisibilityChanged(object? sender, bool isVisible)
-    {
-        if (!isVisible)
-            return;
-        // Expand the chat surface so the composer stays above the keyboard.
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            if (BottomSheet != null)
-                BottomSheet.State = BottomSheetState.FullExpanded;
-        });
-    }
-
-    private async Task ExecuteAssistRequestAsync(object? parameter)
-    {
-        try
-        {
-            // Ensure conversation started before handling first request
-            TryStartConversation();
-
-            // Determine which AssistView to use based on platform
-            var isDesktop = DeviceInfo.Idiom == DeviceIdiom.Desktop || DeviceInfo.Idiom == DeviceIdiom.Tablet;
-            var activeAssistView = isDesktop ? DesktopAssistView : AssistView;
-
-            // If caller passed the Editor element as parameter, read text directly from it (reliable
-            // even when template bindings haven't propagated); otherwise, fall back to AssistView.InputText.
-            string? text = null;
-            if (parameter is Microsoft.Maui.Controls.Editor paramEditor)
-            {
-                text = paramEditor.Text;
-                _vm?.AssistItems.Add(new AssistItem { Text = text, IsRequested = true });
-                paramEditor.Unfocus();
-                // Clear the editor immediately (mirrors default send behaviour)
-                paramEditor.Text = string.Empty;
-
-                // Replace the active editor template with a disabled variant
-                if (!_composerDisabledAfterFirstSend)
-                {
-                    _composerDisabledAfterFirstSend = true;
-
-                    try
-                    {
-                        var disabledTemplate = CreateDisabledEditorTemplate();
-                        if (AssistView != null)
-                            AssistView.EditorViewTemplate = disabledTemplate;
-                        if (DesktopAssistView != null)
-                            DesktopAssistView.EditorViewTemplate = disabledTemplate;
-                    }
-                    catch { }
-                }
-            }
-            else
-            {
-                text = activeAssistView?.InputText;
-                if (activeAssistView != null)
-                    activeAssistView.InputText = string.Empty;
-            }
-
-            if (string.IsNullOrWhiteSpace(text))
-                return;
-
-            // If we are in the guided conversation flow, route the input to the ViewModel, not to the LLM.
-            if (BindingContext is TravelPlannerViewModel vm)
-            {
-                if (vm.Step is ConversationStep.Destination or ConversationStep.Dates or ConversationStep.TripType or ConversationStep.Interests)
-                {
-                    // Important: yield to let SfAIAssistView append the user's message first,
-                    // so our predefined follow-up appears AFTER the user's message.
-                    await Task.Yield();
-                    await Task.Delay(10);
-
-                    if (vm.HandleUserInputCommand.CanExecute(text))
-                        vm.HandleUserInputCommand.Execute(text);
-                    return; // Stop here; follow-up questions are asked by the ViewModel
-                }
-            }
-
-            // Otherwise, fall back to generic AI chat for ad-hoc questions
-            if (_vm.FallbackAiQueryCommand.CanExecute(text))
-                _vm.FallbackAiQueryCommand.Execute(text);
-        }
-        catch (Exception ex)
-        {
-            _vm?.AssistItems.Add(new AssistItem { Text = $"Error: {ex.Message}", IsRequested = false });
-        }
-    }
-
     private async void OnDrawerToggle(object sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
         await ToggleDrawerAsync();
@@ -591,53 +406,19 @@ public partial class MainPage : ContentPage
 
     private void OnRestartTripClicked(object sender, EventArgs e)
     {
-        try
-        {
-            if (BindingContext is not TravelPlannerViewModel vm)
-                return;
-
-            // All conversation/trip state is reset by the ViewModel; the page only
-            // clears view-owned state in response to the TripRestarted notification.
-            if (vm.RestartTripCommand.CanExecute(null))
-                vm.RestartTripCommand.Execute(null);
-
-            // Re-enable both composers explicitly
-            if (AssistView != null)
-                AssistView.IsEnabled = true;
-            if (DesktopAssistView != null)
-                DesktopAssistView.IsEnabled = true;
-
-            ResetComposerTemplates();
-        }
-        catch { }
+        if (_vm.RestartTripCommand.CanExecute(null))
+            _vm.RestartTripCommand.Execute(null);
     }
 
-    /// <summary>
-    /// Restores the original (enabled) editor template after a restart.
-    /// </summary>
-    private void ResetComposerTemplates()
+    private void OnDesktopLayoutSizeChanged(object? sender, EventArgs e)
     {
-        try
-        {
-            _composerDisabledAfterFirstSend = false;
-            var template = this.Resources.ContainsKey("CustomEditorTemplate") ? this.Resources["CustomEditorTemplate"] as DataTemplate : null;
-            if (template != null)
-            {
-                if (AssistView != null)
-                    AssistView.EditorViewTemplate = template;
-                if (DesktopAssistView != null)
-                    DesktopAssistView.EditorViewTemplate = template;
-            }
-            else
-            {
-                // Fallback: reassign current templates to force a refresh
-                if (AssistView != null)
-                    AssistView.EditorViewTemplate = AssistView.EditorViewTemplate;
-                if (DesktopAssistView != null)
-                    DesktopAssistView.EditorViewTemplate = DesktopAssistView.EditorViewTemplate;
-            }
-        }
-        catch { }
+        if (sender is not Grid grid || grid.Width <= 0) return;
+        var panelWidth = Math.Min(600, Math.Max(320, grid.Width * 0.45));
+        grid.ColumnDefinitions[1].Width = new GridLength(panelWidth);
+        if (RightDrawerDesktop != null)
+            RightDrawerDesktop.WidthRequest = panelWidth;
+        if (!_drawerOpen && RightDrawerDesktop != null)
+            RightDrawerDesktop.TranslationX = panelWidth;
     }
 
     private async Task ToggleDrawerAsync()
@@ -693,7 +474,6 @@ public partial class MainPage : ContentPage
         }
     }
 
-//#if !WINDOWS
     private async void OnPlaceTapped(object? sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
         try
@@ -757,50 +537,6 @@ public partial class MainPage : ContentPage
                 }
         }
         catch { }
-    }
-
-    private void OnTripTypeTapped(object? sender, Microsoft.Maui.Controls.TappedEventArgs e)
-    {
-        try
-        {
-            if (BindingContext is not TravelPlannerViewModel vm)
-                return;
-            var text = e?.Parameter as string;
-            if (string.IsNullOrWhiteSpace(text))
-                return;
-
-            // Add the selected trip type as a user request before the follow-up bot prompt
-            vm.AssistItems.Add(new AssistItem { Text = text, IsRequested = true });
-
-            if (vm.HandleUserInputCommand.CanExecute(text))
-                vm.HandleUserInputCommand.Execute(text);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"OnTripTypeTapped error: {ex}");
-        }
-    }
-
-    private void OnSuggestionTapped(object? sender, Microsoft.Maui.Controls.TappedEventArgs e)
-    {
-        try
-        {
-            if (BindingContext is not TravelPlannerViewModel vm)
-                return;
-            var text = e?.Parameter as string;
-            if (string.IsNullOrWhiteSpace(text))
-                return;
-
-            // Add the tapped suggestion as a user request and forward to the ViewModel
-            vm.AssistItems.Add(new AssistItem { Text = text, IsRequested = true });
-
-            if (vm.HandleUserInputCommand.CanExecute(text))
-                vm.HandleUserInputCommand.Execute(text);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"OnSuggestionTapped error: {ex}");
-        }
     }
 
     private void OnCalendarOkClicked(object? sender, EventArgs e)
@@ -1070,31 +806,9 @@ public partial class MainPage : ContentPage
 
     private void OnChipsSelectionChanged(object? sender, Syncfusion.Maui.Toolkit.Chips.SelectionChangedEventArgs e)
     {
-        try
-        {
-            if (BindingContext is not TravelPlannerViewModel vm) return;
-
-            // Clear and rebuild selected interests from the chip group
-
-            string selectedItem =  (string)e.AddedItem!;
-            string removedItem = (string)e.RemovedItem!;
-            if (selectedItem != null)
-            {
-                vm.SelectedInterests.Add(selectedItem);
-            }
-            if(removedItem != null) {
-            vm.SelectedInterests.Remove(removedItem);
-            }
-            // Clear any previous validation error when the user changes selection
-            vm.InterestsErrorMessage = string.Empty;
-            ErrorText.HeightRequest = 0;
-            ErrorTextDesktop.HeightRequest = 0;
-            System.Diagnostics.Debug.WriteLine($"Selected interests updated: {string.Join(", ", vm.SelectedInterests)}");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"OnChipsSelectionChanged error: {ex}");
-        }
+        if (BindingContext is not TravelPlannerViewModel vm) return;
+        if (e.AddedItem is string added) vm.ToggleInterestCommand.Execute(added);
+        if (e.RemovedItem is string removed) vm.ToggleInterestCommand.Execute(removed);
     }
 
     private async void OnInterestsConfirmClicked(object? sender, EventArgs e)
@@ -1113,10 +827,7 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private void MapTooltipSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
 
-    }
 }
 
 public class CustomMarker : MapMarker

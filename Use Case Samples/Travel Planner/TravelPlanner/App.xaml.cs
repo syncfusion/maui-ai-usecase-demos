@@ -1,9 +1,14 @@
+using Microsoft.Extensions.DependencyInjection;
+
 namespace TravelPlanner;
 
 public partial class App : Application
 {
-	public App()
+	private readonly IServiceProvider _services;
+
+	public App(IServiceProvider services)
 	{
+		_services = services;
 		// TODO: Register your Syncfusion license key before shipping.
 		// For development: paste your key into the call below.
 		// For CI/secure environments: load the key from an environment variable or
@@ -13,11 +18,10 @@ public partial class App : Application
 			Environment.GetEnvironmentVariable("SYNCFUSION_LICENSE_KEY") ?? "ENTER_YOUR_LICENSE_KEY");
 
 		InitializeComponent();
-		Application.Current.UserAppTheme = AppTheme.Light;
 	}
 
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
-		return new Window(new AppShell());
+		return new Window(_services.GetRequiredService<AppShell>());
 	}
 }
