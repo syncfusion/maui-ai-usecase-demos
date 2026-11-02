@@ -337,7 +337,7 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
                 IsInterestsPopupVisible = false;
                 _interestsPromptItem = AddBotTextWithSuggestions(
                     "Select your interests.",
-                    Array.Empty<string>()
+                    new[] { "Select Interests" }
                 );
                 IsInterestsPopupVisible = true;
                 break;
