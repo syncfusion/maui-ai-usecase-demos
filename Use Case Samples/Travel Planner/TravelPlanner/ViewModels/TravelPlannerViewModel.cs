@@ -336,9 +336,10 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
                 // so the user can open the interests picker from the conversation.
                 IsInterestsPopupVisible = false;
                 _interestsPromptItem = AddBotTextWithSuggestions(
-                    "Select your interests. Tap 'Select Interests' to open the picker.",
-                    new[] { "Select Interests" }
+                    "Select your interests.",
+                    Array.Empty<string>()
                 );
+                IsInterestsPopupVisible = true;
                 break;
             case ConversationStep.Interests:
                 {
