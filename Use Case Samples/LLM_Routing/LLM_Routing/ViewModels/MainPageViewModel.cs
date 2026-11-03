@@ -19,6 +19,7 @@ public partial class MainPageViewModel : ObservableObject
     };
 
     private const int MaxResponseChars = 8500;
+    private const int MaxImageBytes = 10 * 1024 * 1024;
 
     private readonly AzureOpenAIService _aiService;
 
@@ -143,7 +144,19 @@ public partial class MainPageViewModel : ObservableObject
                 continue;
 
             using var ms = new MemoryStream();
-            attachment.FileContent.CopyTo(ms);
+            var buffer = new byte[81920];
+            int bytesRead;
+            while ((bytesRead = attachment.FileContent.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                if (ms.Length + bytesRead > MaxImageBytes)
+                    break;
+
+                ms.Write(buffer, 0, bytesRead);
+            }
+
+            if (ms.Length + bytesRead > MaxImageBytes || ms.Length == 0)
+                continue;
+
             imageBytes = ms.ToArray();
             mediaType = mime;
             return true;

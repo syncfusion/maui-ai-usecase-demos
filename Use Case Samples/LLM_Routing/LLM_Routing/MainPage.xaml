@@ -17,6 +17,7 @@
 
             <!-- MD3 light palette (matches the desktop/mobile HTML) -->
             <Color x:Key="Surface">#faf9fd</Color>
+            <Color x:Key="SurfaceContainerLowest">#faf9fd</Color>
             <Color x:Key="SurfaceContainerLow">#f4f3f8</Color>
             <Color x:Key="SurfaceContainer">#eeedf2</Color>
             <Color x:Key="SurfaceContainerHigh">#e8e8ec</Color>
