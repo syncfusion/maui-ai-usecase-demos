@@ -788,23 +788,6 @@ public partial class MainPage : ContentPage
             if (string.IsNullOrWhiteSpace(text))
                 return;
 
-            if (vm.Step == ConversationStep.TripType)
-            {
-                var tripType = text;
-                var itemCountBeforeTap = vm.AssistItems.Count;
-                Dispatcher.Dispatch(() =>
-                {
-                    var requestWasAdded = vm.AssistItems
-                        .Skip(itemCountBeforeTap)
-                        .OfType<AssistItem>()
-                        .Any(item => item.IsRequested && string.Equals(item.Text?.Trim(), tripType.Trim(), StringComparison.OrdinalIgnoreCase));
-                    if (!requestWasAdded)
-                        vm.AssistItems.Add(new AssistItem { Text = tripType, IsRequested = true });
-
-                    vm.HandleUserInputCommand.Execute(tripType);
-                });
-                return;
-            }
 
             if (vm.HandleUserInputCommand.CanExecute(text))
                 vm.HandleUserInputCommand.Execute(text);
