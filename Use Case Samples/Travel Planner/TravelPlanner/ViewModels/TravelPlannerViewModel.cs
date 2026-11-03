@@ -12,6 +12,7 @@ namespace TravelPlanner.ViewModels;
 
 public class TravelPlannerViewModel : INotifyPropertyChanged
 {
+    private static readonly HttpClient ImageLinkHttpClient = new() { Timeout = TimeSpan.FromSeconds(5) };
     private readonly OpenAIServices _aiService;
     private AssistItem? _interestsPromptItem;
 
@@ -553,8 +554,8 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
     {
         try
         {
-            using var httpClient = new HttpClient();
-            var response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            using var response = await ImageLinkHttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             return response.IsSuccessStatusCode;
         }
         catch
