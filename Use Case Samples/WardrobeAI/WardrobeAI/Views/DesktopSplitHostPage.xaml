@@ -534,7 +534,7 @@
                         </VerticalStackLayout>
 
                         <Button Text="Done"
-                                    Margin="20,4,20,12"
+                                    Margin="20,4,20,0"
                                     BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                                     TextColor="{AppThemeBinding Light={StaticResource OnPrimary}, Dark={StaticResource OnPrimaryDark}}"
                                     FontFamily="OpenSansSemibold"
