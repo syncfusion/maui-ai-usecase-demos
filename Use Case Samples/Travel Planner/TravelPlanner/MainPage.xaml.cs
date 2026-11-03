@@ -790,11 +790,8 @@ public partial class MainPage : ContentPage
 
             if (vm.Step == ConversationStep.TripType)
             {
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    if (vm.HandleUserInputCommand.CanExecute(text))
-                        vm.HandleUserInputCommand.Execute(text);
-                });
+                vm.AssistItems.Add(new AssistItem { Text = text, IsRequested = true });
+                vm.HandleUserInputCommand.Execute(text);
                 return;
             }
 
