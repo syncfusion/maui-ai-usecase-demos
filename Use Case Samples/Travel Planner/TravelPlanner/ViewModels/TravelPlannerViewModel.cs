@@ -116,8 +116,6 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
     public DateTime? PendingEndDate { get => _pendingEndDate; set { _pendingEndDate = value; OnPropertyChanged(); } }
     private DateTime? _pendingEndDate;
 
-    public bool HasPendingDateRange => PendingStartDate.HasValue && PendingEndDate.HasValue;
-
     public bool IsSampleItinerary { get; private set; }
     public ICommand StartConversationCommand { get; }
     public ICommand HandleUserInputCommand { get; }
@@ -210,14 +208,12 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
 
         PendingStartDate = start.Value.Date;
         PendingEndDate = end.Value.Date;
-        OnPropertyChanged(nameof(HasPendingDateRange));
     }
 
     void ClearPendingDateRange()
     {
         PendingStartDate = null;
         PendingEndDate = null;
-        OnPropertyChanged(nameof(HasPendingDateRange));
     }
 
     /// <summary>

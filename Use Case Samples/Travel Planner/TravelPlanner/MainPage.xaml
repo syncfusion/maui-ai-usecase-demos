@@ -115,8 +115,7 @@
                 </Border>
             </Grid>
         </DataTemplate>
-        <Style x:Key="ResponseLoader"
-               TargetType="ai:ResponseLoaderView">
+        <Style TargetType="ai:ResponseLoaderView">
             <Setter Property="ControlTemplate">
                 <Setter.Value>
                     <ControlTemplate>
@@ -835,18 +834,6 @@
                             </sfmaps:MapTileLayer>
                         </sfmaps:SfMaps.Layer>
                     </sfmaps:SfMaps>
-                    <!--<sfmaps:SfMaps x:Name="sfMapsDesktop"
-                        Grid.Column="0"
-                        IsVisible="{OnPlatform WinUI=true, Default=false}">
-                        <sfmaps:SfMaps.Layer>
-                            <sfmaps:MapTileLayer x:Name="sfMapsDesktopLayer" UrlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png">
-                                <sfmaps:MapTileLayer.ZoomPanBehavior>
-                                    <sfmaps:MapZoomPanBehavior ZoomLevel="4" />
-                                </sfmaps:MapTileLayer.ZoomPanBehavior>
-                            </sfmaps:MapTileLayer>
-                        </sfmaps:SfMaps.Layer>
-                    </sfmaps:SfMaps>-->
-
                     <!--  Desktop AI Panel - Right side permanent panel  -->
                     <Grid
                         x:Name="DesktopAiPanel"
@@ -983,16 +970,6 @@
                                     </sfmaps:MapTileLayer>
                                 </sfmaps:SfMaps.Layer>
                             </sfmaps:SfMaps>
-                            <!--<sfmaps:SfMaps x:Name="sfSummaryMap"
-                                IsVisible="{OnPlatform WinUI=true, Default=false}">
-                                <sfmaps:SfMaps.Layer>
-                                    <sfmaps:MapTileLayer x:Name="sfSummaryMapLayer" UrlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png">
-                                        <sfmaps:MapTileLayer.ZoomPanBehavior>
-                                            <sfmaps:MapZoomPanBehavior ZoomLevel="2" />
-                                        </sfmaps:MapTileLayer.ZoomPanBehavior>
-                                    </sfmaps:MapTileLayer>
-                                </sfmaps:SfMaps.Layer>
-                            </sfmaps:SfMaps>-->
                         </Grid>
                         <ScrollView Grid.Row="3"
                                     Background="#fff7e7"

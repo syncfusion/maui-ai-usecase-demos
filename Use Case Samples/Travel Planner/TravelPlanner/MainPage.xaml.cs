@@ -24,7 +24,6 @@ public partial class MainPage : ContentPage
 {
     private readonly TravelPlannerViewModel _vm;
     private bool _drawerOpen = false;
-    private double AssistViewHeight;
     private readonly IKeyboardService? _keyboardService;
 
     private bool _isDesktop = DeviceInfo.Idiom == DeviceIdiom.Desktop || DeviceInfo.Idiom == DeviceIdiom.Tablet;
@@ -433,7 +432,6 @@ public partial class MainPage : ContentPage
 
     private void OnStateChanged(object sender, StateChangedEventArgs args)
     {
-        Console.WriteLine($"Dynamic height while dragging: {args.NewState}");
         if (args.NewState == BottomSheetState.HalfExpanded)
         {
             // Hide the floating AI button while the sheet is half-expanded
@@ -458,7 +456,6 @@ public partial class MainPage : ContentPage
                 AiButton.TranslateToAsync(0, -100, 250, Easing.CubicOut);
             }
         }
-        AssistViewHeight = BottomSheet.Bounds.Height;
         _ = UpdateSummaryMapPinsAsync();
     }
 
@@ -486,11 +483,6 @@ public partial class MainPage : ContentPage
                 _ = AiButton.TranslateToAsync(0, -10, 250, Easing.CubicOut);
             }
         }
-    }
-
-    private async void OnAssistRequest(object sender, RequestEventArgs e)
-    {
-        await ExecuteAssistRequestAsync(null);
     }
 
     private void OnKeyboardVisibilityChanged(object? sender, bool isVisible)
@@ -693,7 +685,6 @@ public partial class MainPage : ContentPage
         }
     }
 
-//#if !WINDOWS
     private async void OnPlaceTapped(object? sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
         try
@@ -1113,10 +1104,6 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private void MapTooltipSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-
-    }
 }
 
 public class CustomMarker : MapMarker
