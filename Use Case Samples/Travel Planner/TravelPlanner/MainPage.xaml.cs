@@ -778,7 +778,7 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private void OnSuggestionTapped(object? sender, Microsoft.Maui.Controls.TappedEventArgs e)
+    private async void OnSuggestionTapped(object? sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
         try
         {
@@ -790,6 +790,9 @@ public partial class MainPage : ContentPage
 
             // Add the tapped suggestion as a user request and forward to the ViewModel
             vm.AssistItems.Add(new AssistItem { Text = text, IsRequested = true });
+
+            await Task.Yield();
+            await Task.Delay(10);
 
             if (vm.HandleUserInputCommand.CanExecute(text))
                 vm.HandleUserInputCommand.Execute(text);
