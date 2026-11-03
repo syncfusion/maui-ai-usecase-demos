@@ -286,7 +286,7 @@
                        ShowCloseButton="True"
                        StaysOpen="False"
                        WidthRequest="380"
-                       HeightRequest="450"
+                       HeightRequest="480"
                        AnimationMode="Zoom"
                        AutomationId="DesktopProfileInfoPopup">
             <popup:SfPopup.PopupStyle>
@@ -534,7 +534,7 @@
                         </VerticalStackLayout>
 
                         <Button Text="Done"
-                                    Margin="20,12,20,20"
+                                    Margin="20,4,20,0"
                                     BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                                     TextColor="{AppThemeBinding Light={StaticResource OnPrimary}, Dark={StaticResource OnPrimaryDark}}"
                                     FontFamily="OpenSansSemibold"

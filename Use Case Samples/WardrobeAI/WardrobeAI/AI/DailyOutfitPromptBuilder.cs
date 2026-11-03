@@ -72,10 +72,6 @@ internal static class DailyOutfitPromptBuilder
         sb.Append("Weather: ")
           .Append(Math.Round(request.Weather.TemperatureC)).Append(" °C, ")
           .Append(request.Weather.Condition);
-        if (!string.IsNullOrWhiteSpace(request.Weather.LocationLabel))
-        {
-            sb.Append(" @ ").Append(request.Weather.LocationLabel);
-        }
         if (request.Weather.HumidityPercent > 0)
         {
             sb.Append(" (humidity ").Append(request.Weather.HumidityPercent).Append("%)");
@@ -119,10 +115,6 @@ internal static class DailyOutfitPromptBuilder
         sb.Append("Weather: ")
           .Append(Math.Round(request.Weather.TemperatureC)).Append(" °C, ")
           .Append(request.Weather.Condition);
-        if (!string.IsNullOrWhiteSpace(request.Weather.LocationLabel))
-        {
-            sb.Append(" @ ").Append(request.Weather.LocationLabel);
-        }
         if (request.Weather.HumidityPercent > 0)
         {
             sb.Append(" (humidity ").Append(request.Weather.HumidityPercent).Append("%)");
