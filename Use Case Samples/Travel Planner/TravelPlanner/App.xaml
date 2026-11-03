@@ -2,9 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:TravelPlanner"
-             xmlns:ai="clr-namespace:Syncfusion.Maui.AIAssistView;assembly=Syncfusion.Maui.AIAssistView"
              xmlns:syncTheme="clr-namespace:Syncfusion.Maui.Themes;assembly=Syncfusion.Maui.Core"
-             xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
              x:Class="TravelPlanner.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -55,27 +53,6 @@
                 </syncTheme:SyncfusionThemeDictionary.MergedDictionaries>
             </syncTheme:SyncfusionThemeDictionary>
 
-            <!-- Implicit style for the ResponseLoaderView so the control inside SfAIAssistView picks it up automatically -->
-            <Style TargetType="ai:ResponseLoaderView">
-                <Setter Property="ControlTemplate">
-                    <Setter.Value>
-                        <ControlTemplate>
-                            <Grid ColumnDefinitions="Auto, *" HeightRequest="40" HorizontalOptions="Start" VerticalOptions="Center">
-                                <Label FontAttributes="Bold" FontFamily="MauiSampleFontIcon" FontSize="32" HorizontalOptions="Center" Text="&#xe7e1;" TextColor="#73623c" VerticalOptions="Center" />
-                                <HorizontalStackLayout Grid.Column="1" Padding="16,0,0,0" Spacing="4">
-                                    <shapes:Ellipse x:Name="dot1" HeightRequest="10" WidthRequest="10" />
-                                    <shapes:Ellipse x:Name="dot2" HeightRequest="10" WidthRequest="10" />
-                                    <shapes:Ellipse x:Name="dot3" HeightRequest="10" WidthRequest="10" />
-                                    <shapes:Ellipse x:Name="dot4" HeightRequest="10" WidthRequest="10" />
-                                    <HorizontalStackLayout.Behaviors>
-                                        <local:DotAnimationBehavior />
-                                    </HorizontalStackLayout.Behaviors>
-                                </HorizontalStackLayout>
-                            </Grid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

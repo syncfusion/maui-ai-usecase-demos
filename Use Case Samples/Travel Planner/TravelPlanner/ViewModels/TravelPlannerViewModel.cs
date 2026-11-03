@@ -12,6 +12,7 @@ namespace TravelPlanner.ViewModels;
 
 public class TravelPlannerViewModel : INotifyPropertyChanged
 {
+    private static readonly HttpClient ImageLinkHttpClient = new() { Timeout = TimeSpan.FromSeconds(5) };
     private readonly OpenAIServices _aiService;
     private AssistItem? _interestsPromptItem;
 
@@ -115,10 +116,7 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
     public DateTime? PendingEndDate { get => _pendingEndDate; set { _pendingEndDate = value; OnPropertyChanged(); } }
     private DateTime? _pendingEndDate;
 
-    public bool HasPendingDateRange => PendingStartDate.HasValue && PendingEndDate.HasValue;
-
-    // Random generator for fallback sample data
-    private static readonly System.Random _rng = new System.Random();
+    public bool IsSampleItinerary { get; private set; }
     public ICommand StartConversationCommand { get; }
     public ICommand HandleUserInputCommand { get; }
     public ICommand FallbackAiQueryCommand { get; }
@@ -210,14 +208,12 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
 
         PendingStartDate = start.Value.Date;
         PendingEndDate = end.Value.Date;
-        OnPropertyChanged(nameof(HasPendingDateRange));
     }
 
     void ClearPendingDateRange()
     {
         PendingStartDate = null;
         PendingEndDate = null;
-        OnPropertyChanged(nameof(HasPendingDateRange));
     }
 
     /// <summary>
@@ -238,6 +234,7 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
         SelectedInterests.Clear();
         DestinationSummary = string.Empty;
         ConsolidatedDetails = string.Empty;
+        IsSampleItinerary = false;
         InterestsErrorMessage = string.Empty;
         IsInterestsPopupVisible = false;
         ClearPendingDateRange();
@@ -282,9 +279,6 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
         {
             var systemPrompt = "You are a helpful travel assistant. Reply concisely.";
             var reply = await _aiService.GetRawResponseAsync(systemPrompt, text);
-            if (string.IsNullOrWhiteSpace(reply))
-                reply = "Sorry, I couldn't find an answer.";
-
             AddBotText(reply);
         }
         catch (Exception ex)
@@ -336,9 +330,10 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
                 // so the user can open the interests picker from the conversation.
                 IsInterestsPopupVisible = false;
                 _interestsPromptItem = AddBotTextWithSuggestions(
-                    "Select your interests. Tap 'Select Interests' to open the picker.",
+                    "Select your interests.",
                     new[] { "Select Interests" }
                 );
+                IsInterestsPopupVisible = true;
                 break;
             case ConversationStep.Interests:
                 {
@@ -379,7 +374,9 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
                         Step = ConversationStep.Done;
                         Suggestions.Clear();
                         _interestsPromptItem = null;
-                        AddBotText("Trip plan generated. Open the drawer to view consolidated details.");
+                        AddBotText(IsSampleItinerary
+                            ? "Sample itinerary ready. Some or all details are demo data because Azure OpenAI was unavailable or returned incomplete results. Open the drawer to review it."
+                            : "Trip plan generated. Open the drawer to view consolidated details.");
                         break;
                     }
 
@@ -435,6 +432,41 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
         return item;
     }
 
+    private static TripRecommendation CreateMockRecommendation(TripInput input)
+    {
+        var destination = string.IsNullOrWhiteSpace(input.Destination) ? "your destination" : input.Destination;
+        var interests = input.Interests.Count == 0 ? "sightseeing" : string.Join(", ", input.Interests);
+        var summary = $"Sample itinerary for {destination}: a {input.TripType.ToLowerInvariant()} trip focused on {interests}.";
+
+        return new TripRecommendation
+        {
+            DestinationSummary = summary,
+            TopPlaces = new List<PlaceCard>
+            {
+                new() { Name = $"Sample attraction 1 near {destination}", Address = "Demo district", ImageUrl = "image_not_available.png", Rating = 4.7 },
+                new() { Name = $"Sample attraction 2 near {destination}", Address = "Demo district", ImageUrl = "image_not_available.png", Rating = 4.5 },
+                new() { Name = $"Sample attraction 3 near {destination}", Address = "Demo district", ImageUrl = "image_not_available.png", Rating = 4.6 },
+                new() { Name = $"Sample attraction 4 near {destination}", Address = "Demo district", ImageUrl = "image_not_available.png", Rating = 4.4 },
+                new() { Name = $"Sample attraction 5 near {destination}", Address = "Demo district", ImageUrl = "image_not_available.png", Rating = 4.5 }
+            },
+            Hotels = new List<PlaceCard>
+            {
+                new() { Name = $"Sample hotel 1 near {destination}", Address = "Demo district", ImageUrl = "image_not_available.png", Rating = 4.3 },
+                new() { Name = $"Sample hotel 2 near {destination}", Address = "Demo district", ImageUrl = "image_not_available.png", Rating = 4.2 },
+                new() { Name = $"Sample hotel 3 near {destination}", Address = "Demo district", ImageUrl = "image_not_available.png", Rating = 4.1 },
+                new() { Name = $"Sample hotel 4 near {destination}", Address = "Demo district", ImageUrl = "image_not_available.png", Rating = 4.4 }
+            },
+            FoodSpots = new List<PlaceCard>
+            {
+                new() { Name = $"Sample food spot 1 near {destination}", Address = "Demo district", ImageUrl = "image_not_available.png", Rating = 4.6 },
+                new() { Name = $"Sample food spot 2 near {destination}", Address = "Demo district", ImageUrl = "image_not_available.png", Rating = 4.4 },
+                new() { Name = $"Sample food spot 3 near {destination}", Address = "Demo district", ImageUrl = "image_not_available.png", Rating = 4.5 },
+                new() { Name = $"Sample food spot 4 near {destination}", Address = "Demo district", ImageUrl = "image_not_available.png", Rating = 4.3 },
+                new() { Name = $"Sample food spot 5 near {destination}", Address = "Demo district", ImageUrl = "image_not_available.png", Rating = 4.2 }
+            }
+        };
+    }
+
     async Task BuildTripAsync()
     {
         IsBusy = true;
@@ -449,7 +481,23 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
                 Interests = Interests.ToList()
             };
 
-            var rec = await _aiService.GetTripRecommendationsAsync(input);
+            TripRecommendation rec;
+            var useMockData = !OpenAIServices.HasAzureCredentials;
+            try
+            {
+                rec = useMockData
+                    ? CreateMockRecommendation(input)
+                    : await _aiService.GetTripRecommendationsAsync(input);
+            }
+            catch (Exception)
+            {
+                rec = CreateMockRecommendation(input);
+                useMockData = true;
+            }
+
+            useMockData |= rec.TopPlaces.Count == 0 || rec.Hotels.Count == 0 || rec.FoodSpots.Count == 0;
+            if (useMockData)
+                rec = CreateMockRecommendation(input);
 
             // Defensive normalization to guarantee UI text presence
             async Task NormalizeList(List<PlaceCard>? list, string fallback)
@@ -460,44 +508,31 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
                     if (it == null) continue;
                     if (string.IsNullOrWhiteSpace(it.Name)) it.Name = fallback;
                     if (string.IsNullOrWhiteSpace(it.Address)) it.Address = "Address not available";
-                    if (!await IsValidLink(it.ImageUrl)) it.ImageUrl = "image_not_available.png";
+                    if (it.ImageUrl != "image_not_available.png" && !await IsValidLink(it.ImageUrl)) it.ImageUrl = "image_not_available.png";
                     if (it.Rating <= 0) it.Rating = 4.2;
                 }
             }
 
-            // Helper to generate fallback sample data when API returns none
-            List<PlaceCard> GenerateFallbackPlaces(string kind, int count)
-            {
-                var list = new List<PlaceCard>();
-                for (int i = 1; i <= count; i++)
-                {
-                    list.Add(new PlaceCard
-                    {
-                        Name = $"{kind} {i} in {(!string.IsNullOrWhiteSpace(Destination) ? Destination : "Destination")}",
-                        Address = $"{i} {kind} Street",
-                        ImageUrl = "image_not_available.png",
-                        Rating = Math.Round(3.5 + _rng.NextDouble() * 1.5, 1)
-                    });
-                }
-                return list;
-            }
-
-            // Use API data when present, otherwise generate fallback samples
-            var topPlaces = (rec?.TopPlaces != null && rec.TopPlaces.Count > 0) ? rec.TopPlaces : GenerateFallbackPlaces("Attraction", 5);
-            var hotels = (rec?.Hotels != null && rec.Hotels.Count > 0) ? rec.Hotels : GenerateFallbackPlaces("Hotel", 4);
-            var foods = (rec?.FoodSpots != null && rec.FoodSpots.Count > 0) ? rec.FoodSpots : GenerateFallbackPlaces("Food Spot", 5);
+            var mockRecommendation = CreateMockRecommendation(input);
+            var topPlaces = rec.TopPlaces.Count > 0 ? rec.TopPlaces : mockRecommendation.TopPlaces;
+            var hotels = rec.Hotels.Count > 0 ? rec.Hotels : mockRecommendation.Hotels;
+            var foods = rec.FoodSpots.Count > 0 ? rec.FoodSpots : mockRecommendation.FoodSpots;
 
             await NormalizeList(topPlaces, "Attraction");
             await NormalizeList(hotels, "Hotel");
             await NormalizeList(foods, "Food Spot");
 
-            DestinationSummary = string.IsNullOrWhiteSpace(rec?.DestinationSummary)
-                ? $"Trip to {Destination}"
+            DestinationSummary = useMockData || string.IsNullOrWhiteSpace(rec.DestinationSummary)
+                ? mockRecommendation.DestinationSummary
                 : rec.DestinationSummary;
 
             ReplaceItems(TopPlaces, topPlaces ?? new());
             ReplaceItems(Hotels, hotels ?? new());
             ReplaceItems(FoodSpots, foods ?? new());
+            IsSampleItinerary = useMockData;
+            if (useMockData)
+                AddBotText("Showing sample trip details; these suggestions are not AI-generated or verified for this destination.");
+            OnPropertyChanged(nameof(IsSampleItinerary));
 
             ConsolidatedDetails = $"Destination: {Destination}\nDates: {StartDate:yyyy-MM-dd} - {EndDate:yyyy-MM-dd}\nTrip Type: {TripType}\nInterests: {string.Join(", ", Interests)}\n\nTop Places: {string.Join(", ", TopPlaces.Select(p => p.Name))}\nHotels: {string.Join(", ", Hotels.Select(h => h.Name))}\nFood: {string.Join(", ", FoodSpots.Select(f => f.Name))}";
         }
@@ -515,8 +550,8 @@ public class TravelPlannerViewModel : INotifyPropertyChanged
     {
         try
         {
-            using var httpClient = new HttpClient();
-            var response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            using var response = await ImageLinkHttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             return response.IsSuccessStatusCode;
         }
         catch

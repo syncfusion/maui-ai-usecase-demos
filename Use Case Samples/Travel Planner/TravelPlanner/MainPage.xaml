@@ -13,7 +13,6 @@
     xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
     xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
     xmlns:local="clr-namespace:TravelPlanner"
-    xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
     xmlns:sfmaps="clr-namespace:Syncfusion.Maui.Maps;assembly=Syncfusion.Maui.Maps"
     xmlns:models="clr-namespace:TravelPlanner.Models"
     xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
@@ -116,8 +115,7 @@
                 </Border>
             </Grid>
         </DataTemplate>
-        <Style x:Key="ResponseLoader"
-               TargetType="ai:ResponseLoaderView">
+        <Style TargetType="ai:ResponseLoaderView">
             <Setter Property="ControlTemplate">
                 <Setter.Value>
                     <ControlTemplate>
@@ -606,8 +604,6 @@
                                         </listView:SfListView>
                                     </VerticalStackLayout>
                                 </ScrollView>
-                                <Label Text="{Binding ConsolidatedDetails}"
-                                       TextColor="#73623c"/>
                             </VerticalStackLayout>
                         </ScrollView>
                     </Grid>
@@ -838,18 +834,6 @@
                             </sfmaps:MapTileLayer>
                         </sfmaps:SfMaps.Layer>
                     </sfmaps:SfMaps>
-                    <!--<sfmaps:SfMaps x:Name="sfMapsDesktop"
-                        Grid.Column="0"
-                        IsVisible="{OnPlatform WinUI=true, Default=false}">
-                        <sfmaps:SfMaps.Layer>
-                            <sfmaps:MapTileLayer x:Name="sfMapsDesktopLayer" UrlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png">
-                                <sfmaps:MapTileLayer.ZoomPanBehavior>
-                                    <sfmaps:MapZoomPanBehavior ZoomLevel="4" />
-                                </sfmaps:MapTileLayer.ZoomPanBehavior>
-                            </sfmaps:MapTileLayer>
-                        </sfmaps:SfMaps.Layer>
-                    </sfmaps:SfMaps>-->
-
                     <!--  Desktop AI Panel - Right side permanent panel  -->
                     <Grid
                         x:Name="DesktopAiPanel"
@@ -986,16 +970,6 @@
                                     </sfmaps:MapTileLayer>
                                 </sfmaps:SfMaps.Layer>
                             </sfmaps:SfMaps>
-                            <!--<sfmaps:SfMaps x:Name="sfSummaryMap"
-                                IsVisible="{OnPlatform WinUI=true, Default=false}">
-                                <sfmaps:SfMaps.Layer>
-                                    <sfmaps:MapTileLayer x:Name="sfSummaryMapLayer" UrlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png">
-                                        <sfmaps:MapTileLayer.ZoomPanBehavior>
-                                            <sfmaps:MapZoomPanBehavior ZoomLevel="2" />
-                                        </sfmaps:MapTileLayer.ZoomPanBehavior>
-                                    </sfmaps:MapTileLayer>
-                                </sfmaps:SfMaps.Layer>
-                            </sfmaps:SfMaps>-->
                         </Grid>
                         <ScrollView Grid.Row="3"
                                     Background="#fff7e7"
@@ -1243,8 +1217,6 @@
                                         </listView:SfListView>
                                     </VerticalStackLayout>
                                 </ScrollView>
-                                <Label Text="{Binding ConsolidatedDetails}"
-                                       TextColor="#73623c"/>
                             </VerticalStackLayout>
                         </ScrollView>
                     </Grid>

@@ -23,7 +23,6 @@ namespace TravelPlanner.Services
         private static readonly string _apiKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_KEY") ?? string.Empty;
         private static readonly string _deploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_CHAT_DEPLOYMENT") ?? "gpt-4o-mini";
         private static readonly string _apiVersion = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_VERSION") ?? "2024-08-01-preview";
-        private static readonly string UnsplashAccessKey = Environment.GetEnvironmentVariable("UNSPLASH_ACCESS_KEY") ?? string.Empty;
 
         // True when Azure OpenAI credentials look usable (non-empty, non-placeholder).
         public static bool HasAzureCredentials =>
@@ -32,11 +31,9 @@ namespace TravelPlanner.Services
             !_apiKey.StartsWith("YOUR_", StringComparison.OrdinalIgnoreCase) &&
             !_apiKey.StartsWith("GIVE_", StringComparison.OrdinalIgnoreCase);
 
-        public static bool HasUnsplashKey => !string.IsNullOrWhiteSpace(UnsplashAccessKey);
-
         public OpenAIServices()
         {
-            // All configuration is read from environment variables (AZURE_OPENAI_* and UNSPLASH_ACCESS_KEY).
+            // All configuration is read from environment variables (AZURE_OPENAI_*).
             // Do not hardcode secrets in source. See README.md for setup instructions.
         }
 
@@ -45,7 +42,7 @@ namespace TravelPlanner.Services
             ArgumentNullException.ThrowIfNull(input);
 
             if (!HasAzureCredentials)
-                return new TripRecommendation();
+                throw new InvalidOperationException("Azure OpenAI credentials are not configured.");
 
             string? content = null;
 
@@ -54,10 +51,10 @@ namespace TravelPlanner.Services
                 var systemPrompt =
                     "You are a travel-planning assistant. Return strictly JSON following this schema: " +
                     "{ \"destinationSummary\": string, " +
-                    "\"topPlaces\": [ { \"imageUrl\": string, \"name\": string, \"address\": string, \"rating\": number, \"location\": {latitude,longitude} } ], " +
-                    "\"hotels\": [ { \"imageUrl\": string, \"name\": string, \"address\": string, \"rating\": number } ], " +
-                    "\"foodSpots\": [ { \"imageUrl\": string, \"name\": string, \"address\": string, \"rating\": number } ] } " +
-                    "Ensure exactly 5 items in topPlaces, 5 hotels, and 5 foodSpots. Use public image URLs.";
+                    "\"topPlaces\": [ { \"name\": string, \"address\": string, \"rating\": number, \"location\": {latitude,longitude} } ], " +
+                    "\"hotels\": [ { \"name\": string, \"address\": string, \"rating\": number } ], " +
+                    "\"foodSpots\": [ { \"name\": string, \"address\": string, \"rating\": number } ] } " +
+                    "Ensure exactly 5 items in topPlaces, 5 hotels, and 5 foodSpots.";
 
                 var userPrompt =
                     $"Destination: {input.Destination}\n" +
@@ -97,22 +94,19 @@ namespace TravelPlanner.Services
                     .GetString();
 
                 if (string.IsNullOrWhiteSpace(content))
-                    return new TripRecommendation();
+                    throw new InvalidOperationException("Azure OpenAI returned an empty response.");
             }
-            catch (System.Net.Sockets.SocketException)
+            catch (System.Net.Sockets.SocketException ex)
             {
-                // Skip if network/socket error (invalid credentials, wrong endpoint, etc.)
-                return new TripRecommendation();
+                throw new HttpRequestException("Azure OpenAI could not be reached.", ex);
             }
             catch (HttpRequestException)
             {
-                // Skip if HTTP error (invalid credentials, bad endpoint, etc.)
-                return new TripRecommendation();
+                throw;
             }
-            catch
+            catch (Exception ex)
             {
-                // Skip on any other error
-                return new TripRecommendation();
+                throw new InvalidOperationException("Azure OpenAI returned an invalid response.", ex);
             }
 
             if (content.StartsWith("```"))
@@ -162,8 +156,7 @@ namespace TravelPlanner.Services
                         it.Name = fallbackNamePrefix;
                     if (string.IsNullOrWhiteSpace(it.Address))
                         it.Address = "Address not available";
-                    if (string.IsNullOrWhiteSpace(it.ImageUrl))
-                        it.ImageUrl = "https://via.placeholder.com/200x150.png?text=Image";
+                    it.ImageUrl = "image_not_available.png";
                     if (it.Rating <= 0)
                         it.Rating = 4.2;
                 }
@@ -179,7 +172,7 @@ namespace TravelPlanner.Services
         public async Task<string> GetRawResponseAsync(string systemPrompt, string userPrompt, CancellationToken ct = default)
         {
             if (!HasAzureCredentials)
-                return string.Empty;
+                return "Azure OpenAI credentials are not configured.";
 
             try
             {
@@ -219,18 +212,15 @@ namespace TravelPlanner.Services
             }
             catch (System.Net.Sockets.SocketException)
             {
-                // Skip on network error
-                return string.Empty;
+                return "Azure OpenAI could not be reached. Check the endpoint and network connection.";
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException ex)
             {
-                // Skip on HTTP error (invalid credentials, bad endpoint, etc.)
-                return string.Empty;
+                return ex.Message;
             }
-            catch
+            catch (Exception ex)
             {
-                // Skip on any other error
-                return string.Empty;
+                return $"Azure OpenAI request failed: {ex.Message}";
             }
         }
 
@@ -272,25 +262,9 @@ namespace TravelPlanner.Services
                 var name = TryGetString(item, "name", "title", "hotelName", "restaurantName");
                 var address = TryGetString(item, "address", "location", "formattedAddress", "vicinity");
                 var rating = TryGetDouble(item, "rating", "score", "stars");
-                string imageTarget = string.IsNullOrWhiteSpace(name) ? fallbackName : name;
-                string imageUrl = "image_not_available.png";
-
-                if (HasUnsplashKey)
-                {
-                    try
-                    {
-                        imageUrl = await GetImage(imageTarget);
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Image lookup failed for '{imageTarget}': {ex.Message}");
-                        imageUrl = "image_not_available.png";
-                    }
-                }
-
                 var card = new PlaceCard
                 {
-                    ImageUrl = imageUrl,
+                    ImageUrl = "image_not_available.png",
                     Name = string.IsNullOrWhiteSpace(name) ? fallbackName : name,
                     Address = string.IsNullOrWhiteSpace(address) ? "Address not available" : address,
                     Rating = rating <= 0 ? 4.2 : rating
@@ -393,31 +367,5 @@ namespace TravelPlanner.Services
             return list;
         }
 
-        private async Task<string> GetImage(string location)
-        {
-            string query = location.Trim();
-            if (string.IsNullOrEmpty(query) || !HasUnsplashKey)
-                return "image_not_available.png";
-
-            try
-            {
-                string url = $"https://api.unsplash.com/search/photos?query={Uri.EscapeDataString(query)}&client_id={UnsplashAccessKey}&per_page=1";
-                var response = await _httpClient.GetStringAsync(url);
-
-                using var doc = JsonDocument.Parse(response);
-                var results = doc.RootElement.GetProperty("results");
-
-                if (results.GetArrayLength() > 0)
-                {
-                    return results[0].GetProperty("urls").GetProperty("regular").GetString() ?? "image_not_available.png";
-                }
-
-                return "image_not_available.png";
-            }
-            catch
-            {
-                return "image_not_available.png";
-            }
-        }
     }
 }
