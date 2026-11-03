@@ -298,7 +298,9 @@
             </popup:SfPopup.PopupStyle>
             <popup:SfPopup.ContentTemplate>
                 <DataTemplate x:DataType="vm:DesktopSplitHostViewModel">
-                    <VerticalStackLayout Spacing="0" Padding="0">
+                    <Grid RowDefinitions="*,Auto" Padding="0">
+                        <ScrollView Grid.Row="0" VerticalScrollBarVisibility="Never">
+                            <VerticalStackLayout Spacing="0" Padding="0">
                         <Grid ColumnDefinitions="Auto,*,Auto"
                                   ColumnSpacing="12"
                                   Padding="20,20,20,8">
@@ -541,8 +543,11 @@
                                     FontSize="14"
                                     CornerRadius="10"
                                     HeightRequest="44"
-                                    Command="{Binding ToggleProfilePopupCommand}"/>
-                    </VerticalStackLayout>
+                                    Command="{Binding ToggleProfilePopupCommand}"
+                                    Grid.Row="1"/>
+                            </VerticalStackLayout>
+                        </ScrollView>
+                    </Grid>
                 </DataTemplate>
             </popup:SfPopup.ContentTemplate>
         </popup:SfPopup>
