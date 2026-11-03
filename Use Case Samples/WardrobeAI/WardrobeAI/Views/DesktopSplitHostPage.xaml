@@ -286,7 +286,7 @@
                        ShowCloseButton="True"
                        StaysOpen="False"
                        WidthRequest="380"
-                       HeightRequest="450"
+                       HeightRequest="540"
                        AnimationMode="Zoom"
                        AutomationId="DesktopProfileInfoPopup">
             <popup:SfPopup.PopupStyle>
@@ -298,9 +298,7 @@
             </popup:SfPopup.PopupStyle>
             <popup:SfPopup.ContentTemplate>
                 <DataTemplate x:DataType="vm:DesktopSplitHostViewModel">
-                    <Grid RowDefinitions="*,Auto" Padding="0">
-                        <ScrollView Grid.Row="0" VerticalScrollBarVisibility="Never">
-                            <VerticalStackLayout Spacing="0" Padding="0">
+                    <VerticalStackLayout Spacing="0" Padding="0">
                         <Grid ColumnDefinitions="Auto,*,Auto"
                                   ColumnSpacing="12"
                                   Padding="20,20,20,8">
@@ -536,18 +534,15 @@
                         </VerticalStackLayout>
 
                         <Button Text="Done"
-                                    Margin="20,12,20,20"
+                                    Margin="20,4,20,12"
                                     BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                                     TextColor="{AppThemeBinding Light={StaticResource OnPrimary}, Dark={StaticResource OnPrimaryDark}}"
                                     FontFamily="OpenSansSemibold"
                                     FontSize="14"
                                     CornerRadius="10"
                                     HeightRequest="44"
-                                    Command="{Binding ToggleProfilePopupCommand}"
-                                    Grid.Row="1"/>
-                            </VerticalStackLayout>
-                        </ScrollView>
-                    </Grid>
+                                    Command="{Binding ToggleProfilePopupCommand}"/>
+                    </VerticalStackLayout>
                 </DataTemplate>
             </popup:SfPopup.ContentTemplate>
         </popup:SfPopup>
