@@ -790,8 +790,19 @@ public partial class MainPage : ContentPage
 
             if (vm.Step == ConversationStep.TripType)
             {
-                vm.AssistItems.Add(new AssistItem { Text = text, IsRequested = true });
-                vm.HandleUserInputCommand.Execute(text);
+                var tripType = text;
+                var itemCountBeforeTap = vm.AssistItems.Count;
+                Dispatcher.Dispatch(() =>
+                {
+                    var requestWasAdded = vm.AssistItems
+                        .Skip(itemCountBeforeTap)
+                        .OfType<AssistItem>()
+                        .Any(item => item.IsRequested && string.Equals(item.Text?.Trim(), tripType.Trim(), StringComparison.OrdinalIgnoreCase));
+                    if (!requestWasAdded)
+                        vm.AssistItems.Add(new AssistItem { Text = tripType, IsRequested = true });
+
+                    vm.HandleUserInputCommand.Execute(tripType);
+                });
                 return;
             }
 
