@@ -27,7 +27,6 @@ The AIAssistView showcases a custom **`EditorViewTemplate`**, a custom **`Sugges
 - .NET 10 SDK (10.0.401 or newer preview)
 - MAUI workload: `dotnet workload install maui-android maui-ios maui-maccatalyst`
 - An **Azure OpenAI** resource (chat deployment is sufficient; image generation is optional)
-- An **Unsplash** developer key — free at <https://unsplash.com/developers> (used to fetch place photos)
 
 ---
 
@@ -41,7 +40,8 @@ Configure the following environment variables **before** running the sample. The
 | `AZURE_OPENAI_KEY`             | Yes*     | `…`                                                | Read by `OpenAIServices`                         |
 | `AZURE_OPENAI_CHAT_DEPLOYMENT` | No       | `gpt-4o-mini`                                      | Defaults to `gpt-4o-mini`                        |
 | `AZURE_OPENAI_API_VERSION`     | No       | `2024-08-01-preview`                               | Defaults to `2024-08-01-preview`                 |
-| `UNSPLASH_ACCESS_KEY`          | No       | `…`                                                | When missing the sample shows a placeholder image |
+
+Place images use the local `image_not_available.png` placeholder. The app does not fetch images from third-party services.
 
 \* When `AZURE_OPENAI_ENDPOINT` / `AZURE_OPENAI_KEY` are unset (or still `YOUR_AZURE_OPENAI_*`) the sample still builds and runs — the trip plan is generated from local mock data so you can preview the UI without a deployment.
 
@@ -51,7 +51,6 @@ Example (PowerShell):
 $env:AZURE_OPENAI_ENDPOINT = "https://YOUR-RESOURCE.openai.azure.com"
 $env:AZURE_OPENAI_KEY      = "..."
 $env:AZURE_OPENAI_CHAT_DEPLOYMENT = "gpt-4o-mini"
-$env:UNSPLASH_ACCESS_KEY   = "..."
 ```
 
 Example (bash):
@@ -60,7 +59,6 @@ Example (bash):
 export AZURE_OPENAI_ENDPOINT="https://YOUR-RESOURCE.openai.azure.com"
 export AZURE_OPENAI_KEY="..."
 export AZURE_OPENAI_CHAT_DEPLOYMENT="gpt-4o-mini"
-export UNSPLASH_ACCESS_KEY="..."
 ```
 
 The Syncfusion license key is **not** committed to this repository. Set the `SYNCFUSION_LICENSE_KEY` environment variable before running the sample. As a fallback during development, you can paste the key directly into `TravelPlanner/App.xaml.cs` (see the `// TODO` comment there) but never commit a real key to source.
@@ -98,7 +96,7 @@ TravelPlanner/
 ├── Converters/                   # XAML value converters
 ├── Models/TripItem.cs            # TripInput, PlaceCard, TripRecommendation
 ├── Models/MapMarkerLabel.cs      # BindableObject wrapping marker text for tooltips
-├── Services/OpenAIServices.cs    # Azure OpenAI + Unsplash clients (env-var driven)
+├── Services/OpenAIServices.cs    # Azure OpenAI client (env-var driven)
 ├── Services/IKeyboardService.cs  # Keyboard visibility contract
 ├── Platforms/Android/KeyboardService_Android.cs
 ├── Platforms/iOS/KeyboardService_iOS.cs
