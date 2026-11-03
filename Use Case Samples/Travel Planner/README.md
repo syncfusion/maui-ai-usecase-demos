@@ -33,7 +33,7 @@ The AIAssistView showcases a custom **`EditorViewTemplate`**, a custom **`Sugges
 
 ## AI / API setup
 
-Configure the following environment variables **before** running the sample. The app reads them on startup; missing values fall back to placeholder strings and the sample generates local mock data instead of calling Azure OpenAI.
+Configure the following environment variables **before** running the sample. The app reads them on startup. If credentials are missing or the Azure OpenAI request fails or returns incomplete itinerary data, the app shows clearly labeled sample itinerary details instead.
 
 | Variable                       | Required | Example                                            | Notes                                            |
 |--------------------------------|----------|----------------------------------------------------|--------------------------------------------------|
@@ -64,16 +64,6 @@ export UNSPLASH_ACCESS_KEY="..."
 ```
 
 The Syncfusion license key is **not** committed to this repository. Set the `SYNCFUSION_LICENSE_KEY` environment variable before running the sample. As a fallback during development, you can paste the key directly into `TravelPlanner/App.xaml.cs` (see the `// TODO` comment there) but never commit a real key to source.
-
-### Windows-only: Bing Maps key
-
-On Windows, `MauiProgram.cs` reads a `BING_MAPS_KEY` environment variable and passes it to the Community Toolkit Maps initializer. On non-Windows platforms the OS-native maps provider is used and no key is required.
-
-```powershell
-$env:BING_MAPS_KEY = "..."
-```
-
----
 
 ## Run
 

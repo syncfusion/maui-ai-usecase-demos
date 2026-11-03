@@ -45,7 +45,7 @@ namespace TravelPlanner.Services
             ArgumentNullException.ThrowIfNull(input);
 
             if (!HasAzureCredentials)
-                return new TripRecommendation();
+                throw new InvalidOperationException("Azure OpenAI credentials are not configured.");
 
             string? content = null;
 
@@ -97,22 +97,19 @@ namespace TravelPlanner.Services
                     .GetString();
 
                 if (string.IsNullOrWhiteSpace(content))
-                    return new TripRecommendation();
+                    throw new InvalidOperationException("Azure OpenAI returned an empty response.");
             }
-            catch (System.Net.Sockets.SocketException)
+            catch (System.Net.Sockets.SocketException ex)
             {
-                // Skip if network/socket error (invalid credentials, wrong endpoint, etc.)
-                return new TripRecommendation();
+                throw new HttpRequestException("Azure OpenAI could not be reached.", ex);
             }
             catch (HttpRequestException)
             {
-                // Skip if HTTP error (invalid credentials, bad endpoint, etc.)
-                return new TripRecommendation();
+                throw;
             }
-            catch
+            catch (Exception ex)
             {
-                // Skip on any other error
-                return new TripRecommendation();
+                throw new InvalidOperationException("Azure OpenAI returned an invalid response.", ex);
             }
 
             if (content.StartsWith("```"))
@@ -179,7 +176,7 @@ namespace TravelPlanner.Services
         public async Task<string> GetRawResponseAsync(string systemPrompt, string userPrompt, CancellationToken ct = default)
         {
             if (!HasAzureCredentials)
-                return string.Empty;
+                return "Azure OpenAI credentials are not configured.";
 
             try
             {
@@ -219,18 +216,15 @@ namespace TravelPlanner.Services
             }
             catch (System.Net.Sockets.SocketException)
             {
-                // Skip on network error
-                return string.Empty;
+                return "Azure OpenAI could not be reached. Check the endpoint and network connection.";
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException ex)
             {
-                // Skip on HTTP error (invalid credentials, bad endpoint, etc.)
-                return string.Empty;
+                return ex.Message;
             }
-            catch
+            catch (Exception ex)
             {
-                // Skip on any other error
-                return string.Empty;
+                return $"Azure OpenAI request failed: {ex.Message}";
             }
         }
 

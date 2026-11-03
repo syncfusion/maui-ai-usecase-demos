@@ -1,4 +1,3 @@
-using CommunityToolkit.Maui.Maps;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Core.Hosting;
 using Syncfusion.Maui.Toolkit.Hosting;
@@ -18,14 +17,6 @@ public static class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
-#if WINDOWS
-			// Initialize the .NET MAUI Community Toolkit Maps by passing the Bing Maps Key.
-			// The key is read from the environment variable `BING_MAPS_KEY` for security.
-			.UseMauiCommunityToolkitMaps(Environment.GetEnvironmentVariable("BING_MAPS_KEY") ?? string.Empty)
-#else
-			// For all other platforms
-			.UseMauiMaps()
-#endif
             .ConfigureSyncfusionToolkit()
             .ConfigureSyncfusionCore()
             .ConfigureFonts(fonts =>

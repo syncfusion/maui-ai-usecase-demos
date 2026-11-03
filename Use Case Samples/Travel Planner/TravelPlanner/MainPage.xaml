@@ -13,7 +13,6 @@
     xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
     xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
     xmlns:local="clr-namespace:TravelPlanner"
-    xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
     xmlns:sfmaps="clr-namespace:Syncfusion.Maui.Maps;assembly=Syncfusion.Maui.Maps"
     xmlns:models="clr-namespace:TravelPlanner.Models"
     xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
