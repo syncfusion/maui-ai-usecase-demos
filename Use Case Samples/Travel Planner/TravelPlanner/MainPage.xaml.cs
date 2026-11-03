@@ -788,6 +788,8 @@ public partial class MainPage : ContentPage
             if (string.IsNullOrWhiteSpace(text))
                 return;
 
+            // Add the tapped suggestion as a user request and forward to the ViewModel
+            vm.AssistItems.Add(new AssistItem { Text = text, IsRequested = true });
 
             if (vm.HandleUserInputCommand.CanExecute(text))
                 vm.HandleUserInputCommand.Execute(text);
