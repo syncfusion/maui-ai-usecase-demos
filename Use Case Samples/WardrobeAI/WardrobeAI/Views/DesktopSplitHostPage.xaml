@@ -286,7 +286,7 @@
                        ShowCloseButton="True"
                        StaysOpen="False"
                        WidthRequest="380"
-                       HeightRequest="540"
+                       HeightRequest="480"
                        AnimationMode="Zoom"
                        AutomationId="DesktopProfileInfoPopup">
             <popup:SfPopup.PopupStyle>
