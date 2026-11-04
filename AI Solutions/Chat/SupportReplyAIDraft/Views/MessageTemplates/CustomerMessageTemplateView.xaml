@@ -38,7 +38,7 @@
             </VerticalStackLayout>
             <Border.GestureRecognizers>
                 <TapGestureRecognizer x:DataType="views:SupportChatPage"
-                                      Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectMessageCommand}"
+                                      Command="{Binding Source={x:Reference RootPage}, Path=SelectMessageCommand}"
                                       CommandParameter="{Binding .}" />
             </Border.GestureRecognizers>
         </Border>
