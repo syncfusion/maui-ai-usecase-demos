@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Core.Hosting;
 using AIProcessDiagramDrafting.Services;
 using AIProcessDiagramDrafting.ViewModels;

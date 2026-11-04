@@ -1,9 +1,10 @@
-using Foundation;
+﻿using Foundation;
 
-namespace AIProcessDiagramDrafting;
-
-[Register("AppDelegate")]
-public class AppDelegate : MauiUIApplicationDelegate
+namespace AIProcessDiagramDrafting
 {
-    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+	[Register("AppDelegate")]
+	public class AppDelegate : MauiUIApplicationDelegate
+	{
+		protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+	}
 }

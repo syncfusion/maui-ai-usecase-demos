@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
@@ -8,12 +8,12 @@
 
   <Identity Name="maui-package-name-placeholder" Publisher="CN=User Name" Version="0.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="B73D59BB-9D03-4910-AE89-035BE7A592E7" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <mp:PhoneIdentity PhoneProductId="0F75A6C1-72B1-488F-80E8-CFEDB2FCD030" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>AIProcessDiagramDrafting</DisplayName>
+    <DisplayName>$placeholder$</DisplayName>
     <PublisherDisplayName>User Name</PublisherDisplayName>
-    <Logo>appstore.png</Logo>
+    <Logo>$placeholder$.png</Logo>
   </Properties>
 
   <Dependencies>
@@ -28,13 +28,13 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="AIProcessDiagramDrafting"
-        Description="AIProcessDiagramDrafting"
-        Square150x150Logo="appstore.png"
-        Square44x44Logo="appstore.png"
+        DisplayName="$placeholder$"
+        Description="$placeholder$"
+        Square150x150Logo="$placeholder$.png"
+        Square44x44Logo="$placeholder$.png"
         BackgroundColor="transparent">
-        <uap:DefaultTile Square71x71Logo="appstore.png" Wide310x150Logo="appstore.png" Square310x310Logo="appstore.png" />
-        <uap:SplashScreen Image="splashscreen.png" />
+        <uap:DefaultTile Square71x71Logo="$placeholder$.png" Wide310x150Logo="$placeholder$.png" Square310x310Logo="$placeholder$.png" />
+        <uap:SplashScreen Image="$placeholder$.png" />
       </uap:VisualElements>
     </Application>
   </Applications>
