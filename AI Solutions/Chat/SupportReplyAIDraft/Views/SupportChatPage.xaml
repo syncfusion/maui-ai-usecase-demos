@@ -4,6 +4,7 @@
              xmlns:chat="clr-namespace:Syncfusion.Maui.Chat;assembly=Syncfusion.Maui.Chat"
              xmlns:viewModels="clr-namespace:SupportReplyAIDraft.ViewModels"
              x:Class="SupportReplyAIDraft.Views.SupportChatPage"
+             x:Name="RootPage"
              x:DataType="viewModels:SupportChatViewModel"
              Title="Support Reply AI Draft">
     <Grid RowDefinitions="Auto,*,Auto"
@@ -83,11 +84,11 @@
                     <Label Text="Requested information" Style="{StaticResource SectionSubtitleStyle}" />
                     <FlexLayout BindableLayout.ItemsSource="{Binding RequestedInformation}"
                                 Wrap="Wrap"
-                                Direction="Row"
-                                Spacing="8">
+                                Direction="Row">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource PillStyle}">
+                                <Border Style="{StaticResource PillStyle}"
+                                        Margin="0,0,8,8">
                                     <Label Text="{Binding .}" Style="{StaticResource PillTextStyle}" />
                                 </Border>
                             </DataTemplate>
@@ -100,11 +101,11 @@
                     <Label Text="Warnings" Style="{StaticResource SectionSubtitleStyle}" />
                     <FlexLayout BindableLayout.ItemsSource="{Binding Warnings}"
                                 Wrap="Wrap"
-                                Direction="Row"
-                                Spacing="8">
+                                Direction="Row">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource PillStyle}">
+                                <Border Style="{StaticResource PillStyle}"
+                                        Margin="0,0,8,8">
                                     <Label Text="{Binding .}" Style="{StaticResource PillTextStyle}" />
                                 </Border>
                             </DataTemplate>
