@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SupportReplyAIDraft.Views.MessageTemplates.AgentMessageTemplateView">
+    <Grid Padding="0,2" HorizontalOptions="End">
+        <Border StrokeShape="RoundRectangle 18"
+                BackgroundColor="{StaticResource AgentBubbleBackground}"
+                Stroke="{StaticResource AgentBorderColor}"
+                StrokeThickness="1"
+                Padding="12"
+                MaximumWidthRequest="560">
+            <VerticalStackLayout Spacing="6">
+                <HorizontalStackLayout Spacing="8">
+                    <VerticalStackLayout Spacing="0" HorizontalOptions="EndAndExpand">
+                        <Label Text="{Binding Timestamp}" Style="{StaticResource MessageTimeStyle}" HorizontalTextAlignment="End" />
+                        <Label Text="{Binding AuthorName}" Style="{StaticResource MessageAuthorStyle}" HorizontalTextAlignment="End" />
+                    </VerticalStackLayout>
+                    <Border Style="{StaticResource AvatarStyle}">
+                        <Label Text="{Binding Initials}" Style="{StaticResource AvatarTextStyle}" />
+                    </Border>
+                </HorizontalStackLayout>
+                <Label Text="{Binding Text}" Style="{StaticResource MessageBodyStyle}" HorizontalTextAlignment="End" />
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentView>
