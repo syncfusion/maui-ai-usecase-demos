@@ -51,8 +51,11 @@ public sealed class SupportReplyService : ISupportReplyService
                 new UserChatMessage(userPrompt)
             };
 
-            var completion = await chatClient.CompleteChatAsync(messages, cancellationToken: cancellationToken).ConfigureAwait(false);
-            var text = completion.Content.Count > 0 ? completion.Content[0].Text : string.Empty;
+            var result = await chatClient.CompleteChatAsync(messages, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var completion = result.Value;
+            var text = completion.Content.Count > 0 && !string.IsNullOrWhiteSpace(completion.Content[0].Text)
+                ? completion.Content[0].Text
+                : string.Empty;
             return _validator.Validate(text);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
