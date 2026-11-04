@@ -49,7 +49,7 @@ public partial class SupportConversationMessage : ObservableObject, IMessage
     public bool IsMessageContentHiddenAfterSelection { get; set; }
     public bool IsPinned { get; set; }
     public bool IsSuggestionViewHiddenAfterSelection { get; set; }
-    public IList<string>? Suggestions { get; set; }
+    public ChatSuggestions Suggestions { get; set; } = new();
 
     public bool CanSelect => Role == SupportConversationRole.Customer;
     public bool IsAgent => Role == SupportConversationRole.SupportAgent;
