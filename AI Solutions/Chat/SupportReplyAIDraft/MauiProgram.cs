@@ -19,6 +19,7 @@ public static class MauiProgram
             SyncfusionLicenseProvider.RegisterLicense(license);
         }
 
+        builder.Services.AddSingleton<App>();
         builder.Services.AddSingleton<Services.ConversationService>();
         builder.Services.AddSingleton<Services.ISupportReplyService, Services.SupportReplyService>();
         builder.Services.AddSingleton<Services.SupportReplyValidator>();

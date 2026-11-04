@@ -1,6 +1,7 @@
 using Azure;
 using Azure.AI.OpenAI;
 using Azure.Core;
+using OpenAI.Chat;
 using SupportReplyAIDraft.Models;
 
 namespace SupportReplyAIDraft.Services;

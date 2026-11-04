@@ -72,7 +72,6 @@ public sealed partial class SupportChatViewModel : ObservableObject
     [ObservableProperty]
     private bool hasUserEdits;
 
-    [ObservableProperty]
     private bool suppressReplyTracking;
 
     public ICommand SelectMessageCommand { get; }
@@ -243,7 +242,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
             return true;
         }
 
-        return await page.DisplayAlert(
+        return await page.DisplayAlertAsync(
             "Replace current draft?",
             "Regenerating will replace your current edits. Do you want to continue?",
             "Regenerate",

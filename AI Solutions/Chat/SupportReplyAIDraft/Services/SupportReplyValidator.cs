@@ -58,8 +58,8 @@ public sealed class SupportReplyValidator
             return SupportReplyValidationResult.Success(new SupportReplyResponse(
                 reply,
                 response.RequiresMoreInformation,
-                response.RequestedInformation ?? Array.Empty<string>(),
-                response.Warnings ?? Array.Empty<string>()));
+                response.RequestedInformation ?? new List<string>(),
+                response.Warnings ?? new List<string>()));
         }
         catch (JsonException)
         {
