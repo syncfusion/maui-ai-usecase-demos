@@ -30,6 +30,10 @@ Rules that always apply:
 2. Use the original image's pixel dimensions (top-left origin).
 3. Stay strictly inside the image boundary on every side.
 4. Never cut through the main subject the intent refers to.
+5. If the subject is close to an edge, keep extra breathing room instead
+   of clipping it; prefer a slightly wider safe crop over a tight crop
+   that cuts off hair, shoulders, hands, petals, fruit, rims, or other
+   visible subject parts.
 
 The "framing" field MUST explain how the crop satisfies the intent in one
 or two sentences, and the crop region MUST match the subject-prominence
@@ -76,13 +80,16 @@ Identify the primary subject.
 
 If a face is visible:
 - Keep the entire face visible.
-- Include the head, neck, and upper body.
-- Avoid cropping too tightly around the face.
-- Maintain balanced margins around the subject.
+- Include the full top of the head, hair, ears, neck, and both shoulders.
+- Do not clip the hairline, forehead, chin, or either shoulder.
+- Prefer a crop that ends around the upper chest/shoulders rather than the waist or hips.
+- Keep the head comfortably below the top edge with a small margin.
+- Keep both shoulders comfortably inside the left and right edges with balanced spacing.
 - Center the subject.
 
 If no face is visible:
 - Focus on the most recognizable upper portion of the subject.
+- Crop around the head and shoulders, not the torso or hips.
 
 The resulting crop should resemble a professional profile photograph
 suitable for:
@@ -94,7 +101,7 @@ suitable for:
 
 Prefer square or portrait-oriented framing.
 
-The subject should occupy approximately 50–65% of the crop area.
+The subject should occupy approximately 55–70% of the crop area.
 
 Do not generate face-only crops unless the original image contains only
 a face.
@@ -148,22 +155,25 @@ Return JSON only.
         """
 The image will be used for food photography.
 
-Identify the primary dish or food item.
+Identify the primary dish or food item and the surface it is served on.
 
 The crop should:
 
-- Keep the food fully visible.
-- Highlight presentation and texture.
-- Remove distracting background elements.
-- Preserve appealing composition.
+- Keep the entire food fully visible.
+- Include the full plate, bowl, tray, glass, or serving vessel that contains the food.
+- Never clip the rim or edge of the plate/bowl/container.
+- Preserve a small, neat margin around the serving dish.
+- Include enough of the surrounding table or setting to keep the composition natural and appetizing.
+- Highlight presentation and texture without cropping so tightly that the dish loses context.
 
-The food should occupy approximately 60–75% of the crop area.
+The food and its serving dish should occupy approximately 65–80% of the crop area.
 
 This crop should feel suitable for:
 
 - Menus
 - Food blogs
 - Delivery apps
+- Editorial food photography
 
 Return JSON only.
 """,
@@ -207,11 +217,12 @@ Identify the primary subject.
 The crop should:
 
 - Focus tightly on the subject.
-- Remove as much surrounding content as possible.
-- Keep the subject fully visible.
-- Aggressively reduce background space.
+- Remove as much surrounding content as possible without clipping the subject.
+- Keep the full visible extent of the subject inside the crop.
+- Leave a small safety margin around the subject so edges are not cut off.
+- Be careful with irregular shapes, rounded objects, stems, tops, bottoms, and protruding details.
 
-The subject should occupy approximately 75–85% of the crop area.
+The subject should occupy approximately 70–82% of the crop area.
 
 Examples:
 
@@ -220,7 +231,7 @@ Examples:
 - Product: product dominates crop.
 - Object: object dominates crop.
 
-This should be the most aggressive crop among all intents.
+This should be the most focused crop among all intents, but it must still keep the entire subject intact.
 
 Return JSON only.
 """
