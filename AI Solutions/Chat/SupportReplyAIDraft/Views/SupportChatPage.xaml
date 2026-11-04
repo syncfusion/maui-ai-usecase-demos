@@ -2,7 +2,9 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:chat="clr-namespace:Syncfusion.Maui.Chat;assembly=Syncfusion.Maui.Chat"
+             xmlns:viewModels="clr-namespace:SupportReplyAIDraft.ViewModels"
              x:Class="SupportReplyAIDraft.Views.SupportChatPage"
+             x:DataType="viewModels:SupportChatViewModel"
              Title="Support Reply AI Draft">
     <Grid RowDefinitions="Auto,*,Auto"
           BackgroundColor="{StaticResource AppBackground}"
@@ -82,8 +84,7 @@
                     <FlexLayout BindableLayout.ItemsSource="{Binding RequestedInformation}"
                                 Wrap="Wrap"
                                 Direction="Row"
-                                RowSpacing="8"
-                                ColumnSpacing="8">
+                                Spacing="8">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate>
                                 <Border Style="{StaticResource PillStyle}">
@@ -100,8 +101,7 @@
                     <FlexLayout BindableLayout.ItemsSource="{Binding Warnings}"
                                 Wrap="Wrap"
                                 Direction="Row"
-                                RowSpacing="8"
-                                ColumnSpacing="8">
+                                Spacing="8">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate>
                                 <Border Style="{StaticResource PillStyle}">
