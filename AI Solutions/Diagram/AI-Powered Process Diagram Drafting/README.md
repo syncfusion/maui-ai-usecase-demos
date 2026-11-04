@@ -1,8 +1,8 @@
 # AI-Powered Process Diagram Drafting
 
-This folder defines the sample for a single-screen .NET MAUI app that uses Syncfusion .NET MAUI Diagram to turn a short process description into an editable flowchart.
+This folder defines the sample for a single-screen .NET MAUI app under **AI Solutions** that uses Syncfusion .NET MAUI Diagram to turn a short process description into an editable flowchart.
 
-The AI suggests workflow nodes and connectors. The app validates the response, calculates diagram positions, renders the draft, and waits for the user to accept, regenerate, or discard it.
+The sample uses Azure OpenAI to extract workflow nodes and connectors. The app validates the response, calculates diagram positions, renders the draft, and waits for the user to accept, regenerate, or discard it.
 
 ## Documentation set
 

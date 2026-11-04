@@ -16,6 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
     <PackageReference Include="Syncfusion.Maui.Core" Version="31.2.2" />
     <PackageReference Include="Syncfusion.Maui.Diagram" Version="31.2.2" />
   </ItemGroup>

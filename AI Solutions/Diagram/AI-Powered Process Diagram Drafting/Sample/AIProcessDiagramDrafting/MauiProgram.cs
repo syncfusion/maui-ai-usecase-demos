@@ -19,7 +19,7 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        builder.Services.AddSingleton<IWorkflowExtractionService, WorkflowExtractionService>();
+        builder.Services.AddSingleton<IWorkflowExtractionService, AzureOpenAIWorkflowExtractionService>();
         builder.Services.AddSingleton<WorkflowResponseValidator>();
         builder.Services.AddSingleton<DiagramDraftBuilder>();
         builder.Services.AddSingleton<ProcessDiagramViewModel>();

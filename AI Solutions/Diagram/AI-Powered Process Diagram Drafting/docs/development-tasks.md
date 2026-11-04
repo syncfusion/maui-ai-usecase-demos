@@ -81,16 +81,16 @@ Done when:
 - no coordinate data comes from the AI
 - connector labels appear on the rendered branches
 
-## Task 5: Implement the AI extraction service
+## Task 5: Implement the Azure OpenAI extraction service
 
 Goal:
-Hide the AI provider behind the service interface.
+Hide Azure OpenAI behind the service interface.
 
 Work items:
 
 - Build the prompt that asks for JSON only.
-- Send the user description to the provider.
-- Parse the provider response into the workflow model.
+- Send the user description to Azure OpenAI.
+- Parse the Azure OpenAI response into the workflow model.
 - Surface warnings from the AI response.
 - Keep the implementation swappable through dependency injection.
 
