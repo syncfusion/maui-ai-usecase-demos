@@ -1,12 +1,10 @@
-using AIDiagramDrafting.ViewModels;
-
-namespace AIDiagramDrafting;
+namespace AIProcessDiagramDrafting;
 
 public partial class App : Application
 {
-    public App(ProcessDiagramPage processDiagramPage)
+    public App()
     {
         InitializeComponent();
-        MainPage = processDiagramPage;
+        MainPage = new AppShell();
     }
 }
