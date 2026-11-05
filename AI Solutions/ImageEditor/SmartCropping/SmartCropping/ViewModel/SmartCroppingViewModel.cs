@@ -227,7 +227,7 @@ public partial class SmartCroppingViewModel : ObservableObject
 
     private static async Task<FileResult?> PickImageAsync()
     {
-        if (OperatingSystem.IsIOS())
+        if (OperatingSystem.IsIOS() || OperatingSystem.IsMacCatalyst())
         {
             return await MediaPicker.Default.PickPhotoAsync(new MediaPickerOptions
             {
