@@ -1,0 +1,127 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net10.0-android</TargetFrameworks>
+		<TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('linux'))">$(TargetFrameworks);net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+
+		<!-- Note for MacCatalyst:
+		The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
+		When specifying both architectures, use the plural <RuntimeIdentifiers> instead of the singular <RuntimeIdentifier>.
+		The Mac App Store will NOT accept apps with ONLY maccatalyst-arm64 indicated;
+		either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
+		<!-- For example: <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
+
+		<OutputType>Exe</OutputType>
+		<RootNamespace>WardrobeAI</RootNamespace>
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<!-- Enable XAML source generation for faster build times and improved performance.
+		     This generates C# code from XAML at compile time instead of runtime inflation.
+		     To disable, remove this line.
+		     For individual files, you can override by setting Inflator metadata:
+		       <MauiXaml Update="MyPage.xaml" Inflator="Default" /> (reverts to defaults: Runtime for Debug, XamlC for Release)
+		       <MauiXaml Update="MyPage.xaml" Inflator="Runtime" /> (force runtime inflation) -->
+		<MauiXamlInflator>SourceGen</MauiXamlInflator>
+
+		<!-- Display name -->
+		<ApplicationTitle>WardrobeAI</ApplicationTitle>
+
+		<!-- App Identifier -->
+		<ApplicationId>com.companyname.wardrobeai</ApplicationId>
+
+		<!-- Versions -->
+		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
+
+		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
+		<WindowsPackageType>None</WindowsPackageType>
+
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- App Icon -->
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+
+		<!-- Splash Screen -->
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+
+		<!-- Images -->
+		<MauiImage Include="Resources\Images\**" />
+
+		<!--
+			Shopping-page product imagery (curated wardrobe essentials).
+			These are NOT exposed via MauiImage's source-generator because
+			we need to look them up by bare file name at runtime (the names
+			come wardrobe.json, not from XAML). Bundling them as MauiAsset
+			lets WardrobeEssentialsCatalog.ResolveImageSource stream them
+			through FileSystem.OpenAppPackageFileAsync("shopping/<name>"),
+			which works uniformly across Windows / Android / iOS / Mac and
+			avoids platform file-system path quirks. LogicalName keeps the
+			"shopping/" subfolder intact so the resolver can find files.
+		-->
+		<MauiAsset Include="Resources\Images\shopping\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+
+		<!-- Custom Fonts -->
+		<MauiFont Include="Resources\Fonts\*" />
+
+		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+		<PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.11" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11" />
+		<!--
+			EF Core Sqlite delegates to SQLitePCLRaw, which needs a native sqlite3 library at runtime.
+			The "bundle_e_sqlite3" package ships a cross-platform native build (incl. Android .so) and
+			is the recommended way to make EF Core Sqlite work on Android — without it, the first call
+			to db.Database.Migrate() in MauiProgram throws Android.Runtime.JavaProxyThrowable wrapping
+			DllNotFoundException: e_sqlite3. The 2.1.10 version is the one pinned by EF Core 10.
+		-->
+		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.12" />
+		<PackageReference Include="Syncfusion.Maui.Core" Version="34.2.5" />
+		<PackageReference Include="Syncfusion.Maui.Buttons" Version="34.2.5" />
+		<PackageReference Include="Syncfusion.Maui.Rotator" Version="34.2.5" />
+		<PackageReference Include="Syncfusion.Maui.Gauges" Version="34.2.5" />
+		<PackageReference Include="Syncfusion.Maui.Inputs" Version="34.2.5" />
+		<PackageReference Include="Syncfusion.Maui.Popup" Version="34.2.5" />
+		<PackageReference Include="Syncfusion.Maui.Picker" Version="34.2.5" />
+		<PackageReference Include="Syncfusion.Maui.TabView" Version="34.2.5" />
+		<PackageReference Include="Syncfusion.Maui.Expander" Version="34.2.5" />
+	</ItemGroup>
+
+	<!--
+		Force the XAML inflator to "Runtime" for the SfTabView host page.
+		The MAUI XAML source generator (MauiXamlInflator=SourceGen, set above
+		for faster Debug builds) chokes on Syncfusion.Maui.TabView's XAML
+		schema in this version with MAUIG1001 "ElementNode was not present
+		in the dictionary". Falling back to runtime inflation for just this
+		page resolves the parse failure while leaving every other page on
+		the faster source-gen path.
+	-->
+	<ItemGroup>
+		<MauiXaml Update="Views\Main\MainTabHostPage.xaml" Inflator="Runtime" />
+		<!--
+			The Outfit Planner page also fails to parse under the source
+			generator after switching the occasion tag template from
+			buttons:SfButton to chip:SfChip with MAUIG1001 "The method or
+			operation is not implemented." Falling back to runtime inflation
+			keeps the rest of the app on the faster source-gen path.
+		-->
+		<MauiXaml Update="Views\OutfitPlanner\OutfitPlannerPage.xaml" Inflator="Runtime" />
+	</ItemGroup>
+
+</Project>
