@@ -81,19 +81,28 @@ public sealed partial class SupportChatViewModel : ObservableObject
     public ICommand RetryCommand { get; }
     public ICommand SendCommand { get; }
 
-    public bool CanDraftReply => SelectedMessage is { CanSelect: true } && !IsDrafting && string.IsNullOrWhiteSpace(ReplyText);
+    public bool CanDraftReply => SelectedMessage is { CanSelect: true } && !IsDrafting;
     public bool CanRegenerate => SelectedMessage is not null && HasValidatedDraft && !IsDrafting;
-    public bool CanDiscard => SelectedMessage is not null && (HasValidatedDraft || !string.IsNullOrWhiteSpace(ReplyText) || ShowStatus);
+    public bool CanDiscard => SelectedMessage is not null && (HasValidatedDraft || !string.IsNullOrWhiteSpace(ReplyText));
     public bool CanSend => !IsDrafting && !string.IsNullOrWhiteSpace(ReplyText);
     public bool HasReply => !string.IsNullOrWhiteSpace(ReplyText);
     public bool IsComposerEnabled => HasValidatedDraft && !IsDrafting;
     public string ComposerHint => SelectedMessage is null
-        ? "Choose a customer message to draft a reply."
+        ? "Select a customer message to begin."
         : IsDrafting
-            ? "Drafting a structured reply from the selected message and recent context."
+            ? "Preparing a grounded reply..."
             : HasValidatedDraft
-                ? "Review, edit, regenerate, or send the draft reply."
-                : "Draft a reply from the selected message and recent context.";
+                ? "Review before sending"
+                : "Draft a reply from the selected message and recent conversation context.";
+    public string ReplyPlaceholder => SelectedMessage is null
+        ? "Select a customer message to begin."
+        : IsDrafting
+            ? "Preparing a grounded reply..."
+            : ShowStatus && !HasValidatedDraft
+                ? "No draft was generated."
+                : HasValidatedDraft
+                    ? "Write your response..."
+                    : "Generate a draft to edit it here.";
 
     public bool HasRequestedInformation => RequestedInformation.Count > 0;
     public bool HasWarnings => Warnings.Count > 0;
@@ -335,6 +344,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
         OnPropertyChanged(nameof(HasWarnings));
         OnPropertyChanged(nameof(IsComposerEnabled));
         OnPropertyChanged(nameof(ComposerHint));
+        OnPropertyChanged(nameof(ReplyPlaceholder));
         (DraftReplyCommand as Command)?.ChangeCanExecute();
         (RegenerateCommand as Command)?.ChangeCanExecute();
         (DiscardCommand as Command)?.ChangeCanExecute();

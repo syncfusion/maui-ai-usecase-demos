@@ -58,8 +58,8 @@ Approval is required before:
 - Deletion other than approved harness cleanup
 
 ## Completion Evidence
-- Internal harness files created only in the allowed path.
-- No implementation files created.
+- Internal harness files remain in the allowed path.
+- Implementation changes stay within the allowed path.
 - No design-reference files modified.
 - Package verification recorded with verified versions, sources, and compatibility.
 
@@ -77,9 +77,9 @@ Stop when:
 
 ## Cleanup and Final Git Review
 Before final implementation commit and push:
-1. Delete `HARNESS.md`, `INTENT.md`, `SPEC.md`, `PLAN.md`, and `TASKS.md`.
-2. Verify Git status and staged files contain none of those files.
-3. Confirm no temporary harness artifacts remain.
+1. Keep `HARNESS.md`, `INTENT.md`, `SPEC.md`, `PLAN.md`, and `TASKS.md` in place.
+2. Verify Git status and staged files contain only the intended implementation changes.
+3. Confirm no temporary harness artifacts remain outside the preserved harness files.
 
 ## Optional Build Policy
 - Build is deferred until explicit approval.

@@ -10,13 +10,14 @@ The agent needs a controlled way to draft a professional reply to one selected c
 Produce an editable reply draft that the agent can review, edit, regenerate, discard, and explicitly send.
 
 ## Goals
-- Display one fictional support conversation
+- Display one fictional support conversation in a single SfChat surface
 - Allow exactly one customer message to be selected
 - Draft a context-aware reply from Azure OpenAI
 - Validate structured JSON before display
 - Preserve the conversation and selection during failures
 - Keep Send under explicit agent control
 - Support responsive desktop and mobile layouts
+- Keep the reply editor integrated with the same conversation surface
 
 ## Non-goals
 - Knowledge retrieval or knowledge UI
@@ -28,13 +29,13 @@ Produce an editable reply draft that the agent can review, edit, regenerate, dis
 - WebView or copied web implementation
 
 ## Success Definition
-The harness is ready when the temporary planning files capture the full contract, constraints, acceptance coverage, and cleanup rules needed for later implementation without changing the design references.
+The sample is ready when the approved support-reply workflow is implemented in the allowed folder, the design references remain unchanged, and the documented states match the approved workflow.
 
 ## Approval Owner
 Human reviewer / product owner
 
 ## Completion Evidence
-- Five internal harness files created under `AI Solutions/Chat/SupportReplyAIDraft`
-- No implementation files created
+- Five internal harness files are preserved under `AI Solutions/Chat/SupportReplyAIDraft`
+- Implementation files remain within the allowed folder
 - No design-reference files modified
-- Package verification recorded as blocked rather than guessed
+- Package verification recorded as 35.1.43 and build validation is unavailable in the sandbox

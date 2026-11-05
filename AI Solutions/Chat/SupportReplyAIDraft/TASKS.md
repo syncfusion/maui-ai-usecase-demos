@@ -6,7 +6,7 @@
 | T-002 | Record the approved product contract and harness rules | REQ-001 through REQ-077 | Complete | Approved prompt contract | `AI Solutions/Chat/SupportReplyAIDraft` | Harness files created with full contract coverage | None |
 | T-003 | Map requirements to acceptance criteria | REQ-001 through REQ-077 | Complete | SPEC.md | `AI Solutions/Chat/SupportReplyAIDraft` | One-to-one requirement-to-acceptance mapping documented | None |
 | T-004 | Capture package, secret, and cleanup policy | REQ-075, REQ-076, REQ-077 | Complete | Approved prompt contract | `AI Solutions/Chat/SupportReplyAIDraft` | Policy sections recorded in HARNESS.md and SPEC.md | None |
-| T-005 | Prepare for later implementation planning only | REQ-060, REQ-061, REQ-062 | Complete | Package verification, approval, and final design review | `AI Solutions/Chat/SupportReplyAIDraft` | Static implementation files now exist for the solution, MAUI shell, chat page, templates, services, validator, README, and .slnx convention | None |
+| T-005 | Implement the approved support-reply UI and workflow | REQ-001 through REQ-059 | In Progress | Package verification, approval, and final design review | `AI Solutions/Chat/SupportReplyAIDraft` | Support chat page, templates, services, validator, README, and state wiring reflect the approved workflow | None |
 
 ## Status Rules
 - Only one implementation task should be In Progress when implementation begins.

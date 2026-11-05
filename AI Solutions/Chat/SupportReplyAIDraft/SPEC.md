@@ -37,7 +37,7 @@ Thanks for confirming that the renewal was successful. I understand that the app
 MSG-004 is the selected message in the Generated Reply state.
 
 ## 2. EARS Requirements
-- REQ-001: The system shall display one fictional support conversation.
+- REQ-001: The system shall display one fictional support conversation with three customer messages and one support-agent message.
 - REQ-002: The system shall allow exactly one customer message to be selected.
 - REQ-003: The system shall not allow support-agent messages to be selected.
 - REQ-004: When a customer message is selected, the system shall show `Selected for reply`.
@@ -49,8 +49,8 @@ MSG-004 is the selected message in the Generated Reply state.
 - REQ-010: When the user activates Draft Reply for a selected customer message, the system shall send the selected message and relevant recent conversation context to Azure OpenAI.
 - REQ-011: While reply generation is in progress, the system shall display `Drafting reply...`.
 - REQ-012: While reply generation is in progress, the system shall display a progress indicator.
-- REQ-013: While reply generation is in progress, the system shall display `Reviewing the conversation...`.
-- REQ-014: While reply generation is in progress, the system shall display `Preparing a reply...`.
+- REQ-013: While reply generation is in progress, the system shall display `Drafting reply...` in the selected customer message card.
+- REQ-014: While reply generation is in progress, the system shall display `Preparing a grounded reply...` in the Reply composer placeholder.
 - REQ-015: While reply generation is in progress, the system shall keep the Reply composer empty.
 - REQ-016: While reply generation is in progress, the system shall disable the Reply composer.
 - REQ-017: While reply generation is in progress, the system shall disable Discard.

@@ -2,7 +2,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
     <Style x:Key="PageTitleStyle" TargetType="Label">
-        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontSize" Value="22" />
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
     </Style>
@@ -11,7 +11,7 @@
         <Setter Property="TextColor" Value="{StaticResource TextSecondaryColor}" />
     </Style>
     <Style x:Key="SectionTitleStyle" TargetType="Label">
-        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontSize" Value="16" />
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
     </Style>
@@ -83,7 +83,7 @@
     <Style x:Key="ReplyEditorStyle" TargetType="Editor">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
-        <Setter Property="BackgroundColor" Value="#FBFCFF" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="AutoSize" Value="TextChanges" />
         <Setter Property="Margin" Value="0" />
     </Style>

@@ -1,9 +1,9 @@
 # Support Reply AI Draft Plan
 
 ## Current status
-- The static implementation has been laid out in the allowed folder.
+- The approved support-reply workflow is being aligned with the allowed folder implementation.
 - The solution uses the repository's `.slnx` convention.
-- Completion evidence is still static only; build and runtime verification remain deferred.
+- Build and runtime verification remain deferred because the sandbox lacks the required tooling.
 
 ## Phase 1: Package verification
 - Expected files: `SupportReplyAIDraft.csproj` and package reference sources
@@ -149,17 +149,17 @@
 - Approval: required for publication beyond the allowed path
 - Recovery action: defer publication if approval is missing
 
-## Phase 19: Temporary-file cleanup
-- Expected files: delete `HARNESS.md`, `INTENT.md`, `SPEC.md`, `PLAN.md`, `TASKS.md`
+## Phase 19: Harness-file preservation and final implementation review
+- Expected files: `HARNESS.md`, `INTENT.md`, `SPEC.md`, `PLAN.md`, `TASKS.md`
 - Dependencies: completion of implementation and review
-- Completion condition: all five internal files are removed
-- Evidence: clean Git status for those files
-- Approval: required before deletion in final cleanup
-- Recovery action: verify no stale harness files remain
+- Completion condition: the harness files remain in place and the implementation review is complete
+- Evidence: preserved harness files and review notes
+- Approval: not required for review, required for any edits beyond the allowed scope
+- Recovery action: verify the harness files are still present if they are accidentally removed
 
 ## Phase 20: Final Git inspection
 - Expected files: Git status and staged changes
-- Dependencies: cleanup complete
+- Dependencies: review complete
 - Completion condition: only approved changes remain staged or committed
 - Evidence: final status review
 - Approval: required before commit or push

@@ -2,157 +2,208 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:chat="clr-namespace:Syncfusion.Maui.Chat;assembly=Syncfusion.Maui.Chat"
-             xmlns:system="clr-namespace:System;assembly=System.Runtime"
              xmlns:viewModels="clr-namespace:SupportReplyAIDraft.ViewModels"
              x:Class="SupportReplyAIDraft.Views.SupportChatPage"
              x:Name="RootPage"
              x:DataType="viewModels:SupportChatViewModel"
              Title="Support Reply AI Draft">
-    <Grid RowDefinitions="Auto,*,Auto"
-          BackgroundColor="{StaticResource AppBackground}"
-          Padding="20,20,20,32">
-        <VerticalStackLayout Spacing="4" Grid.Row="0">
-            <Label Text="AI-Powered Support Reply Drafting"
+    <Grid RowDefinitions="Auto,Auto,*"
+          BackgroundColor="{StaticResource AppBackground}">
+        <Grid.Padding>
+            <OnIdiom x:TypeArguments="Thickness">
+                <OnIdiom.Phone>0</OnIdiom.Phone>
+                <OnIdiom.Tablet>16</OnIdiom.Tablet>
+                <OnIdiom.Desktop>20</OnIdiom.Desktop>
+                <OnIdiom.Default>20</OnIdiom.Default>
+            </OnIdiom>
+        </Grid.Padding>
+
+        <VerticalStackLayout Grid.Row="0" Spacing="4">
+            <Label Text="Support Reply AI Draft"
                    Style="{StaticResource PageTitleStyle}" />
-            <Label Text="Select a customer message, draft a reply, review the generated text, and send only when ready."
+            <Label Text="Select one customer message, draft a response, review it, and send only when ready."
                    Style="{StaticResource PageSubtitleStyle}" />
         </VerticalStackLayout>
 
         <Border Grid.Row="1"
-                Style="{StaticResource SurfaceCardStyle}"
-                Margin="0,16,0,12">
-            <Grid RowDefinitions="Auto,*" RowSpacing="12">
-                <Grid ColumnDefinitions="*,Auto" Padding="16,16,16,0">
+                Margin="0,16,0,12"
+                BackgroundColor="{StaticResource SurfaceColor}"
+                Stroke="{StaticResource BubbleBorderColor}"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 20">
+            <Grid ColumnDefinitions="*,Auto" Padding="16,14" ColumnSpacing="16">
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="Subject"
+                           Style="{StaticResource SectionSubtitleStyle}" />
+                    <Label Text="License still shows as expired after renewal"
+                           Style="{StaticResource MessageAuthorStyle}"
+                           LineBreakMode="TailTruncation" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1"
+                                     Spacing="2"
+                                     HorizontalOptions="End">
+                    <Label Text="CS-28417"
+                           Style="{StaticResource MessageTimeStyle}"
+                           HorizontalTextAlignment="End" />
+                    <Label Text="Alex Morgan"
+                           Style="{StaticResource MessageAuthorStyle}"
+                           HorizontalTextAlignment="End" />
+                    <Label Text="Open"
+                           Style="{StaticResource SectionSubtitleStyle}"
+                           HorizontalTextAlignment="End" />
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="2"
+                Style="{StaticResource SurfaceCardStyle}">
+            <Grid RowDefinitions="Auto,*,Auto">
+                <Grid Grid.Row="0"
+                      ColumnDefinitions="*,Auto"
+                      Padding="16,16,16,0">
                     <VerticalStackLayout Spacing="2">
-                        <Label Text="Conversation" Style="{StaticResource SectionTitleStyle}" />
-                        <Label Text="Select a customer message to begin." Style="{StaticResource SectionSubtitleStyle}" />
+                        <Label Text="Conversation"
+                               Style="{StaticResource SectionTitleStyle}" />
+                        <Label Text="Select a customer message to draft a grounded reply."
+                               Style="{StaticResource SectionSubtitleStyle}" />
                     </VerticalStackLayout>
-                    <Border Grid.Column="1"
-                            VerticalOptions="Center"
-                            IsVisible="{Binding SelectedMessage, Converter={StaticResource NullToBoolConverter}}"
-                            Style="{StaticResource SelectedBadgeStyle}">
-                        <HorizontalStackLayout Spacing="6">
-                            <Label Text="✓" Style="{StaticResource BadgeIconStyle}" />
-                            <Label Text="Selected for reply" Style="{StaticResource BadgeTextStyle}" />
-                        </HorizontalStackLayout>
-                    </Border>
                 </Grid>
 
                 <chat:SfChat x:Name="ConversationChat"
                             Grid.Row="1"
                             Messages="{Binding Messages}"
                             CurrentUser="{Binding CurrentUser}"
+                            ShowMessageInputView="False"
                             Margin="0,0,0,4"
                             VerticalOptions="Fill"
                             BackgroundColor="Transparent" />
-            </Grid>
-        </Border>
 
-        <Border Grid.Row="2"
-                Style="{StaticResource SurfaceCardStyle}">
-            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="10" Padding="16">
-                <Grid ColumnDefinitions="*,Auto">
-                    <VerticalStackLayout Spacing="2">
-                        <Label Text="Reply composer" Style="{StaticResource SectionTitleStyle}" />
-                        <Label Text="{Binding ComposerHint}" Style="{StaticResource SectionSubtitleStyle}" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="End" Spacing="4">
-                        <Label Text="AI draft"
-                               IsVisible="{Binding HasValidatedDraft}"
-                               HorizontalOptions="End"
-                               Style="{StaticResource BadgeTextStyle}" />
-                        <Label Text="Review before sending"
-                               IsVisible="{Binding HasValidatedDraft}"
-                               HorizontalOptions="End"
-                               Style="{StaticResource SectionSubtitleStyle}" />
-                    </VerticalStackLayout>
-                </Grid>
-
-                <Border Grid.Row="1"
-                        IsVisible="{Binding ShowStatus}"
-                        Style="{StaticResource ErrorBannerStyle}">
-                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                        <Label Text="!" Style="{StaticResource ErrorIconStyle}" />
+                <Grid Grid.Row="2"
+                      RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+                      RowSpacing="10"
+                      Padding="16,0,16,16">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                         <VerticalStackLayout Spacing="2">
-                            <Label Text="{Binding StatusTitle}" Style="{StaticResource ErrorTitleStyle}" />
-                            <Label Text="{Binding StatusMessage}" Style="{StaticResource ErrorMessageStyle}" />
+                            <Label Text="Reply"
+                                   Style="{StaticResource SectionTitleStyle}" />
+                            <Label Text="Review before sending"
+                                   IsVisible="{Binding HasValidatedDraft}"
+                                   Style="{StaticResource SectionSubtitleStyle}" />
                         </VerticalStackLayout>
+
+                        <Border Grid.Column="1"
+                                IsVisible="{Binding HasValidatedDraft}"
+                                VerticalOptions="Start"
+                                Style="{StaticResource SelectedBadgeStyle}">
+                            <HorizontalStackLayout Spacing="6">
+                                <Label Text="AI draft"
+                                       Style="{StaticResource BadgeTextStyle}" />
+                            </HorizontalStackLayout>
+                        </Border>
                     </Grid>
-                </Border>
 
-                <VerticalStackLayout Grid.Row="2" Spacing="8"
-                                     IsVisible="{Binding ShowRequestedInformation}">
-                    <Label Text="Requested information" Style="{StaticResource SectionSubtitleStyle}" />
-                    <FlexLayout BindableLayout.ItemsSource="{Binding RequestedInformation}"
-                                Wrap="Wrap"
-                                Direction="Row">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="system:String">
-                                <Border Style="{StaticResource PillStyle}"
-                                        Margin="0,0,8,8">
-                                    <Label Text="{Binding .}" Style="{StaticResource PillTextStyle}" />
-                                </Border>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </FlexLayout>
-                </VerticalStackLayout>
+                    <Border Grid.Row="1"
+                            IsVisible="{Binding ShowStatus}"
+                            Style="{StaticResource ErrorBannerStyle}">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <Label Text="!"
+                                   Style="{StaticResource ErrorIconStyle}" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="{Binding StatusTitle}"
+                                       Style="{StaticResource ErrorTitleStyle}" />
+                                <Label Text="{Binding StatusMessage}"
+                                       Style="{StaticResource ErrorMessageStyle}" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="2"
+                                    Text="Retry"
+                                    Command="{Binding RetryCommand}"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Padding="14,0"
+                                    HeightRequest="34"
+                                    VerticalOptions="Start" />
+                        </Grid>
+                    </Border>
 
-                <VerticalStackLayout Grid.Row="3" Spacing="8"
-                                     IsVisible="{Binding HasWarnings}">
-                    <Label Text="Warnings" Style="{StaticResource SectionSubtitleStyle}" />
-                    <FlexLayout BindableLayout.ItemsSource="{Binding Warnings}"
-                                Wrap="Wrap"
-                                Direction="Row">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="system:String">
-                                <Border Style="{StaticResource PillStyle}"
-                                        Margin="0,0,8,8">
-                                    <Label Text="{Binding .}" Style="{StaticResource PillTextStyle}" />
-                                </Border>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </FlexLayout>
-                </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Row="2"
+                                         Spacing="8"
+                                         IsVisible="{Binding ShowRequestedInformation}">
+                        <Label Text="Requested information"
+                               Style="{StaticResource SectionSubtitleStyle}" />
+                        <FlexLayout BindableLayout.ItemsSource="{Binding RequestedInformation}"
+                                    Wrap="Wrap"
+                                    Direction="Row">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource PillStyle}"
+                                            Margin="0,0,8,8">
+                                        <Label Text="{Binding .}"
+                                               Style="{StaticResource PillTextStyle}" />
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                    </VerticalStackLayout>
 
-                <Editor Grid.Row="4"
-                        Text="{Binding ReplyText, Mode=TwoWay}"
-                        Placeholder="Generate a draft to edit it here."
-                        AutoSize="TextChanges"
-                        IsEnabled="{Binding IsComposerEnabled}"
-                        MinimumHeightRequest="120"
-                        Style="{StaticResource ReplyEditorStyle}" />
+                    <VerticalStackLayout Grid.Row="3"
+                                         Spacing="8"
+                                         IsVisible="{Binding HasWarnings}">
+                        <Label Text="Warnings"
+                               Style="{StaticResource SectionSubtitleStyle}" />
+                        <FlexLayout BindableLayout.ItemsSource="{Binding Warnings}"
+                                    Wrap="Wrap"
+                                    Direction="Row">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource PillStyle}"
+                                            Margin="0,0,8,8">
+                                        <Label Text="{Binding .}"
+                                               Style="{StaticResource PillTextStyle}" />
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                    </VerticalStackLayout>
 
-                <Grid Grid.Row="5" ColumnDefinitions="Auto,Auto,Auto,*,Auto" ColumnSpacing="10">
-                    <Button Text="Draft Reply"
-                            Command="{Binding DraftReplyCommand}"
-                            IsVisible="{Binding CanDraftReply}"
-                            Style="{StaticResource PrimaryButtonStyle}" />
-                    <Button Text="Discard"
-                            Command="{Binding DiscardCommand}"
-                            IsEnabled="{Binding CanDiscard}"
-                            Style="{StaticResource SecondaryButtonStyle}" />
-                    <Button Text="Regenerate"
-                            Command="{Binding RegenerateCommand}"
-                            IsVisible="{Binding CanRegenerate}"
-                            Style="{StaticResource SecondaryButtonStyle}" />
-                    <ActivityIndicator Grid.Column="3"
-                                       IsRunning="{Binding IsDrafting}"
-                                       IsVisible="{Binding IsDrafting}"
-                                       HorizontalOptions="End"
-                                       Color="{StaticResource AccentColor}" />
-                    <Button Grid.Column="4"
-                            Text="Send"
-                            Command="{Binding SendCommand}"
-                            IsEnabled="{Binding CanSend}"
-                            Style="{StaticResource PrimaryButtonStyle}" />
+                    <Border Grid.Row="4"
+                            Stroke="{StaticResource BubbleBorderColor}"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 16"
+                            BackgroundColor="White"
+                            Padding="12">
+                        <Editor Text="{Binding ReplyText, Mode=TwoWay}"
+                                Placeholder="{Binding ReplyPlaceholder}"
+                                AutoSize="TextChanges"
+                                IsEnabled="{Binding IsComposerEnabled}"
+                                MinimumHeightRequest="120"
+                                Style="{StaticResource ReplyEditorStyle}" />
+                    </Border>
+
+                    <Grid Grid.Row="5"
+                          ColumnDefinitions="Auto,Auto,*,Auto"
+                          ColumnSpacing="10">
+                        <Button Text="Discard"
+                                Command="{Binding DiscardCommand}"
+                                IsEnabled="{Binding CanDiscard}"
+                                Style="{StaticResource SecondaryButtonStyle}" />
+                        <Button Grid.Column="1"
+                                Text="Regenerate"
+                                Command="{Binding RegenerateCommand}"
+                                IsVisible="{Binding CanRegenerate}"
+                                Style="{StaticResource SecondaryButtonStyle}" />
+                        <ActivityIndicator Grid.Column="2"
+                                           IsRunning="{Binding IsDrafting}"
+                                           IsVisible="{Binding IsDrafting}"
+                                           HorizontalOptions="End"
+                                           VerticalOptions="Center"
+                                           Color="{StaticResource AccentColor}" />
+                        <Button Grid.Column="3"
+                                Text="Send"
+                                Command="{Binding SendCommand}"
+                                IsEnabled="{Binding CanSend}"
+                                Style="{StaticResource PrimaryButtonStyle}" />
+                    </Grid>
                 </Grid>
-
-                <Button Grid.Row="6"
-                        Text="Retry"
-                        Command="{Binding RetryCommand}"
-                        HorizontalOptions="End"
-                        IsVisible="{Binding ShowStatus}"
-                        Style="{StaticResource SecondaryButtonStyle}" />
             </Grid>
         </Border>
     </Grid>
