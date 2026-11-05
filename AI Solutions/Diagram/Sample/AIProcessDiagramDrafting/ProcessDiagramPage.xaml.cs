@@ -36,6 +36,26 @@ public partial class ProcessDiagramPage : ContentPage
         }
     }
 
+    private async void OnGenerateDraftClicked(object? sender, EventArgs e)
+    {
+        await viewModel.GenerateDraftAsync();
+    }
+
+    private async void OnRegenerateClicked(object? sender, EventArgs e)
+    {
+        await viewModel.RegenerateAsync();
+    }
+
+    private void OnAcceptDraftClicked(object? sender, EventArgs e)
+    {
+        viewModel.AcceptDraft();
+    }
+
+    private void OnDiscardClicked(object? sender, EventArgs e)
+    {
+        viewModel.DiscardDraft();
+    }
+
     private void OnLoaded(object? sender, EventArgs e)
     {
         ApplyLayout(Width);

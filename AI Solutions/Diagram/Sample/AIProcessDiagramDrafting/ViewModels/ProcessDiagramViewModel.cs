@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
 using AIProcessDiagramDrafting.Models;
 using AIProcessDiagramDrafting.Services;
 
@@ -52,23 +51,11 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
         selectedExample = examples[0];
         processDescription = selectedExample.Description;
 
-        GenerateDraftCommand = new Command(async () => await GenerateDraftAsync());
-        AcceptDraftCommand = new Command(AcceptDraft);
-        RegenerateCommand = new Command(async () => await RegenerateAsync());
-        DiscardCommand = new Command(DiscardDraft);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public Func<string, Task<bool>>? ConfirmReplaceDraftAsync { get; set; }
-
-    public ICommand GenerateDraftCommand { get; }
-
-    public ICommand AcceptDraftCommand { get; }
-
-    public ICommand RegenerateCommand { get; }
-
-    public ICommand DiscardCommand { get; }
 
     public ObservableCollection<WorkflowExample> Examples => examples;
 
@@ -238,7 +225,7 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
         IsDraftDirty = true;
     }
 
-    private async Task GenerateDraftAsync()
+    public async Task GenerateDraftAsync()
     {
         if (!CanGenerate)
         {
@@ -279,7 +266,7 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
             }
 
             IsDraftDirty = false;
-            StatusMessage = HasWarnings ? "Draft generated with warnings." : string.Empty;
+            StatusMessage = HasWarnings ? "Draft generated with warnings." : "Draft generated.";
         }
         catch
         {
@@ -291,10 +278,16 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
         }
     }
 
-    private async Task RegenerateAsync()
+    public async Task RegenerateAsync()
     {
-        if (IsBusy || CurrentWorkflow is null)
+        if (IsBusy)
         {
+            return;
+        }
+
+        if (CurrentWorkflow is null)
+        {
+            StatusMessage = "Generate a draft before regenerating it.";
             return;
         }
 
@@ -310,10 +303,11 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
         await GenerateDraftAsync();
     }
 
-    private void AcceptDraft()
+    public void AcceptDraft()
     {
         if (CurrentWorkflow is null)
         {
+            StatusMessage = "Generate a draft before accepting it.";
             return;
         }
 
@@ -321,13 +315,19 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
         StatusMessage = "Draft accepted.";
     }
 
-    private void DiscardDraft()
+    public void DiscardDraft()
     {
+        if (CurrentWorkflow is null)
+        {
+            StatusMessage = "Generate a draft before discarding it.";
+            return;
+        }
+
         CurrentWorkflow = null;
         CurrentDiagram = null;
         Warnings.Clear();
         IsDraftDirty = false;
-        StatusMessage = string.Empty;
+        StatusMessage = "Draft discarded.";
     }
 
     private void OnWarningsChanged(object? sender, NotifyCollectionChangedEventArgs e)
