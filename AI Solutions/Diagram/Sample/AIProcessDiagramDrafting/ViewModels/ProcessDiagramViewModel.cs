@@ -88,6 +88,7 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
             OnPropertyChanged();
             OnPropertyChanged(nameof(CanGenerate));
             OnPropertyChanged(nameof(HasStatusMessage));
+            RaiseCommandCanExecuteChanged();
         }
     }
 
@@ -128,6 +129,7 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(CanRegenerate));
             OnPropertyChanged(nameof(CanDiscard));
             OnPropertyChanged(nameof(IsInputVisible));
+            RaiseCommandCanExecuteChanged();
         }
     }
 
@@ -159,6 +161,7 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
             statusMessage = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(HasStatusMessage));
+            RaiseCommandCanExecuteChanged();
         }
     }
 
@@ -213,6 +216,7 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
             isCompactLayout = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(IsInputVisible));
+            RaiseCommandCanExecuteChanged();
         }
     }
 
