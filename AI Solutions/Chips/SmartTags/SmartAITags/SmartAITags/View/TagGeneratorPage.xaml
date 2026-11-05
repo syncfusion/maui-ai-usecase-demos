@@ -3,8 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SmartAITags.TagGeneratorPage"
              xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
-             xmlns:model="clr-namespace:SmartAITags"
-              >
+             xmlns:model="clr-namespace:SmartAITags">
 
     <!-- BindingContext is set in the code-behind constructor from DI. -->
 
@@ -161,13 +160,13 @@
                    - IsLoading     : centered loader + "Generating tags"
                    - HasTags       : wrapping SfChipGroup with stronger styling -->
             <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
-        StrokeThickness="1"
-        Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
-        StrokeShape="RoundRectangle 12"
-        Padding="14,12,14,12"
-        MinimumHeightRequest="96"
-        HorizontalOptions="Fill"
-        VerticalOptions="Start">
+                    StrokeThickness="1"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}"
+                    StrokeShape="RoundRectangle 12"
+                    Padding="14,12,14,12"
+                    MinimumHeightRequest="96"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Start">
 
                 <Grid RowDefinitions="*">
 
@@ -202,50 +201,47 @@
                     </HorizontalStackLayout>
 
                     <syncfusion:SfChipGroup Grid.Row="0"
-    x:Name="chipsControl"
-    ItemsSource="{Binding Tags}"
-    DisplayMemberPath="Name"
-    ChipType="Action"
-    ChipBackground="{StaticResource BrandAccent}"
-    ChipTextColor="White"
-    ChipStrokeThickness="0"
-    ChipPadding="6,4,0,4"
-    HorizontalOptions="Fill"
-    VerticalOptions="Start"
-    SemanticProperties.Description="AI generated tag chips">
+                                x:Name="chipsControl"
+                                ItemsSource="{Binding Tags}"
+                                DisplayMemberPath="Name"
+                                ChipType="Action"
+                                ChipBackground="{StaticResource BrandAccent}"
+                                ChipTextColor="White"
+                                ChipStrokeThickness="0"
+                                ChipPadding="6,4,0,4"
+                                HorizontalOptions="Fill"
+                                VerticalOptions="Start"
+                                SemanticProperties.Description="AI generated tag chips">
                         <!--
-        Wrap chips to multiple rows by replacing the default horizontal
-        StackLayout with a FlexLayout. Without this, the chip group defaults
-        to a single-line horizontal StackLayout, and any chip that doesn't fit
-        is clipped (which is the "single line + missing tags" issue).
-    -->
+                            Wrap chips to multiple rows by replacing the default horizontal
+                            StackLayout with a FlexLayout. Without this, the chip group defaults
+                            to a single-line horizontal StackLayout, and any chip that doesn't fit
+                            is clipped (which is the "single line + missing tags" issue).
+                        -->
                         <syncfusion:SfChipGroup.ChipLayout>
                             <FlexLayout HorizontalOptions="Start"
-                    VerticalOptions="Start"
-                    Direction="Row"
-                    Wrap="Wrap"
-                    JustifyContent="Start"
-                    AlignItems="Start"
-                    AlignContent="Start"/>
+                                        VerticalOptions="Start"
+                                        Direction="Row"
+                                        Wrap="Wrap"
+                                        JustifyContent="Start"
+                                        AlignItems="Start"
+                                        AlignContent="Start"/>
                         </syncfusion:SfChipGroup.ChipLayout>
                         <syncfusion:SfChipGroup.ItemTemplate>
                             <DataTemplate x:DataType="model:TagModel">
                                 <Label Text="{Binding Name}"
-                   FontSize="13"
-                   Padding="4"
-                   TextColor="White"
-                   MaxLines="2"
-                   LineBreakMode="WordWrap"
-                   HorizontalOptions="Start"
-                   VerticalOptions="Center"/>
+                                       FontSize="13"
+                                       Padding="4"
+                                       TextColor="White"
+                                       MaxLines="2"
+                                       LineBreakMode="WordWrap"
+                                       HorizontalOptions="Start"
+                                       VerticalOptions="Center"/>
                             </DataTemplate>
                         </syncfusion:SfChipGroup.ItemTemplate>
                     </syncfusion:SfChipGroup>
                 </Grid>
             </Border>
-
-
-
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:chip="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:chipCore="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:gauge="clr-namespace:Syncfusion.Maui.Gauges;assembly=Syncfusion.Maui.Gauges"
+             xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:picker="clr-namespace:Syncfusion.Maui.Picker;assembly=Syncfusion.Maui.Picker"
+             xmlns:rotator="clr-namespace:Syncfusion.Maui.Rotator;assembly=Syncfusion.Maui.Rotator"
+             xmlns:vm="clr-namespace:WardrobeAI.ViewModels"
+             x:Class="WardrobeAI.Views.OutfitPlanner.OutfitPlannerPage"
+             x:Name="PlanPage"
+             x:DataType="vm:OutfitPlannerViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Background}, Dark={StaticResource BackgroundDark}}">
+
+    <Grid RowDefinitions="Auto, *" RowSpacing="0">
+        <Grid.Resources>
+            <Style TargetType="buttons:SfButton" x:Key="OccasionChip">
+                <Setter Property="CornerRadius" Value="20"/>
+                <Setter Property="FontFamily" Value="OpenSansSemibold"/>
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="Padding" Value="10,6"/>
+            </Style>
+            <!-- SfChipGroup styling for the suggestion-chip row (Work / Meeting /
+                 Casual / Party). SfChip has no public XAML-bindable Background
+                 or TextColor that lights up reliably across the Windows /
+                 Android / iOS renderers, so any per-chip `<chip:SfChip
+                 Background=… TextColor=…>` wiring collapses to an empty pill
+                 (no text, no fill) on Windows — the previous attempt at that
+                 produced four empty ovals. SfChipGroup exposes
+                 ChipBackground / ChipTextColor for the unselected state and
+                 SelectedChipBackground / SelectedChipTextColor for the
+                 selected state; those are wired with linked Setter values
+                 keyed off the existing color resources so the visual stays
+                 consistent with the rest of the planner page. ChipType=Choice
+                 gives us built-in single-select behavior; SelectionChanged is
+                 handled in the VM via the bound SelectedItem. -->
+            <Style TargetType="chip:SfChipGroup" x:Key="OccasionChipGroup">
+                <Setter Property="ChipType" Value="Choice"/>
+                <Setter Property="ChipCornerRadius" Value="20"/>
+                <Setter Property="ChipStrokeThickness" Value="0"/>
+                <Setter Property="ChipBackground" Value="{AppThemeBinding Light={StaticResource SurfaceContainerHighest}, Dark={StaticResource Gray900}}"/>
+                <Setter Property="ChipTextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"/>
+                <Setter Property="SelectedChipBackground" Value="{StaticResource Primary}"/>
+                <Setter Property="SelectedChipTextColor" Value="{StaticResource OnPrimary}"/>
+                <Setter Property="SelectionIndicatorColor" Value="{StaticResource OnPrimary}"/>
+            </Style>
+            <Style TargetType="buttons:SfButton" x:Key="PrimaryCircle">
+                <Setter Property="Background" Value="{StaticResource Primary}"/>
+                <Setter Property="TextColor" Value="{StaticResource OnPrimary}"/>
+                <Setter Property="CornerRadius" Value="28"/>
+                <Setter Property="WidthRequest" Value="48"/>
+                <Setter Property="HeightRequest" Value="48"/>
+                <Setter Property="Padding" Value="0"/>
+            </Style>
+            <!-- Floating Action Button (FAB) anchored at the bottom-right of the page. -->
+            <Style TargetType="buttons:SfButton" x:Key="Fab">
+                <Setter Property="Background" Value="{StaticResource Primary}"/>
+                <Setter Property="TextColor" Value="{StaticResource OnPrimary}"/>
+                <Setter Property="FontFamily" Value="OpenSansSemibold"/>
+                <Setter Property="FontSize" Value="22"/>
+                <Setter Property="WidthRequest" Value="56"/>
+                <Setter Property="HeightRequest" Value="56"/>
+                <Setter Property="CornerRadius" Value="12"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="HorizontalOptions" Value="End"/>
+                <Setter Property="VerticalOptions" Value="Center"/>
+                <Setter Property="Shadow">
+                    <Shadow Brush="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Black}}"
+                            Offset="0,4" Radius="12" Opacity="0.35"/>
+                </Setter>
+            </Style>
+        </Grid.Resources>
+
+        <!-- Top App Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" HorizontalOptions="Fill" Padding="20,0,20,20"
+              BackgroundColor="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}"
+              IsVisible="{OnIdiom Phone=True, Default=False}">
+            <syncfusion:SfAvatarView ImageSource="ai.png" ContentType="Default" WidthRequest="40" HeightRequest="40" VerticalOptions="Center" Background="Transparent"/>
+            <Label Grid.Column="1" Style="{StaticResource TitleLarge}" Text="Wardrobe AI" VerticalOptions="Center" HorizontalOptions="Center" FontSize="24" Padding="-20,0,0,0"/>
+        </Grid>
+
+        <ScrollView Grid.Row="1" Padding="20,8,20,16" VerticalScrollBarVisibility="Never">
+            <VerticalStackLayout Spacing="24">
+
+                <!-- Header + Occasion chips -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Style="{StaticResource DisplayLarge}" Text="Create My Outfit" FontSize="28" IsVisible="{OnIdiom Phone=True, Default=False}"/>
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <!-- Looks-style Suggestion chip group. SfChipGroup with
+                             ChipType=Choice renders each OccasionChip item with
+                             built-in single-select coloring (SelectedChipBackground
+                             / SelectedChipTextColor). The bound `SelectedItem`
+                             property is kept on the VM as the source-of-truth for
+                             which planner category is active; SelectionChanged is
+                             routed to SelectOccasionAsyncCommand so we still
+                             trigger an AI regeneration on chip change (just as the
+                             per-chip Command wiring used to). -->
+                        <chip:SfChipGroup ItemsSource="{Binding Occasions}"
+                                           DisplayMemberPath="Label"
+                                           SelectedItem="{Binding SelectedOccasionChip, Mode=TwoWay}"
+                                           Style="{StaticResource OccasionChipGroup}"
+                                           SelectionChanged="OnOccasionChipSelectionChanged"/>
+                    </ScrollView>
+                </VerticalStackLayout>
+
+                <!-- Weather context -->
+                <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource Gray950}}"
+                        StrokeShape="RoundRectangle 16" Padding="16" StrokeThickness="0">
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                        <HorizontalStackLayout Grid.Column="0" Spacing="12">
+                            <Border BackgroundColor="{StaticResource SecondaryContainer}"
+                                    StrokeShape="RoundRectangle 20" WidthRequest="40" HeightRequest="40" StrokeThickness="0">
+                                <Image Aspect="AspectFit"
+                                       Source="{Binding WeatherImage}"
+                                       WidthRequest="22" HeightRequest="22"
+                                       VerticalOptions="Center" HorizontalOptions="Center"/>
+                            </Border>
+                            <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                                <Label Style="{StaticResource SubtitleMedium}" Text="{Binding WeatherLabel}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                                <Label Style="{StaticResource BodySmall}" Text="{Binding WeatherNote}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" HorizontalOptions="End" Spacing="2">
+                            <Label Style="{StaticResource HeadlineMedium}" Text="{Binding Temperature}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                   HorizontalOptions="End"/>
+                            <Label Style="{StaticResource LabelCaps}" Text="{Binding TemperatureLabel}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                   HorizontalOptions="End"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- AI Recommendation Panel (Hero) — bound to the active category (Work/Meeting/Casual/Party) -->
+                <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource Gray950}}"
+                        StrokeShape="RoundRectangle 24" StrokeThickness="0.5"
+                        Stroke="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource Gray950}}"
+                        Padding="24" MinimumHeightRequest="380">
+                    <Grid RowDefinitions="Auto, *, Auto" RowSpacing="12">
+                        <!-- Stacked outfit visual: horizontal scroll of the AI-picked items
+                             bound to ActiveCategory.Items. Falls back to a single
+                             placeholder image when the closet is empty / AI hasn't
+                             returned yet. -->
+                        <Border Grid.Row="0" StrokeShape="RoundRectangle 20" StrokeThickness="0" Margin="0,10,0,0"
+                                BackgroundColor="{StaticResource BeigeCard}">
+                            <Grid VerticalOptions="Fill">
+                                <!-- SfRotator replaces the manual horizontal ScrollView: it gives
+                                     swipe navigation, optional autoplay, and a built-in dot strip so
+                                     the user can see how many AI-picked items are in the outfit and
+                                     jump to any of them. Items are populated from the active
+                                     category's Items collection (one OutfitItemCard per slot).
+                                     Explicit WidthRequest/HeightRequest are required because
+                                     SfRotator must know its own dimensions to lay out and measure
+                                     its items; without them the rotator collapses to 0×0 and the
+                                     bound images never render. -->
+                                <!-- AI generation indicator: ai.png icon + "Curating outfit" label
+                                     + three dots playing a wave animation, arranged horizontally and
+                                     centered. Visibility is bound to IsGenerating so the rotator
+                                     underneath stays visible only when an outfit has actually been
+                                     produced. The dot ellipses carry ClassId names ("Dot0"/"Dot1"/
+                                     "Dot2") which the code-behind uses to find them and start the
+                                     wave animation; the animation is suspended while the wrapper
+                                     is collapsed so the transforms do not leak across runs. -->
+                                <Grid x:Name="CuratingIndicator" 
+      ColumnDefinitions="Auto, Auto, Auto" 
+      ColumnSpacing="10" 
+      IsVisible="{Binding IsGenerating}" 
+      HorizontalOptions="Center" 
+      HeightRequest="200" 
+      VerticalOptions="Center" >
+                                    <Image Source="ai.png" 
+           WidthRequest="32" HeightRequest="32" 
+           VerticalOptions="Center"/>
+                                    <Label Grid.Column="1" 
+           Text="Curating outfit" 
+           Style="{StaticResource SubtitleMedium}" 
+           TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" 
+           VerticalOptions="Center"/>
+                                    <HorizontalStackLayout Grid.Column="2" 
+                                                           x:Name="CuratingDots" 
+                                                           Spacing="6" VerticalOptions="Center">
+                                        <Ellipse x:Name="Dot0" 
+                                                 ClassId="Dot0" 
+                                                 WidthRequest="8" HeightRequest="8" 
+                                                 Fill="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" 
+                                                 VerticalOptions="Center"/>
+                                        <Ellipse x:Name="Dot1" 
+                                                 ClassId="Dot1" 
+                                                 WidthRequest="8" HeightRequest="8" 
+                                                 Fill="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" 
+                                                 VerticalOptions="Center"/>
+                                        <Ellipse x:Name="Dot2" 
+                                                 ClassId="Dot2" 
+                                                 WidthRequest="8" HeightRequest="8" 
+                                                 Fill="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" 
+                                                 VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
+                                </Grid>
+                                <rotator:SfRotator ItemsSource="{Binding ActiveCategory.Items}"
+                                                   NavigationStripMode="Dots"
+                                                   NavigationStripPosition="Bottom"
+                                                   NavigationDirection="Horizontal"
+                                                   EnableAutoPlay="False"
+                                                   EnableLooping="True"
+                                                   EnableSwiping="True"
+                                                   IsVisible="{Binding ActiveCategory.HasOutfit}"
+                                                   Background="White"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"
+                                                   WidthRequest="{OnIdiom Phone=300, Default=320}"
+                                                   HeightRequest="{OnIdiom Phone=300, Default=320}">
+                                    <rotator:SfRotator.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:OutfitPlannerViewModel+OutfitItemCard">
+                                            <!-- The Image has no IsVisible binding: we let Source=null
+                                                 (returned by the converter when ImageBase64 is null/
+                                                 empty) render as an empty tile naturally. The earlier
+                                                 IsVisible binding on ImageBase64/StringIsNotNullOrEmpty
+                                                 captured `false` during SfRotator's initial template
+                                                 realization (before the data context was assigned),
+                                                 then never re-evaluated when the [ObservableProperty]
+                                                 ImageBase64 fired — leaving the items permanently
+                                                 hidden on Windows. Source=null is the native, timing-
+                                                 safe way to express "no image yet". -->
+                                            <Grid>
+                                                <Image Aspect="AspectFill"
+                                                       Source="{Binding ImageBase64, Converter={StaticResource Base64ToImageSourceConverter}}"
+                                                       HorizontalOptions="Fill"
+                                                       VerticalOptions="Fill"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </rotator:SfRotator.ItemTemplate>
+                                </rotator:SfRotator>
+                            </Grid>
+                        </Border>
+
+                        <!-- AI Generated badge — sits on top of the rotator (row 1).
+                             VerticalOptions=Start + HorizontalOptions=End + Grid.Row=1
+                             overlay the badge on the rotator's top-right corner without
+                             consuming layout space in the row. -->
+                        <HorizontalStackLayout HorizontalOptions="End" VerticalOptions="Start">
+                            <Border BackgroundColor="#B3FFFFFF" StrokeShape="RoundRectangle 12" Padding="12,6" StrokeThickness="1">
+                                <Label Style="{StaticResource LabelCaps}" Text="AI GENERATED" WidthRequest="-1"
+                                       TextColor="{StaticResource OnTertiaryContainer}" FontSize="10"/>
+                            </Border>
+                        </HorizontalStackLayout>
+
+                        <!-- Outfit info + action -->
+                        <Grid Grid.Row="2" ColumnDefinitions="*, Auto" ColumnSpacing="12" Margin="0,8,0,0" VerticalOptions="End">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                                <Label Style="{StaticResource SubtitleMedium}" Text="{Binding ActiveCategory.Title}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                                <Label Style="{StaticResource BodySmall}" Text="{Binding ActiveCategory.Subtitle}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"/>
+                            </VerticalStackLayout>
+                            <buttons:SfButton Grid.Column="1" Padding="-3,0,0,0" ShowIcon="True" ImageSource="ai_white.png" ImageSize="20" Style="{StaticResource PrimaryCircle}"
+                                              Command="{Binding GenerateCommand}"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- Empty state — shown until the AI plan is loaded. -->
+                <Label Style="{StaticResource BodySmall}"
+                       Text="{Binding EmptyStateMessage}"
+                       IsVisible="{Binding HasOutfits, Converter={StaticResource InverseBoolConverter}}"
+                       TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                       Padding="4,0"/>
+
+                <!-- Match Metrics (radial gauges) — driven by the active category.
+                     Each gauge is a 270° progress ring: a full background track
+                     (AxisLineStyle, #1E2A38) + a filled RangePointer (Primary
+                     = #091523) that grows from 0..Score. WidthUnit="Factor" is
+                     required so PointerWidth="0.15" reads as 15% of radius
+                     instead of 0.15 pixels (the previous default left the
+                     ring invisible). -->
+                <Grid ColumnDefinitions="*, *, *, *" ColumnSpacing="12" RowSpacing="12">
+                    <VerticalStackLayout Grid.Column="0" Spacing="6" HorizontalOptions="Center">
+                        <gauge:SfRadialGauge WidthRequest="56" HeightRequest="56" HorizontalOptions="Center"  Background="Transparent">
+                            <gauge:SfRadialGauge.Axes>
+                                <gauge:RadialAxis Minimum="0" Maximum="100" StartAngle="180" EndAngle="180"
+                                                  ShowLabels="False" ShowTicks="False" RadiusFactor="0.9">
+                                    <gauge:RadialAxis.AxisLineStyle>
+                                        <gauge:RadialLineStyle Thickness="0.15" ThicknessUnit="Factor"/>
+                                    </gauge:RadialAxis.AxisLineStyle>
+                                    <gauge:RadialAxis.Pointers>
+                                        <gauge:RangePointer Value="{Binding ActiveCategory.MatchScore}" Fill="{StaticResource Primary}"
+                                                            PointerWidth="0.15" WidthUnit="Factor"/>
+                                    </gauge:RadialAxis.Pointers>
+                                    <gauge:RadialAxis.Annotations>
+                                        <gauge:GaugeAnnotation>
+                                            <gauge:GaugeAnnotation.Content>
+                                                <Label Text="{Binding ActiveCategory.MatchScore}" Style="{StaticResource LabelCaps}"
+                                                       TextColor="{StaticResource Primary}" FontSize="11"
+                                                       HorizontalOptions="Center" VerticalOptions="Center"/>
+                                            </gauge:GaugeAnnotation.Content>
+                                        </gauge:GaugeAnnotation>
+                                    </gauge:RadialAxis.Annotations>
+                                </gauge:RadialAxis>
+                            </gauge:SfRadialGauge.Axes>
+                        </gauge:SfRadialGauge>
+                        <Label Style="{StaticResource LabelCaps}" Text="Match"
+                               TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" FontSize="10"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="6" HorizontalOptions="Center">
+                        <gauge:SfRadialGauge WidthRequest="56" HeightRequest="56" HorizontalOptions="Center" Background="Transparent">
+                            <gauge:SfRadialGauge.Axes>
+                                <gauge:RadialAxis Minimum="0" Maximum="100" StartAngle="180" EndAngle="180"
+                                                  ShowLabels="False" ShowTicks="False" RadiusFactor="0.9">
+                                    <gauge:RadialAxis.AxisLineStyle>
+                                        <gauge:RadialLineStyle Thickness="0.15" ThicknessUnit="Factor"/>
+                                    </gauge:RadialAxis.AxisLineStyle>
+                                    <gauge:RadialAxis.Pointers>
+                                        <gauge:RangePointer Value="{Binding ActiveCategory.StyleScore}" Fill="{StaticResource Primary}"
+                                                            PointerWidth="0.15" WidthUnit="Factor"/>
+                                    </gauge:RadialAxis.Pointers>
+                                    <gauge:RadialAxis.Annotations>
+                                        <gauge:GaugeAnnotation>
+                                            <gauge:GaugeAnnotation.Content>
+                                                <Label Text="{Binding ActiveCategory.StyleScore}" Style="{StaticResource LabelCaps}"
+                                                       TextColor="{StaticResource Primary}" FontSize="11"
+                                                       HorizontalOptions="Center" VerticalOptions="Center"/>
+                                            </gauge:GaugeAnnotation.Content>
+                                        </gauge:GaugeAnnotation>
+                                    </gauge:RadialAxis.Annotations>
+                                </gauge:RadialAxis>
+                            </gauge:SfRadialGauge.Axes>
+                        </gauge:SfRadialGauge>
+                        <Label Style="{StaticResource LabelCaps}" Text="Style"
+                               TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" FontSize="10"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="2" Spacing="6" HorizontalOptions="Center">
+                        <gauge:SfRadialGauge WidthRequest="56" HeightRequest="56" HorizontalOptions="Center"  Background="Transparent">
+                            <gauge:SfRadialGauge.Axes>
+                                <gauge:RadialAxis Minimum="0" Maximum="100" StartAngle="180" EndAngle="180"
+                                                  ShowLabels="False" ShowTicks="False" RadiusFactor="0.9">
+                                    <gauge:RadialAxis.AxisLineStyle>
+                                        <gauge:RadialLineStyle Thickness="0.15" ThicknessUnit="Factor"/>
+                                    </gauge:RadialAxis.AxisLineStyle>
+                                    <gauge:RadialAxis.Pointers>
+                                        <gauge:RangePointer Value="{Binding ActiveCategory.ComfortScore}" Fill="{StaticResource Primary}"
+                                                            PointerWidth="0.15" WidthUnit="Factor"/>
+                                    </gauge:RadialAxis.Pointers>
+                                    <gauge:RadialAxis.Annotations>
+                                        <gauge:GaugeAnnotation>
+                                            <gauge:GaugeAnnotation.Content>
+                                                <Label Text="{Binding ActiveCategory.ComfortScore}" Style="{StaticResource LabelCaps}"
+                                                       TextColor="{StaticResource Primary}" FontSize="11"
+                                                       HorizontalOptions="Center" VerticalOptions="Center"/>
+                                            </gauge:GaugeAnnotation.Content>
+                                        </gauge:GaugeAnnotation>
+                                    </gauge:RadialAxis.Annotations>
+                                </gauge:RadialAxis>
+                            </gauge:SfRadialGauge.Axes>
+                        </gauge:SfRadialGauge>
+                        <Label Style="{StaticResource LabelCaps}" Text="Comfort"
+                               TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" FontSize="10"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="3" Spacing="6" HorizontalOptions="Center">
+                        <gauge:SfRadialGauge WidthRequest="56" HeightRequest="56" HorizontalOptions="Center" Background="Transparent">
+                            <gauge:SfRadialGauge.Axes>
+                                <gauge:RadialAxis Minimum="0" Maximum="100" StartAngle="180" EndAngle="180"
+                                                  ShowLabels="False" ShowTicks="False" RadiusFactor="0.9">
+                                    <gauge:RadialAxis.AxisLineStyle>
+                                        <gauge:RadialLineStyle Thickness="0.15" ThicknessUnit="Factor"/>
+                                    </gauge:RadialAxis.AxisLineStyle>
+                                    <gauge:RadialAxis.Pointers>
+                                        <gauge:RangePointer Value="{Binding ActiveCategory.TrendScore}" Fill="{StaticResource Primary}"
+                                                            PointerWidth="0.15" WidthUnit="Factor"/>
+                                    </gauge:RadialAxis.Pointers>
+                                    <gauge:RadialAxis.Annotations>
+                                        <gauge:GaugeAnnotation>
+                                            <gauge:GaugeAnnotation.Content>
+                                                <Label Text="{Binding ActiveCategory.TrendScore}" Style="{StaticResource LabelCaps}"
+                                                       TextColor="{StaticResource Primary}" FontSize="11"
+                                                       HorizontalOptions="Center" VerticalOptions="Center"/>
+                                            </gauge:GaugeAnnotation.Content>
+                                        </gauge:GaugeAnnotation>
+                                    </gauge:RadialAxis.Annotations>
+                                </gauge:RadialAxis>
+                            </gauge:SfRadialGauge.Axes>
+                        </gauge:SfRadialGauge>
+                        <Label Style="{StaticResource LabelCaps}" Text="Trend"
+                               TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}" FontSize="10"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Alternative Looks — bound to the active category's alternatives. -->
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                        <Label Grid.Column="0" Style="{StaticResource SubtitleMedium}"
+                               Text="{Binding ActiveCategory.Category, StringFormat='Alternative Looks · {0}'}"
+                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                        <Label Grid.Column="1" Text="See all" TextColor="{StaticResource OnTertiaryContainer}"
+                               FontSize="12" VerticalOptions="Center"/>
+                    </Grid>
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" HeightRequest="{OnIdiom Phone=200, Default=200}">
+                        <HorizontalStackLayout BindableLayout.ItemsSource="{Binding ActiveCategory.Alternatives}" Spacing="12">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:OutfitPlannerViewModel+AlternativeLook">
+                                    <Border StrokeShape="RoundRectangle 20" Padding="12" StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource Gray900}}"
+                                            WidthRequest="{OnIdiom Phone=140, Default=160}">
+                                        <VerticalStackLayout Spacing="8">
+                                            <Border StrokeShape="RoundRectangle 12" StrokeThickness="0"
+                                                    HeightRequest="{OnIdiom Phone=120, Default=128}">
+                                                <Grid>
+                                                    <!-- Placeholder image sits underneath; the bound image is
+                                                         overlaid on top. We no longer toggle the bound
+                                                         Image's IsVisible via the StringIsNotNullOrEmpty
+                                                         converter — that converter's bool result was
+                                                         captured at template realization (when ImageBase64
+                                                         was still null) and never re-evaluated inside the
+                                                         BindableLayout item template on Windows, so the
+                                                         user saw the placeholder forever. Letting
+                                                         Source=null render nothing is the timing-safe
+                                                         equivalent: when there's a real base64 string the
+                                                         Image shows; when there isn't, the placeholder
+                                                         shows through. -->
+                                                    <Image Aspect="AspectFill"
+                                                           Source="ai.png"
+                                                           HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                                                    <Image Aspect="AspectFill"
+                                                           Source="{Binding ImageBase64, Converter={StaticResource Base64ToImageSourceConverter}}"
+                                                           HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                                                </Grid>
+                                            </Border>
+                                            <Label Style="{StaticResource SubtitleMedium}" Text="{Binding Title}" FontSize="14"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                                   LineBreakMode="TailTruncation"/>
+                                            <Label Style="{StaticResource BodySmall}" Text="{Binding Match, StringFormat='Match: {0}%'}"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                                   FontSize="12"/>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+                </VerticalStackLayout>
+
+                <!-- AI Explanation — "Why this works" for the active category. -->
+                <Border BackgroundColor="#B3FFFFFF" StrokeShape="RoundRectangle 24" StrokeThickness="1" Stroke="#80FFFFFF" Padding="24">
+                    <HorizontalStackLayout Spacing="16">
+                        <Border BackgroundColor="{AppThemeBinding Light={StaticResource SecondaryContainer}, Dark={StaticResource Gray600}}"
+                                StrokeShape="RoundRectangle 20" WidthRequest="40" HeightRequest="40" StrokeThickness="0">
+                            <Image Source="ai.png" WidthRequest="22" HeightRequest="22"
+                                   HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                        <VerticalStackLayout Spacing="8">
+                            <Label Style="{StaticResource SubtitleMedium}"
+                                   Text="{Binding ActiveCategory.Category, StringFormat='Why this works'}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                            <Label Style="{StaticResource BodySmall}" Text="{Binding ActiveCategory.Explanation}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                   LineBreakMode="WordWrap"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Floating Action Button (calendar icon) — opens the Plan popup. -->
+        <Border Grid.Row="1"
+                Margin="0,0,20,20"
+                StrokeThickness="0"
+                VerticalOptions="End"
+                BackgroundColor="Transparent">
+            <buttons:SfButton x:Name="PlanFab"
+                              Style="{StaticResource Fab}"
+                              Text="&#xe71d;"
+                              FontFamily="MaterialAssets"
+                              Command="{Binding OpenPlanPopupCommand}"
+                              AutomationId="PlanFab"
+                              ToolTipProperties.Text="Plan an outfit"/>
+        </Border>
+
+        <!-- Plan popup: ask for date, occasion, plan name. -->
+        <popup:SfPopup x:Name="PlanPopup"
+                       Grid.Row="0" Grid.RowSpan="3"
+                       IsOpen="{Binding IsPlanPopupOpen, Mode=TwoWay}"
+                       HeaderTitle="Plan an outfit"
+                       AppearanceMode="TwoButton"
+                       ShowHeader="True"
+                       ShowFooter="True"
+                       AcceptButtonText="Save plan"
+                       DeclineButtonText="Cancel"
+                       WidthRequest="360"
+                       HeightRequest="480"
+                       StaysOpen="False"
+                       AcceptCommand="{Binding SavePlanCommand}"
+                       DeclineCommand="{Binding ClosePlanPopupCommand}">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle AcceptButtonBackground="#001A42"
+                                  DeclineButtonBackground="#E9F1FF"
+                                  FooterBackground="{StaticResource BeigeCard}"
+                                  HeaderBackground="{StaticResource BeigeCard}"
+                                  MessageBackground="{StaticResource BeigeCard}"
+                                  AcceptButtonTextColor="#E9F1FF"
+                                  DeclineButtonTextColor="#001A42"/>
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:OutfitPlannerViewModel">
+                    <ScrollView Padding="20,12,20,4">
+                        <VerticalStackLayout Spacing="14">
+
+                            <!-- Validation error -->
+                            <Label Text="{Binding PlanValidationError}"
+                                   TextColor="{StaticResource Error}"
+                                   FontSize="13"
+                                   FontFamily="OpenSansSemibold"
+                                   IsVisible="{Binding PlanValidationError, Converter={StaticResource StringIsNotNullOrEmptyConverter}}" />
+
+                            <!-- Plan name -->
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="Plan name"
+                                       Style="{StaticResource SubtitleMedium}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource Gray950}}"
+                                        StrokeShape="RoundRectangle 12"
+                                        Stroke="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource Gray900}}"
+                                        StrokeThickness="1"
+                                        Padding="12,6">
+                                    <Entry Text="{Binding PlanName, Mode=TwoWay}"
+                                           Placeholder="e.g. Monday client meeting"
+                                           BackgroundColor="Transparent"
+                                           TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                           PlaceholderColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                           FontFamily="OpenSansRegular"
+                                           FontSize="15"
+                                           MaxLength="160" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <!-- Plan date: read-only display + "Today" quick pick + open SfDatePicker -->
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="Date"
+                                       Style="{StaticResource SubtitleMedium}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+
+                                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                                    <!-- Read-only display of the currently selected date (taps open the picker) -->
+                                    <Border Grid.Column="0"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource Gray950}}"
+                                            StrokeShape="RoundRectangle 12"
+                                            Stroke="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource Gray900}}"
+                                            StrokeThickness="1"
+                                            Padding="12,10">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding OpenPlanDatePickerCommand}" />
+                                        </Border.GestureRecognizers>
+                                        <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                                            <Label Text=""
+                                                   FontSize="18"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                                   VerticalOptions="Center" />
+                                            <Label Text="{Binding PlanDateDisplay}"
+                                                   FontFamily="OpenSansSemibold"
+                                                   FontSize="15"
+                                                   TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                                   VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+
+                                    <!-- Quick "Today" action -->
+                                    <buttons:SfButton Grid.Column="1"
+                                                      Text="Today"
+                                                      Style="{StaticResource OccasionChip}"
+                                                      Background="{AppThemeBinding Light={StaticResource SurfaceContainerHighest}, Dark={StaticResource Gray600}}"
+                                                      TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                                      Command="{Binding SetPlanDateToTodayCommand}" />
+                                </Grid>
+
+                                <!-- Inline SfDatePicker (shown only when the user taps the date display) -->
+                                <picker:SfDatePicker IsVisible="{Binding IsPlanDatePickerOpen}"
+                                                   SelectedDate="{Binding PlanDate, Mode=TwoWay, Converter={StaticResource DateTimeToNullableDateTimeConverter}}"
+                                                   MinimumDate="{Binding PlanDateMinimum}"
+                                                   BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource Gray950}}"
+                                                   HeightRequest="280">
+                                    <picker:SfDatePicker.HeaderView>
+                                        <picker:PickerHeaderView Text="Select plan date" Height="40"
+                                                                  Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource Gray950}}" />
+                                    </picker:SfDatePicker.HeaderView>
+                                    <picker:SfDatePicker.FooterView>
+                                        <picker:PickerFooterView ShowOkButton="True" Height="44"
+                                                                 OkButtonText="Done"
+                                                                 CancelButtonText="Cancel" />
+                                    </picker:SfDatePicker.FooterView>
+                                </picker:SfDatePicker>
+                            </VerticalStackLayout>
+
+                            <!-- Occasion picker -->
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="Occasion"
+                                       Style="{StaticResource SubtitleMedium}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource Gray950}}"
+                                        StrokeShape="RoundRectangle 12"
+                                        Stroke="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource Gray900}}"
+                                        StrokeThickness="1"
+                                        Padding="4,0">
+                                    <Picker ItemsSource="{Binding PlanOccasionOptions}"
+                                            SelectedItem="{Binding PlanOccasion, Mode=TwoWay}"
+                                            TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                            TitleColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryDark}}"
+                                            FontFamily="OpenSansRegular"
+                                            FontSize="15"
+                                            BackgroundColor="Transparent" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+                    </ScrollView>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+    </Grid>
+</ContentPage>
