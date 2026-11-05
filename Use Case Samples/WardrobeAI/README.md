@@ -117,7 +117,9 @@ dotnet run --project WardrobeAI/WardrobeAI.csproj -f net10.0-windows10.0.19041.0
 
 ## Output
 
-The UI includes a dashboard with a daily outfit and weather, a closet gallery, an outfit planner with recommendation scores and alternatives, and a shopping view with wardrobe essentials. No screenshot or GIF is included in this sample directory.
+The UI includes a dashboard with a daily outfit and weather, a closet gallery, an outfit planner with recommendation scores and alternatives, and a shopping view with wardrobe essentials.
+
+![WardrobeAI UI](WardrobeAI/Resources/Images/Wardrobe-AI.gif)
 
 ## Project Structure
 

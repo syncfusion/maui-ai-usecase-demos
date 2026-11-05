@@ -108,7 +108,9 @@ dotnet build LLM_Routing/LLM_Routing.csproj -t:Run -f net10.0-windows10.0.19041.
 
 ## Output
 
-The UI is an AI chat titled “AI Model Router”. It shows user queries and responses, indicates routing and generation progress, displays the chosen model in each assistant response, and shows input/output token counts and estimated cost. No screenshot or GIF is included in the sample files.
+The UI is an AI chat titled “AI Model Router”. It shows user queries and responses, indicates routing and generation progress, displays the chosen model in each assistant response, and shows input/output token counts and estimated cost.
+
+![LLM Routing UI](LLM_Routing/Resources/Images/LLM-Routing.gif)
 
 ## Project Structure
 
