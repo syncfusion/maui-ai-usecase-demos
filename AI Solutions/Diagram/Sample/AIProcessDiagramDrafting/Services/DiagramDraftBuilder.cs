@@ -22,8 +22,8 @@ public sealed class DiagramDraftBuilder
             .Select(pair => new
             {
                 Nodes = pair
-                    .Select(nodeId => orderedNodes.First(node => node.Id == nodeId))
-                    .OrderBy(node => nodeIndex[node.Id])
+                    .Select(nodeId => orderedNodes.First((WorkflowNode node) => node.Id == nodeId))
+                    .OrderBy((WorkflowNode node) => nodeIndex[node.Id])
                     .ToList()
             })
             .ToList();
