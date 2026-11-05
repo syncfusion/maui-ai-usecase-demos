@@ -168,4 +168,4 @@ Gates are sequential; a later gate must not begin until the previous gate has hu
 - Gate 6, Mobile correction: all four mobile states are directly compared with DesignReference.
 
 ## 4. Acceptance Criteria
-- AC-001 through AC-099 map directly to REQ-001 through REQ-099.
+- Each REQ item is accepted only when its observable behavior is verified through the applicable evidence gate in Section 3.3. Static inspection, build success, and git diff --check alone are insufficient for runtime or visual requirements.

@@ -114,7 +114,7 @@ Stop when:
 - A required change exceeds the allowed path
 - A shared-file change is required
 - A real secret is found
-- The same approach fails three times
+- A speculative third-party control-model or API approach fails once in local runtime validation
 - Required tooling or SfChat capability cannot be verified
 - Package compatibility is unresolved
 - Scope expansion or approval is required

@@ -15,7 +15,7 @@ If the Syncfusion license key is empty, the app starts without registering a lic
 ## Workflow
 - select one customer message from the conversation
 - draft a reply from the selected message plus recent context
-- review the structured JSON result before sending
+- review and edit the generated reply draft before sending
 - edit, regenerate, discard, retry, or send explicitly
 - generated text appears in the reply editor with a `Review before sending` prompt
 - send only when you choose; the sent reply appears in the conversation as a support-agent message, and the AI never sends automatically

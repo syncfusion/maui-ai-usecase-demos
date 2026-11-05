@@ -41,4 +41,4 @@ Human reviewer / product owner
 - Five internal harness files are preserved under `AI Solutions/Chat/SupportReplyAIDraft`
 - Implementation files remain within the allowed folder
 - No design-reference files modified
-- Package verification recorded as 35.1.43 and build validation is unavailable in the sandbox
+- Package verification recorded as 35.1.43
