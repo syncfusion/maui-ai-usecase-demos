@@ -1,4 +1,4 @@
-# Smart Vehicle Care — AI-Powered Vehicle Management in .NET MAUI
+# Smart Vehicle Care: AI-Powered Vehicle Management in .NET MAUI
 
 An AI-powered vehicle care companion sample that demonstrates how a .NET MAUI app can combine Syncfusion UI controls with Azure OpenAI to deliver vehicle health insights, an AI maintenance assistant, real nearby-service discovery, and maintenance scheduling in a single cross-platform app.
 
@@ -9,17 +9,17 @@ Vehicle owners struggle to answer simple questions: *Is my car healthy? When is 
 - **What the sample does:** Tracks vehicles, service records, fuel logs, and schedule reminders; scores vehicle health; renders a dashboard; chats with an AI vehicle-care specialist; and shows real nearby fuel stations/service centers on a map.
 - **Who it is for:** .NET MAUI developers who want to learn how to embed conversational AI (chat completions), contextual prompt building, and location-based fallbacks into a line-of-business mobile/desktop app.
 - **What AI capability it uses:** Azure OpenAI chat completions (non-streaming). The app builds a rich system + user prompt from real vehicle context (odometer, health score, last 5 services, last 5 fuel entries, reminder status) so responses are grounded in actual data.
-- **What outcome the user gets:** Practical, vehicle-specific maintenance advice, AI-generated dashboard insights and health summaries, plus graceful degradation — the app remains fully usable offline with rule-based insights when no AI key is configured.
+- **What outcome the user gets:** Practical, vehicle-specific maintenance advice, AI-generated dashboard insights and health summaries, plus graceful degradation: the app remains fully usable offline with rule-based insights when no AI key is configured.
 
 ## Key Features
 
-- **Dashboard** — Vehicle health score, service history summary, fuel log, expense chart, recent activities, and quick actions.
-- **AI Assistant** — Conversational AI (SfAIAssistView) that answers vehicle maintenance, cost, and service questions using the selected vehicle's real records as prompt context.
-- **AI Dashboard Insights** — AI-generated insight cards and a health summary whose tone adapts to the current health score (excellent / watch item / needs attention).
-- **Vehicle Center** — Add and manage multiple vehicles with service and fuel records in tabbed SfDataGrid views.
-- **Maintenance Scheduler** — SfScheduler with month/week/day views and color-coded appointment types (Service, Inspection, Overdue).
-- **Nearby Network** — Live map (SfMaps tile layer) showing fuel stations or service centers within 10 km using the Overpass OpenStreetMap API (multiple server fallbacks), with an AI fallback and a curated static sample dataset if all live sources fail.
-- **Welcome Wizard** — Step-by-step first-launch onboarding (vehicle profile) with adaptive layouts: two-column hero layout on Windows/macOS, single-column on Android/iOS.
+- **Dashboard**: Vehicle health score, service history summary, fuel log, expense chart, recent activities, and quick actions.
+- **AI Assistant**: Conversational AI (SfAIAssistView) that answers vehicle maintenance, cost, and service questions using the selected vehicle's real records as prompt context.
+- **AI Dashboard Insights**: AI-generated insight cards and a health summary whose tone adapts to the current health score (excellent / watch item / needs attention).
+- **Vehicle Center**: Add and manage multiple vehicles with service and fuel records in tabbed SfDataGrid views.
+- **Maintenance Scheduler**: SfScheduler with month/week/day views and color-coded appointment types (Service, Inspection, Overdue).
+- **Nearby Network**: Live map (SfMaps tile layer) showing fuel stations or service centers within 10 km using the Overpass OpenStreetMap API (multiple server fallbacks), with an AI fallback and a curated static sample dataset if all live sources fail.
+- **Welcome Wizard**: Step-by-step first-launch onboarding (vehicle profile) with adaptive layouts: two-column hero layout on Windows/macOS, single-column on Android/iOS.
 
 ## AI Flow
 
@@ -28,37 +28,37 @@ Vehicle owners struggle to answer simple questions: *Is my car healthy? When is 
 3. A system message ("You are a vehicle care specialist…") plus the vehicle-context user prompt are sent to `AzureOpenAIService`, which posts to `{BaseEndpoint}/chat/completions` on the Azure AI Foundry `/openai/v1` endpoint (non-streaming, 30-second HTTP timeout, cancellation-supported).
 4. The app receives the JSON response, extracts the assistant message, and returns it to the ViewModel.
 5. The response is rendered as an AI bubble in `SfAIAssistView` (or as insight cards / a health summary on the dashboard).
-6. Fallback behavior: if no API key/endpoint is configured, requests are rejected with a friendly message pointing to Settings; if the AI call fails or times out, an inline "trouble reaching the AI" message is shown — the app remains fully usable. Nearby places fall back: Overpass → Azure OpenAI–generated places → curated static sample data (clearly labeled).
+6. Fallback behavior: if no API key/endpoint is configured, requests are rejected with a friendly message pointing to Settings; if the AI call fails or times out, an inline "trouble reaching the AI" message is shown, and the app remains fully usable. Nearby places fall back: Overpass → Azure OpenAI-generated places → curated static sample data (clearly labeled).
 
 ## Controls Used
 
-- **SfAIAssistView** — The AI chat interface: message bubbles, suggestions, typing/loading indicator, and request handling.
-- **SfScheduler** — Month/Week/Day maintenance scheduling with color-coded appointment types.
-- **SfMaps** — Tile-layer map that pins nearby fuel stations and service centers with markers and tooltips.
-- **SfDataGrid** — Tabular service history and fuel log per vehicle.
-- **SfCartesianChart** — Dashboard expense/fuel-trend column chart with tooltips.
-- **SfTabView** — Dashboard and Vehicle Center tab navigation.
-- **SfPopup** — Add/edit dialogs for vehicles, services, fuel entries, and schedules.
-- **SfDatePicker / SfTimePicker** — Date and time selection inside the add-schedule flow.
-- **SfComboBox** — Vehicle type, fuel type, and selection inputs.
-- **SfTextInputLayout** — Form fields in the wizard and add/edit panels (with hint labels and numeric behaviors).
-- **SfLinearProgressBar** — Inline progress for loading/health indicators.
-- **SfBusyIndicator** — Loading state while AI requests and map data are in flight.
-- **SfButton** — Actions across the dashboard, wizard, and forms.
+- **SfAIAssistView**: The AI chat interface: message bubbles, suggestions, typing/loading indicator, and request handling.
+- **SfScheduler**: Month/Week/Day maintenance scheduling with color-coded appointment types.
+- **SfMaps**: Tile-layer map that pins nearby fuel stations and service centers with markers and tooltips.
+- **SfDataGrid**: Tabular service history and fuel log per vehicle.
+- **SfCartesianChart**: Dashboard expense/fuel-trend column chart with tooltips.
+- **SfTabView**: Dashboard and Vehicle Center tab navigation.
+- **SfPopup**: Add/edit dialogs for vehicles, services, fuel entries, and schedules.
+- **SfDatePicker / SfTimePicker**: Date and time selection inside the add-schedule flow.
+- **SfComboBox**: Vehicle type, fuel type, and selection inputs.
+- **SfTextInputLayout**: Form fields in the wizard and add/edit panels (with hint labels and numeric behaviors).
+- **SfLinearProgressBar**: Inline progress for loading/health indicators.
+- **SfBusyIndicator**: Loading state while AI requests and map data are in flight.
+- **SfButton**: Actions across the dashboard, wizard, and forms.
 
 ## Architecture
 
 The sample follows the MVVM pattern:
 
-- **Views/** (`MainPage`, `AIAssistPage`, `VehicleCenterPage`, `SettingsPage`, `WelcomePage`, `SplashPage`, add/edit panels) — XAML UI pages and layouts.
-- **ViewModels/** (`MainViewModel`, `AIAssistViewModel`, `VehicleCenterViewModel`, `SettingsViewModel`, `WelcomeViewModel`, add/edit ViewModels) — presentation logic; build AI prompts, manage loading state, and synchronize with the data service via events.
+- **Views/** (`MainPage`, `AIAssistPage`, `VehicleCenterPage`, `SettingsPage`, `WelcomePage`, `SplashPage`, add/edit panels): XAML UI pages and layouts.
+- **ViewModels/** (`MainViewModel`, `AIAssistViewModel`, `VehicleCenterViewModel`, `SettingsViewModel`, `WelcomeViewModel`, add/edit ViewModels): presentation logic; build AI prompts, manage loading state, and synchronize with the data service via events.
 - **Services/**
-  - `AzureOpenAIService` — chat completions client; also owns AI configuration (API key, endpoint, deployment name).
-  - `VehicleDataService` — singleton in-memory data store for vehicles, services, fuel, and reminders; persists to device storage as JSON via `Preferences`.
-  - `ServiceCenterDataHelper` — Overpass (OpenStreetMap) queries for nearby fuel stations/service centers, plus a curated static fallback dataset.
-- **Models/** — `Vehicle`, `CustomMarker`, dashboard and vehicle-center models.
-- **Helpers/** — `ConstellationDrawable`, `VehicleCenterCalculations`.
-- **Resources/** — Styles, fonts, images, splash/app icons.
+  - `AzureOpenAIService`: chat completions client; also owns AI configuration (API key, endpoint, deployment name).
+  - `VehicleDataService`: singleton in-memory data store for vehicles, services, fuel, and reminders; persists to device storage as JSON via `Preferences`.
+  - `ServiceCenterDataHelper`: Overpass (OpenStreetMap) queries for nearby fuel stations/service centers, plus a curated static fallback dataset.
+- **Models/**: `Vehicle`, `CustomMarker`, dashboard and vehicle-center models.
+- **Helpers/**: `ConstellationDrawable`, `VehicleCenterCalculations`.
+- **Resources/**: Styles, fonts, images, splash/app icons.
 
 Data flow: Views bind to ViewModels → ViewModels read/write `VehicleDataService` → changes are persisted as JSON → `AzureOpenAIService` and `ServiceCenterDataHelper` consume the data to produce AI or map output → ViewModels render results back into the UI.
 
@@ -68,16 +68,16 @@ Data flow: Views bind to ViewModels → ViewModels read/write `VehicleDataServic
 - .NET MAUI workload (`dotnet workload install maui`)
 - Visual Studio 2022 (17.12+) with the .NET MAUI workload, or VS Code with the MAUI extension
 - Syncfusion .NET MAUI packages (installed via NuGet; a valid Syncfusion license key is required to avoid trial watermarks)
-- Azure OpenAI account (optional — AI features are enhancements; the app runs fully offline)
+- Azure OpenAI account (optional: AI features are enhancements; the app runs fully offline)
 - Android: device/emulator with location services for the Nearby map
 
 ## AI Configuration
 
-All AI settings are entered at runtime in the app's **Settings** tab — nothing is hardcoded in source:
+All AI settings are entered at runtime in the app's **Settings** tab, and nothing is hardcoded in source:
 
-1. **Azure OpenAI API key** — saved via `SecureStorage` and never written to source.
-2. **Azure OpenAI endpoint** — the Azure AI Foundry `/openai/v1` project endpoint, e.g. `https://<your-project>.openai.azure.com/openai/v1`; stored via `Preferences` (not a secret).
-3. **Deployment name** — defaults to `gpt-5-mini`; stored via `Preferences`.
+1. **Azure OpenAI API key**: saved via `SecureStorage` and never written to source.
+2. **Azure OpenAI endpoint**: the Azure AI Foundry `/openai/v1` project endpoint, e.g. `https://<your-project>.openai.azure.com/openai/v1`; stored via `Preferences` (not a secret).
+3. **Deployment name**: defaults to `gpt-5-mini`; stored via `Preferences`.
 
 The Syncfusion license key is read from the `SYNCFUSION_LICENSE_KEY` environment variable at startup:
 
@@ -139,13 +139,13 @@ Or open `SmartVehicleCare.slnx` in Visual Studio and deploy to your target platf
 
 ## Project Structure
 
-- **Views/** — UI pages and layouts (dashboard, AI assist, vehicle center, settings, wizard, add/edit panels)
-- **ViewModels/** — presentation logic (prompt building, loading states, data synchronization)
-- **Models/** — data structures (`Vehicle`, `CustomMarker`, dashboard and vehicle-center models)
-- **Services/** — AI and helper services (`AzureOpenAIService`, `VehicleDataService`, `ServiceCenterDataHelper`)
-- **Resources/** — styles, images, fonts, and app/splash icons
-- **Helpers/** — drawing and calculation utilities
-- **Behaviors/ / Converters/** — input validation behaviors and XAML value converters
+- **Views/**: UI pages and layouts (dashboard, AI assist, vehicle center, settings, wizard, add/edit panels)
+- **ViewModels/**: presentation logic (prompt building, loading states, data synchronization)
+- **Models/**: data structures (`Vehicle`, `CustomMarker`, dashboard and vehicle-center models)
+- **Services/**: AI and helper services (`AzureOpenAIService`, `VehicleDataService`, `ServiceCenterDataHelper`)
+- **Resources/**: styles, images, fonts, and app/splash icons
+- **Helpers/**: drawing and calculation utilities
+- **Behaviors/ / Converters/**: input validation behaviors and XAML value converters
 
 ## Troubleshooting
 
@@ -171,8 +171,8 @@ Or open `SmartVehicleCare.slnx` in Visual Studio and deploy to your target platf
 
 ## Security and Privacy Notes
 
-- Do not hard-code API keys — this sample stores the Azure OpenAI key in `SecureStorage` and reads the Syncfusion license from an environment variable.
-- The AI service is sent only vehicle context (make/model, odometer, health score, recent service/fuel/reminders) and the user's question — avoid adding unnecessary sensitive data to prompts.
+- Do not hard-code API keys: this sample stores the Azure OpenAI key in `SecureStorage` and reads the Syncfusion license from an environment variable.
+- The AI service is sent only vehicle context (make/model, odometer, health score, recent service/fuel/reminders) and the user's question; do not add unnecessary sensitive data to prompts.
 - The endpoint and deployment name are non-secrets and stored via `Preferences`; the API key never leaves secure storage in plaintext.
 - No credentials are written to source or committed; the only external calls are to your Azure OpenAI endpoint, Overpass/OSM servers, and map tiles.
 - Review the Overpass query and AI requests before extending them with personal data (e.g. registration numbers are shown locally but included in the AI prompt context only if you add them).
