@@ -11,6 +11,8 @@ Gates are sequential. A later gate must not begin until the previous gate has hu
 6. Gate 6: Mobile correction
 
 ## Current Gate
-Gate 1: Predefined conversations.
+Gate 2: SfChat reply-editor feasibility.
 
-Blocker: local runtime evidence that the four messages render in SfChat with correct incoming/outgoing alignment and no initial selection has not yet been confirmed by a human.
+Required investigation: verify whether Syncfusion.Maui.Chat 35.1.43 can support the approved integrated reply UI through documented public APIs.
+
+Stop condition: if the approved UI cannot be achieved through SfChat public APIs, implementation must stop and wait for human approval before proceeding.
