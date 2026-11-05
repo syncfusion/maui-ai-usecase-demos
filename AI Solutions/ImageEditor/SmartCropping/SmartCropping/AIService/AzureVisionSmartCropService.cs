@@ -1,4 +1,3 @@
-using Azure;
 using Azure.AI.Vision.ImageAnalysis;
 using System.Diagnostics;
 
@@ -63,13 +62,12 @@ namespace SmartCropping;
 /// Prompts produce variance; bounding boxes plus arithmetic do not.
 /// </para>
 /// <para>
-/// <b>Switching engines.</b> This service is parallel to
-/// <see cref="SmartCropService"/>. The DI factory in
-/// <c>MauiProgram.cs</c> picks one at compile time; flip
-/// <c>UseAzureVision</c> to compare.
+/// <b>Switching engines.</b> This service is registered directly in
+/// <c>MauiProgram.cs</c> so the app uses Azure AI Vision for smart
+/// cropping without extra startup branching.
 /// </para>
 /// </remarks>
-public sealed class AzureVisionSmartCropService : ISmartCropService
+public sealed class AzureVisionSmartCropService : AzureBaseService, ISmartCropService
 {
     /// <summary>
     /// Tags from the Azure AI Vision Objects taxonomy that identify pets.
@@ -95,23 +93,9 @@ public sealed class AzureVisionSmartCropService : ISmartCropService
 
     private readonly ImageAnalysisClient client;
 
-    public AzureVisionSmartCropService(string endpoint, string apiKey)
+    public AzureVisionSmartCropService()
     {
-        if (string.IsNullOrWhiteSpace(endpoint))
-        {
-            throw new ArgumentException(
-                "Azure AI Vision endpoint is required (set AZURE_VISION_ENDPOINT).",
-                nameof(endpoint));
-        }
-
-        if (string.IsNullOrWhiteSpace(apiKey))
-        {
-            throw new ArgumentException(
-                "Azure AI Vision API key is required (set AZURE_VISION_KEY).",
-                nameof(apiKey));
-        }
-
-        client = new ImageAnalysisClient(new Uri(endpoint), new AzureKeyCredential(apiKey));
+        client = CreateImageAnalysisClient();
     }
 
     /// <inheritdoc />

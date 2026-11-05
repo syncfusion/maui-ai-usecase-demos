@@ -1,5 +1,6 @@
-﻿using Azure;
+using Azure;
 using Azure.AI.OpenAI;
+using Azure.AI.Vision.ImageAnalysis;
 
 namespace SmartCropping;
 
@@ -8,20 +9,27 @@ namespace SmartCropping;
 /// </summary>
 /// <remarks>
 /// This abstract class contains shared functionality required to communicate with Azure AI services,
-/// including client initialization, credential validation, endpoint configuration, and common request handling.
-/// Derived classes can extend this base class to implement specific AI capabilities such as chat completion,
-/// smart cropping, smart search, or content generation.
+/// including client initialization and credential configuration.
+/// Derived classes can extend this base class to implement specific AI capabilities such as chat completion
+/// or image analysis.
 /// </remarks>
 public abstract class AzureBaseService
 {
-    protected virtual string Endpoint => "YOUR_ENDPOINT_HERE";
+    protected virtual string Endpoint =>
+        Environment.GetEnvironmentVariable("AZURE_VISION_ENDPOINT") ?? "YOUR_ENDPOINT_HERE";
 
-    protected virtual string ApiKey => "YOUR_API_KEY_HERE";
+    protected virtual string ApiKey =>
+        Environment.GetEnvironmentVariable("AZURE_VISION_KEY") ?? "YOUR_API_KEY_HERE";
 
     protected virtual string DeploymentName => "YOUR_DEPLOYMENT_NAME_HERE";
 
     protected AzureOpenAIClient CreateClient()
     {
         return new AzureOpenAIClient(new Uri(Endpoint), new AzureKeyCredential(ApiKey));
+    }
+
+    protected ImageAnalysisClient CreateImageAnalysisClient()
+    {
+        return new ImageAnalysisClient(new Uri(Endpoint), new AzureKeyCredential(ApiKey));
     }
 }
