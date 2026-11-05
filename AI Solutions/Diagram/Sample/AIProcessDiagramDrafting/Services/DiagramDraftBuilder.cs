@@ -19,11 +19,11 @@ public sealed class DiagramDraftBuilder
         var nodeSizes = orderedNodes.ToDictionary(node => node.Id, GetNodeSize, StringComparer.Ordinal);
         var layoutRows = levels
             .OrderBy(pair => pair.Value)
-            .Select(pair => new
+            .Select(level => new
             {
-                Nodes = pair
-                    .Select(nodeId => orderedNodes.First((WorkflowNode node) => node.Id == nodeId))
-                    .OrderBy((WorkflowNode node) => nodeIndex[node.Id])
+                Nodes = orderedNodes
+                    .Where(node => levels[node.Id] == level.Value)
+                    .OrderBy(node => nodeIndex[node.Id])
                     .ToList()
             })
             .ToList();
