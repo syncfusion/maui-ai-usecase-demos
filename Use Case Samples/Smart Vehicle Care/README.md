@@ -135,7 +135,7 @@ Or open `SmartVehicleCare.slnx` in Visual Studio and deploy to your target platf
 
 ## Output
 
-![Vehicle care demo](vehicle-care-demo.gif)
+![Vehicle care demo](vehicle-care-demo.mp4)
 
 ## Project Structure
 
