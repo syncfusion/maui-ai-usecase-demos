@@ -49,7 +49,6 @@
 
                 <Label Text="Process description" FontAttributes="Bold" />
                 <Editor Text="{Binding ProcessDescription, Mode=TwoWay}"
-                        AutoSize="TextChanges"
                         HeightRequest="180"
                         TextChanged="OnProcessDescriptionTextChanged"
                         Placeholder="Describe the workflow in a few sentences..." />
