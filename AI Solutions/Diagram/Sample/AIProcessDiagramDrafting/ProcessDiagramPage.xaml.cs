@@ -28,6 +28,14 @@ public partial class ProcessDiagramPage : ContentPage
         ApplyLayout(Width);
     }
 
+    private void OnProcessDescriptionTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (viewModel.ProcessDescription != e.NewTextValue)
+        {
+            viewModel.ProcessDescription = e.NewTextValue ?? string.Empty;
+        }
+    }
+
     private void OnLoaded(object? sender, EventArgs e)
     {
         ApplyLayout(Width);

@@ -48,13 +48,15 @@
                         SelectedItem="{Binding SelectedExample, Mode=TwoWay}" />
 
                 <Label Text="Process description" FontAttributes="Bold" />
-                <Editor Text="{Binding ProcessDescription}"
+                <Editor Text="{Binding ProcessDescription, Mode=TwoWay}"
                         AutoSize="TextChanges"
                         HeightRequest="180"
+                        TextChanged="OnProcessDescriptionTextChanged"
                         Placeholder="Describe the workflow in a few sentences..." />
 
                 <Button Text="Generate Draft"
-                        Command="{Binding GenerateDraftCommand}" />
+                        Command="{Binding GenerateDraftCommand}"
+                        IsEnabled="{Binding CanGenerate}" />
 
                 <Label Text="{Binding StatusMessage}"
                        IsVisible="{Binding HasStatusMessage}"
@@ -79,9 +81,9 @@
             <VerticalStackLayout Spacing="12">
                 <Label Text="Review actions" FontAttributes="Bold" FontSize="16" />
                 <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
-                    <Button Grid.Row="0" Grid.Column="0" Text="Accept Draft" Command="{Binding AcceptDraftCommand}" />
-                    <Button Grid.Row="0" Grid.Column="1" Text="Regenerate" Command="{Binding RegenerateCommand}" />
-                    <Button Grid.Row="1" Grid.Column="0" Text="Discard" Command="{Binding DiscardCommand}" />
+                    <Button Grid.Row="0" Grid.Column="0" Text="Accept Draft" Command="{Binding AcceptDraftCommand}" IsEnabled="{Binding CanAccept}" />
+                    <Button Grid.Row="0" Grid.Column="1" Text="Regenerate" Command="{Binding RegenerateCommand}" IsEnabled="{Binding CanRegenerate}" />
+                    <Button Grid.Row="1" Grid.Column="0" Text="Discard" Command="{Binding DiscardCommand}" IsEnabled="{Binding CanDiscard}" />
                     <Button Grid.Row="1" Grid.Column="1" Text="Fit to View" Clicked="OnFitToViewClicked" />
                 </Grid>
                 <Grid ColumnDefinitions="*,*" RowDefinitions="Auto" ColumnSpacing="10">
