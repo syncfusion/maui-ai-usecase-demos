@@ -9,5 +9,8 @@
         <!-- When App Sandbox is enabled, this value is required to open outgoing network connections. -->
         <key>com.apple.security.network.client</key>
         <true/>
+        <!-- Required so the user-selected file picker can access local image files on Mac Catalyst. -->
+        <key>com.apple.security.files.user-selected.read-only</key>
+        <true/>
     </dict>
 </plist>

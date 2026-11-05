@@ -18,7 +18,7 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        builder.Services.AddSingleton<ISmartCropService, SmartCropService>();
+        builder.Services.AddSingleton<ISmartCropService, AzureVisionSmartCropService>();
 
         // One view model per request; the shell picks the desktop or mobile
         // page and resolves it from the same singleton service.

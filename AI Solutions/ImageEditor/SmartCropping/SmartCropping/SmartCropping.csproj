@@ -70,6 +70,7 @@
 		<PackageReference Include="Syncfusion.Maui.Inputs" Version="35.1.41" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="Azure.AI.OpenAI" Version="*" />
+		<PackageReference Include="Azure.AI.Vision.ImageAnalysis" Version="1.0.0" />
 		<PackageReference Include="Azure.Identity" Version="*" />
 		<PackageReference Include="Newtonsoft.Json" Version="*" />
 	</ItemGroup>

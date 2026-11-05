@@ -7,7 +7,6 @@
              xmlns:viewModel="clr-namespace:SmartCropping.ViewModel"
              x:Class="SmartCropping.SmartCroppingMobileView"
              x:DataType="viewModel:SmartCroppingViewModel"
-             Title="Smart Cropping"
              BackgroundColor="#FFFFFF">
 
     <!--
@@ -195,7 +194,9 @@
         <!-- ====== ROW 1: EDITOR + OVERLAY ====== -->
         <Grid Grid.Row="1" BackgroundColor="#F8FAFC">
             <sf:SfImageEditor x:Name="imageEditor"
-                              BackgroundColor="#F8FAFC" />
+                              BackgroundColor="#F8FAFC"
+                                  ShowToolbar="False"
+                                  AutoGenerateToolbarItems="False"/>
             <helpers:CropOverlayView IsVisible="{Binding IsOverlayVisible}"
                                      OverlayX="{Binding OverlayX, Mode=OneWay}"
                                      OverlayY="{Binding OverlayY, Mode=OneWay}"
