@@ -3,7 +3,7 @@
 ## Source Priority
 1. Approved product contract in the task prompt
 2. Derived EARS requirements and acceptance criteria in this harness set
-3. DesignReference HTML, then PNG as backup visual reference
+3. DesignReference HTML (primary visual source of truth), then PNG screenshots (supporting visual evidence)
 
 ## Allowed Path
 - `AI Solutions/Chat/SupportReplyAIDraft`
@@ -13,6 +13,50 @@
 - Fictional conversation content
 - Structured JSON field names
 - Approved workflow and state names
+
+## DesignReference Contract
+- DesignReference HTML is the primary visual source of truth; PNG screenshots are supporting visual evidence.
+- DesignReference must remain unchanged.
+- Desktop and mobile must closely match all four approved states: initial, drafting, generated reply, generation error.
+- The implementation must follow the approved hierarchy, layout, spacing, alignment, colors, typography, borders, controls, and responsive behavior.
+- Static code inspection, build success, and `git diff --check` are not visual validation. Visual validation requires running the app and comparing each state directly with DesignReference.
+
+## SfChat Architecture Contract
+- Standard .NET MAUI controls may be used above the Conversation header for the application header, subject, and case metadata.
+- Below the Conversation header, SfChat must be the single primary control and must extend through the bottom of the support workspace.
+- The conversation and reply-editing experience must appear as one continuous SfChat surface.
+- The normal arbitrary customer-message composer must remain hidden.
+- Prohibited: a separate Reply card, a second composer, a second Editor, or a visually disconnected page-level reply section.
+- Prohibited without human approval: replacing SfChat with CollectionView, WebView, SfAIAssistView, or another chat control.
+
+## SfChat Feasibility and Escalation
+Before implementing the reply area, inspect the verified public APIs in Syncfusion.Maui.Chat 35.1.43 and confirm whether SfChat can support: multiline reply editing, Reply label, AI draft badge, Review before sending, drafting state, generation error state, Retry, Regenerate, Discard, Send, conditional action visibility, and Send disabled for empty text.
+If the approved reply UI cannot be achieved with a verified public SfChat API:
+1. Stop implementation.
+2. Report the exact limitation and which required elements are unsupported.
+3. Describe the closest supported SfChat option.
+4. Request human approval before implementing any fallback.
+Never silently add an external page-level Editor or alternative control.
+
+## Mandatory Gate Order
+Gates are sequential. Do not begin a later gate until the previous gate has human-confirmed evidence.
+1. Gate 1: Predefined conversations (local runtime evidence required)
+2. Gate 2: SfChat reply-editor feasibility (unsupported means stop for human approval)
+3. Gate 3: Message selection and Draft Reply (runtime-verified)
+4. Gate 4: Azure OpenAI reply workflow (runtime-verified)
+5. Gate 5: Desktop visual correction (all four states compared with DesignReference)
+6. Gate 6: Mobile correction (all four states compared with DesignReference)
+Gate details and acceptance evidence are defined in `SPEC.md`; status is tracked in `TASKS.md`.
+
+## Document Governance
+- `HARNESS.md` changes only when permanent execution rules change.
+- `INTENT.md` changes only when approved product intent changes.
+- `SPEC.md` changes only when approved requirements or architecture change.
+- `PLAN.md` changes only when the gate sequence or current gate changes.
+- `TASKS.md` changes regularly for progress, blockers, issues, and evidence.
+- `README.md` changes only when user-facing configuration or finished behavior changes.
+- New implementation bugs normally update `TASKS.md` only.
+- Stable documents must not contain bug history, failed attempts, compiler errors, or commit history.
 
 ## Scope and UI Constraints
 - No WebView or copied web code may be used.

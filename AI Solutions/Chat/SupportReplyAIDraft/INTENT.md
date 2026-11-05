@@ -19,6 +19,9 @@ Produce an editable reply draft that the agent can review, edit, regenerate, dis
 - Support responsive desktop and mobile layouts
 - Keep the reply editor integrated with the same conversation surface while the built-in SfChat composer remains hidden
 
+- Look and behave like a polished, professional, real-world customer-support workspace on desktop and mobile
+- Match the approved DesignReference states: initial, drafting, generated reply, generation error
+
 ## Non-goals
 - Knowledge retrieval or knowledge UI
 - Source IDs, source panels, or source actions
@@ -29,7 +32,7 @@ Produce an editable reply draft that the agent can review, edit, regenerate, dis
 - WebView or copied web implementation
 
 ## Success Definition
-The sample is ready when the approved support-reply workflow is implemented in the allowed folder, the design references remain unchanged, and the documented states match the approved workflow.
+The sample is ready when the approved support-reply workflow is implemented in the allowed folder, the design references remain unchanged, and all four states on desktop and mobile visibly match the approved DesignReference while behaving as specified.
 
 ## Approval Owner
 Human reviewer / product owner

@@ -6,10 +6,15 @@
 | T-002 | Record the approved product contract and harness rules | REQ-001 through REQ-077 | Complete | Approved prompt contract | `AI Solutions/Chat/SupportReplyAIDraft` | Harness files created with full contract coverage | None |
 | T-003 | Map requirements to acceptance criteria | REQ-001 through REQ-077 | Complete | SPEC.md | `AI Solutions/Chat/SupportReplyAIDraft` | One-to-one requirement-to-acceptance mapping documented | None |
 | T-004 | Capture package, secret, and cleanup policy | REQ-075, REQ-076, REQ-077 | Complete | Approved prompt contract | `AI Solutions/Chat/SupportReplyAIDraft` | Policy sections recorded in HARNESS.md and SPEC.md | None |
-| T-005 | Implement the approved support-reply UI and workflow | REQ-001 through REQ-059 | Complete | Package verification, approval, and final design review | `AI Solutions/Chat/SupportReplyAIDraft` | Support chat page, templates, services, validator, README, and state wiring reflect the approved workflow | None |
+| G-1 | Gate 1: Predefined conversations | REQ-001, REQ-078 through REQ-081 | In Progress | Package verification | `AI Solutions/Chat/SupportReplyAIDraft` | Local runtime evidence: four messages visibly render in SfChat, three Alex Morgan incoming and one Jordan Lee outgoing, no message selected | Awaiting human-confirmed runtime evidence |
+| G-2 | Gate 2: SfChat reply-editor feasibility | REQ-090 through REQ-096 | Blocked by Gate 1 | G-1 | `AI Solutions/Chat/SupportReplyAIDraft` | Exact supported Syncfusion.Maui.Chat 35.1.43 public API identified for each required reply element, or unsupported elements reported with human approval requested | Gate 1 |
+| G-3 | Gate 3: Message selection and Draft Reply | REQ-002 through REQ-009, REQ-082, REQ-083 | Blocked by Gate 2 approval | G-2 | `AI Solutions/Chat/SupportReplyAIDraft` | Runtime-verified customer selection, selected-bubble marking, non-selectable support messages, Draft Reply only on selected request | Gate 2 approval |
+| G-4 | Gate 4: Azure OpenAI reply workflow | REQ-010 through REQ-058, REQ-084 through REQ-088 | Blocked by Gate 3 | G-3 | `AI Solutions/Chat/SupportReplyAIDraft` | Runtime-verified draft generation, editing, Review before sending, Regenerate, Discard, Retry, conditional Send, and sent-message insertion as Jordan Lee outgoing | Gate 3 |
+| G-5 | Gate 5: Desktop visual correction | REQ-089 through REQ-093, REQ-097 through REQ-099 | Blocked by Gate 4 | G-4 | `AI Solutions/Chat/SupportReplyAIDraft` | All four desktop states directly compared with DesignReference with human confirmation | Gate 4 |
+| G-6 | Gate 6: Mobile correction | REQ-097 through REQ-099 | Blocked by Gate 5 | G-5 | `AI Solutions/Chat/SupportReplyAIDraft` | All four mobile states directly compared with DesignReference with human confirmation | Gate 5 |
 
 ## Status Rules
-- Only one implementation task should be In Progress when implementation begins.
+- Only one gate should be In Progress at a time; gates run in order.
 - Complete requires evidence.
 - Record blockers instead of guessing.
-- Update `PLAN.md` and `TASKS.md` after each phase.
+- Update `TASKS.md` for progress, blockers, issues, and evidence; update `PLAN.md` only when the current gate changes.

@@ -14,12 +14,20 @@ If the Syncfusion license key is empty, the app starts without registering a lic
 
 ## Workflow
 - select one customer message from the conversation
-- draft a reply from the selected message plus recent context in the integrated reply footer while the built-in SfChat composer stays hidden
+- draft a reply from the selected message plus recent context
 - review the structured JSON result before sending
 - edit, regenerate, discard, retry, or send explicitly
-- send only when you choose; the AI never sends automatically
+- generated text appears in the reply editor with a `Review before sending` prompt
+- send only when you choose; the sent reply appears in the conversation as a support-agent message, and the AI never sends automatically
 
 ## Scope
 - only native MAUI XAML/C# is used
 - knowledge retrieval, source IDs, source panels, and WebView content are intentionally out of scope
-- temporary harness notes are preserved for this task
+
+## Platform support
+Targets .NET 10 on Mac Catalyst, iOS, Android, and Windows, with responsive desktop and mobile layouts.
+
+## Safe usage
+- Use fictional data only.
+- Keep API keys and license keys in environment variables; never commit them.
+- Review every generated draft before sending.

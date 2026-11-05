@@ -115,5 +115,57 @@ MSG-004 is the selected message in the Generated Reply state.
 - REQ-076: The system shall not add floating package versions.
 - REQ-077: The system shall not restore or build during harness preparation.
 
-## 3. Acceptance Criteria
-- AC-001 through AC-077 map directly to REQ-001 through REQ-077.
+- REQ-078: The system shall load the four predefined conversation messages in SfChat.
+- REQ-079: The system shall render the three Alex Morgan messages as incoming and the one Jordan Lee message as outgoing.
+- REQ-080: The system shall set Jordan Lee as `SfChat.CurrentUser`.
+- REQ-081: The system shall start with no message selected.
+- REQ-082: The system shall visibly mark the selected customer bubble.
+- REQ-083: The system shall show Draft Reply only for the selected customer request.
+- REQ-084: The system shall display generated text automatically in the single approved reply editor.
+- REQ-085: The system shall show Regenerate and Discard only when draft text exists.
+- REQ-086: The system shall disable Send for empty or whitespace-only text.
+- REQ-087: When Send is activated, the system shall add the reviewed response to SfChat as a Jordan Lee outgoing message, then clear the draft and the selected request.
+- REQ-088: The AI shall never send automatically.
+- REQ-089: The system shall use standard .NET MAUI controls only above the Conversation header (application header, subject, case metadata).
+- REQ-090: Below the Conversation header, SfChat shall be the single primary control extending through the bottom of the support workspace.
+- REQ-091: The conversation and reply editing shall appear as one continuous SfChat surface, with the normal arbitrary customer-message composer hidden.
+- REQ-092: The system shall not provide a separate Reply card, a second composer, a second Editor, or a visually disconnected page-level reply section.
+- REQ-093: The system shall not replace SfChat with CollectionView, WebView, SfAIAssistView, or another chat control without human approval.
+- REQ-094: Before implementing the reply area, the implementer shall verify the public APIs of Syncfusion.Maui.Chat 35.1.43 for multiline reply editing, Reply label, AI draft badge, Review before sending, drafting state, generation error state, Retry, Regenerate, Discard, Send, conditional action visibility, and Send disabled for empty text.
+- REQ-095: If the approved reply UI cannot be achieved with a verified public SfChat API, the implementer shall stop, report the exact unsupported elements and the closest supported SfChat option, and obtain human approval before any fallback.
+- REQ-096: The system shall not silently add an external page-level Editor or alternative control.
+- REQ-097: Desktop and mobile shall closely match all four approved DesignReference states (initial, drafting, generated reply, generation error), following the approved hierarchy, layout, spacing, alignment, colors, typography, borders, controls, and responsive behavior.
+- REQ-098: DesignReference HTML is the primary visual source of truth and PNG screenshots are supporting evidence.
+- REQ-099: Static code inspection, build success, and `git diff --check` shall not count as visual validation.
+
+## 3. Architecture and Visual Contracts
+
+### 3.1 Desktop
+- No unintended outer workspace padding.
+- No unintended thin gray inset around the conversation.
+- SUBJECT and `License still shows as expired after renewal` display horizontally.
+- Case ID, Customer, and Status align according to the approved desktop reference.
+- Polished, professional customer-support workspace appearance.
+- Header, metadata, dividers, avatars, messages, bubbles, reply area, controls, proportions, and state-specific content match the approved reference.
+- The approved hierarchy is preserved when the Mac Catalyst window is resized.
+
+### 3.2 Mobile
+- Same SfChat architecture and workflow as desktop.
+- Matches all four approved mobile references.
+- Supports touch message selection.
+- Respects safe areas.
+- Keeps the editor accessible above the software keyboard.
+- Metadata and actions adapt without clipping or horizontal overflow.
+- State-specific actions keep their meaning and visibility rules.
+
+### 3.3 Evidence Gates
+Gates are sequential; a later gate must not begin until the previous gate has human-confirmed evidence.
+- Gate 1, Predefined conversations: four messages visibly render in SfChat; incoming/outgoing alignment is correct; no message is selected initially; local runtime evidence required.
+- Gate 2, SfChat reply-editor feasibility: exact supported public API is identified; if unsupported, implementation stops for human approval.
+- Gate 3, Message selection and Draft Reply: customer selection, selected state, and Draft Reply are runtime-verified.
+- Gate 4, Azure OpenAI reply workflow: draft generation, editing, Review before sending, Regenerate, Discard, Retry, conditional Send, and sent-message insertion are runtime-verified.
+- Gate 5, Desktop visual correction: all four desktop states are directly compared with DesignReference.
+- Gate 6, Mobile correction: all four mobile states are directly compared with DesignReference.
+
+## 4. Acceptance Criteria
+- AC-001 through AC-099 map directly to REQ-001 through REQ-099.
