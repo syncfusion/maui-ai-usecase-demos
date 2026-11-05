@@ -17,7 +17,7 @@ Produce an editable reply draft that the agent can review, edit, regenerate, dis
 - Preserve the conversation and selection during failures
 - Keep Send under explicit agent control
 - Support responsive desktop and mobile layouts
-- Keep the reply editor integrated with the same conversation surface
+- Keep the reply editor integrated with the same conversation surface while the built-in SfChat composer remains hidden
 
 ## Non-goals
 - Knowledge retrieval or knowledge UI

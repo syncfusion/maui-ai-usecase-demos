@@ -46,7 +46,7 @@
 - Customer-message selection approach must be recorded.
 - Selected for reply presentation must be recorded.
 - Draft Reply placement must be recorded.
-- The exact selected-message and Draft Reply template implementation remains the first inspection task in the implementation phase.
+- The exact selected-message and Draft Reply template implementation was the first inspection task in the implementation phase.
 
 ## Permissions and Approval Gates
 Approval is required before:

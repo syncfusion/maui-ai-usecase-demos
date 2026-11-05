@@ -6,12 +6,12 @@
              x:DataType="models:SupportConversationMessage">
     <Grid Padding="0,2"
           HorizontalOptions="Start">
-        <Border StrokeShape="RoundRectangle 18"
+        <Border StrokeShape="RoundRectangle 14"
                 BackgroundColor="{StaticResource ConversationBubbleBackground}"
                 Stroke="{StaticResource BubbleBorderColor}"
                 StrokeThickness="1"
-                Padding="12"
-                MaximumWidthRequest="560">
+                Padding="14"
+                MaximumWidthRequest="730">
             <Border.Triggers>
                 <DataTrigger TargetType="Border"
                              Binding="{Binding IsSelected}"
@@ -23,14 +23,20 @@
             </Border.Triggers>
 
             <VerticalStackLayout Spacing="8">
-                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
-                    <Border Style="{StaticResource AvatarStyle}">
-                        <Label Text="{Binding Initials}" Style="{StaticResource AvatarTextStyle}" />
+                <Grid ColumnDefinitions="Auto,*,Auto"
+                      ColumnSpacing="8">
+                    <Border Style="{StaticResource CustomerAvatarStyle}">
+                        <Label Text="{Binding Initials}"
+                               Style="{StaticResource CustomerAvatarTextStyle}" />
                     </Border>
-                    <VerticalStackLayout Grid.Column="1" Spacing="0">
-                        <Label Text="{Binding AuthorName}" Style="{StaticResource MessageAuthorStyle}" />
-                        <Label Text="{Binding Timestamp}" Style="{StaticResource MessageTimeStyle}" />
-                    </VerticalStackLayout>
+                    <HorizontalStackLayout Grid.Column="1"
+                                           Spacing="8"
+                                           VerticalOptions="Center">
+                        <Label Text="{Binding AuthorName}"
+                               Style="{StaticResource MessageAuthorStyle}" />
+                        <Label Text="{Binding Timestamp}"
+                               Style="{StaticResource MessageTimeStyle}" />
+                    </HorizontalStackLayout>
                     <HorizontalStackLayout Grid.Column="2"
                                            Spacing="4"
                                            HorizontalOptions="End"

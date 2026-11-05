@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SupportReplyAIDraft.Models;
@@ -19,8 +20,8 @@ public sealed partial class SupportChatViewModel : ObservableObject
         _conversationService = conversationService;
         _supportReplyService = supportReplyService;
 
+        CurrentUser = _conversationService.SupportAuthor;
         Messages = _conversationService.CreateConversation();
-        CurrentUser = new Syncfusion.Maui.Chat.Author { Name = "Jordan Lee" };
 
         SelectMessageCommand = new Command<SupportConversationMessage>(SelectMessage);
         DraftReplyCommand = new Command(async () => await DraftReplyAsync());
@@ -30,7 +31,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
         SendCommand = new Command(SendReply);
     }
 
-    public ObservableCollection<SupportConversationMessage> Messages { get; }
+    public ObservableCollection<object> Messages { get; }
     public Syncfusion.Maui.Chat.Author CurrentUser { get; }
 
     [ObservableProperty]
@@ -109,7 +110,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
     partial void OnSelectedMessageChanged(SupportConversationMessage? value)
     {
-        foreach (var message in Messages)
+        foreach (var message in Messages.OfType<SupportConversationMessage>())
         {
             message.IsSelected = message == value;
         }
@@ -280,14 +281,18 @@ public sealed partial class SupportChatViewModel : ObservableObject
             return;
         }
 
-        Messages.Add(new SupportConversationMessage(
+        var sentReply = new SupportConversationMessage(
             $"AGENT-{Messages.Count + 1:000}",
             "Jordan Lee",
             "JL",
             SupportConversationRole.SupportAgent,
             DateTime.Now.ToString("h:mm tt"),
-            ReplyText.Trim()));
+            ReplyText.Trim())
+        {
+            Author = _conversationService.SupportAuthor
+        };
 
+        Messages.Add(sentReply);
         DiscardDraft();
     }
 

@@ -4,24 +4,35 @@
              xmlns:models="clr-namespace:SupportReplyAIDraft.Models"
              x:Class="SupportReplyAIDraft.Views.MessageTemplates.AgentMessageTemplateView"
              x:DataType="models:SupportConversationMessage">
-    <Grid Padding="0,2" HorizontalOptions="End">
-        <Border StrokeShape="RoundRectangle 18"
+    <Grid Padding="0,2"
+          HorizontalOptions="End">
+        <Border StrokeShape="RoundRectangle 14"
                 BackgroundColor="{StaticResource AgentBubbleBackground}"
                 Stroke="{StaticResource AgentBorderColor}"
                 StrokeThickness="1"
-                Padding="12"
-                MaximumWidthRequest="560">
-            <VerticalStackLayout Spacing="6">
-                <HorizontalStackLayout Spacing="8">
-                    <VerticalStackLayout Spacing="0" HorizontalOptions="EndAndExpand">
-                        <Label Text="{Binding Timestamp}" Style="{StaticResource MessageTimeStyle}" HorizontalTextAlignment="End" />
-                        <Label Text="{Binding AuthorName}" Style="{StaticResource MessageAuthorStyle}" HorizontalTextAlignment="End" />
-                    </VerticalStackLayout>
-                    <Border Style="{StaticResource AvatarStyle}">
-                        <Label Text="{Binding Initials}" Style="{StaticResource AvatarTextStyle}" />
+                Padding="14"
+                MaximumWidthRequest="730">
+            <VerticalStackLayout Spacing="8">
+                <Grid ColumnDefinitions="*,Auto"
+                      ColumnSpacing="8">
+                    <HorizontalStackLayout Grid.Column="0"
+                                           Spacing="8"
+                                           VerticalOptions="Center"
+                                           HorizontalOptions="End">
+                        <Label Text="{Binding Timestamp}"
+                               Style="{StaticResource MessageTimeStyle}" />
+                        <Label Text="{Binding AuthorName}"
+                               Style="{StaticResource MessageAuthorStyle}" />
+                    </HorizontalStackLayout>
+                    <Border Grid.Column="1"
+                            Style="{StaticResource AgentAvatarStyle}">
+                        <Label Text="{Binding Initials}"
+                               Style="{StaticResource AgentAvatarTextStyle}" />
                     </Border>
-                </HorizontalStackLayout>
-                <Label Text="{Binding Text}" Style="{StaticResource MessageBodyStyle}" HorizontalTextAlignment="End" />
+                </Grid>
+                <Label Text="{Binding Text}"
+                       Style="{StaticResource MessageBodyStyle}"
+                       HorizontalTextAlignment="Start" />
             </VerticalStackLayout>
         </Border>
     </Grid>

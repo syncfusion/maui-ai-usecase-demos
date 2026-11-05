@@ -1,7 +1,7 @@
 # Support Reply AI Draft Plan
 
 ## Current status
-- The approved support-reply workflow is being aligned with the allowed folder implementation.
+- The approved support-reply workflow is implemented in the allowed folder; validation remains deferred because the sandbox lacks the required tooling.
 - The solution uses the repository's `.slnx` convention.
 - Build and runtime verification remain deferred because the sandbox lacks the required tooling.
 

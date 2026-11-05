@@ -37,7 +37,7 @@ Thanks for confirming that the renewal was successful. I understand that the app
 MSG-004 is the selected message in the Generated Reply state.
 
 ## 2. EARS Requirements
-- REQ-001: The system shall display one fictional support conversation with three customer messages and one support-agent message.
+- REQ-001: The system shall display one fictional support conversation with four predefined messages (three customer messages and one support-agent message).
 - REQ-002: The system shall allow exactly one customer message to be selected.
 - REQ-003: The system shall not allow support-agent messages to be selected.
 - REQ-004: When a customer message is selected, the system shall show `Selected for reply`.
