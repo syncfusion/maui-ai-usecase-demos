@@ -197,7 +197,7 @@
                               BackgroundColor="#F8FAFC"
                                   ShowToolbar="False"
                                   AutoGenerateToolbarItems="False"/>
-            <helpers:CropOverlayView IsVisible="{Binding IsOverlayVisible}"
+            <helpers:CropOverlayView IsOverlayVisible="{Binding IsOverlayVisible}"
                                      OverlayX="{Binding OverlayX, Mode=OneWay}"
                                      OverlayY="{Binding OverlayY, Mode=OneWay}"
                                      OverlayWidth="{Binding OverlayWidth, Mode=OneWay}"
