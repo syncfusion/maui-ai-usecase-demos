@@ -1,4 +1,3 @@
-using SupportReplyAIDraft.Models;
 using Syncfusion.Maui.Chat;
 
 namespace SupportReplyAIDraft.Views.MessageTemplates;
@@ -16,7 +15,7 @@ public sealed class SupportChatMessageTemplateSelector : ChatMessageTemplateSele
 
     protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
     {
-        return item is SupportConversationMessage message && message.IsAgent
+        return item is TextMessage message && message.Author?.Name == "Jordan Lee"
             ? _agentTemplate
             : _customerTemplate;
     }

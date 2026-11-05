@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:models="clr-namespace:SupportReplyAIDraft.Models"
+             xmlns:chat="clr-namespace:Syncfusion.Maui.Chat;assembly=Syncfusion.Maui.Chat"
              x:Class="SupportReplyAIDraft.Views.MessageTemplates.CustomerMessageTemplateView"
-             x:DataType="models:SupportConversationMessage">
+             x:DataType="chat:TextMessage">
     <Grid Padding="0,2"
           HorizontalOptions="Start">
         <Border StrokeShape="RoundRectangle 14"
@@ -12,88 +12,18 @@
                 StrokeThickness="1"
                 Padding="14"
                 MaximumWidthRequest="730">
-            <Border.Triggers>
-                <DataTrigger TargetType="Border"
-                             Binding="{Binding IsSelected}"
-                             Value="True">
-                    <Setter Property="Stroke" Value="{StaticResource AccentColor}" />
-                    <Setter Property="StrokeThickness" Value="2" />
-                    <Setter Property="BackgroundColor" Value="{StaticResource SelectedBubbleBackground}" />
-                </DataTrigger>
-            </Border.Triggers>
-
             <VerticalStackLayout Spacing="8">
-                <Grid ColumnDefinitions="Auto,*,Auto"
-                      ColumnSpacing="8">
-                    <Border Style="{StaticResource CustomerAvatarStyle}">
-                        <Label Text="{Binding Initials}"
-                               Style="{StaticResource CustomerAvatarTextStyle}" />
-                    </Border>
-                    <HorizontalStackLayout Grid.Column="1"
-                                           Spacing="8"
-                                           VerticalOptions="Center">
-                        <Label Text="{Binding AuthorName}"
-                               Style="{StaticResource MessageAuthorStyle}" />
-                        <Label Text="{Binding Timestamp}"
-                               Style="{StaticResource MessageTimeStyle}" />
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Grid.Column="2"
-                                           Spacing="4"
-                                           HorizontalOptions="End"
-                                           VerticalOptions="Center"
-                                           IsVisible="{Binding IsSelected}">
-                        <Label Text="✓" Style="{StaticResource BadgeIconStyle}" />
-                        <Label Text="Selected for reply" Style="{StaticResource SelectedTextStyle}" />
-                    </HorizontalStackLayout>
-                </Grid>
+                <HorizontalStackLayout Spacing="8"
+                                       VerticalOptions="Center">
+                    <Label Text="{Binding Author.Name}"
+                           Style="{StaticResource MessageAuthorStyle}" />
+                    <Label Text="{Binding DateTime, StringFormat='{0:h:mm tt}'}"
+                           Style="{StaticResource MessageTimeStyle}" />
+                </HorizontalStackLayout>
 
                 <Label Text="{Binding Text}"
                        Style="{StaticResource MessageBodyStyle}" />
-
-                <Grid Margin="0,2,0,0"
-                      HorizontalOptions="Start">
-                    <Button Text="Draft Reply"
-                            IsVisible="{Binding IsSelected}"
-                            IsEnabled="{Binding Source={x:Reference RootPage}, Path=ViewModel.CanDraftReply}"
-                            Command="{Binding Source={x:Reference RootPage}, Path=ViewModel.DraftReplyCommand}"
-                            Style="{StaticResource SecondaryButtonStyle}"
-                            Padding="14,0"
-                            HeightRequest="34"
-                            TextColor="{StaticResource AccentColor}"
-                            BorderColor="{StaticResource AccentMutedColor}"
-                            BackgroundColor="White">
-                        <Button.Triggers>
-                            <DataTrigger TargetType="Button"
-                                         Binding="{Binding Source={x:Reference RootPage}, Path=ViewModel.IsDrafting}"
-                                         Value="True">
-                                <Setter Property="IsVisible" Value="False" />
-                            </DataTrigger>
-                        </Button.Triggers>
-                    </Button>
-
-                    <HorizontalStackLayout IsVisible="{Binding IsSelected}"
-                                           Spacing="6"
-                                           VerticalOptions="Center">
-                        <HorizontalStackLayout.Triggers>
-                            <DataTrigger TargetType="HorizontalStackLayout"
-                                         Binding="{Binding Source={x:Reference RootPage}, Path=ViewModel.IsDrafting}"
-                                         Value="False">
-                                <Setter Property="IsVisible" Value="False" />
-                            </DataTrigger>
-                        </HorizontalStackLayout.Triggers>
-                        <ActivityIndicator IsRunning="True"
-                                           Color="{StaticResource AccentColor}"
-                                           WidthRequest="14"
-                                           HeightRequest="14" />
-                        <Label Text="Drafting reply..."
-                               Style="{StaticResource SelectedTextStyle}" />
-                    </HorizontalStackLayout>
-                </Grid>
             </VerticalStackLayout>
-            <Border.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=SelectMessageCommand}"
-                                      CommandParameter="{Binding .}" />
-            </Border.GestureRecognizers>
         </Border>
     </Grid>
 </ContentView>
