@@ -20,7 +20,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
         _conversationService = conversationService;
         _supportReplyService = supportReplyService;
 
-        CurrentUser = new Syncfusion.Maui.Chat.Author { Name = "Jordan Lee" };
+        CurrentUser = _conversationService.SupportAuthor;
         Messages = _conversationService.CreateConversation();
 
         SelectMessageCommand = new Command<SupportConversationMessage>(SelectMessage);
@@ -31,7 +31,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
         SendCommand = new Command(SendReply);
     }
 
-    public ObservableCollection<SupportConversationMessage> Messages { get; }
+    public ObservableCollection<object> Messages { get; }
     public Syncfusion.Maui.Chat.Author CurrentUser { get; }
 
     [ObservableProperty]
@@ -287,7 +287,10 @@ public sealed partial class SupportChatViewModel : ObservableObject
             "JL",
             SupportConversationRole.SupportAgent,
             DateTime.Now.ToString("h:mm tt"),
-            ReplyText.Trim());
+            ReplyText.Trim())
+        {
+            Author = _conversationService.SupportAuthor
+        };
 
         Messages.Add(sentReply);
         DiscardDraft();
