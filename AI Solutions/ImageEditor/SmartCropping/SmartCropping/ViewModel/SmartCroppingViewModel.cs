@@ -194,11 +194,7 @@ public partial class SmartCroppingViewModel : ObservableObject
 
         try
         {
-            FileResult? result = await FilePicker.Default.PickAsync(new PickOptions
-            {
-                PickerTitle = "Select an image",
-                FileTypes = ImageFileTypes
-            });
+            FileResult? result = await PickImageAsync();
 
             if (result is null)
             {
@@ -228,6 +224,26 @@ public partial class SmartCroppingViewModel : ObservableObject
     }
 
     private bool CanOpenImage() => !IsBusy && editorController is not null;
+
+    private static async Task<FileResult?> PickImageAsync()
+    {
+        if (OperatingSystem.IsIOS() || OperatingSystem.IsMacCatalyst())
+        {
+            FileResult? photo = await MediaPicker.Default.PickPhotoAsync(new MediaPickerOptions
+            {
+                Title = "Select an image"
+            });
+
+            return photo;
+        }
+
+        return await FilePicker.Default.PickAsync(new PickOptions
+        {
+            PickerTitle = "Select an image",
+            FileTypes = ImageFileTypes
+        });
+    }
+
 
     /// <summary>
     /// Requests a crop suggestion from Azure OpenAI and shows it as a preview
@@ -453,17 +469,14 @@ public partial class SmartCroppingViewModel : ObservableObject
     private bool CanRetry() => IsError && !IsBusy;
 
     /// <summary>
-    /// Image MIME types accepted by the picker. These are declared explicitly
-    /// rather than using a built-in image constant so the picker returns only
-    /// formats the editor and Azure OpenAI can both decode.
+    /// Image MIME types accepted by the file picker on platforms that use it.
     /// </summary>
     private static readonly FilePickerFileType ImageFileTypes = new(
         new Dictionary<DevicePlatform, IEnumerable<string>>
         {
-            [DevicePlatform.iOS] = new[] { "public.image" },
             [DevicePlatform.Android] = new[] { "image/png", "image/jpeg" },
             [DevicePlatform.WinUI] = new[] { ".png", ".jpg", ".jpeg" },
-            [DevicePlatform.macOS] = new[] { "png", "jpg", "jpeg" }
+            [DevicePlatform.MacCatalyst] = new[] { "public.image" }
         });
 
     /// <summary>
