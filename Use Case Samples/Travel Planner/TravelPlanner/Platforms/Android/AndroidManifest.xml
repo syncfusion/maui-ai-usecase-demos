@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+	<application android:allowBackup="true" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:supportsRtl="true">
+		<!--
+			The sample renders tiles via Syncfusion's MapTileLayer against OpenStreetMap,
+			so no Google Maps key is required. The placeholder below satisfies the OS
+			binder without leaking a real key into source control. Replace with your own
+			key only if you switch to Google Maps tiles.
+		-->
+		<meta-data android:name="com.google.android.geo.API_KEY"
+			android:value="YOUR_GOOGLE_MAPS_API_KEY" />
+	</application>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.INTERNET" />
+	<!-- Location permissions required to obtain device location -->
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+</manifest>

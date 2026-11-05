@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="WardrobeAI.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:WardrobeAI.Views"
+    xmlns:main="clr-namespace:WardrobeAI.Views.Main"
+    Title="WardrobeAI">
+
+    <!--
+        Main tabbed experience — boots directly into the SfTabView host.
+        The Shell <TabBar> is replaced by a Syncfusion <c>SfTabView</c> hosted
+        inside <see cref="WardrobeAI.Views.Main.MainTabHostPage"/>. The
+        per-tab routes (main/dashboard, main/closet, …) are still registered
+        in <c>AppShell.xaml.cs</c> so existing <c>GoToAsync("//main/closet")</c>
+        call sites (e.g. the Dashboard quick actions) keep working — the
+        <c>Shell.Navigated</c> handler in the code-behind syncs the host
+        VM's <c>SelectedIndex</c> to the resolved route.
+    -->
+    <ShellContent Route="main"
+                  ContentTemplate="{DataTemplate main:MainTabHostPage}"
+                  Shell.TabBarIsVisible="False"
+                  Shell.NavBarIsVisible="False" />
+
+</Shell>
