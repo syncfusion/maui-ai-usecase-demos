@@ -254,21 +254,87 @@ public sealed class AzureVisionSmartCropService : ISmartCropService
     }
 
     /// <summary>
-    /// Product Image prefers a non-pet object. People are excluded so a
-    /// model wearing a product isn't framed as the subject.
+    /// Product Image frames the full collection of major products instead
+    /// of a single largest object. We keep only detections that are large
+    /// enough to represent real products, then merge their bounds into one
+    /// combined region so the eventual crop contains every major item.
+    /// Tiny background detections are ignored so they do not blow up the
+    /// crop area.
     /// </summary>
     private static DetectedSubject SelectForProduct(IReadOnlyList<DetectedObject>? objects)
     {
-        if (objects is { Count: > 0 })
+        if (objects is not { Count: > 0 })
         {
-            DetectedSubject? product = LargestObjectExcluding(objects, PetTags);
-            if (product is not null)
-            {
-                return product.Value;
-            }
-            return LargestObject(objects);
+            return NoSubject();
         }
-        return NoSubject();
+
+        List<DetectedObject> majorProducts = SelectMajorProductObjects(objects);
+        //if (majorProducts.Count == 0)
+        //{
+        //    DetectedSubject? product = LargestObjectExcluding(objects, PetTags);
+        //    return product ?? LargestObject(objects);
+        //}
+
+        // Use a combined bounding box so the Product Image intent frames
+        // the full product set rather than centring on a single object.
+        // The later Product Image framing step still applies the existing
+        // balanced margins around this merged region.
+        CropRegion combinedBounds =
+    CombineBoundingBoxes(
+        majorProducts.Select(o => o.BoundingBox));
+
+        if (majorProducts.Count > 1)
+        {
+            double horizontalPadding = combinedBounds.Width * 0.10;
+            double topPadding = combinedBounds.Height * 0.20;
+            double bottomPadding = combinedBounds.Height * 0.10;
+
+            combinedBounds = new CropRegion
+            {
+                X = combinedBounds.X - horizontalPadding,
+                Y = combinedBounds.Y - topPadding,
+                Width = combinedBounds.Width + (horizontalPadding * 2),
+                Height = combinedBounds.Height + topPadding + bottomPadding
+            };
+        }
+
+        string label = majorProducts.Count == 1
+            ? (majorProducts[0].Tags.Count > 0
+                ? majorProducts[0].Tags[0].Name
+                : "object")
+            : "products";
+
+        return new DetectedSubject(
+            combinedBounds,
+            SubjectKind.Object,
+            label,
+            1.0);
+    }
+
+    /// <summary>
+    /// Keeps only detections that are large enough to matter for product
+    /// framing. We drop tiny detections that are likely background clutter
+    /// by measuring each object against the biggest detected product-sized
+    /// region and keeping only the major ones.
+    /// </summary>
+    private static List<DetectedObject> SelectMajorProductObjects(IReadOnlyList<DetectedObject> objects)
+    {
+        List<DetectedObject> candidates = objects
+            .Where(o => !o.Tags.Any(t => PetTags.Contains(t.Name)))
+            .ToList();
+
+        if (candidates.Count <= 1)
+        {
+            return candidates;
+        }
+
+        double largestArea = candidates.Max(o => o.BoundingBox.Width * o.BoundingBox.Height);
+        double minimumArea = largestArea * 0.12;
+
+        return candidates
+            .Where(o => (o.BoundingBox.Width * o.BoundingBox.Height) >= minimumArea)
+            .OrderByDescending(o => o.BoundingBox.Width * o.BoundingBox.Height)
+            .ToList();
     }
 
     /// <summary>
@@ -466,6 +532,24 @@ public sealed class AzureVisionSmartCropService : ISmartCropService
 
     private static CropRegion ToCropRegion(ImageBoundingBox box) =>
         new() { X = box.X, Y = box.Y, Width = box.Width, Height = box.Height };
+
+    private static CropRegion CombineBoundingBoxes(IEnumerable<ImageBoundingBox> boxes)
+    {
+        List<ImageBoundingBox> list = boxes.ToList();
+
+        double left = list.Min(box => box.X);
+        double top = list.Min(box => box.Y);
+        double right = list.Max(box => box.X + box.Width);
+        double bottom = list.Max(box => box.Y + box.Height);
+
+        return new CropRegion
+        {
+            X = left,
+            Y = top,
+            Width = right - left,
+            Height = bottom - top
+        };
+    }
 
     #endregion
 

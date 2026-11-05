@@ -89,7 +89,7 @@ public partial class SmartCroppingViewModel : ObservableObject
     /// <summary>Gets the crop intents offered to the user.</summary>
     public ObservableCollection<string> CropIntents { get; } = new()
     {
-        "Profile Photo",
+        //"Profile Photo",
         "Product Image",
         "Pet Portrait",
         "Food Photography",
