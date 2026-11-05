@@ -29,21 +29,21 @@ NutriLens helps people quickly understand what is in a packaged food product by 
 
 ## Controls Used
 
-- **SfListView** — displays recent scans, history, and frequent ingredients.
-- **SfCharts** — visualizes health-score trends and summary data.
-- **SfGauges** / **SfProgressBar** — shows score and progress-style status indicators.
-- **SfButtons** — supports scan, save, and navigation actions.
-- **SfPopup** — provides in-app dialogs for editing or reviewing ingredient content.
+- **SfListView** : displays recent scans, history, and frequent ingredients.
+- **SfCharts** : visualizes health-score trends and summary data.
+- **SfGauges** / **SfProgressBar** : shows score and progress-style status indicators.
+- **SfButtons** : supports scan, save, and navigation actions.
+- **SfPopup** : provides in-app dialogs for editing or reviewing ingredient content.
 
 ## Architecture
 
 NutriLens follows an MVVM-based structure with separate pages, view models, services, and models.
 
-- **View / Page** — presents the dashboard, scan flow, review screen, result view, profile, and trends pages.
-- **ViewModel** — coordinates UI state, user actions, and AI requests.
-- **AI service** — sends prompts to Azure OpenAI and returns structured analysis responses.
-- **Models** — represent ingredient analysis, user preferences, and scan history data.
-- **Supporting UI components** — Syncfusion controls render lists, charts, progress, popups, and navigation elements.
+- **View / Page** : presents the dashboard, scan flow, review screen, result view, profile, and trends pages.
+- **ViewModel** : coordinates UI state, user actions, and AI requests.
+- **AI service** : sends prompts to Azure OpenAI and returns structured analysis responses.
+- **Models** : represent ingredient analysis, user preferences, and scan history data.
+- **Supporting UI components** : Syncfusion controls render lists, charts, progress, popups, and navigation elements.
 
 ## Prerequisites
 
@@ -90,11 +90,11 @@ If you want to target another supported platform, use the matching framework nam
 
 ## Project Structure
 
-- `Views/` — UI pages and layouts
-- `ViewModels/` — presentation logic
-- `Models/` — data structures
-- `Services/` — AI and helper services
-- `Resources/` — styles, images, and assets
+- `Views/` : UI pages and layouts
+- `ViewModels/` : presentation logic
+- `Models/` : data structures
+- `Services/` : AI and helper services
+- `Resources/` : styles, images, and assets
 
 ## Troubleshooting
 
