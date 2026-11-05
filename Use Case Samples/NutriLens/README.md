@@ -86,8 +86,7 @@ dotnet build -t:Run -f net10.0-windows10.0.19041.0
 If you want to target another supported platform, use the matching framework name for that platform in the same command.
 
 ## Output
-
-Add a screenshot, GIF, or short visual summary of the final UI here.
+<img width="424" height="836" alt="NutriLens" src="https://github.com/user-attachments/assets/4ad199c0-dab4-4d01-b4f2-d7b57f962002" />
 
 ## Project Structure
 
