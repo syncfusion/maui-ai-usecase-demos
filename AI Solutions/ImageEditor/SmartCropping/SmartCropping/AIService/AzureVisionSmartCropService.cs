@@ -92,12 +92,13 @@ public sealed class AzureVisionSmartCropService : AzureBaseService, ISmartCropSe
         "fruit", "vegetable", "bread", "egg"
     };
 
-    private readonly ImageAnalysisClient client;
+    private ImageAnalysisClient? client;
 
     public AzureVisionSmartCropService()
     {
-        client = CreateImageAnalysisClient();
     }
+
+    private ImageAnalysisClient Client => client ??= CreateImageAnalysisClient();
 
     /// <inheritdoc />
     public async Task<SmartCropResponse?> SuggestCropAsync(
@@ -121,7 +122,7 @@ public sealed class AzureVisionSmartCropService : AzureBaseService, ISmartCropSe
         {
             // One round trip gets us everything we need: people boxes,
             // object boxes (with tags) and ROI / smart-crop suggestions.
-            ImageAnalysisResult analysis = await client.AnalyzeAsync(
+            ImageAnalysisResult analysis = await Client.AnalyzeAsync(
                 BinaryData.FromBytes(imageBytes),
                 VisualFeatures.People | VisualFeatures.Objects | VisualFeatures.SmartCrops,
                 cancellationToken: cancellationToken);

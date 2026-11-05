@@ -25,11 +25,21 @@ public abstract class AzureBaseService
 
     protected AzureOpenAIClient CreateClient()
     {
-        return new AzureOpenAIClient(new Uri(Endpoint), new AzureKeyCredential(ApiKey));
+        return new AzureOpenAIClient(GetEndpointUri(), new AzureKeyCredential(ApiKey));
     }
 
     protected ImageAnalysisClient CreateImageAnalysisClient()
     {
-        return new ImageAnalysisClient(new Uri(Endpoint), new AzureKeyCredential(ApiKey));
+        return new ImageAnalysisClient(GetEndpointUri(), new AzureKeyCredential(ApiKey));
+    }
+
+    private Uri GetEndpointUri()
+    {
+        if (!Uri.TryCreate(Endpoint, UriKind.Absolute, out Uri? endpointUri))
+        {
+            throw new InvalidOperationException("A valid Azure Vision endpoint must be configured before using AI features.");
+        }
+
+        return endpointUri;
     }
 }
