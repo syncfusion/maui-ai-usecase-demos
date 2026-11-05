@@ -1,3 +1,4 @@
+using Azure;
 using Azure.AI.Vision.ImageAnalysis;
 using System.Diagnostics;
 
