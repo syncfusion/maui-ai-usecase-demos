@@ -1,5 +1,4 @@
-using System.Globalization;
-using Microsoft.Maui.Controls;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Syncfusion.Maui.Chat;
 
 namespace SupportReplyAIDraft.Models;
@@ -10,13 +9,10 @@ public enum SupportConversationRole
     SupportAgent
 }
 
-public class SupportConversationMessage : TextMessage
+public partial class SupportConversationMessage : ObservableObject, IMessage
 {
-    public static readonly BindableProperty IsSelectedProperty = BindableProperty.Create(
-        nameof(IsSelected),
-        typeof(bool),
-        typeof(SupportConversationMessage),
-        false);
+    [ObservableProperty]
+    private bool isSelected;
 
     public SupportConversationMessage(
         string id,
@@ -31,9 +27,10 @@ public class SupportConversationMessage : TextMessage
         Initials = initials;
         Role = role;
         Timestamp = timestamp;
-        Author = new Author { Name = authorName };
         Text = text;
-        DateTime = DateTime.ParseExact(timestamp, "h:mm tt", CultureInfo.InvariantCulture);
+        Author = new Author { Name = authorName };
+        Data = text;
+        DateTime = DateTime.ParseExact(timestamp, "h:mm tt", System.Globalization.CultureInfo.InvariantCulture);
         DeliveryState = DeliveryStates.Delivered;
     }
 
@@ -42,12 +39,17 @@ public class SupportConversationMessage : TextMessage
     public string Initials { get; }
     public SupportConversationRole Role { get; }
     public string Timestamp { get; }
+    public string Text { get; }
 
-    public bool IsSelected
-    {
-        get => (bool)GetValue(IsSelectedProperty);
-        set => SetValue(IsSelectedProperty, value);
-    }
+    public Author Author { get; set; } = new Author();
+    public object Data { get; set; }
+    public DateTime DateTime { get; set; }
+    public DeliveryStates DeliveryState { get; set; }
+    public bool HideAfterSelection { get; set; }
+    public bool IsMessageContentHiddenAfterSelection { get; set; }
+    public bool IsPinned { get; set; }
+    public bool IsSuggestionViewHiddenAfterSelection { get; set; }
+    public ChatSuggestions Suggestions { get; set; } = new();
 
     public bool CanSelect => Role == SupportConversationRole.Customer;
     public bool IsAgent => Role == SupportConversationRole.SupportAgent;
