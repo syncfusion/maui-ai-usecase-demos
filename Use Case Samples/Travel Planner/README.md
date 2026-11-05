@@ -109,7 +109,9 @@ Start the trip conversation and follow its prompts. Once recommendations are gen
 
 ## Output
 
-The UI presents a guided trip-planning conversation alongside a consolidated trip-details view. The details include a destination summary, top-place, hotel, and food-spot lists with ratings, and a map with available location pins. No screenshot or GIF is included in the sample files.
+The UI presents a guided trip-planning conversation alongside a map and a consolidated trip-details view. The details include a destination summary, top-place, hotel, and food-spot lists with ratings, and available location pins.
+
+![Travel Planner UI](TravelPlanner/Resources/Images/Travel-Planner.gif)
 
 ## Project Structure
 
