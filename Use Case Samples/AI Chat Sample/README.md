@@ -65,13 +65,13 @@ The sample demonstrates how Syncfusion's AI-focused controls can be combined wit
 
 ## Controls Used
 
-- `SfAIAssistView` — Provides the conversational AI chat experience.
-- `SfListView` — Displays agent lists and navigation content.
-- `SfExpander` — Organizes collapsible sections.
-- `SfPopup` — Hosts avatar and branding editors.
-- `SfChipGroup` — Switches configuration modes.
-- `SfAvatarView` — Displays agent avatars.
-- `SfButton` — Executes primary actions.
+- `SfAIAssistView` - Provides the conversational AI chat experience.
+- `SfListView` - Displays agent lists and navigation content.
+- `SfExpander` - Organizes collapsible sections.
+- `SfPopup` - Hosts avatar and branding editors.
+- `SfChipGroup` - Switches configuration modes.
+- `SfAvatarView` - Displays agent avatars.
+- `SfButton` - Executes primary actions.
 
 ---
 
@@ -165,11 +165,11 @@ Services/
 Resources/
 ```
 
-- `Views/` — UI pages and layouts
-- `ViewModels/` — Presentation logic
-- `Models/` — Data structures
-- `Services/` — AI services
-- `Resources/` — Styles and assets
+- `Views/` - UI pages and layouts
+- `ViewModels/` - Presentation logic
+- `Models/` - Data structures
+- `Services/` - AI services
+- `Resources/` - Styles and assets
 
 ---
 
