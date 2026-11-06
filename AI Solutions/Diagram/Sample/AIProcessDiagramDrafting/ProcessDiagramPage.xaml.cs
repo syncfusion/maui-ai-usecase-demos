@@ -20,16 +20,10 @@ public partial class ProcessDiagramPage : ContentPage
         DiagramSurface.Created += (_, __) => DiagramSurface.FitToPage();
     }
 
-    private async void OnLoaded(object? sender, EventArgs e)
+    private void OnLoaded(object? sender, EventArgs e)
     {
         ApplyLayout(Width);
         ApplyCurrentDiagram();
-
-        if (viewModel.CurrentDiagram is null)
-        {
-            SyncProcessDescriptionFromEditor();
-            await viewModel.GenerateDraftAsync();
-        }
     }
 
     private void OnSizeChanged(object? sender, EventArgs e)
