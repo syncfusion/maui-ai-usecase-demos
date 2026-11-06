@@ -227,22 +227,17 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
 
     public async Task GenerateDraftAsync()
     {
-        var description = ProcessDescription;
-        if (string.IsNullOrWhiteSpace(description) && SelectedExample is not null)
+        if (!CanGenerate)
         {
-            description = SelectedExample.Description;
-            ProcessDescription = description;
-        }
+            if (string.IsNullOrWhiteSpace(ProcessDescription))
+            {
+                StatusMessage = "Enter a process description before generating a draft.";
+            }
+            else if (ProcessDescription.Length > WorkflowLimits.ProcessDescription)
+            {
+                StatusMessage = $"The process description must be {WorkflowLimits.ProcessDescription} characters or fewer.";
+            }
 
-        if (string.IsNullOrWhiteSpace(description))
-        {
-            StatusMessage = "Enter a process description before generating a draft.";
-            return;
-        }
-
-        if (description.Length > WorkflowLimits.ProcessDescription)
-        {
-            StatusMessage = $"The process description must be {WorkflowLimits.ProcessDescription} characters or fewer.";
             return;
         }
 
@@ -251,7 +246,7 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
 
         try
         {
-            var workflow = await workflowExtractionService.ExtractAsync(description);
+            var workflow = await workflowExtractionService.ExtractAsync(ProcessDescription);
             if (!validator.Validate(workflow, out var errorMessage))
             {
                 StatusMessage = errorMessage;
@@ -292,7 +287,7 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
 
         if (CurrentWorkflow is null)
         {
-            await GenerateDraftAsync();
+            StatusMessage = "Generate a draft before regenerating it.";
             return;
         }
 

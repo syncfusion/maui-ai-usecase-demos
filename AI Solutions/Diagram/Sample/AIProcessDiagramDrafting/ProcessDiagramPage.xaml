@@ -43,15 +43,12 @@
                 </Border>
 
                 <Label Text="Examples" FontAttributes="Bold" />
-                <Picker x:Name="ExamplePicker"
-                        ItemsSource="{Binding Examples}"
+                <Picker ItemsSource="{Binding Examples}"
                         ItemDisplayBinding="{Binding Name}"
-                        SelectedItem="{Binding SelectedExample, Mode=TwoWay}"
-                        SelectedIndexChanged="OnSelectedExampleChanged" />
+                        SelectedItem="{Binding SelectedExample, Mode=TwoWay}" />
 
                 <Label Text="Process description" FontAttributes="Bold" />
-                <Editor x:Name="ProcessDescriptionEditor"
-                        Text="{Binding ProcessDescription, Mode=TwoWay}"
+                <Editor Text="{Binding ProcessDescription, Mode=TwoWay}"
                         HeightRequest="180"
                         TextChanged="OnProcessDescriptionTextChanged"
                         Placeholder="Describe the workflow in a few sentences..." />

@@ -38,13 +38,11 @@ public partial class ProcessDiagramPage : ContentPage
 
     private async void OnGenerateDraftClicked(object? sender, EventArgs e)
     {
-        SyncProcessDescriptionFromEditor();
         await viewModel.GenerateDraftAsync();
     }
 
     private async void OnRegenerateClicked(object? sender, EventArgs e)
     {
-        SyncProcessDescriptionFromEditor();
         await viewModel.RegenerateAsync();
     }
 
@@ -56,20 +54,6 @@ public partial class ProcessDiagramPage : ContentPage
     private void OnDiscardClicked(object? sender, EventArgs e)
     {
         viewModel.DiscardDraft();
-    }
-
-    private void OnSelectedExampleChanged(object? sender, EventArgs e)
-    {
-        if (ExamplePicker.SelectedItem is WorkflowExample workflowExample)
-        {
-            viewModel.SelectedExample = workflowExample;
-            SyncProcessDescriptionFromEditor();
-        }
-    }
-
-    private void SyncProcessDescriptionFromEditor()
-    {
-        viewModel.ProcessDescription = ProcessDescriptionEditor.Text ?? string.Empty;
     }
 
     private void OnLoaded(object? sender, EventArgs e)
