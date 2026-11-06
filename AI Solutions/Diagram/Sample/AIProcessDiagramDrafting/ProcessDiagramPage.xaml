@@ -4,53 +4,33 @@
              xmlns:syncfusionDiagram="clr-namespace:Syncfusion.Maui.Diagram;assembly=Syncfusion.Maui.Diagram"
              x:Class="AIProcessDiagramDrafting.ProcessDiagramPage"
              Title="AI-Powered Process Diagram Drafting">
-    <Grid x:Name="RootGrid" Padding="24" RowSpacing="16" ColumnSpacing="24">
+    <Grid x:Name="RootGrid"
+          Padding="24"
+          RowSpacing="16"
+          RowDefinitions="Auto,Auto,*,Auto">
         <VerticalStackLayout x:Name="HeaderSection" Spacing="6">
             <Label Text="AI-Powered Process Diagram Drafting"
                    FontSize="28"
                    FontAttributes="Bold" />
-            <Label Text="Enter a short process description and generate an editable flowchart draft."
+            <Label Text="Edit the workflow description and generate an updated diagram with AI."
                    FontSize="14" />
         </VerticalStackLayout>
 
-        <Border x:Name="InputSection"
+        <Border Grid.Row="1"
+                x:Name="InputSection"
                 Stroke="#E5E7EB"
                 StrokeThickness="1"
                 BackgroundColor="White"
                 Padding="16"
                 StrokeShape="RoundRectangle 16">
             <VerticalStackLayout Spacing="12">
-                <Label Text="Process input" FontAttributes="Bold" FontSize="16" />
+                <Label Text="Process description"
+                       FontAttributes="Bold"
+                       FontSize="16" />
 
-                <Border IsVisible="{Binding HasWarnings}"
-                        BackgroundColor="#FFF7ED"
-                        Stroke="#FDBA74"
-                        StrokeThickness="1"
-                        Padding="12"
-                        StrokeShape="RoundRectangle 10">
-                    <VerticalStackLayout Spacing="8">
-                        <Label Text="AI warnings" FontAttributes="Bold" TextColor="#9A3412" />
-                        <CollectionView ItemsSource="{Binding Warnings}">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <Label Text="{Binding .}"
-                                           LineBreakMode="WordWrap"
-                                           TextColor="#9A3412" />
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </VerticalStackLayout>
-                </Border>
-
-                <Label Text="Examples" FontAttributes="Bold" />
-                <Picker ItemsSource="{Binding Examples}"
-                        ItemDisplayBinding="{Binding Name}"
-                        SelectedItem="{Binding SelectedExample, Mode=TwoWay}" />
-
-                <Label Text="Process description" FontAttributes="Bold" />
-                <Editor Text="{Binding ProcessDescription, Mode=TwoWay}"
+                <Editor x:Name="ProcessDescriptionEditor"
+                        Text="{Binding ProcessDescription, Mode=TwoWay}"
                         HeightRequest="180"
-                        TextChanged="OnProcessDescriptionTextChanged"
                         Placeholder="Describe the workflow in a few sentences..." />
 
                 <Button Text="Generate Draft"
@@ -62,7 +42,8 @@
             </VerticalStackLayout>
         </Border>
 
-        <Border x:Name="DiagramSection"
+        <Border Grid.Row="2"
+                x:Name="DiagramSection"
                 Stroke="#E5E7EB"
                 StrokeThickness="1"
                 BackgroundColor="White"
@@ -71,22 +52,23 @@
             <syncfusionDiagram:SfDiagram x:Name="DiagramSurface" />
         </Border>
 
-        <Border x:Name="ReviewSection"
+        <Border Grid.Row="3"
+                x:Name="ReviewSection"
                 Stroke="#E5E7EB"
                 StrokeThickness="1"
                 Padding="16"
                 StrokeShape="RoundRectangle 16">
             <VerticalStackLayout Spacing="12">
-                <Label Text="Review actions" FontAttributes="Bold" FontSize="16" />
-                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
-                    <Button Grid.Row="0" Grid.Column="0" Text="Accept Draft" Clicked="OnAcceptDraftClicked" />
-                    <Button Grid.Row="0" Grid.Column="1" Text="Regenerate" Clicked="OnRegenerateClicked" />
-                    <Button Grid.Row="1" Grid.Column="0" Text="Discard" Clicked="OnDiscardClicked" />
-                    <Button Grid.Row="1" Grid.Column="1" Text="Fit to View" Clicked="OnFitToViewClicked" />
-                </Grid>
-                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto" ColumnSpacing="10">
-                    <Button Grid.Column="0" Text="Undo" Clicked="OnUndoClicked" />
-                    <Button Grid.Column="1" Text="Redo" Clicked="OnRedoClicked" />
+                <Label Text="Review actions"
+                       FontAttributes="Bold"
+                       FontSize="16" />
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Button Grid.Column="0"
+                            Text="Accept Draft"
+                            Clicked="OnAcceptDraftClicked" />
+                    <Button Grid.Column="1"
+                            Text="Regenerate"
+                            Clicked="OnRegenerateClicked" />
                 </Grid>
             </VerticalStackLayout>
         </Border>
