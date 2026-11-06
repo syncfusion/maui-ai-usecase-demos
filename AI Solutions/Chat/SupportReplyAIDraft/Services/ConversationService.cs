@@ -33,6 +33,11 @@ public sealed class ConversationService
         };
     }
 
+    public bool IsCustomerMessage(TextMessage message)
+    {
+        return message.Author?.Name == _customerAuthor.Name;
+    }
+
     public IReadOnlyList<string> BuildRecentContext(IEnumerable<object> conversation, string selectedMessageId)
     {
         var list = conversation.OfType<SupportConversationMessage>().ToList();

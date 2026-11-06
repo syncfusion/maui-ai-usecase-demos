@@ -31,14 +31,14 @@
                         Opacity="0.12" />
             </Border.Shadow>
 
-            <Grid RowDefinitions="Auto,1,Auto,1,Auto,1,*,1,Auto"
+            <Grid RowDefinitions="Auto,1,Auto,1,Auto,1,*"
                   BackgroundColor="{StaticResource SurfaceColor}">
                 <Grid Grid.Row="0"
                       Padding="16,10"
                       ColumnDefinitions="Auto,Auto,*"
                       ColumnSpacing="14">
                     <HorizontalStackLayout Spacing="6"
-                                          VerticalOptions="Center">
+                                           VerticalOptions="Center">
                         <Border HeightRequest="10"
                                 WidthRequest="10"
                                 BackgroundColor="#CBD5E1"
@@ -169,140 +169,13 @@
                     <chat:SfChat x:Name="ConversationChat"
                                  Messages="{Binding Messages}"
                                  CurrentUser="{Binding CurrentUser}"
-                                 ShowMessageInputView="False"
+                                 ShowMessageInputView="True"
+                                 AllowMultilineInput="True"
+                                 SendMessageCommand="{Binding NativeSendCommand}"
                                  VerticalOptions="FillAndExpand"
                                  HorizontalOptions="FillAndExpand"
                                  BackgroundColor="Transparent"
                                  Margin="0" />
-                </Grid>
-
-                <BoxView Grid.Row="7"
-                         HeightRequest="1"
-                         Color="{StaticResource BubbleBorderColor}" />
-
-                <Grid Grid.Row="8"
-                      Padding="16,14,16,16"
-                      RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
-                      RowSpacing="10"
-                      BackgroundColor="{StaticResource SurfaceColor}">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <VerticalStackLayout Spacing="2">
-                            <Label Text="Reply"
-                                   Style="{StaticResource SectionTitleStyle}" />
-                            <Label Text="Review before sending"
-                                   IsVisible="{Binding HasValidatedDraft}"
-                                   Style="{StaticResource SectionSubtitleStyle}" />
-                        </VerticalStackLayout>
-
-                        <Border Grid.Column="1"
-                                IsVisible="{Binding HasValidatedDraft}"
-                                VerticalOptions="Start"
-                                Style="{StaticResource SelectedBadgeStyle}">
-                            <Label Text="AI draft"
-                                   Style="{StaticResource BadgeTextStyle}" />
-                        </Border>
-                    </Grid>
-
-                    <Border Grid.Row="1"
-                            IsVisible="{Binding ShowStatus}"
-                            Style="{StaticResource ErrorBannerStyle}">
-                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                            <Label Text="!"
-                                   Style="{StaticResource ErrorIconStyle}" />
-                            <VerticalStackLayout Grid.Column="1" Spacing="2">
-                                <Label Text="{Binding StatusTitle}"
-                                       Style="{StaticResource ErrorTitleStyle}" />
-                                <Label Text="{Binding StatusMessage}"
-                                       Style="{StaticResource ErrorMessageStyle}" />
-                            </VerticalStackLayout>
-                            <Button Grid.Column="2"
-                                    Text="Retry"
-                                    Command="{Binding RetryCommand}"
-                                    Style="{StaticResource SecondaryButtonStyle}"
-                                    Padding="14,0"
-                                    HeightRequest="34"
-                                    VerticalOptions="Start" />
-                        </Grid>
-                    </Border>
-
-                    <VerticalStackLayout Grid.Row="2"
-                                         Spacing="8"
-                                         IsVisible="{Binding ShowRequestedInformation}">
-                        <Label Text="Requested information"
-                               Style="{StaticResource SectionSubtitleStyle}" />
-                        <FlexLayout BindableLayout.ItemsSource="{Binding RequestedInformation}"
-                                    Wrap="Wrap"
-                                    Direction="Row">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Style="{StaticResource PillStyle}"
-                                            Margin="0,0,8,8">
-                                        <Label Text="{Binding .}"
-                                               Style="{StaticResource PillTextStyle}" />
-                                    </Border>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </FlexLayout>
-                    </VerticalStackLayout>
-
-                    <VerticalStackLayout Grid.Row="3"
-                                         Spacing="8"
-                                         IsVisible="{Binding HasWarnings}">
-                        <Label Text="Warnings"
-                               Style="{StaticResource SectionSubtitleStyle}" />
-                        <FlexLayout BindableLayout.ItemsSource="{Binding Warnings}"
-                                    Wrap="Wrap"
-                                    Direction="Row">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Style="{StaticResource PillStyle}"
-                                            Margin="0,0,8,8">
-                                        <Label Text="{Binding .}"
-                                               Style="{StaticResource PillTextStyle}" />
-                                    </Border>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </FlexLayout>
-                    </VerticalStackLayout>
-
-                    <Border Grid.Row="4"
-                            Stroke="{StaticResource BubbleBorderColor}"
-                            StrokeThickness="1"
-                            StrokeShape="RoundRectangle 10"
-                            BackgroundColor="White"
-                            Padding="12">
-                        <Editor Text="{Binding ReplyText, Mode=TwoWay}"
-                                Placeholder="{Binding ReplyPlaceholder}"
-                                AutoSize="TextChanges"
-                                IsEnabled="{Binding IsComposerEnabled}"
-                                MinimumHeightRequest="120"
-                                Style="{StaticResource ReplyEditorStyle}" />
-                    </Border>
-
-                    <Grid Grid.Row="5"
-                          ColumnDefinitions="Auto,Auto,*,Auto"
-                          ColumnSpacing="10">
-                        <Button Text="Discard"
-                                Command="{Binding DiscardCommand}"
-                                IsEnabled="{Binding CanDiscard}"
-                                Style="{StaticResource SecondaryButtonStyle}" />
-                        <Button Grid.Column="1"
-                                Text="Regenerate"
-                                Command="{Binding RegenerateCommand}"
-                                IsVisible="{Binding CanRegenerate}"
-                                Style="{StaticResource SecondaryButtonStyle}" />
-                        <ActivityIndicator Grid.Column="2"
-                                           IsRunning="{Binding IsDrafting}"
-                                           IsVisible="{Binding IsDrafting}"
-                                           HorizontalOptions="End"
-                                           VerticalOptions="Center"
-                                           Color="{StaticResource AccentColor}" />
-                        <Button Grid.Column="3"
-                                Text="Send"
-                                Command="{Binding SendCommand}"
-                                IsEnabled="{Binding CanSend}"
-                                Style="{StaticResource PrimaryButtonStyle}" />
-                    </Grid>
                 </Grid>
             </Grid>
         </Border>

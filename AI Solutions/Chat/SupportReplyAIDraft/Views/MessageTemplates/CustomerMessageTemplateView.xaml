@@ -2,16 +2,37 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:chat="clr-namespace:Syncfusion.Maui.Chat;assembly=Syncfusion.Maui.Chat"
+             xmlns:views="clr-namespace:SupportReplyAIDraft.Views"
              x:Class="SupportReplyAIDraft.Views.MessageTemplates.CustomerMessageTemplateView"
              x:DataType="chat:TextMessage">
     <Grid Padding="0,2"
           HorizontalOptions="Start">
-        <Border StrokeShape="RoundRectangle 14"
-                BackgroundColor="{StaticResource ConversationBubbleBackground}"
+        <Border x:Name="SelectionBorder"
+                StrokeShape="RoundRectangle 14"
                 Stroke="{StaticResource BubbleBorderColor}"
                 StrokeThickness="1"
+                BackgroundColor="{StaticResource SurfaceColor}"
                 Padding="14"
                 MaximumWidthRequest="730">
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=SelectMessageCommand}"
+                                      CommandParameter="{Binding .}" />
+            </Border.GestureRecognizers>
+            <Border.Triggers>
+                <DataTrigger TargetType="Border"
+                             Value="True">
+                    <DataTrigger.Binding>
+                        <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
+                            <Binding Path="." />
+                            <Binding Path="BindingContext.SelectedMessage"
+                                     Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
+                        </MultiBinding>
+                    </DataTrigger.Binding>
+                    <Setter Property="Stroke" Value="{StaticResource AccentColor}" />
+                    <Setter Property="StrokeThickness" Value="2" />
+                </DataTrigger>
+            </Border.Triggers>
+
             <VerticalStackLayout Spacing="8">
                 <HorizontalStackLayout Spacing="8"
                                        VerticalOptions="Center">
@@ -21,8 +42,40 @@
                            Style="{StaticResource MessageTimeStyle}" />
                 </HorizontalStackLayout>
 
+                <HorizontalStackLayout Spacing="6"
+                                       IsVisible="False">
+                    <HorizontalStackLayout.IsVisible>
+                        <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
+                            <Binding Path="." />
+                            <Binding Path="BindingContext.SelectedMessage"
+                                     Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
+                        </MultiBinding>
+                    </HorizontalStackLayout.IsVisible>
+                    <Label Text="●"
+                           Style="{StaticResource SelectedTextStyle}" />
+                    <Label Text="Selected for reply"
+                           Style="{StaticResource SelectedTextStyle}" />
+                </HorizontalStackLayout>
+
                 <Label Text="{Binding Text}"
                        Style="{StaticResource MessageBodyStyle}" />
+
+                <Label Text="✦ Draft Reply"
+                       IsVisible="False"
+                       TextColor="{StaticResource AccentColor}"
+                       FontSize="14"
+                       FontAttributes="Bold">
+                    <Label.IsVisible>
+                        <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
+                            <Binding Path="." />
+                            <Binding Path="BindingContext.SelectedMessage"
+                                     Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
+                        </MultiBinding>
+                    </Label.IsVisible>
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=DraftReplyCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
             </VerticalStackLayout>
         </Border>
     </Grid>

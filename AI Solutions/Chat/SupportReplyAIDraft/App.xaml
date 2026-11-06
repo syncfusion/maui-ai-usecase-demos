@@ -10,6 +10,7 @@
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+            <converters:SelectedMessageMatchConverter x:Key="SelectedMessageMatchConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
