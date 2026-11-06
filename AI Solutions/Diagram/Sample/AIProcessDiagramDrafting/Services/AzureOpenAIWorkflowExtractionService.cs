@@ -47,7 +47,7 @@ public sealed class AzureOpenAIWorkflowExtractionService : AzureBaseService, IWo
         };
 
         var completion = await chatClient.CompleteChatAsync(messages, options, cancellationToken);
-        var json = string.Concat(completion.Content.Select(content => content.Text ?? string.Empty));
+        var json = string.Concat(completion.Value.Content.Select(content => content.Text ?? string.Empty));
 
         return JsonSerializer.Deserialize<WorkflowResponse>(json, JsonOptions)
             ?? throw new InvalidOperationException("Azure OpenAI returned an empty workflow response.");
