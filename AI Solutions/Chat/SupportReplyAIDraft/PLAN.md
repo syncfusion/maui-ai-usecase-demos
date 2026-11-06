@@ -11,8 +11,8 @@ Gates are sequential. A later gate must not begin until the previous gate has hu
 6. Gate 6: Mobile correction
 
 ## Current Gate
-Gate 2: SfChat reply-editor feasibility.
+Gate 3: Message selection and Draft Reply.
 
-Required investigation: verify whether Syncfusion.Maui.Chat 35.1.43 can support the approved integrated reply UI through documented public APIs.
+Scope: customer-message selection, selected-bubble marking, non-selectable support messages, and Draft Reply on the selected request, using SfChat message templates and the native disabled composer.
 
-Stop condition: if the approved UI cannot be achieved through SfChat public APIs, implementation must stop and wait for human approval before proceeding.
+Stop condition: any need for a custom footer, external Editor, or alternative chat control requires human approval.

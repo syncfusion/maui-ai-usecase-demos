@@ -24,24 +24,22 @@
 ## SfChat Architecture Contract
 - Standard .NET MAUI controls may be used above the Conversation header for the application header, subject, and case metadata.
 - Below the Conversation header, SfChat must be the single primary control and must extend through the bottom of the support workspace.
-- The conversation and reply-editing experience must appear as one continuous SfChat surface.
-- The normal arbitrary customer-message composer must remain hidden.
-- Prohibited: a separate Reply card, a second composer, a second Editor, or a visually disconnected page-level reply section.
+- The conversation and reply editing must appear as one continuous SfChat surface using the native SfChat composer, native multiline Editor, and native Send button.
+- Reply workflow elements use supported native SfChat capabilities only: typing indicator (`Drafting reply...`), SfChat suggestions (Regenerate, Discard, Retry), message templates (customer-message selection and Draft Reply), and supported composer styling.
+- The native composer stays disabled or read-only until the workflow permits reply editing.
+- Prohibited: a custom page-level reply footer, a separate Reply heading or reply panel, an external or second Editor, an external Send button, or a second composer.
 - Prohibited without human approval: replacing SfChat with CollectionView, WebView, SfAIAssistView, or another chat control.
 
-## SfChat Feasibility and Escalation
-Before implementing the reply area, inspect the verified public APIs in Syncfusion.Maui.Chat 35.1.43 and confirm whether SfChat can support: multiline reply editing, Reply label, AI draft badge, Review before sending, drafting state, generation error state, Retry, Regenerate, Discard, Send, conditional action visibility, and Send disabled for empty text.
-If the approved reply UI cannot be achieved with a verified public SfChat API:
-1. Stop implementation.
-2. Report the exact limitation and which required elements are unsupported.
-3. Describe the closest supported SfChat option.
-4. Request human approval before implementing any fallback.
-Never silently add an external page-level Editor or alternative control.
+## SfChat Feasibility (Gate 2 Result)
+Verified for Syncfusion.Maui.Chat 35.1.43: native Editor access, `AllowMultilineInput`, `SendMessage` event and `SendMessageCommand`, `ShowMessageInputView`, typing indicator, suggestions, message templates, attachment-button template, and supported composer styling.
+Not provided: a documented public full composer/footer template for arbitrary controls.
+Approved adaptation: native Editor for the generated draft, native Send, typing indicator for drafting, suggestions for Regenerate, Discard, and Retry, and message templates for selection and Draft Reply. No custom footer or external Editor is approved.
+If any further required element cannot be achieved with a verified public SfChat API, stop, report the limitation and closest supported option, and request human approval. Never silently add an external page-level Editor or alternative control.
 
 ## Mandatory Gate Order
 Gates are sequential. Do not begin a later gate until the previous gate has human-confirmed evidence.
 1. Gate 1: Predefined conversations (local runtime evidence required)
-2. Gate 2: SfChat reply-editor feasibility (unsupported means stop for human approval)
+2. Gate 2: SfChat reply-editor feasibility (Complete; SfChat-native adaptation approved)
 3. Gate 3: Message selection and Draft Reply (runtime-verified)
 4. Gate 4: Azure OpenAI reply workflow (runtime-verified)
 5. Gate 5: Desktop visual correction (all four states compared with DesignReference)

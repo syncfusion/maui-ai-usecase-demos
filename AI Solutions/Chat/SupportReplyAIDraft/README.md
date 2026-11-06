@@ -16,9 +16,9 @@ If the Syncfusion license key is empty, the app starts without registering a lic
 - select one customer message from the conversation
 - draft a reply from the selected message plus recent context
 - review and edit the generated reply draft before sending
-- edit, regenerate, discard, retry, or send explicitly
-- generated text appears in the reply editor with a `Review before sending` prompt
-- send only when you choose; the sent reply appears in the conversation as a support-agent message, and the AI never sends automatically
+- the generated reply appears in the native chat composer with a `Review and edit before sending.` prompt
+- edit the text, or use the Regenerate and Discard suggestions; if generation fails, use Retry
+- send only with the chat Send button when you choose; the sent reply appears in the conversation as a support-agent message, and the AI never sends automatically
 
 ## Scope
 - only native MAUI XAML/C# is used

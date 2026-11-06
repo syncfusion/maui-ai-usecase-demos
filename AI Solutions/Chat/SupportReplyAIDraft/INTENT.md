@@ -17,7 +17,9 @@ Produce an editable reply draft that the agent can review, edit, regenerate, dis
 - Preserve the conversation and selection during failures
 - Keep Send under explicit agent control
 - Support responsive desktop and mobile layouts
-- Keep the reply editor integrated with the same conversation surface while the built-in SfChat composer remains hidden
+- Use the native SfChat composer, multiline Editor, and Send button as the only reply editor, disabled until the workflow permits reply editing
+- Use the SfChat typing indicator for drafting, SfChat suggestions for Regenerate, Discard, and Retry, and message templates for request selection and Draft Reply
+- Use no custom reply footer, separate reply panel, or external Editor
 
 - Look and behave like a polished, professional, real-world customer-support workspace on desktop and mobile
 - Match the approved DesignReference states: initial, drafting, generated reply, generation error
