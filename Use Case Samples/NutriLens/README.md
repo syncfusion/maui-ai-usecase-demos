@@ -125,6 +125,3 @@ Fix: Check the prompt/context being sent and confirm the AI settings.
 - Windows
 - macOS
 
-## License
-
-Add the repository license or vendor disclaimer here.
