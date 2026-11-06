@@ -14,21 +14,34 @@ public partial class ProcessDiagramPage : ContentPage
         this.viewModel = viewModel;
         BindingContext = viewModel;
         this.viewModel.PropertyChanged += OnViewModelPropertyChanged;
-        Loaded += OnLoaded;
 
+        Loaded += OnLoaded;
+        SizeChanged += OnSizeChanged;
         DiagramSurface.Created += (_, __) => DiagramSurface.FitToPage();
     }
 
-    private void OnLoaded(object? sender, EventArgs e)
+    private async void OnLoaded(object? sender, EventArgs e)
     {
+        ApplyLayout(Width);
         ApplyCurrentDiagram();
+
+        if (viewModel.CurrentDiagram is null)
+        {
+            SyncProcessDescriptionFromEditor();
+            await viewModel.GenerateDraftAsync();
+        }
     }
 
-    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void OnSizeChanged(object? sender, EventArgs e)
     {
-        if (e.PropertyName == nameof(ProcessDiagramViewModel.CurrentDiagram))
+        ApplyLayout(Width);
+    }
+
+    private void OnProcessDescriptionTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (viewModel.ProcessDescription != e.NewTextValue)
         {
-            ApplyCurrentDiagram();
+            viewModel.ProcessDescription = e.NewTextValue ?? string.Empty;
         }
     }
 
@@ -47,6 +60,14 @@ public partial class ProcessDiagramPage : ContentPage
     private void OnAcceptDraftClicked(object? sender, EventArgs e)
     {
         viewModel.AcceptDraft();
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ProcessDiagramViewModel.CurrentDiagram))
+        {
+            ApplyCurrentDiagram();
+        }
     }
 
     private void SyncProcessDescriptionFromEditor()
@@ -77,5 +98,48 @@ public partial class ProcessDiagramPage : ContentPage
         }
 
         Dispatcher.Dispatch(() => DiagramSurface.FitToPage());
+    }
+
+    private void ApplyLayout(double width)
+    {
+        var compact = width > 0 && width < 900;
+
+        RootGrid.RowDefinitions.Clear();
+        RootGrid.ColumnDefinitions.Clear();
+
+        if (compact)
+        {
+            RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+            RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+            RootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(1, GridUnitType.Star)));
+            RootGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+
+            Grid.SetRow(HeaderSection, 0);
+            Grid.SetColumn(HeaderSection, 0);
+            Grid.SetColumnSpan(HeaderSection, 1);
+
+            Grid.SetRow(DetailsSection, 1);
+            Grid.SetColumn(DetailsSection, 0);
+
+            Grid.SetRow(DiagramSection, 2);
+            Grid.SetColumn(DiagramSection, 0);
+        }
+        else
+        {
+            RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+            RootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(1, GridUnitType.Star)));
+            RootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(2, GridUnitType.Star)));
+            RootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(3, GridUnitType.Star)));
+
+            Grid.SetRow(HeaderSection, 0);
+            Grid.SetColumn(HeaderSection, 0);
+            Grid.SetColumnSpan(HeaderSection, 2);
+
+            Grid.SetRow(DetailsSection, 1);
+            Grid.SetColumn(DetailsSection, 0);
+
+            Grid.SetRow(DiagramSection, 1);
+            Grid.SetColumn(DiagramSection, 1);
+        }
     }
 }
