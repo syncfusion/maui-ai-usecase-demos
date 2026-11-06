@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:cards="clr-namespace:Syncfusion.Maui.Cards;assembly=Syncfusion.Maui.Cards"
+    xmlns:rating="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+    xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    x:Class="AIRatingFeedback.MainPage"
+    x:DataType="vm:MainViewModel"
+    xmlns:vm="clr-namespace:AIRatingFeedback.ViewModels"
+    xmlns:conv="clr-namespace:AIRatingFeedback.Converters"
+    Padding="30"
+    Title="">
+
+    <ContentPage.Resources>
+        <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+    </ContentPage.Resources>
+
+    <cards:SfCardView
+        VerticalOptions="Center"
+        CornerRadius="15"
+        HeightRequest="410"
+        BackgroundColor="White">
+        <VerticalStackLayout Spacing="0">
+            <!-- Header -->
+            <Grid
+                HeightRequest="74"
+                Padding="25,10"
+                ColumnDefinitions="*,Auto,Auto"
+                ColumnSpacing="14"
+                BackgroundColor="#EEF2F8">
+                <Label
+                    VerticalOptions="Center"
+                    Text="Feedback"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    TextColor="#263A5A" />
+                <ActivityIndicator
+                    Grid.Column="1"
+                    WidthRequest="22"
+                    HeightRequest="22"
+                    HorizontalOptions="End"
+                    VerticalOptions="Center"
+                    Color="#4F46E5"
+                    IsRunning="{Binding IsAnalyzing}"
+                    IsVisible="{Binding IsAnalyzing}" />
+                <rating:SfRating
+                    Grid.Column="2"
+                    VerticalOptions="Center"
+                    HorizontalOptions="End"
+                    ItemCount="5"
+                    ItemSize="32"
+                    Value="{Binding Rating, Mode=OneWay}"
+                    IsReadOnly="True"
+                    BackgroundColor="Transparent">
+                    <rating:SfRating.RatingSettings>
+                        <rating:RatingSettings RatedFill="#4F46E5" />
+                    </rating:SfRating.RatingSettings>
+                </rating:SfRating>
+            </Grid>
+
+            <!-- Editor -->
+            <inputLayout:SfTextInputLayout
+                Margin="24,24,24,0"
+                ContainerType="None"
+                ShowHint="False"
+                CharMaxLength="300"
+                ShowCharCount="True"
+                Stroke="#EEF2F8">
+                <Editor
+                    HeightRequest="240"
+                    FontSize="16"
+                    BackgroundColor="Transparent"
+                    Placeholder="Describe your customer support experience..."
+                    PlaceholderColor="#8A9BB8"
+                    AutoSize="Disabled"
+                    TextChanged="OnFeedbackTextChanged" />
+            </inputLayout:SfTextInputLayout>
+
+            <!-- Error message (only shown when non-empty) -->
+            <Label
+                Margin="24,8,24,0"
+                Text="{Binding ErrorMessage}"
+                TextColor="#B91C1C"
+                FontSize="13"
+                IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}" />
+        </VerticalStackLayout>
+    </cards:SfCardView>
+</ContentPage>

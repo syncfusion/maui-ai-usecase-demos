@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="AIChatSample.NewChat"
+    xmlns:assistView="clr-namespace:Syncfusion.Maui.AIAssistView;assembly=Syncfusion.Maui.AIAssistView"
+    xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+    xmlns:controls="clr-namespace:AIChatSample.Controls"
+    xmlns:converters="clr-namespace:AIChatSample.Converters"
+    xmlns:viewModel="clr-namespace:AIChatSample">
+
+    <ContentPage.BindingContext>
+        <viewModel:AIChatSuggestionViewModel />
+    </ContentPage.BindingContext>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:InverseBooleanConverter x:Key="InvertedBoolConverter" />
+            <DataTemplate x:Key="headerTemplate">
+                <Grid RowDefinitions="48,30,45" HorizontalOptions="Center"
+                    VerticalOptions="{OnPlatform Android=Start, Default=Center}"
+                    Margin="{OnPlatform Android='0,0,0,0', Default='0'}"
+                    Padding="{OnPlatform Android='0', Default='0,0,0,32'}"
+                    RowSpacing="{OnPlatform Android=16, Default=8}">
+
+                    <Border BackgroundColor="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CurrentAgent.Color, FallbackValue=#6C4EC2}"
+                            Stroke="#CAC4D0" HorizontalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+
+                        <Grid HeightRequest="45" WidthRequest="45">
+                            <Image Source="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CurrentAgent.AvatarSource}"
+                                   IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CurrentAgent.AvatarSource, Converter={StaticResource InvertedBoolConverter}}"
+                                   Aspect="AspectFill" />
+                            <Label Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CurrentAgent.Initial, FallbackValue=AI}"
+                                FontFamily="Roboto-Medium" FontSize="20"
+                                HorizontalTextAlignment="Center" VerticalTextAlignment="Center" TextColor="White"
+                                HeightRequest="45" WidthRequest="45" HorizontalOptions="Center"
+                                IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CurrentAgent.AvatarSource, Converter={StaticResource InvertedBoolConverter}}" />
+                        </Grid>
+                    </Border>
+
+                    <Label Grid.Row="1"
+                        Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.HeaderTitle, FallbackValue='How can I help you today?'}"
+                        TextColor="{AppThemeBinding Light={DynamicResource PrimaryTextColorLight}, Dark={DynamicResource PrimaryTextColorDark}}"
+                        FontSize="22" LineHeight="1.5" FontAttributes="Bold" FontFamily="Roboto-Medium"
+                        HorizontalOptions="Center" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+
+                    <Label Grid.Row="2"
+                        Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.HeaderSubtitle, FallbackValue='I am ready to assist with writing, analysis, or answering your questions.'}"
+                        TextColor="{AppThemeBinding Light={DynamicResource ContentTextColorLight}, Dark={DynamicResource ContentTextColorDark}}"
+                        FontSize="14" CharacterSpacing="0.4" LineBreakMode="WordWrap" FontFamily="Roboto-Regular"
+                        HorizontalOptions="Center" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+
+                </Grid>
+            </DataTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid x:Name="RootGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{Binding NavigationColumnWidth, Source={x:Reference AIChatNavigationPanel}}" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- CONTENT -->
+
+        <Grid Grid.Column="{Binding ContentColumn, Source={x:Reference AIChatNavigationPanel}}"
+            Grid.ColumnSpan="{Binding ContentColumnSpan, Source={x:Reference AIChatNavigationPanel}}"
+            x:Name="ContentGrid" RowDefinitions="56, *">
+
+            <controls:AIChatToolbar x:Name="AIChatToolbar" Grid.Row="0"
+                IsNavigationMenuVisible="{Binding IsNavigationMenuVisible, Source={x:Reference AIChatNavigationPanel}}"
+                NavigationMenuTapped="AndroidMenuTapped"
+                />
+
+            <!-- AssistView -->
+
+            <Grid Grid.Row="1" VerticalOptions="Fill" HorizontalOptions="Fill">
+
+                <assistView:SfAIAssistView x:Name="sfAIAssistView" 
+                                           HeaderTemplate="{StaticResource headerTemplate}"
+                                           Background="{AppThemeBinding Light=white,Dark=#1C1B1D}"
+                                           ShowToolbar="False" 
+                                           EnableConversationHistory="False" 
+                                           Padding="20"
+                                           HorizontalOptions="Fill"
+                                           VerticalOptions="Fill"
+                                           AssistItems="{Binding AssistItems}"
+                                           Agents="{Binding Agents}"
+                                           SelectedAgent="{Binding SelectedAgent, Mode=TwoWay}"
+                                           ShowSelectedAgent="True"
+                                           ShowResponseLoader="{Binding ShowResponseLoader}"
+                                           RequestCommand="{Binding RequestCommand}">
+                    <assistView:SfAIAssistView.ResponseItemTemplate>
+                        <DataTemplate>
+                            <Border BackgroundColor="Transparent" Stroke="Transparent">
+                                <Label
+                                    Text="{Binding Text}"
+                                    TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                                    FontSize="14"/>
+                            </Border>
+                        </DataTemplate>
+                    </assistView:SfAIAssistView.ResponseItemTemplate>
+
+                    <assistView:SfAIAssistView.EditorViewTemplate>
+                        <DataTemplate>
+                            <VerticalStackLayout HorizontalOptions="Fill" MaximumWidthRequest="710" Margin="0"
+                                Spacing="14">
+                                <controls:AIChatInputEditor HeightRequest="56" HorizontalOptions="Fill"
+                                                            MaximumWidthRequest="710" Margin="{OnPlatform Android='0', Default='0,0,0,8'}"
+                                                            Placeholder="Type Message..."
+                                                            Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.InputText, Mode=TwoWay}"
+                                                            SendCommand="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SendCommand}"
+                                                            AttachCommand="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AttachCommand}"
+                                                            MicCommand="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.MicCommand}"
+                                                            RemoveAttachmentCommand="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveAttachmentCommand}"
+                                                            AttachedFile="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectedFile, Mode=OneWay}"
+                                                            IsListening="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IsListening, Mode=OneWay}" />
+
+                                <Label Text="Suggested for you" FontSize="16" FontFamily="Roboto-Regular"
+                                    LineHeight="2.4" CharacterSpacing="0.5"
+                                    IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ShowWelcomeSuggestions}"
+                                    TextColor="{AppThemeBinding Light={DynamicResource ContentTextColorLight}, Dark={DynamicResource ContentTextColorDark}}"
+                                    Margin="{OnPlatform Android='0,0,0,12', Default='0,0,0,8'}"
+                                    HorizontalOptions="Center" VerticalTextAlignment="Center"
+                                    HorizontalTextAlignment="Center" />
+
+                                <listView:SfListView x:Name="SuggestionsLayout" ItemsSource="{Binding Suggestions}" Orientation="Vertical" AutoFitMode="Height"
+                                                    HorizontalOptions="Fill" MaximumWidthRequest="600" SelectionMode="None" SelectionBackground="Transparent" ItemSpacing="6"
+                                                    IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ShowWelcomeSuggestions}"
+                                                    SizeChanged="SuggestionsLayoutSizeChanged">
+                                    <listView:SfListView.ItemsLayout>
+                                        <listView:GridLayout  SpanCount="2" />
+                                    </listView:SfListView.ItemsLayout>
+                                    <listView:SfListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border HeightRequest="58" HorizontalOptions="Fill"
+                                                BackgroundColor="{AppThemeBinding Light={DynamicResource BackgroundColorLight}, Dark={DynamicResource BackgroundColorDark}}"
+                                                Stroke="{AppThemeBinding Light={DynamicResource SeparatorColorLight}, Dark={DynamicResource SeparatorColorDark}}"
+                                                StrokeThickness="1" Padding="16">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SuggestionTappedCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                                </Border.GestureRecognizers>
+                                                <VisualStateManager.VisualStateGroups>
+                                                    <VisualStateGroupList>
+                                                        <VisualStateGroup Name="CommonStates">
+                                                            <VisualState Name="Normal" />
+                                                            <VisualState Name="PointerOver">
+                                                                <VisualState.Setters>
+                                                                    <Setter Property="BackgroundColor"
+                                                                        Value="{AppThemeBinding Light=#F3EFF4, Dark=#35303C}" />
+                                                                </VisualState.Setters>
+                                                            </VisualState>
+                                                        </VisualStateGroup>
+                                                    </VisualStateGroupList>
+                                                </VisualStateManager.VisualStateGroups>
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="12" />
+                                                </Border.StrokeShape>
+
+                                                <Grid ColumnDefinitions="18,16,*">
+                                                    <Image Grid.Column="0" Source="{Binding ImageSource}"
+                                                        WidthRequest="16" HeightRequest="20" VerticalOptions="Center" />
+
+                                                    <Label Grid.Column="2" Text="{Binding Text}" FontSize="16"
+                                                        LineHeight="1.4" FontFamily="Roboto-Regular"
+                                                        TextColor="{AppThemeBinding Light={DynamicResource ContentTextColorLight}, Dark={DynamicResource ContentTextColorDark}}"
+                                                        VerticalOptions="Center" VerticalTextAlignment="Center" />
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </listView:SfListView.ItemTemplate>
+                                </listView:SfListView>
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </assistView:SfAIAssistView.EditorViewTemplate>
+                </assistView:SfAIAssistView>
+            </Grid>
+        </Grid>
+
+        <controls:AIChatNavigationPanel Grid.Column="0" x:Name="AIChatNavigationPanel" HorizontalOptions="Start"
+            InitialSelectedItem="NewChat" ZIndex="2" />
+
+    </Grid>
+
+</ContentPage>

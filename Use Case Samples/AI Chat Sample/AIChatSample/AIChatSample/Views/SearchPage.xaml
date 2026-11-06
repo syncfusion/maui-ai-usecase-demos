@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:aiassist="clr-namespace:Syncfusion.Maui.AIAssistView;assembly=Syncfusion.Maui.AIAssistView"
+    xmlns:syncTheme="clr-namespace:Syncfusion.Maui.Themes;assembly=Syncfusion.Maui.Core"
+    xmlns:chatViews="clr-namespace:AIChatSample"
+    xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+    xmlns:controls="clr-namespace:AIChatSample.Controls"
+    xmlns:local="clr-namespace:AIChatSample"
+    xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:popup="clr-namespace:Syncfusion.Maui.Toolkit.Popup;assembly=Syncfusion.Maui.Toolkit"
+    xmlns:model="clr-namespace:AIChatSample"
+    xmlns:viewModel="clr-namespace:AIChatSample"
+    x:Class="AIChatSample.SearchPage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Search glyph -->
+            <FontImageSource x:Key="LB_SearchGlyph" Glyph="{DynamicResource Search}" FontFamily="FontIcons"
+                Color="{AppThemeBinding Light=#313032, Dark=#FFFFFF}" Size="18" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid x:Name="RootGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{Binding NavigationColumnWidth, Source={x:Reference AIChatNavigationPanel}}" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="{Binding ContentColumn, Source={x:Reference AIChatNavigationPanel}}"
+            Grid.ColumnSpan="{Binding ContentColumnSpan, Source={x:Reference AIChatNavigationPanel}}"
+            x:Name="ContentGrid" RowDefinitions="56, *">
+
+            <controls:AIChatToolbar x:Name="AIChatToolbar" Grid.Row="0"
+                IsNavigationMenuVisible="{Binding IsNavigationMenuVisible, Source={x:Reference AIChatNavigationPanel}}"
+                NavigationMenuTapped="OnNavigationMenuTapped" />
+
+            <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
+                <VerticalStackLayout HorizontalOptions="Center"
+                     Padding="{OnIdiom Default='40,16', Phone='16,16'}" Spacing="12"
+                    Background="{AppThemeBinding Light=#FAF8FA,Dark=#313032}">
+
+                    <!-- SEARCH SECTION -->
+                    <core:SfTextInputLayout Hint="Search for files..." ContainerType="Outlined" OutlineCornerRadius="28"
+                        ContainerBackground="{AppThemeBinding Dark=#1C1B1D, Light=white}" FocusedStrokeThickness="1"
+                        UnfocusedStrokeThickness="1" ReserveSpaceForAssistiveLabels="False"
+                        InputViewPadding="16, 0, 16, 0" EnableFloating="False" Margin="0" ShowHelperText="False"
+                        ShowHint="True"
+                        Stroke="{AppThemeBinding Light={DynamicResource ContentTextColorDark}, Dark={DynamicResource SecondaryTextColorLight}}"
+                        HorizontalOptions="Fill" VerticalOptions="Fill">
+                        <core:SfTextInputLayout.LeadingView>
+                            <Image Source="{StaticResource LB_SearchGlyph}" WidthRequest="14" HeightRequest="14"
+                                VerticalOptions="Center" Margin="12,5,0,0" />
+                        </core:SfTextInputLayout.LeadingView>
+                        <core:SfTextInputLayout.HintLabelStyle>
+                            <core:LabelStyle FontSize="14" FontFamily="Roboto-Regular"
+                                TextColor="{AppThemeBinding Light={DynamicResource PlaceholderTextColorLight}, Dark={DynamicResource PlaceholderTextColorDark}}" />
+                        </core:SfTextInputLayout.HintLabelStyle>
+                        <Entry Text="{Binding SearchText, Mode=TwoWay}" FontFamily="Roboto-Regular"
+                            FontSize="14" Placeholder="Search recent chats" />
+                    </core:SfTextInputLayout>
+
+                    <!-- CONTENT LIST -->
+                    <listView:SfListView x:Name="RecentChatsList" ItemsSource="{Binding FilteredRecentChats}" SelectionMode="None"
+                        ItemSize="64" ItemSpacing="6" HeightRequest="600" BackgroundColor="Transparent"
+                        Margin="0,4,0,16">
+
+                        <listView:SfListView.ItemTemplate>
+                            <DataTemplate x:DataType="model:RecentChatItem">
+                                <Border Stroke="Transparent" StrokeShape="RoundRectangle 8" Padding="12"
+                                        HeightRequest="64" BackgroundColor="Transparent">
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12"
+                                          VerticalOptions="Center">
+
+                                        <!-- LEFT ICON -->
+                                        <Label Grid.Column="0" Text="{Binding Glyph}" FontFamily="MaterialAssets"
+                                            FontSize="18" VerticalOptions="Center"
+                                            TextColor="{AppThemeBinding Light=#313032, Dark=#FFFFFF}" />
+
+                                        <!-- TITLE -->
+                                        <Label Grid.Column="1" Text="{Binding Title}" FontFamily="Roboto-Medium" FontSize="16"
+                                            LineBreakMode="TailTruncation" MaxLines="1" VerticalOptions="Center"
+                                            TextColor="{AppThemeBinding Light=#313032, Dark=#FFFFFF}" />
+
+                                        <!-- TIME -->
+                                        <Label Grid.Column="2" Text="{Binding Time}" FontFamily="Roboto-Regular"
+                                            FontSize="12" VerticalOptions="Center"
+                                            TextColor="{AppThemeBinding Light=#5F5E60, Dark=#929092}" />
+
+                                        <!-- ACTION ICONS: share + more -->
+                                        <HorizontalStackLayout Grid.Column="3" Spacing="6" VerticalOptions="Center">
+                                            <Border StrokeThickness="0" BackgroundColor="Transparent"
+                                                StrokeShape="RoundRectangle 14" WidthRequest="28" HeightRequest="28">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="OnShareTapped"
+                                                        CommandParameter="{Binding}" />
+                                                </Border.GestureRecognizers>
+                                                <Label Text="&#xe704;" FontFamily="FontIcons" FontSize="16"
+                                                    WidthRequest="28" HeightRequest="28"
+                                                    TextColor="{AppThemeBinding Light=#5F5E60, Dark=#C9C6C8}"
+                                                    BackgroundColor="Transparent"
+                                                    VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+                                            </Border>
+                                            <Border StrokeThickness="0" BackgroundColor="Transparent"
+                                                StrokeShape="RoundRectangle 14" WidthRequest="28" HeightRequest="28">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="OnMoreTapped"
+                                                        CommandParameter="{Binding}" />
+                                                </Border.GestureRecognizers>
+                                                <Label Text="&#xe725;" FontFamily="MaterialAssets" FontSize="16"
+                                                        WidthRequest="28" HeightRequest="28"
+                                                        TextColor="{AppThemeBinding Light=#5F5E60, Dark=#C9C6C8}"
+                                                        BackgroundColor="Transparent"
+                                                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+                                            </Border>
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </listView:SfListView.ItemTemplate>
+                    </listView:SfListView>
+
+                </VerticalStackLayout>
+            </ScrollView>
+
+        </Grid>
+
+        <controls:AIChatNavigationPanel Grid.Column="0" x:Name="AIChatNavigationPanel" HorizontalOptions="Start"
+            InitialSelectedItem="NewChat" ZIndex="2" />
+
+        <!-- Share / Copy popup -->
+        <popup:SfPopup x:Name="SharePopup" IsOpen="False" ShowHeader="False" ShowFooter="False" ShowCloseButton="False"
+                       HeightRequest="100" WidthRequest="120" 
+                       ShowOverlayAlways="False" BackgroundColor="Transparent">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle CornerRadius="4" PopupBackground="White" HasShadow="True"/>
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate>
+                    <Border Padding="4" StrokeShape="RoundRectangle 12" StrokeThickness="0"
+                            VerticalOptions="Center"
+                            BackgroundColor="Transparent">
+                        <VerticalStackLayout Spacing="6">
+                            <Button BackgroundColor="Transparent" TextColor="Black" Text="Copy Chat" Clicked="OnShareCopyClicked" />
+                            <Button BackgroundColor="Transparent" TextColor="Black" Text="Cancel" Clicked="OnShareCancelClicked" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+
+        <!-- Open / Delete popup -->
+        <popup:SfPopup x:Name="MorePopup" IsOpen="False" ShowHeader="False" ShowFooter="False" ShowCloseButton="True"
+                       ShowOverlayAlways="False" HeightRequest="100" WidthRequest="100" Background="Transparent">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle CornerRadius="4" PopupBackground="White" HasShadow="True"/>
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate>
+                    <Border StrokeShape="RoundRectangle 12" StrokeThickness="0" Padding="6"
+                            BackgroundColor="Transparent">
+                        <VerticalStackLayout Spacing="0">
+                            <Button Text="Open" Clicked="OnMoreOpenClicked" BackgroundColor="Transparent"
+                                    TextColor="Black" />
+                            <Button Text="Delete" Clicked="OnMoreDeleteClicked" BackgroundColor="Transparent"
+                                    TextColor="{AppThemeBinding Light=#D93025, Dark=#FF8A80}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+    </Grid>
+</ContentPage>

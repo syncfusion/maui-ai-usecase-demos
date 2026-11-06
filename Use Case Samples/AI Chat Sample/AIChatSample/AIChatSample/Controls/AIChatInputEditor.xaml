@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="AIChatSample.Controls.AIChatInputEditor"
+    xmlns:controls="clr-namespace:AIChatSample.Controls"
+    x:Name="this" HorizontalOptions="Fill">
+    <VerticalStackLayout Spacing="6">
+        <!-- Attached file chip (visible when a file is attached) -->
+        <Border IsVisible="{Binding HasAttachedFile, Source={x:Reference this}}"
+            BackgroundColor="{AppThemeBinding Light=#EBDCFF, Dark=#3C3B3D}"
+            StrokeThickness="0" StrokeShape="RoundRectangle 12"
+            Padding="10,4" HorizontalOptions="Start">
+            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                <Label Text="&#xe226;" FontFamily="MaterialAssets" FontSize="14"
+                    VerticalTextAlignment="Center" TextColor="{AppThemeBinding Light=#7633DA, Dark=#A572F7}" />
+                <Label Text="{Binding AttachedFile, Source={x:Reference this}}"
+                    FontFamily="Roboto-Medium" FontSize="12"
+                    VerticalTextAlignment="Center"
+                    TextColor="{AppThemeBinding Light=#313032, Dark=#FFFFFF}" />
+                <Border StrokeThickness="0" BackgroundColor="Transparent" Padding="2"
+                    WidthRequest="22" HeightRequest="22" StrokeShape="RoundRectangle 11">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRemoveAttachmentTapped" />
+                    </Border.GestureRecognizers>
+                    <Label Text="&#xe5cd;" FontFamily="MaterialAssets" FontSize="12"
+                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+                        TextColor="{AppThemeBinding Light=#7633DA, Dark=#A572F7}" />
+                </Border>
+            </HorizontalStackLayout>
+        </Border>
+
+        <Border HeightRequest="56" Padding="16,8"
+            BackgroundColor="{AppThemeBinding Light={DynamicResource BackgroundColorLight}, Dark={DynamicResource BackgroundColorDark}}"
+            Stroke="{AppThemeBinding Light=#C9C6C8, Dark=#5F5E60}" StrokeThickness="1">
+            <Border.GestureRecognizers>
+                <PointerGestureRecognizer PointerEntered="EditorBorder_PointerEntered"
+                    PointerExited="EditorBorder_PointerExited" />
+            </Border.GestureRecognizers>
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="42" />
+            </Border.StrokeShape>
+
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="0">
+
+                <!-- Attachment (plus) icon: invokes AttachCommand when tapped -->
+                <Border Grid.Column="0" StrokeThickness="0" BackgroundColor="Transparent" StrokeShape="RoundRectangle 16"
+                    WidthRequest="36" HeightRequest="36">
+
+                    <Border.GestureRecognizers>
+                        <PointerGestureRecognizer PointerEntered="Icon_PointerEntered" PointerExited="Icon_PointerExited" />
+                        <TapGestureRecognizer Tapped="OnAttachTapped" />
+                    </Border.GestureRecognizers>
+                    <Label Text="&#xe70d;" FontFamily="MaterialAssets" FontSize="20" WidthRequest="32" HeightRequest="32"
+                        TextColor="{AppThemeBinding Light={DynamicResource ContentTextColorLight}, Dark={DynamicResource ContentTextColorDark}}"
+                        BackgroundColor="Transparent" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+                </Border>
+                <!-- Editable message input: Enter sends via SendCommand -->
+                <controls:BorderlessEntry Grid.Column="1" x:Name="MessageEntry"
+                    Placeholder="{Binding Placeholder, Source={x:Reference this}}"
+                    PlaceholderColor="{AppThemeBinding Light={DynamicResource PlaceholderTextColorLight}, Dark={DynamicResource PlaceholderTextColorDark}}"
+                    Text="{Binding Text, Source={x:Reference this}, Mode=TwoWay}" BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light=#313032, Dark=#FFFFFF}" FontSize="14"
+                    TextChanged="InputEditor_PropertyChanged" FontFamily="Roboto-Regular" VerticalOptions="Center"
+                    ReturnType="Send"
+                    ReturnCommand="{Binding SendCommand, Source={x:Reference this}}"
+                    ReturnCommandParameter="{Binding Text, Source={x:Reference this}}"
+                    HorizontalOptions="Fill" HeightRequest="40" />
+
+                <!-- Mic icon: invokes MicCommand when tapped; toggles while listening -->
+                <Border Grid.Column="2" StrokeThickness="0" BackgroundColor="Transparent" StrokeShape="RoundRectangle 16"
+                    WidthRequest="36" HeightRequest="36">
+
+                    <Border.GestureRecognizers>
+                        <PointerGestureRecognizer PointerEntered="Icon_PointerEntered" PointerExited="Icon_PointerExited" />
+                        <TapGestureRecognizer Tapped="OnMicTapped" />
+                    </Border.GestureRecognizers>
+                    <Label Grid.Column="2" Text="{Binding MicGlyph, Source={x:Reference this}}" FontFamily="MaterialAssets" FontSize="20" WidthRequest="32"
+                        HeightRequest="32"
+                        TextColor="{Binding MicTint, Source={x:Reference this}}"
+                        BackgroundColor="Transparent" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+                </Border>
+                <!-- Send icon -->
+                <Border x:Name="SendIconBorder" Grid.Column="3" StrokeThickness="0" BackgroundColor="Transparent"
+                        StrokeShape="RoundRectangle 16" WidthRequest="36" HeightRequest="36"
+                        IsEnabled="{Binding IsSendEnabled, Source={x:Reference this}}">
+
+                    <Border.GestureRecognizers>
+                        <PointerGestureRecognizer PointerEntered="SendIcon_PointerEntered"
+                            PointerExited="SendIcon_PointerExited" />
+                        <TapGestureRecognizer Tapped="OnSendTapped" />
+                    </Border.GestureRecognizers>
+                    <Label x:Name="SendIconLabel" Grid.Column="3" Text="&#xe784;" FontFamily="MaterialAssets" FontSize="20"
+                        WidthRequest="32" HeightRequest="32"
+                        TextColor="{AppThemeBinding Light={DynamicResource ContentTextColorLight}, Dark={DynamicResource ContentTextColorDark}}"
+                        BackgroundColor="Transparent" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+                </Border>
+            </Grid>
+
+        </Border>
+    </VerticalStackLayout>
+</ContentView>

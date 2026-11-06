@@ -1,0 +1,23 @@
+﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:SmartVehicleCare"
+             xmlns:converters="clr-namespace:SmartVehicleCare.Converters"
+             x:Class="SmartVehicleCare.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            
+            <!-- Value Converters -->
+            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter"/>
+            <converters:WidthToBooleanConverter x:Key="WidthToBooleanConverter"/>
+            <converters:WidthToGridLengthConverter x:Key="WidthToGridLengthConverter"/>
+            <converters:WidthToDoubleConverter x:Key="WidthToDoubleConverter"/>
+            <converters:WidthToThicknessConverter x:Key="WidthToThicknessConverter"/>
+            
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

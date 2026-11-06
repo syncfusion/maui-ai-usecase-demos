@@ -1,0 +1,61 @@
+# Build outputs
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.[Pp]ublish.xml
+
+# IDE / tooling
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userprefs
+*.swp
+*.swo
+*~
+*.[Tt]humbs.db
+
+# .NET / MAUI
+*.csproj.user
+*.binlog
+*.nupkg
+*.nupkg.props
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Generated / local
+*.pfx
+*.snupkg
+*.local
+*.local.json
+*.tmp
+[Dd]eploy[Rr]esult*/
+
+# OS
+.DS_Store
+.DS_Store?
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+desktop.ini
+Thumbs.db
+
+# Logs
+*.log
+
+# Credential / secret files
+secrets.json
+appsettings.*.local.json
+*.env
+*.env.*

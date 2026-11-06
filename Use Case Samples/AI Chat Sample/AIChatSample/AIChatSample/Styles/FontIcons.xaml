@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AIChatSample.Styles.FontIcons">
+
+    <!--  Font icon glyph strings consumed by AIChatNavigationPanel / NavBar.  -->
+    <x:String x:Key="BurgerMenu">&#xe72e;</x:String>
+    <x:String x:Key="DropDownButtonIcon">&#xe70b;</x:String>
+    <x:String x:Key="Search">&#xe705;</x:String>
+    <x:String x:Key="New">&#xe720;</x:String>
+
+</ResourceDictionary>

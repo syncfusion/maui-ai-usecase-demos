@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:TravelPlanner"
+             xmlns:syncTheme="clr-namespace:Syncfusion.Maui.Themes;assembly=Syncfusion.Maui.Core"
+             x:Class="TravelPlanner.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Single source of truth for Syncfusion AIAssistView theme colors.
+                 Implemented as a global dictionary so every SfAIAssistView in the app
+                 resolves these tokens (editor chrome, request/response bubbles, etc.). -->
+            <syncTheme:SyncfusionThemeDictionary>
+                <syncTheme:SyncfusionThemeDictionary.MergedDictionaries>
+                    <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+                        <x:String x:Key="SfAIAssistViewTheme">CustomTheme</x:String>
+
+                        <!--  Editor  -->
+                        <Color x:Key="SfAIAssistViewEditorPlaceholderTextColor">#73623c</Color>
+                        <Color x:Key="SfAIAssistViewEditorTextColor">#73623c</Color>
+                        <Color x:Key="SfAIAssistViewEditorBackground">#fff7e7</Color>
+                        <Color x:Key="SfAIAssistViewEditorStroke">#73623c</Color>
+                        <FontAttributes x:Key="SfAIAssistViewEditorFontAttributes">Bold</FontAttributes>
+                        <x:Double x:Key="SfAIAssistViewEditorFontSize">16</x:Double>
+
+                        <!--  Request Bubble  -->
+                        <Color x:Key="SfAIAssistViewRequestItemBackground">#ffeac3</Color>
+                        <Color x:Key="SfAIAssistViewRequestItemTextColor">#73623c</Color>
+
+                        <!--  Response Bubble  -->
+                        <Color x:Key="SfAIAssistViewResponseItemBackground">#fff7e7</Color>
+                        <Color x:Key="SfAIAssistViewResponseItemTextColor">#73623c</Color>
+
+                        <!--  Suggestion Chips  -->
+                        <Color x:Key="SfAIAssistViewSuggestionItemBackground">#ffeac3</Color>
+
+                        <!--  Action Buttons  -->
+                        <Color x:Key="SfAIAssistViewActionButtonBackground">#ffeac3</Color>
+                        <Color x:Key="SfAIAssistViewActionButtonIconColor">#b7a27a</Color>
+                        <Color x:Key="SfAIAssistViewActionButtonViewTextColor">#b7a27a</Color>
+                        <Color x:Key="SfAIAssistViewActionButtonsPopupBackground">#ffeac3</Color>
+                        <Color x:Key="SfAIAssistViewNormalActionViewColor">#fff7e7</Color>
+                        <Color x:Key="SfAIAssistViewHoverActionViewColor">#fff7e7</Color>
+                        <Color x:Key="SfAIAssistViewPressedActionViewColor">DarkGray</Color>
+                        <Color x:Key="SfAIAssistViewNormalActionViewIconColor">Black</Color>
+                        <Color x:Key="SfAIAssistViewSelectedLikeIconColor">#73623c</Color>
+                        <Color x:Key="SfAIAssistViewSelectedDisLikeIconColor">#73623c</Color>
+                    </ResourceDictionary>
+                </syncTheme:SyncfusionThemeDictionary.MergedDictionaries>
+            </syncTheme:SyncfusionThemeDictionary>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

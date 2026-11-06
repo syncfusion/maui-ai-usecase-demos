@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="AIChatSample.CreateNewAgentPage"
+            xmlns:aiassist="clr-namespace:Syncfusion.Maui.AIAssistView;assembly=Syncfusion.Maui.AIAssistView"
+            xmlns:syncTheme="clr-namespace:Syncfusion.Maui.Themes;assembly=Syncfusion.Maui.Core"
+            xmlns:chatViews="clr-namespace:AIChatSample"
+            xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+            xmlns:controls="clr-namespace:AIChatSample.Controls"
+            xmlns:local="clr-namespace:AIChatSample"
+            xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+            xmlns:model="clr-namespace:AIChatSample" xmlns:viewModel="clr-namespace:AIChatSample">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Header that the SfAIAssistView renders at the top of the chat area. -->
+            <DataTemplate x:Key="HeaderView">
+                <VerticalStackLayout>
+                    <Grid RowDefinitions="*,Auto" RowSpacing="14" Padding="0,0,0,24" VerticalOptions="Center">
+                        <Border HorizontalOptions="Center" Stroke="Transparent">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="11" />
+                            </Border.StrokeShape>
+                            <VerticalStackLayout Spacing="16" VerticalOptions="Center" HorizontalOptions="Center">
+
+                                <core:SfAvatarView ContentType="Custom" AvatarShape="Square" StrokeThickness="0"
+                                    ImageSource="background.png" WidthRequest="64" Background="Transparent" Margin="0"
+                                    HeightRequest="64" HorizontalOptions="Center" VerticalOptions="Center"
+                                    SemanticProperties.Description="Specialist agent avatar">
+
+                                </core:SfAvatarView>
+
+                                <Label Style="{StaticResource CA_HeadingLabel}"
+                                    Text="Create your own specialist agent" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                </VerticalStackLayout>
+            </DataTemplate>
+
+            <Style x:Key="CA_CardTitle" TargetType="Label">
+                <Setter Property="FontFamily" Value="Roboto-Medium" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=#313032, Dark=#FFFFFF}" />
+                <Setter Property="LineBreakMode" Value="TailTruncation" />
+                <Setter Property="MaxLines" Value="1" />
+                <Setter Property="HorizontalOptions" Value="Start" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+
+            </Style>
+
+            <Style x:Key="CA_CardDescription" TargetType="Label">
+                <Setter Property="FontFamily" Value="Roboto-Regular" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=#5F5E60, Dark=#929092}" />
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+                <Setter Property="MaxLines" Value="2" />
+                <Setter Property="HorizontalOptions" Value="Start" />
+
+            </Style>
+            <Style x:Key="CA_HeadingLabel" TargetType="Label">
+                <Setter Property="FontFamily" Value="Roboto-Medium" />
+                <Setter Property="FontSize" Value="28" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=#313032, Dark=#FFFFFF}" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+
+            </Style>
+            <Style x:Key="CA_SectionCaption" TargetType="Label">
+                <Setter Property="FontFamily" Value="Roboto-Medium" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=#313032, Dark=#FFFFFF}" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="Margin" Value="0,7,0,11" />
+
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.BindingContext>
+        <viewModel:AIMainLayoutViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid x:Name="RootGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{Binding NavigationColumnWidth, Source={x:Reference AIChatNavigationPanel}}" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- CONTENT -->
+
+        <Grid Grid.Column="{Binding ContentColumn, Source={x:Reference AIChatNavigationPanel}}"
+            Grid.ColumnSpan="{Binding ContentColumnSpan, Source={x:Reference AIChatNavigationPanel}}"
+            x:Name="ContentGrid" RowDefinitions="56, *">
+
+            <controls:AIChatToolbar x:Name="AIChatToolbar" Grid.Row="0"
+                IsNavigationMenuVisible="{Binding IsNavigationMenuVisible, Source={x:Reference AIChatNavigationPanel}}"
+                NavigationMenuTapped="AndroidMenuTapped" />
+
+            <!-- Page body. Top half is the SfAIAssistView (with prompt editor),
+                 bottom half is the Template / My Agents card grid. -->
+            <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
+                <StackLayout Background="{AppThemeBinding Light=#FAF8FA,Dark=#313032}" Spacing="0">
+                    <Grid Padding="0,30,0,0" Background="{AppThemeBinding Light=#FAF8FA,Dark=#313032}">
+                        <aiassist:SfAIAssistView x:Name="sfAIAssistView" Margin="10,0"
+                            Background="{AppThemeBinding Light=#FAF8FA,Dark=#313032}" MinimumHeightRequest="280"
+                            EnableConversationHistory="False" ShowToolbar="False"
+                            HeaderTemplate="{StaticResource HeaderView}" ShowScrollToBottomButton="True"
+                            CanAutoScrollToBottom="False">
+                            <aiassist:SfAIAssistView.EditorViewTemplate>
+                                <DataTemplate>
+                                    <controls:AIChatInputEditor HorizontalOptions="Fill"
+                                                                Placeholder="Describe the agent you want to create..."
+                                                                x:Name="InputEditor"
+                                                                Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CreateAgentVM.PromptText, Mode=TwoWay}"
+                                                                SendCommand="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CreateAgentVM.SendButtonCommand}" />
+                                </DataTemplate>
+                            </aiassist:SfAIAssistView.EditorViewTemplate>
+                        </aiassist:SfAIAssistView>
+                    </Grid>
+
+                    <!-- Template row: 3 cards in a 3-column grid -->
+                    <VerticalStackLayout Padding="0,24,0,0" Background="{AppThemeBinding Light=#FAF8FA,Dark=#313032}" Spacing="6">
+                        <Label Text="Template" Style="{StaticResource CA_SectionCaption}"
+                            HorizontalTextAlignment="Center" />
+                        <listView:SfListView ItemsSource="{Binding CreateAgentVM.Suggestions}"
+                                             IsScrollingEnabled="False"
+                                             SelectionMode="None"
+                                             Orientation="Vertical"
+                                             ItemSpacing="8"
+                                             AutoFitMode="DynamicHeight"
+                                             Margin="24,0">
+                            <listView:SfListView.ItemsLayout>
+                                <listView:GridLayout SpanCount="{OnIdiom Phone=1, Tablet=2, Desktop=3}" />
+                            </listView:SfListView.ItemsLayout>
+                            <listView:SfListView.ItemTemplate>
+                                <DataTemplate x:DataType="model:TemplateCardSuggestion">
+                                    <Border Padding="0" StrokeThickness="1"
+                                        Stroke="{AppThemeBinding Light=#E5E1E3, Dark=#474648}"
+                                        StrokeShape="RoundRectangle 12"
+                                        BackgroundColor="{AppThemeBinding Light=white,Dark=#1C1B1D}">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="CardTapped" CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <StackLayout Padding="14" Spacing="8">
+                                            <HorizontalStackLayout Spacing="12">
+                                                <Border WidthRequest="34" HeightRequest="34" VerticalOptions="Start"
+                                                    BackgroundColor="{Binding IconBackground}"
+                                                    StrokeThickness="0" StrokeShape="RoundRectangle 8">
+                                                    <Label Text="{Binding IconGlyph}"
+                                                        FontFamily="{Binding IconFontFamily}"
+                                                        FontSize="18" TextColor="#7633DA"
+                                                        HorizontalOptions="Center" VerticalOptions="Center" />
+                                                </Border>
+                                                <Label Style="{StaticResource CA_CardTitle}" VerticalTextAlignment="Center"
+                                                    Text="{Binding TitleText}" />
+                                            </HorizontalStackLayout>
+                                            <Label LineHeight="1.43"
+                                                Style="{StaticResource CA_CardDescription}" CharacterSpacing="0.25"
+                                                Text="{Binding DescriptionText}" />
+                                        </StackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </listView:SfListView.ItemTemplate>
+                        </listView:SfListView>
+                    </VerticalStackLayout>
+
+                    <!-- My Agents row: 3 cards in a 3-column grid -->
+                    <VerticalStackLayout Padding="0,8,0,32" Background="{AppThemeBinding Light=#FAF8FA,Dark=#313032}" Spacing="6">
+                        <Label Text="My Agents" Style="{StaticResource CA_SectionCaption}"
+                               HorizontalTextAlignment="Center" />
+                        <listView:SfListView ItemsSource="{Binding CreateAgentVM.MyAgents}"
+                                             IsScrollingEnabled="False"
+                                             SelectionMode="None"
+                                             AutoFitMode="DynamicHeight"
+                                             ItemSpacing="8"
+                                             Margin="24,0"
+                                             Orientation="Vertical">
+                            <listView:SfListView.ItemsLayout>
+                                <listView:GridLayout SpanCount="{OnIdiom Phone=1, Tablet=2, Desktop=3}" />
+                            </listView:SfListView.ItemsLayout>
+                            <listView:SfListView.ItemTemplate>
+                                <DataTemplate x:DataType="model:TemplateCardSuggestion">
+                                    <Border Padding="0" StrokeThickness="1"
+                                        Stroke="{AppThemeBinding Light=#E5E1E3, Dark=#474648}"
+                                        StrokeShape="RoundRectangle 12"
+                                        BackgroundColor="{AppThemeBinding Light=white,Dark=#1C1B1D}">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="CardTapped" CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <StackLayout Padding="14" Spacing="8">
+                                            <HorizontalStackLayout Spacing="12">
+                                                <Border WidthRequest="34" HeightRequest="34" VerticalOptions="Start"
+                                                    BackgroundColor="{Binding IconBackground}"
+                                                    StrokeThickness="0" StrokeShape="RoundRectangle 8">
+                                                    <Label Text="{Binding IconGlyph}"
+                                                        FontFamily="{Binding IconFontFamily}"
+                                                        FontSize="18" TextColor="#7633DA"
+                                                        HorizontalOptions="Center" VerticalOptions="Center" />
+                                                </Border>
+                                                <Label Style="{StaticResource CA_CardTitle}" VerticalTextAlignment="Center"
+                                                    Text="{Binding TitleText}" />
+                                            </HorizontalStackLayout>
+                                            <Label LineHeight="1.43"
+                                                Style="{StaticResource CA_CardDescription}" CharacterSpacing="0.25"
+                                                Text="{Binding DescriptionText}" />
+                                        </StackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </listView:SfListView.ItemTemplate>
+                            </listView:SfListView>
+                    </VerticalStackLayout>
+                </StackLayout>
+            </ScrollView>
+
+        </Grid>
+
+        <controls:AIChatNavigationPanel Grid.Column="0" x:Name="AIChatNavigationPanel" HorizontalOptions="Start"
+            InitialSelectedItem="NewChat" ZIndex="2" />
+
+    </Grid>
+
+</ContentPage>

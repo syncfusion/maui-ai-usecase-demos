@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:til="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:picker="clr-namespace:Syncfusion.Maui.Picker;assembly=Syncfusion.Maui.Picker"
+             xmlns:vm="clr-namespace:SmartVehicleCare.ViewModels"
+             xmlns:behaviors="clr-namespace:SmartVehicleCare.Behaviors"
+             x:Class="SmartVehicleCare.Views.AddServicePanel"
+             x:DataType="vm:AddServiceViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource SplashBgLight}, Dark={StaticResource BrandNavy}}">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- SfDatePicker must be first (lowest Z-order) so content renders on top -->
+        <picker:SfDatePicker x:Name="ServiceDatePicker" Mode="Dialog"
+                             Grid.RowSpan="3"
+                             SelectedDate="{Binding ServiceDate}"
+                             ColumnDividerColor="{AppThemeBinding Light=#E5E0D8, Dark=#3D2E24}"
+                             OkButtonClicked="OnServiceDateOkClicked">
+            <picker:SfDatePicker.SelectionView>
+                <picker:PickerSelectionView CornerRadius="20" Background="{AppThemeBinding Light=#B45309, Dark=#D97706}"/>
+            </picker:SfDatePicker.SelectionView>
+            <picker:SfDatePicker.SelectedTextStyle>
+                <picker:PickerTextStyle TextColor="White" FontAttributes="Bold"/>
+            </picker:SfDatePicker.SelectedTextStyle>
+            <picker:SfDatePicker.ColumnHeaderView>
+                <picker:DatePickerColumnHeaderView Height="50" Background="{AppThemeBinding Light=#FAF9F5, Dark=#2D2117}" DividerColor="{AppThemeBinding Light=#E5E0D8, Dark=#3D2E24}">
+                    <picker:DatePickerColumnHeaderView.TextStyle>
+                        <picker:PickerTextStyle TextColor="{AppThemeBinding Light=#6B5E55, Dark=#B0A39A}" FontAttributes="Bold"/>
+                    </picker:DatePickerColumnHeaderView.TextStyle>
+                </picker:DatePickerColumnHeaderView>
+            </picker:SfDatePicker.ColumnHeaderView>
+            <picker:SfDatePicker.HeaderView>
+                <picker:PickerHeaderView Text="Select service date" Height="40"/>
+            </picker:SfDatePicker.HeaderView>
+            <picker:SfDatePicker.FooterView>
+                <picker:PickerFooterView ShowOkButton="True" CancelButtonText="Cancel" Height="40"/>
+            </picker:SfDatePicker.FooterView>
+        </picker:SfDatePicker>
+
+        <!-- Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="24,16"
+              BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyLight}}">
+                 <StackLayout Spacing="2">
+                    <Label Text="Add service record" FontSize="18" FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"/>
+                <Border BackgroundColor="{AppThemeBinding Light=#FEF3C7, Dark=#152840}"
+                        StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light=#C7D2FE, Dark=#3D2E24}"
+                        StrokeShape="RoundRectangle 20"
+                        Padding="10,4" HorizontalOptions="Start" Margin="0,6,0,0">
+                    <Label Text="{Binding VehicleLabel}" FontSize="12" FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=#B45309, Dark=#8ED3FF}"/>
+                </Border>
+            </StackLayout>
+            <buttons:SfButton Grid.Column="1" WidthRequest="44" HeightRequest="44"
+                              Padding="0" CornerRadius="22"
+                              Background="Transparent" StrokeThickness="0"
+                              Text="&#xE5CD;" FontFamily="MaterialIcons" FontSize="18"
+                              TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"
+                              Command="{Binding CloseCommand}">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal"/>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Background" Value="{AppThemeBinding Light=#14000000, Dark=#26FFFFFF}"/>
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </VisualStateManager.VisualStateGroups>
+            </buttons:SfButton>
+        </Grid>
+
+        <!-- Scrollable Form -->
+        <ScrollView Grid.Row="1" Padding="24,20" BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+            <StackLayout Spacing="16">
+
+                <!-- Service Type chips (2�3) -->
+                <StackLayout Spacing="8">
+                    <Label Text="Service type *" FontSize="12" FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                    <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+
+                        <!-- Oil Change -->
+                        <Border Grid.Row="0" Grid.Column="0" Padding="8,9" StrokeThickness="1.5" StrokeShape="RoundRectangle 10">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding SelectTypeCommand}" CommandParameter="Oil &amp; Filter Change"/></Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsOilChangeSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#FEF3C7, Dark=#152840}"/>
+                                    <Setter Property="Stroke" Value="#D97706"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsOilChangeSelected}" Value="False">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F8FAFC, Dark=#2D2117}"/>
+                                    <Setter Property="Stroke" Value="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <StackLayout Orientation="Horizontal" Spacing="5" HorizontalOptions="Center">
+                                <Label Text="&#xE869;" FontFamily="MaterialIcons" FontSize="14" VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"/>
+                                <Label Text="Oil &amp; filter" FontSize="{OnPlatform Default=12, WinUI=11, MacCatalyst=11}" VerticalOptions="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsOilChangeSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="#B45309"/>
+                                            <Setter Property="FontAttributes" Value="Bold"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsOilChangeSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light=#475569, Dark=#9DB7D2}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </StackLayout>
+                        </Border>
+
+                        <!-- Tyre Rotation -->
+                        <Border Grid.Row="0" Grid.Column="1" Padding="8,9" StrokeThickness="1.5" StrokeShape="RoundRectangle 10">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding SelectTypeCommand}" CommandParameter="Tyre &amp; Wheel Service"/></Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsTyreRotationSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#E0F2FE, Dark=#152840}"/>
+                                    <Setter Property="Stroke" Value="#0284C7"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsTyreRotationSelected}" Value="False">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F8FAFC, Dark=#2D2117}"/>
+                                    <Setter Property="Stroke" Value="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <StackLayout Orientation="Horizontal" Spacing="5" HorizontalOptions="Center">
+                                <Label Text="&#xE863;" FontFamily="MaterialIcons" FontSize="14" VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"/>
+                                <Label Text="Tyre &amp; wheel" FontSize="{OnPlatform Default=12, WinUI=11, MacCatalyst=11}" VerticalOptions="Center" LineBreakMode="NoWrap">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsTyreRotationSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="#B45309"/>
+                                            <Setter Property="FontAttributes" Value="Bold"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsTyreRotationSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light=#475569, Dark=#9DB7D2}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </StackLayout>
+                        </Border>
+
+                        <!-- Brake Service -->
+                        <Border Grid.Row="0" Grid.Column="2" Padding="8,9" StrokeThickness="1.5" StrokeShape="RoundRectangle 10">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding SelectTypeCommand}" CommandParameter="Brake Inspection &amp; Repair"/></Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsBrakeServiceSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#FEE2E2, Dark=#152840}"/>
+                                    <Setter Property="Stroke" Value="#DC2626"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsBrakeServiceSelected}" Value="False">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F8FAFC, Dark=#2D2117}"/>
+                                    <Setter Property="Stroke" Value="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <StackLayout Orientation="Horizontal" Spacing="5" HorizontalOptions="Center">
+                                <Label Text="&#xE550;" FontFamily="MaterialIcons" FontSize="14" VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"/>
+                                <Label Text="Brake repair" FontSize="{OnPlatform Default=12, WinUI=11, MacCatalyst=11}" VerticalOptions="Center" LineBreakMode="NoWrap">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsBrakeServiceSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="#B45309"/>
+                                            <Setter Property="FontAttributes" Value="Bold"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsBrakeServiceSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light=#475569, Dark=#9DB7D2}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </StackLayout>
+                        </Border>
+
+                        <!-- Electrical -->
+                        <Border Grid.Row="1" Grid.Column="0" Padding="8,9" StrokeThickness="1.5" StrokeShape="RoundRectangle 10">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding SelectTypeCommand}" CommandParameter="Battery &amp; Electrical"/></Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsElectricalSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#CCFBF1, Dark=#152840}"/>
+                                    <Setter Property="Stroke" Value="#0F766E"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsElectricalSelected}" Value="False">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F8FAFC, Dark=#2D2117}"/>
+                                    <Setter Property="Stroke" Value="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <StackLayout Orientation="Horizontal" Spacing="5" HorizontalOptions="Center">
+                                <Label Text="&#xE3E7;" FontFamily="MaterialIcons" FontSize="14" VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"/>
+                                <Label Text="Battery &amp; electrical" FontSize="{OnPlatform Default=12, WinUI=11, MacCatalyst=11}" VerticalOptions="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsElectricalSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="#B45309"/>
+                                            <Setter Property="FontAttributes" Value="Bold"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsElectricalSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light=#475569, Dark=#9DB7D2}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </StackLayout>
+                        </Border>
+
+                        <!-- General Service -->
+                        <Border Grid.Row="1" Grid.Column="1" Padding="8,9" StrokeThickness="1.5" StrokeShape="RoundRectangle 10">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding SelectTypeCommand}" CommandParameter="General Service"/></Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsGeneralInspectionSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#DCFCE7, Dark=#152840}"/>
+                                    <Setter Property="Stroke" Value="#16A34A"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsGeneralInspectionSelected}" Value="False">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F8FAFC, Dark=#2D2117}"/>
+                                    <Setter Property="Stroke" Value="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <StackLayout Orientation="Horizontal" Spacing="5" HorizontalOptions="Center">
+                                <Label Text="&#xE877;" FontFamily="MaterialIcons" FontSize="14" VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"/>
+                                <Label Text="General service" FontSize="{OnPlatform Default=12, WinUI=11, MacCatalyst=11}" VerticalOptions="Center" LineBreakMode="NoWrap">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsGeneralInspectionSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="#B45309"/>
+                                            <Setter Property="FontAttributes" Value="Bold"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsGeneralInspectionSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light=#475569, Dark=#9DB7D2}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </StackLayout>
+                        </Border>
+
+                        <!-- Custom -->
+                        <Border Grid.Row="1" Grid.Column="2" Padding="8,9" StrokeThickness="1.5" StrokeShape="RoundRectangle 10">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding SelectTypeCommand}" CommandParameter="Custom"/></Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsCustomSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F1F5F9, Dark=#152840}"/>
+                                    <Setter Property="Stroke" Value="#64748B"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsCustomSelected}" Value="False">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F8FAFC, Dark=#2D2117}"/>
+                                    <Setter Property="Stroke" Value="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <StackLayout Orientation="Horizontal" Spacing="5" HorizontalOptions="Center">
+                                <Label Text="&#xE8B8;" FontFamily="MaterialIcons" FontSize="14" VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"/>
+                                <Label Text="Custom" FontSize="{OnPlatform Default=12, WinUI=11, MacCatalyst=11}" VerticalOptions="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsCustomSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="#B45309"/>
+                                            <Setter Property="FontAttributes" Value="Bold"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsCustomSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light=#475569, Dark=#9DB7D2}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </StackLayout>
+                        </Border>
+                    </Grid>
+                </StackLayout>
+
+                <!-- Service type value; selecting a chip fills this field, Custom stays editable. -->
+                <StackLayout Spacing="6">
+                    <Label Text="Service description *" FontSize="12" FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                    <til:SfTextInputLayout ContainerType="Outlined" OutlineCornerRadius="10" EnableFloating="False"
+                                           Hint="e.g. AC gas refill or wheel alignment"
+                                           InputViewPadding="14,0" ReserveSpaceForAssistiveLabels="False"
+                                           Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                           ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                        <til:SfTextInputLayout.HintLabelStyle>
+                            <til:LabelStyle FontSize="14" TextColor="#94A3B8"/>
+                        </til:SfTextInputLayout.HintLabelStyle>
+                        <Entry Text="{Binding ServiceTypeInput, Mode=TwoWay}"
+                               IsEnabled="{Binding IsCustomSelected}"
+                               TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                               BackgroundColor="Transparent"/>
+                    </til:SfTextInputLayout>
+                </StackLayout>
+
+                <!-- Service Date -->
+                <StackLayout Spacing="6">
+                    <Label Text="Service date *" FontSize="12" FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                    <Grid>
+                        <til:SfTextInputLayout Hint="Select service date">
+                            <til:SfTextInputLayout.HintLabelStyle>
+                                <til:LabelStyle FontSize="14" TextColor="#94A3B8"/>
+                            </til:SfTextInputLayout.HintLabelStyle>
+                            <Entry Text="{Binding ServiceDateDisplay}" IsReadOnly="True"
+                                   TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                   BackgroundColor="Transparent"/>
+                        </til:SfTextInputLayout>
+                        <Label Text="&#xE916;" FontFamily="MaterialIcons" FontSize="18"
+                               VerticalOptions="Center" HorizontalOptions="End" Margin="0,6,14,0"
+                               TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"
+                               InputTransparent="True"/>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnServiceDateFieldTapped"/>
+                        </Grid.GestureRecognizers>
+                    </Grid>
+                </StackLayout>
+
+                <!-- Odometer at Service + Total Cost (2 cols) -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <StackLayout Grid.Column="0" Spacing="6">
+                        <Label Text="Odometer at service" FontSize="12" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                        <til:SfTextInputLayout ContainerType="Outlined" OutlineCornerRadius="10"
+                                               EnableFloating="False"
+                                               FocusedStrokeThickness="1.5"
+                                               UnfocusedStrokeThickness="1.5"
+                                               Hint="42,100" InputViewPadding="14,0"
+                                               ReserveSpaceForAssistiveLabels="False"
+                                               Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                               ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                            <til:SfTextInputLayout.HintLabelStyle>
+                                <til:LabelStyle FontSize="14" TextColor="#94A3B8"/>
+                            </til:SfTextInputLayout.HintLabelStyle>
+                            <Entry Text="{Binding Mileage}" Keyboard="Numeric"
+                                   TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                   BackgroundColor="Transparent">
+                                <Entry.Behaviors>
+                                    <behaviors:NumericOnlyBehavior/>
+                                </Entry.Behaviors>
+                            </Entry>
+                        </til:SfTextInputLayout>
+                    </StackLayout>
+                    <StackLayout Grid.Column="1" Spacing="6">
+                        <Label Text="Total cost" FontSize="12" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                        <til:SfTextInputLayout ContainerType="Outlined" OutlineCornerRadius="10"
+                                               EnableFloating="False"
+                                               FocusedStrokeThickness="1.5"
+                                               UnfocusedStrokeThickness="1.5"
+                                               Hint="3,200" InputViewPadding="14,0"
+                                               ReserveSpaceForAssistiveLabels="False"
+                                               Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                               ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                            <til:SfTextInputLayout.HintLabelStyle>
+                                <til:LabelStyle FontSize="14" TextColor="#94A3B8"/>
+                            </til:SfTextInputLayout.HintLabelStyle>
+                            <Entry Text="{Binding TotalCost}" Keyboard="Numeric"
+                                   TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                   BackgroundColor="Transparent">
+                                <Entry.Behaviors>
+                                    <behaviors:NumericOnlyBehavior/>
+                                </Entry.Behaviors>
+                            </Entry>
+                        </til:SfTextInputLayout>
+                    </StackLayout>
+                </Grid>
+
+                <!-- Service Provider -->
+                <StackLayout Spacing="6">
+                    <Label Text="Service provider" FontSize="12" FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                    <til:SfTextInputLayout ContainerType="Outlined" OutlineCornerRadius="10"
+                                           EnableFloating="False"
+                                           FocusedStrokeThickness="1.5"
+                                           UnfocusedStrokeThickness="1.5"
+                                           Hint="e.g. Toyota Prime Care, Adyar"
+                                           InputViewPadding="14,0"
+                                           ReserveSpaceForAssistiveLabels="False"
+                                           Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                                           ContainerBackground="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}">
+                        <til:SfTextInputLayout.HintLabelStyle>
+                            <til:LabelStyle FontSize="14" TextColor="#94A3B8"/>
+                        </til:SfTextInputLayout.HintLabelStyle>
+                        <Entry Text="{Binding ServiceProvider}"
+                               TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                               BackgroundColor="Transparent"/>
+                    </til:SfTextInputLayout>
+                </StackLayout>
+
+                <!-- Status chips -->
+                <StackLayout Spacing="8">
+                    <Label Text="Status" FontSize="12" FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                    <HorizontalStackLayout Spacing="10">
+
+                        <!-- Completed -->
+                        <Border Padding="14,8" StrokeThickness="1.5" StrokeShape="RoundRectangle 20">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding SelectStatusCommand}" CommandParameter="Completed"/></Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsCompletedSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="#DCFCE7"/>
+                                    <Setter Property="Stroke" Value="#16A34A"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsCompletedSelected}" Value="False">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F8FAFC, Dark=#2D2117}"/>
+                                    <Setter Property="Stroke" Value="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <StackLayout Orientation="Horizontal" Spacing="5">
+                                <Label Text="&#xE876;" FontFamily="MaterialIcons" FontSize="12" VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light=#64748B, Dark=#9DB7D2}"/>
+                                <Label Text="Completed" FontSize="12" VerticalOptions="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsCompletedSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="#16A34A"/>
+                                            <Setter Property="FontAttributes" Value="Bold"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsCompletedSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light=#475569, Dark=#9DB7D2}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </StackLayout>
+                        </Border>
+
+                        <!-- Pending -->
+                        <Border Padding="14,8" StrokeThickness="1.5" StrokeShape="RoundRectangle 20">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding SelectStatusCommand}" CommandParameter="Pending"/></Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsPendingSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="#FEF3C7"/>
+                                    <Setter Property="Stroke" Value="#D97706"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsPendingSelected}" Value="False">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F8FAFC, Dark=#2D2117}"/>
+                                    <Setter Property="Stroke" Value="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Label Text="Pending" FontSize="12">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsPendingSelected}" Value="True">
+                                        <Setter Property="TextColor" Value="#D97706"/>
+                                        <Setter Property="FontAttributes" Value="Bold"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsPendingSelected}" Value="False">
+                                        <Setter Property="TextColor" Value="{AppThemeBinding Light=#475569, Dark=#9DB7D2}"/>
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </Border>
+
+                        <!-- Scheduled -->
+                        <Border Padding="14,8" StrokeThickness="1.5" StrokeShape="RoundRectangle 20">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding SelectStatusCommand}" CommandParameter="Scheduled"/></Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsScheduledSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="#FEF3C7"/>
+                                    <Setter Property="Stroke" Value="#B45309"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsScheduledSelected}" Value="False">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F8FAFC, Dark=#2D2117}"/>
+                                    <Setter Property="Stroke" Value="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Label Text="Scheduled" FontSize="12">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsScheduledSelected}" Value="True">
+                                        <Setter Property="TextColor" Value="#B45309"/>
+                                        <Setter Property="FontAttributes" Value="Bold"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsScheduledSelected}" Value="False">
+                                        <Setter Property="TextColor" Value="{AppThemeBinding Light=#475569, Dark=#9DB7D2}"/>
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </Border>
+                    </HorizontalStackLayout>
+                </StackLayout>
+
+                <!-- Notes -->
+                <StackLayout Spacing="6">
+                    <Label Text="Notes" FontSize="12" FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource BrandTextMid}, Dark={StaticResource BrandTextOnDarkAlt}}"/>
+                    <Border StrokeThickness="1"
+                            Stroke="{AppThemeBinding Light=#CBD5E1, Dark=#3D2E24}"
+                            BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyMid}}"
+                            StrokeShape="RoundRectangle 8" Padding="12,10">
+                        <Editor Text="{Binding Notes}" HeightRequest="80"
+                                Placeholder="e.g. Used synthetic oil as recommended."
+                                PlaceholderColor="{AppThemeBinding Light=#94A3B8, Dark=#4A6580}"
+                                TextColor="{AppThemeBinding Light={StaticResource BrandTextDark}, Dark={StaticResource BrandTextOnDark}}"
+                                BackgroundColor="Transparent" AutoSize="TextChanges"/>
+                    </Border>
+                </StackLayout>
+
+            </StackLayout>
+        </ScrollView>
+
+        <!-- Footer -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12" Padding="24,14,24,24"
+              BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource BrandNavyLight}}">
+            <BoxView Grid.ColumnSpan="2" HeightRequest="1" VerticalOptions="Start"
+                     BackgroundColor="{AppThemeBinding Light=#E2E8F0, Dark=#3D2E24}" Margin="0,0,0,14"/>
+            <buttons:SfButton Grid.Column="0" Text="Cancel" HeightRequest="44"
+                              Background="{AppThemeBinding Light=#FAF9F5, Dark=#1A2D3D}"
+                              TextColor="{AppThemeBinding Light=#475569, Dark=#9DB7D2}"
+                              FontSize="14" FontAttributes="Bold" CornerRadius="10" StrokeThickness="0"
+                              Command="{Binding CancelCommand}"/>
+            <buttons:SfButton Grid.Column="1" Text="Save" HeightRequest="44"
+                              Background="{AppThemeBinding Light=#B45309, Dark=#D97706}"
+                              TextColor="White" FontSize="14" FontAttributes="Bold"
+                              CornerRadius="10" StrokeThickness="0"
+                              IsEnabled="{Binding CanSave}"
+                              Command="{Binding SaveCommand}"/>
+        </Grid>
+
+    </Grid>
+</ContentView>

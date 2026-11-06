@@ -1,0 +1,915 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sfTabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
+             xmlns:sfListView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+             x:Class="SmartDailyDecisionCompanion.MainPage">
+
+    <Grid>
+        <ContentView IsVisible="{Binding IsMobile}"
+                     BackgroundColor="#f7f7f7">
+            <sfTabView:SfTabView x:Name="MobileTabView"
+                                 TabWidthMode="SizeToContent"
+                                 SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
+                <!-- Today Tab -->
+                <sfTabView:SfTabItem Header="Today">
+                    <ScrollView>
+                        <VerticalStackLayout Padding="12"
+                                             Spacing="12">
+                            <!-- Top header -->
+                            <Grid ColumnDefinitions="Auto, * , Auto"
+                                  Padding="6"
+                                  VerticalOptions="Start">
+                                <Label Text="📅"
+                                       FontSize="18"
+                                       VerticalOptions="Center" />
+                                <Label Grid.Column="1"
+                                       Text="{Binding Greeting}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       TextColor="#5484d1"
+                                       FontSize="18"
+                                       FontAttributes="Bold" />
+                            </Grid>
+
+                            <!-- Today's summary card -->
+                            <Border BackgroundColor="White"
+                                    StrokeThickness="0"
+                                    Padding="12">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="8">
+                                    <Label Text="{Binding DateLabel}"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="#8A8A8A" />
+                                    <Label Text="Let's simplify today"
+                                           FontSize="22"
+                                           FontAttributes="Bold" />
+
+                                    <Border BackgroundColor="#EAF5EF"
+                                            StrokeThickness="0"
+                                            Padding="10">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8" />
+                                        </Border.StrokeShape>
+                                        <HorizontalStackLayout Spacing="10">
+                                            <Label Text="✔️"
+                                                   VerticalOptions="Center" />
+                                            <VerticalStackLayout>
+                                                <Label Text="{Binding PressureLabel, StringFormat='• {0}'}"
+                                                       FontAttributes="Bold"
+                                                       TextColor="#4781ed"
+                                                       FontSize="14" />
+                                                <Label Text="{Binding Tips, FallbackValue='This report is a Keystone Task. Completing it today reduces your end-of-week cognitive load by 40%.'}"
+                                                       FontSize="13"
+                                                       MaximumWidthRequest="275"
+                                                       TextColor="#2D3748" />
+                                            </VerticalStackLayout>
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <VerticalStackLayout Padding="12"
+                                                 Spacing="18">
+                                <!-- Do Today -->
+                                <Grid ColumnDefinitions="*, Auto"
+                                      VerticalOptions="Center">
+                                    <Label Text="Do Today"
+                                           FontAttributes="Bold"
+                                           FontSize="20"
+                                           VerticalOptions="Center" />
+                                    <Border BackgroundColor="#E6F2FF"
+                                            Stroke="#D7E9FF"
+                                            Padding="8,4"
+                                            Grid.Column="1"
+                                            HorizontalOptions="End"
+                                            VerticalOptions="Center">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="12" />
+                                        </Border.StrokeShape>
+                                        <Label Text="{Binding DoTodayCount,StringFormat=' {0} Tasks'}"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               TextColor="#2B6CB0" />
+                                    </Border>
+                                </Grid>
+                                <sfListView:SfListView x:Name="Mobile_DoTodayList"
+                                                       BackgroundColor="White"
+                                                       ItemsSource="{Binding DoToday}"
+                                                       ShowItemBorder="True"
+                                                       IsScrollingEnabled="False"
+                                                       ItemBorderRadius="10"
+                                                       ItemBorderThickness="0.5"
+                                                       SelectionMode="Single"
+                                                       SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
+                                                       ItemSize="70">
+                                    <sfListView:SfListView.ItemTemplate>
+                                        <StaticResourceExtension Key="DoTodayTaskItemTemplate" />
+                                    </sfListView:SfListView.ItemTemplate>
+                                </sfListView:SfListView>
+
+                                <!-- Postpone -->
+                                <Label Text="Postpone"
+                                       FontAttributes="Bold"
+                                       FontSize="20" />
+                                <sfListView:SfListView x:Name="Mobile_PostponeList"
+                                                       ItemsSource="{Binding Postpone}"
+                                                       ShowItemBorder="True"
+                                                       ItemBorderRadius="10"
+                                                       IsScrollingEnabled="False"
+                                                       ItemBorderThickness="0.5"
+                                                       SelectionMode="Single"
+                                                       SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
+                                                       ItemSize="60">
+                                    <sfListView:SfListView.ItemTemplate>
+                                        <StaticResourceExtension Key="PostponeTaskItemTemplate" />
+                                    </sfListView:SfListView.ItemTemplate>
+                                </sfListView:SfListView>
+
+                                <!-- Watch -->
+                                <Label Text="Watch"
+                                       FontAttributes="Bold"
+                                       FontSize="20" />
+                                <sfListView:SfListView x:Name="Mobile_WatchList"
+                                                       ItemsSource="{Binding Watch}"
+                                                       BackgroundColor="White"
+                                                       ShowItemBorder="True"
+                                                       IsScrollingEnabled="False"
+                                                       ItemBorderRadius="10"
+                                                       ItemBorderThickness="0.5"
+                                                       SelectionMode="Single"
+                                                       SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
+                                                       ItemSize="60">
+                                    <sfListView:SfListView.ItemTemplate>
+                                        <StaticResourceExtension Key="WatchTaskItemTemplate" />
+                                    </sfListView:SfListView.ItemTemplate>
+                                </sfListView:SfListView>
+                            </VerticalStackLayout>
+
+                            <Grid>
+                                <Border BackgroundColor="#637dad"
+                                        StrokeThickness="0"
+                                        Padding="12">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12" />
+                                    </Border.StrokeShape>
+                                    <VerticalStackLayout Spacing="10">
+                                        <HorizontalStackLayout Spacing="12"
+                                                               VerticalOptions="Center">
+                                            <Border BackgroundColor="#2B3338"
+                                                    StrokeThickness="0"
+                                                    Padding="10">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="18" />
+                                                </Border.StrokeShape>
+                                                <HorizontalStackLayout Spacing="8"
+                                                                       VerticalOptions="Center">
+                                                    <Label Text="📅"
+                                                           TextColor="#E6EEF5" />
+                                                    <Label Text="{Binding MeetingsCountLabel}"
+                                                           TextColor="#E6EEF5"
+                                                           FontAttributes="Bold" />
+                                                </HorizontalStackLayout>
+                                            </Border>
+
+                                            <Border BackgroundColor="#2B3338"
+                                                    StrokeThickness="0"
+                                                    Padding="10">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="18" />
+                                                </Border.StrokeShape>
+                                                <HorizontalStackLayout Spacing="8"
+                                                                       VerticalOptions="Center">
+                                                    <Label Text="⏳"
+                                                           TextColor="#E6EEF5" />
+                                                    <!-- bind focus label -->
+                                                    <Label Text="{Binding FocusLabel, FallbackValue='2H FOCUS'}"
+                                                           TextColor="#E6EEF5"
+                                                           FontAttributes="Bold" />
+                                                </HorizontalStackLayout>
+                                            </Border>
+                                        </HorizontalStackLayout>
+                                        <Border BackgroundColor="#FBEAEA"
+                                                StrokeThickness="0"
+                                                HorizontalOptions="Start"
+                                                Padding="8">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="16" />
+                                            </Border.StrokeShape>
+                                            <HorizontalStackLayout Spacing="8"
+                                                                   VerticalOptions="Center">
+                                                <Label Text="🔔"
+                                                       TextColor="#9A2B2B" />
+                                                <Label Text="{Binding DoTodayCount, StringFormat='{0} DEADLINE'}"
+                                                       TextColor="#9A2B2B"
+                                                       FontAttributes="Bold" />
+                                            </HorizontalStackLayout>
+                                        </Border>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </ScrollView>
+                </sfTabView:SfTabItem>
+
+                <!-- Insights Tab -->
+                <sfTabView:SfTabItem Header="Insights">
+                    <ScrollView>
+                        <VerticalStackLayout Padding="12"
+                                             Spacing="14">
+                            <!-- Header -->
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="✨"
+                                       FontSize="18"
+                                       VerticalOptions="Center" />
+                                <Label Text="Decision Analysis"
+                                       HorizontalOptions="Center"
+                                       TextColor="#5484d1"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="End" />
+                            </HorizontalStackLayout>
+
+
+                            <!-- Recommendation Card -->
+                            <Border BackgroundColor="White"
+                                    StrokeThickness="0"
+                                    Padding="14">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="10">
+                                    <Grid ColumnDefinitions="6*,4*">
+                                        <Label Text="ACTIVE RECOMMENDATION"
+                                               FontSize="12"
+                                               TextColor="#235ea1"
+                                               FontAttributes="Bold" />
+                                        <Label Text="• HIGH PRIORITY"
+                                               Grid.Column="1"
+                                               FontSize="12"
+                                               TextColor="#C53030"
+                                               FontAttributes="Bold"
+                                               HorizontalOptions="End" />
+                                    </Grid>
+
+                                    <Label Text="{Binding RecommendationTitle}"
+                                           FontSize="22"
+                                           FontAttributes="Bold" />
+
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Border BackgroundColor="#E6F4EA"
+                                                Padding="6,4">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="10" />
+                                            </Border.StrokeShape>
+                                            <Label Text="DO TODAY"
+                                                   FontSize="12"
+                                                   TextColor="#2B6CB0"
+                                                   FontAttributes="Bold" />
+                                        </Border>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <!-- Mentorship Insight -->
+                            <HorizontalStackLayout Spacing="8"
+                                                   VerticalOptions="Center">
+                                <Label Text="💡"
+                                       FontSize="18"
+                                       VerticalOptions="Center" />
+                                <Label Text="Mentorship Insight"
+                                       FontAttributes="Bold"
+                                       FontSize="16"
+                                       VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+
+
+                            <Border BackgroundColor="#346bb3"
+                                    StrokeThickness="0"
+                                    Padding="12">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <HorizontalStackLayout Spacing="10">
+
+                                    <Label Text="{Binding MentorshipDetail, FallbackValue='This report is a Keystone Task. Completing it today reduces your end-of-week cognitive load by 40%.'}"
+                                           FontSize="14"
+                                           MaximumWidthRequest="310"
+                                           TextColor="White" />
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <!-- Urgency / Importance tiles -->
+                            <Grid ColumnDefinitions="5*, 5*"
+                                  ColumnSpacing="10">
+                                <Border BackgroundColor="White"
+                                        StrokeThickness="0"
+                                        Padding="12">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10" />
+                                    </Border.StrokeShape>
+                                    <VerticalStackLayout>
+                                        <HorizontalStackLayout Spacing="8"
+                                                               Margin="0,0,0,5"
+                                                               VerticalOptions="Center">
+                                            <Label Text="⏳"
+                                                   FontSize="16"
+                                                   TextColor="#718096" />
+                                            <Label Text="Urgency"
+                                                   FontSize="12"
+                                                   FontAttributes="Bold"
+                                                   VerticalOptions="Center"
+                                                   TextColor="#718096" />
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding UrgencyText, FallbackValue='Due in 48 hours. Missing today loses the buffer for review.'}"
+                                               FontSize="13"
+                                               TextColor="#2D3748" />
+                                    </VerticalStackLayout>
+                                </Border>
+                                <Border BackgroundColor="White"
+                                        StrokeThickness="0"
+                                        Grid.Column="1"
+                                        Padding="12">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10" />
+                                    </Border.StrokeShape>
+                                    <VerticalStackLayout>
+                                        <HorizontalStackLayout Spacing="8"
+                                                               Margin="0,0,0,5"
+                                                               VerticalOptions="Center">
+                                            <Label Text="📈"
+                                                   FontSize="16"
+                                                   TextColor="#718096" />
+                                            <Label Text="Importance"
+                                                   FontSize="12"
+                                                   FontAttributes="Bold"
+                                                   VerticalOptions="Center"
+                                                   TextColor="#718096" />
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding ImportanceText, FallbackValue='Directly impacts Q3 budget approval and team morale.'}"
+                                               FontSize="13"
+                                               TextColor="#2D3748" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </Grid>
+
+                            <!-- Impact / Tradeoffs tiles -->
+
+                            <Label Text="Impact and Tradeoffs"
+                                   FontAttributes="Bold"
+                                   FontSize="16" />
+
+                            <Border BackgroundColor="#EAF5EF"
+                                    StrokeThickness="0"
+                                    Padding="12">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout>
+                                    <HorizontalStackLayout Spacing="8"
+                                                           Margin="0,0,0,5"
+                                                           VerticalOptions="Center">
+                                        <Label Text="✅"
+                                               FontSize="16"
+                                               TextColor="#718096" />
+                                        <Label Text="Positive Momentum"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               VerticalOptions="Center"
+                                               TextColor="#718096" />
+                                    </HorizontalStackLayout>
+                                    <Label Text="{Binding PositiveMomentumText, FallbackValue='Completing this builds forward progress and unlocks the next step.'}"
+                                           FontSize="13"
+                                           TextColor="#2D3748" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border BackgroundColor="White"
+                                    StrokeThickness="0"
+                                    Padding="12">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout>
+                                    <HorizontalStackLayout Spacing="8"
+                                                           Margin="0,0,0,5"
+                                                           VerticalOptions="Center">
+                                        <Label Text="⚠️"
+                                               FontSize="16"
+                                               TextColor="#718096" />
+                                        <Label Text="Delay Risk"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               VerticalOptions="Center"
+                                               TextColor="#718096" />
+                                    </HorizontalStackLayout>
+                                    <Label Text="{Binding DelayRiskText, FallbackValue='Postponing may increase deadline pressure and rework later.'}"
+                                           FontSize="13"
+                                           TextColor="#2D3748" />
+                                </VerticalStackLayout>
+                            </Border>
+
+
+                            <!-- Action buttons -->
+                            <Grid ColumnDefinitions="5*, 5*"
+                                  ColumnSpacing="10"
+                                  Margin="0,10,0,0">
+                                <Button Text="Accept Recommendation"
+                                        BackgroundColor="#1E6FAD"
+                                        TextColor="White"
+                                        CornerRadius="10"
+                                        Command="{Binding AcceptRecommendationCommand}" />
+                                <Button Text="Postpone"
+                                        Grid.Column="1"
+                                        BackgroundColor="#F3F4F6"
+                                        TextColor="#2D3748"
+                                        CornerRadius="10"
+                                        Command="{Binding PostponeRecommendationCommand}" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </ScrollView>
+                </sfTabView:SfTabItem>
+            </sfTabView:SfTabView>
+        </ContentView>
+
+        <!-- Desktop layout -->
+        <ContentView IsVisible="{Binding IsDesktop}"
+                     BackgroundColor="#f7f7f7">
+            <sfTabView:SfTabView x:Name="DesktopTabView"
+                                 TabWidthMode="SizeToContent"
+                                 SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
+                <sfTabView:SfTabItem Header="Today">
+                    <ScrollView Grid.Column="1"
+                                Padding="24">
+                        <!-- Today Page-->
+                        <StackLayout Spacing="20">
+
+                            <VerticalStackLayout Spacing="10">
+                                <!-- Top summary card -->
+                                <Border BackgroundColor="White"
+                                        StrokeThickness="0"
+                                        Padding="12">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12" />
+                                    </Border.StrokeShape>
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label Text="{Binding DateLabel}"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               TextColor="#8A8A8A" />
+                                        <Label Text="Let's simplify today"
+                                               FontSize="22"
+                                               FontAttributes="Bold" />
+
+                                        <Border BackgroundColor="#d3e2d3"
+                                                StrokeThickness="0"
+                                                Padding="10">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="8" />
+                                            </Border.StrokeShape>
+                                            <HorizontalStackLayout Spacing="10">
+                                                <Label Text="✔️"
+                                                       VerticalOptions="Center" />
+                                                <VerticalStackLayout>
+                                                    <Label Text="{Binding PressureLabel, StringFormat='• {0}'}"
+                                                           FontAttributes="Bold"
+                                                           TextColor="#4781ed"
+                                                           FontSize="14" />
+                                                    <Label Text="{Binding Tips, FallbackValue='This report is a Keystone Task. Completing it today reduces your end-of-week cognitive load by 40%.'}"
+                                                           FontSize="14"
+                                                           TextColor="#2D3748" />
+                                                </VerticalStackLayout>
+                                            </HorizontalStackLayout>
+                                        </Border>
+                                    </VerticalStackLayout>
+                                </Border>
+
+                                <!-- Do Today + Side columns -->
+                                <Grid ColumnDefinitions="6.5*,3.5*">
+                                    <VerticalStackLayout Margin="5">
+                                        <Grid ColumnDefinitions="*, Auto"
+                                              Margin="0,0,5,10"
+                                              VerticalOptions="Center">
+                                            <Label Text="Do Today"
+                                                   FontAttributes="Bold"
+                                                   FontSize="20"
+                                                   VerticalOptions="Center" />
+                                            <Border BackgroundColor="#E6F2FF"
+                                                    Stroke="#D7E9FF"
+                                                    Padding="8,4"
+                                                    Grid.Column="1"
+                                                    HorizontalOptions="End"
+                                                    VerticalOptions="Center">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="12" />
+                                                </Border.StrokeShape>
+                                                <Label Text="{Binding DoTodayCount,StringFormat=' {0} Tasks'}"
+                                                       FontSize="12"
+                                                       FontAttributes="Bold"
+                                                       TextColor="#2B6CB0" />
+                                            </Border>
+                                        </Grid>
+                                        <sfListView:SfListView x:Name="Desktop_DoTodayList"
+                                                               ItemsSource="{Binding DoToday}"
+                                                               BackgroundColor="White"
+                                                               IsScrollingEnabled="False"
+                                                               ShowItemBorder="True"
+                                                               SelectionMode="Single"
+                                                               ItemBorderRadius="10"
+                                                               ItemBorderThickness="0.7"
+                                                               SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
+                                                               ItemSize="75">
+                                            <sfListView:SfListView.ItemTemplate>
+                                                <StaticResourceExtension Key="DoTodayTaskItemTemplate" />
+                                            </sfListView:SfListView.ItemTemplate>
+                                        </sfListView:SfListView>
+
+                                        <!-- Bottom badges and actions -->
+                                        <HorizontalStackLayout Spacing="12"
+                                                               Margin="0,20,0,0">
+                                            <Border Padding="8,6">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="14" />
+                                                </Border.StrokeShape>
+                                                <HorizontalStackLayout Spacing="8"
+                                                                       VerticalOptions="Center">
+                                                    <Label Text="📅"
+                                                           TextColor="#E6EEF5" />
+                                                    <Label Text="{Binding MeetingsCountLabel}"
+                                                           FontAttributes="Bold" />
+                                                </HorizontalStackLayout>
+                                            </Border>
+
+                                            <Border Padding="8,6"
+                                                    WidthRequest="130">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="14" />
+                                                </Border.StrokeShape>
+                                                <HorizontalStackLayout Spacing="8"
+                                                                       VerticalOptions="Center">
+                                                    <Label Text="⏳"
+                                                           TextColor="#E6EEF5" />
+                                                    <Label Text="{Binding FocusLabel, FallbackValue='2H FOCUS'}"
+                                                           FontAttributes="Bold" />
+                                                </HorizontalStackLayout>
+                                            </Border>
+
+                                            <Border BackgroundColor="#f7b5b5"
+                                                    HorizontalOptions="Start"
+                                                    WidthRequest="130"
+                                                    Padding="8,6">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="14" />
+                                                </Border.StrokeShape>
+                                                <HorizontalStackLayout Spacing="8"
+                                                                       VerticalOptions="Center">
+                                                    <Label Text="🔔" />
+                                                    <Label Text="{Binding DoTodayCount, StringFormat='{0} DEADLINE'}"
+                                                           FontAttributes="Bold" />
+                                                </HorizontalStackLayout>
+                                            </Border>
+                                        </HorizontalStackLayout>
+
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Grid.Column="1"
+                                                         Spacing="12">
+                                        <VerticalStackLayout>
+                                            <Label Text="Postpone"
+                                                   FontAttributes="Bold"
+                                                   FontSize="20"
+                                                   Margin="0,0,0,15" />
+                                            <sfListView:SfListView x:Name="Desktop_PostponeList"
+                                                                   ItemsSource="{Binding Postpone}"
+                                                                   SelectionMode="Single"
+                                                                   IsScrollingEnabled="False"
+                                                                   ShowItemBorder="True"
+                                                                   ItemBorderRadius="10"
+                                                                   ItemBorderThickness="0.7"
+                                                                   SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
+                                                                   ItemSize="70">
+                                                <sfListView:SfListView.ItemTemplate>
+                                                    <StaticResourceExtension Key="PostponeTaskItemTemplate" />
+                                                </sfListView:SfListView.ItemTemplate>
+                                            </sfListView:SfListView>
+                                        </VerticalStackLayout>
+
+                                        <VerticalStackLayout>
+                                            <Label Text="Watch"
+                                                   FontAttributes="Bold"
+                                                   FontSize="20"
+                                                   Margin="0,0,0,10" />
+                                            <sfListView:SfListView x:Name="Desktop_WatchList"
+                                                                   ItemsSource="{Binding Watch}"
+                                                                   BackgroundColor="White"
+                                                                   SelectionMode="Single"
+                                                                   IsScrollingEnabled="False"
+                                                                   ShowItemBorder="True"
+                                                                   ItemBorderRadius="10"
+                                                                   ItemBorderThickness="0.7"
+                                                                   SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
+                                                                   ItemSize="57">
+                                                <sfListView:SfListView.ItemTemplate>
+                                                    <StaticResourceExtension Key="WatchTaskItemTemplate" />
+                                                </sfListView:SfListView.ItemTemplate>
+                                            </sfListView:SfListView>
+                                        </VerticalStackLayout>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </StackLayout>
+                    </ScrollView>
+                </sfTabView:SfTabItem>
+
+                <sfTabView:SfTabItem Header="Insights">
+                    <!-- Reuse the mobile Insights content for desktop tab -->
+                    <ScrollView>
+                        <VerticalStackLayout Padding="120,0,120,0"
+                                             Spacing="14">
+                            <!-- Header -->
+                            <HorizontalStackLayout Spacing="8"
+                                                   HorizontalOptions="Start"
+                                                   Margin="0,10,0,0">
+                                <Label Text="✨"
+                                       FontSize="18"
+                                       VerticalOptions="Center" />
+                                <Label Text="Decision Analysis"
+                                       HorizontalOptions="Center"
+                                       TextColor="#3d3a69"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="End" />
+                            </HorizontalStackLayout>
+
+
+                            <!-- Recommendation Card -->
+
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="Active Recommendation"
+                                       HorizontalOptions="Center"
+                                       FontSize="18"
+                                       TextColor="#235ea1"
+                                       FontAttributes="Bold" />
+                                <HorizontalStackLayout Spacing="8"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center">
+
+                                    <Border BackgroundColor="ForestGreen"
+                                            Padding="10,8,10,8">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="20" />
+                                        </Border.StrokeShape>
+                                        <Label Text="DO TODAY"
+                                               FontSize="12"
+                                               TextColor="White"
+                                               FontAttributes="Bold" />
+                                    </Border>
+                                    <Border Padding="10,8,10,8"
+                                            BackgroundColor="#3e397d">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="20" />
+                                        </Border.StrokeShape>
+                                        <Label Text="• HIGH PRIORITY"
+                                               FontSize="12"
+                                               TextColor="White"
+                                               FontAttributes="Bold" />
+                                    </Border>
+                                </HorizontalStackLayout>
+
+                                <Label Text="{Binding RecommendationTitle}"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+
+
+                            <Label Text="Mentorship Insight"
+                                   FontAttributes="Bold"
+                                   FontSize="16"
+                                   VerticalOptions="Center" />
+                            <Border BackgroundColor="#346bb3"
+                                    HeightRequest="90"
+                                    Padding="12">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <Label Text="💡"
+                                           FontSize="34"
+                                           VerticalOptions="Center" />
+                                    <ScrollView Grid.Column="1">
+                                        <Label Text="{Binding MentorshipDetail, FallbackValue='This report is a Keystone Task. Completing it today reduces your end-of-week cognitive load by 40%.'}"
+                                               FontSize="14"
+                                               HorizontalOptions="Start"
+                                               VerticalOptions="Start"
+                                               TextColor="White" />
+                                    </ScrollView>
+                                </Grid>
+
+                            </Border>
+
+                            <!-- Urgency / Importance tiles -->
+                            <Grid ColumnDefinitions="5*,5*"
+                                  ColumnSpacing="10">
+                                <Border BackgroundColor="White"
+                                        HeightRequest="90"
+                                        Padding="12">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10" />
+                                    </Border.StrokeShape>
+                                    <ScrollView>
+                                        <VerticalStackLayout>
+                                            <HorizontalStackLayout Spacing="8"
+                                                                   Margin="0,0,0,5"
+                                                                   VerticalOptions="Center">
+                                                <Label Text="⏳"
+                                                       FontSize="14"
+                                                       TextColor="#718096" />
+                                                <Label Text="Urgency"
+                                                       FontSize="14"
+                                                       VerticalOptions="Center"
+                                                       FontAttributes="Bold"
+                                                       TextColor="#718096" />
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding UrgencyText, FallbackValue='Due in 48 hours. Missing today loses the buffer for review.'}"
+                                                   FontSize="13"
+                                                   TextColor="#2D3748" />
+                                        </VerticalStackLayout>
+                                    </ScrollView>
+                                </Border>
+                                <Border BackgroundColor="White"
+                                        Grid.Column="1"
+                                        HeightRequest="90"
+                                        Padding="12">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10" />
+                                    </Border.StrokeShape>
+                                    <ScrollView>
+                                        <VerticalStackLayout>
+                                            <HorizontalStackLayout Spacing="8"
+                                                                   Margin="0,0,0,5"
+                                                                   VerticalOptions="Center">
+                                                <Label Text="📈"
+                                                       FontSize="14"
+                                                       TextColor="#718096" />
+                                                <Label Text="Importance"
+                                                       FontSize="14"
+                                                       VerticalOptions="Center"
+                                                       TextColor="#718096"
+                                                       FontAttributes="Bold" />
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding ImportanceText, FallbackValue='Directly impacts Q3 budget approval and team morale.'}"
+                                                   FontSize="13"
+                                                   TextColor="#2D3748" />
+                                        </VerticalStackLayout>
+                                    </ScrollView>
+                                </Border>
+                            </Grid>
+
+                            <!-- Impact / Tradeoffs tiles -->
+                            <Label Text="Impact and Tradeoffs"
+                                   FontAttributes="Bold"
+                                   FontSize="16" />
+
+                            <Grid ColumnDefinitions="5*, 5*"
+                                  ColumnSpacing="10">
+                                <Border BackgroundColor="#cfe3cf"
+                                        Padding="12">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10" />
+                                    </Border.StrokeShape>
+                                    <ScrollView>
+                                        <VerticalStackLayout>
+                                            <HorizontalStackLayout Spacing="8"
+                                                                   Margin="0,0,0,5"
+                                                                   VerticalOptions="Center">
+                                                <Label Text="✅"
+                                                       FontSize="14"
+                                                       TextColor="#718096" />
+                                                <Label Text="Positive Momentum"
+                                                       FontSize="14"
+                                                       VerticalOptions="Center"
+                                                       FontAttributes="Bold"
+                                                       TextColor="#6a6e75" />
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding PositiveMomentumText, FallbackValue='Completing this builds forward progress and unlocks the next step.'}"
+                                                   FontSize="13"
+                                                   TextColor="#2D3748" />
+                                        </VerticalStackLayout>
+                                    </ScrollView>
+                                </Border>
+                                <Border BackgroundColor="White"
+                                        Grid.Column="1"
+                                        Padding="12">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10" />
+                                    </Border.StrokeShape>
+                                    <ScrollView>
+                                        <VerticalStackLayout>
+                                            <HorizontalStackLayout Spacing="8"
+                                                                   Margin="0,0,0,5"
+                                                                   VerticalOptions="Center">
+                                                <Label Text="⚠️"
+                                                       FontSize="14"
+                                                       TextColor="#718096" />
+                                                <Label Text="Delay Risk"
+                                                       FontSize="14"
+                                                       FontAttributes="Bold"
+                                                       VerticalOptions="Center"
+                                                       TextColor="#718096" />
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding DelayRiskText, FallbackValue='Postponing may increase deadline pressure and rework later.'}"
+                                                   FontSize="13"
+                                                   TextColor="#2D3748" />
+                                        </VerticalStackLayout>
+                                    </ScrollView>
+                                </Border>
+                            </Grid>
+
+                            <!-- Action buttons -->
+                            <HorizontalStackLayout Margin="0,10,0,0"
+                                                   Spacing="10"
+                                                   HorizontalOptions="Center">
+                                <Button Text="Accept Recommendation"
+                                        BackgroundColor="#3e397d"
+                                        TextColor="White"
+                                        CornerRadius="10"
+                                        Command="{Binding AcceptRecommendationCommand}" />
+                                <Button Text="Postpone"
+                                        BackgroundColor="#efebeb"
+                                        TextColor="#2D3748"
+                                        WidthRequest="200"
+                                        CornerRadius="10"
+                                        Command="{Binding PostponeRecommendationCommand}" />
+
+                            </HorizontalStackLayout>
+
+                        </VerticalStackLayout>
+                    </ScrollView>
+                </sfTabView:SfTabItem>
+
+            </sfTabView:SfTabView>
+        </ContentView>
+        <!-- Floating Add Task Button (visible on all platforms) -->
+        <Button Text="+"
+                FontSize="28"
+                WidthRequest="56"
+                HeightRequest="56"
+                CornerRadius="28"
+                BackgroundColor="#3d3a69"
+                TextColor="White"
+                HorizontalOptions="End"
+                VerticalOptions="End"
+                Margin="0,0,20,20"
+                Command="{Binding ShowAddTaskCommand}" />
+
+        <!-- Add Task Popup Overlay -->
+        <ContentView IsVisible="{Binding IsAddTaskPopupVisible}"
+                     BackgroundColor="#80000000"
+                     HorizontalOptions="Fill"
+                     VerticalOptions="Fill">
+            <Grid HorizontalOptions="Center"
+                  VerticalOptions="Center">
+                <Border BackgroundColor="White"
+                        Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10"
+                                         WidthRequest="320">
+                        <Label Text="Add Task"
+                               HorizontalOptions="Center"
+                               FontAttributes="Bold"
+                               FontSize="18" />
+                        <Entry Placeholder="Topic"
+                               Text="{Binding NewTaskTopic}" />
+                        <Editor HeightRequest="80"
+                                Placeholder="Description"
+                                Text="{Binding NewTaskDescription}" />
+                        <DatePicker Date="{Binding NewTaskDeadline}"
+                                    Format="yyyy-MM-dd" />
+                        <Entry Placeholder="Project Type"
+                               Text="{Binding NewTaskProjectType}" />
+                        <Entry Placeholder="Priority (Low/Medium/High)"
+                               Text="{Binding NewTaskPriority}" />
+                        <HorizontalStackLayout Spacing="10"
+                                               HorizontalOptions="End">
+                            <Button Text="Cancel"
+                                    BackgroundColor="#1E6FAD"
+                                    WidthRequest="80"
+                                    Command="{Binding HideAddTaskCommand}" />
+                            <Button Text="OK"
+                                    WidthRequest="80"
+                                    BackgroundColor="#1E6FAD"
+                                    TextColor="White"
+                                    Command="{Binding ConfirmAddTaskCommand}" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+        </ContentView>
+    </Grid>
+</ContentPage>

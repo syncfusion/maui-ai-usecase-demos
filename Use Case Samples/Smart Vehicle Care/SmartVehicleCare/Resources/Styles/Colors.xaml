@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- MAUI DEFAULTS -->
+    <Color x:Key="Primary">#B45309</Color>
+    <Color x:Key="PrimaryDark">#F59E0B</Color>
+    <Color x:Key="PrimaryDarkText">#FFFFFF</Color>
+    <Color x:Key="Secondary">#FEF3C7</Color>
+    <Color x:Key="SecondaryDarkText">#B45309</Color>
+    <Color x:Key="Tertiary">#0369A1</Color>
+    <Color x:Key="White">White</Color>
+    <Color x:Key="Black">Black</Color>
+    <Color x:Key="Magenta">#D600AA</Color>
+    <Color x:Key="MidnightBlue">#1C1412</Color>
+    <Color x:Key="OffBlack">#2A211D</Color>
+    <Color x:Key="Gray100">#E1E1E1</Color>
+    <Color x:Key="Gray200">#C8C8C8</Color>
+    <Color x:Key="Gray300">#ACACAC</Color>
+    <Color x:Key="Gray400">#919191</Color>
+    <Color x:Key="Gray500">#6E6E6E</Color>
+    <Color x:Key="Gray600">#404040</Color>
+    <Color x:Key="Gray900">#212121</Color>
+    <Color x:Key="Gray950">#141414</Color>
+    <SolidColorBrush x:Key="PrimaryBrush"    Color="{StaticResource Primary}"/>
+    <SolidColorBrush x:Key="SecondaryBrush"  Color="{StaticResource Secondary}"/>
+    <SolidColorBrush x:Key="TertiaryBrush"   Color="{StaticResource Tertiary}"/>
+    <SolidColorBrush x:Key="WhiteBrush"      Color="{StaticResource White}"/>
+    <SolidColorBrush x:Key="BlackBrush"      Color="{StaticResource Black}"/>
+    <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
+    <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>
+    <SolidColorBrush x:Key="Gray300Brush" Color="{StaticResource Gray300}"/>
+    <SolidColorBrush x:Key="Gray400Brush" Color="{StaticResource Gray400}"/>
+    <SolidColorBrush x:Key="Gray500Brush" Color="{StaticResource Gray500}"/>
+    <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
+    <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
+    <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
+
+    <!-- COPPER ROAD THEME — Vehicle Care AI
+         Light: Warm parchment · Copper amber primary · Mahogany nav
+         Dark:  Automotive black · Amber instrument glow · Steel AI     -->
+
+    <!-- Primary: Copper Amber -->
+    <Color x:Key="BrandBlue">#B45309</Color>
+    <Color x:Key="BrandBlueBright">#F59E0B</Color>
+    <Color x:Key="BrandBlueLight">#FEF3C7</Color>
+    <Color x:Key="BrandBlueLightDark">#431407</Color>
+
+    <!-- Secondary: Steel Blue for AI/links -->
+    <Color x:Key="BrandCyan">#0369A1</Color>
+    <Color x:Key="BrandCyanBright">#38BDF8</Color>
+    <Color x:Key="BrandCyanLight">#E0F2FE</Color>
+    <Color x:Key="BrandCyanLightDark">#0C2D48</Color>
+
+    <!-- AI Color Tokens -->
+    <Color x:Key="AIPrimary">#0369A1</Color>
+    <Color x:Key="AIPrimaryDark">#38BDF8</Color>
+    <Color x:Key="AIGlow">#E0F2FE</Color>
+    <Color x:Key="AIGlowDark">#0C2D48</Color>
+    <Color x:Key="AIAccent">#7C3AED</Color>
+    <Color x:Key="AIAccentDark">#A78BFA</Color>
+    <Color x:Key="AIBorder">#BAE6FD</Color>
+    <Color x:Key="AIBorderDark">#1D4577</Color>
+
+    <!-- App Backgrounds -->
+    <Color x:Key="AppBackground">#FAF9F5</Color>
+    <Color x:Key="AppBackgroundDark">#111009</Color>
+
+    <!-- Nav Surfaces: Deep mahogany-black -->
+    <Color x:Key="BrandNavy">#1C1412</Color>
+    <Color x:Key="BrandNavyMid">#2D2117</Color>
+    <Color x:Key="BrandNavyLight">#3D2E24</Color>
+    <Color x:Key="BrandDarkCard">#1C1917</Color>
+    <Color x:Key="BrandDarkCardAlt">#2A211D</Color>
+
+    <!-- Text Colors -->
+    <Color x:Key="BrandTextOnDark">#FAF6F0</Color>
+    <Color x:Key="BrandTextOnDarkAlt">#E8DDD4</Color>
+    <Color x:Key="BrandMutedOnDark">#B0A39A</Color>
+    <Color x:Key="BrandDimOnDark">#78716C</Color>
+    <Color x:Key="BrandTextOnLight">#1C1412</Color>
+    <Color x:Key="BrandTextDark">#1C1412</Color>
+    <Color x:Key="BrandTextMid">#2D2117</Color>
+    <Color x:Key="BrandMutedOnLight">#6B5E55</Color>
+    <Color x:Key="BrandDimOnLight">#A8A29E</Color>
+
+    <!-- Light Surfaces -->
+    <Color x:Key="BrandSurfaceLight">#FAF9F5</Color>
+    <Color x:Key="BrandCardLight">#FFFFFF</Color>
+    <Color x:Key="BrandBorderLight">#E5E0D8</Color>
+    <Color x:Key="BrandBorderInput">#D4CCBF</Color>
+
+    <!-- Splash / Landing -->
+    <Color x:Key="SplashBgDark">#1C1412</Color>
+    <Color x:Key="SplashBgLight">#FAF9F5</Color>
+
+    <!-- Green accent -->
+    <Color x:Key="BrandGreen">#4ADE80</Color>
+    <Color x:Key="BrandGreenDeep">#15803D</Color>
+
+    <!-- Semantic Status -->
+    <Color x:Key="StatusSuccess">#15803D</Color>
+    <Color x:Key="StatusWarning">#D97706</Color>
+    <Color x:Key="StatusDanger">#DC2626</Color>
+    <Color x:Key="StatusInfo">#0369A1</Color>
+
+    <!-- Vehicle Health Score Colors -->
+    <Color x:Key="HealthExcellent">#15803D</Color>
+    <Color x:Key="HealthGood">#0369A1</Color>
+    <Color x:Key="HealthFair">#D97706</Color>
+    <Color x:Key="HealthPoor">#EA580C</Color>
+    <Color x:Key="HealthCritical">#DC2626</Color>
+
+    <!-- Service Center Page — adapts to both themes -->
+    <Color x:Key="MapPageBgLight">#F0F4F8</Color>
+    <Color x:Key="MapPageBgDark">#081827</Color>
+    <Color x:Key="MapCardBgLight">#FFFFFF</Color>
+    <Color x:Key="MapCardBgDark">#0F2138</Color>
+    <Color x:Key="MapSurfaceLight">#F8FBFF</Color>
+    <Color x:Key="MapSurfaceDark">#10273D</Color>
+    <Color x:Key="MapBorderLight">#CBD5E1</Color>
+    <Color x:Key="MapBorderDark">#1D3C5B</Color>
+    <Color x:Key="MapTextPrimaryLight">#0F172A</Color>
+    <Color x:Key="MapTextPrimaryDark">#EAF6FF</Color>
+    <Color x:Key="MapTextSecondaryLight">#475569</Color>
+    <Color x:Key="MapTextSecondaryDark">#9DB7D2</Color>
+    <Color x:Key="MapCardHeaderLight">#1E293B</Color>
+    <Color x:Key="MapCardHeaderDark">#D6E7F7</Color>
+    <Color x:Key="MapPillActiveBgLight">#B45309</Color>
+    <Color x:Key="MapPillActiveBgDark">#2D2117</Color>
+    <Color x:Key="MapPillInactiveBgLight">#F1F5F9</Color>
+    <Color x:Key="MapPillInactiveBgDark">#0D2135</Color>
+    <Color x:Key="MapPillInactiveBorderLight">#CBD5E1</Color>
+    <Color x:Key="MapPillInactiveBorderDark">#1D3C5B</Color>
+    <Color x:Key="MapShadowLight">#94A3B8</Color>
+    <Color x:Key="MapShadowDark">#020B14</Color>
+
+    <!-- Splash / Onboarding Page semantic tokens -->
+    <Color x:Key="OnboardingBgLight">#EFF4FB</Color>
+    <Color x:Key="OnboardingBgDark">#0B1929</Color>
+    <Color x:Key="OnboardingRingLight">#DBEAFE</Color>
+    <Color x:Key="OnboardingRingDark">Transparent</Color>
+    <Color x:Key="OnboardingProgressTrackLight">#E2E8F0</Color>
+    <Color x:Key="OnboardingProgressTrackDark">#3D2E24</Color>
+
+</ResourceDictionary>
