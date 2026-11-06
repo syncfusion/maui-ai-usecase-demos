@@ -183,7 +183,3 @@ Or open `SmartVehicleCare.slnx` in Visual Studio and deploy to your target platf
 - iOS
 - Windows
 - macOS (Mac Catalyst)
-
-## License
-
-The Smart Vehicle Care sample is provided by Syncfusion for demonstrative purposes. Syncfusion has no liability for any damage or consequence that may arise by the use or viewing of the Smart Vehicle Care sample. The Smart Vehicle Care sample is for demonstrative purposes and if you choose to use or access the sample you agree to not hold Syncfusion liable, in any form, for any damage that is related to use, accessing or otherwise viewing the Smart Vehicle Care sample. By accessing, viewing, or otherwise seeing the Smart Vehicle Care sample you acknowledge and agree Syncfusion's examples will not allow you to seek injunctive relief in any form for any claim related to the sample. If you do not agree to this, do not view, access, utilize or otherwise do anything with Syncfusion's Smart Vehicle Care sample.
