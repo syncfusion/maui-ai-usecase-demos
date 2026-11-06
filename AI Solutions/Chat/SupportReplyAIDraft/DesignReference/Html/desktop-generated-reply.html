@@ -278,53 +278,41 @@
 
 </div>
 <!-- 4. FULL-WIDTH EDITABLE REPLY COMPOSER (Fixed Bottom Section) -->
-<footer class="border-t border-slate-200 bg-white p-5 shadow-[0_-2px_10px_rgba(15,23,42,0.03)] shrink-0 z-20">
-<!-- Composer Top Bar -->
-<div class="flex items-center justify-between mb-2.5">
-<div class="flex items-center gap-2.5"><h3 class="text-sm font-semibold text-slate-900 leading-none">Reply</h3><span class="text-xs text-blue-700 font-medium bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>AI draft</span><span class="text-xs text-slate-500 font-normal">Review before sending</span></div>
+<div class="border-t border-slate-200 bg-white px-6 py-4 shrink-0 z-20 shadow-[0_-2px_10px_rgba(15,23,42,0.03)] flex flex-col gap-2.5">
+  <!-- Helper status & Quick pill actions -->
+  <div class="flex items-center justify-between">
+    <p class="text-xs text-slate-500 font-medium leading-none">AI-generated draft. Review and edit before sending.</p>
+    <div class="flex items-center gap-2">
+      <button type="button" class="px-3 py-1 text-xs rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer">
+        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+        <span class="">Regenerate</span>
+      </button>
+      <button type="button" class="px-3 py-1 text-xs rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer">
+        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        <span class="">Discard</span>
+      </button>
+    </div>
+  </div>
 
+  <!-- Continuous Native Chat Composer Container -->
+  <div class="rounded-2xl bg-white border border-slate-300 shadow-sm p-3 relative flex flex-col justify-between focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 transition-all" style="min-height: 104px;">
+    <textarea class="w-full text-sm text-slate-800 leading-relaxed font-normal bg-transparent resize-none outline-none font-body-md border-0 p-0 shadow-none focus:ring-0 focus:outline-none" rows="3" placeholder="Write your response...">Thanks for confirming that the renewal was successful. I understand that the application still shows the license as expired after restarting. Please share your order ID so we can review the renewal status and assist you further.</textarea>
+    <div class="flex items-center justify-end pt-1">
+      <button type="button" class="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm cursor-pointer transition-colors shrink-0" title="Send reply">
+        <svg class="w-4 h-4 translate-x-px" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M3.105 2.289a.75.75 0 00-.826.95l1.414 4.925A1.5 1.5 0 005.135 9.25h6.115a.75.75 0 010 1.5H5.135a1.5 1.5 0 00-1.442 1.086l-1.414 4.926a.75.75 0 00.826.95 28.896 28.896 0 0015.293-7.154.75.75 0 000-1.112A28.896 28.896 0 003.105 2.289z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
 </div>
-<!-- Editable Multiline Composer -->
-<div class="relative mb-3">
-<textarea class="w-full text-sm text-slate-800 leading-relaxed font-normal p-3.5 rounded-lg border border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 bg-white resize-none outline-none transition-shadow shadow-xs font-body-md" placeholder="Write your response..." rows="4">Thanks for confirming that the renewal was successful. I understand that the application still shows the license as expired after restarting. Please share your order ID so we can review the renewal status and assist you further.</textarea>
 </div>
-<!-- Metadata & Action Footer -->
-<div class="flex items-center justify-between pt-1">
-<!-- Sources and Context -->
-<div class="flex items-center gap-3">
 
 
-<div class="text-xs text-slate-600 bg-slate-50 px-2.5 py-1 rounded border border-slate-200 inline-flex items-center gap-1.5">
-<svg class="w-3.5 h-3.5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-<path clip-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" fill-rule="evenodd"></path>
-</svg>
-<span class="">Requested information: <strong class="font-medium text-slate-700">Order ID</strong></span>
-</div>
-</div>
-<!-- Action Buttons -->
-<div class="flex items-center gap-2">
-<!-- Discard Action -->
-<button class="text-xs font-medium text-slate-600 hover:text-slate-800 px-3.5 py-1.5 rounded border border-slate-200 hover:bg-slate-50 transition-colors">
-            Discard
-          </button>
-<!-- Regenerate Action -->
-<button class="text-xs font-medium text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 px-3.5 py-1.5 rounded shadow-xs flex items-center gap-1.5 transition-colors">
-<svg class="w-3.5 h-3.5 text-slate-600" fill="currentColor" viewBox="0 0 16 16">
-<path d="M8 0.5L9.6 5.4L14.5 7L9.6 8.6L8 13.5L6.4 8.6L1.5 7L6.4 5.4L8 0.5Z"></path>
-</svg>
-<span class="">Regenerate</span>
-</button>
-<!-- Send Action (Primary) -->
-<button class="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium text-xs rounded shadow-sm flex items-center gap-1.5 transition-colors px-6 py-2.5">
-<span class="">Send</span>
-<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-<path d="M3.105 2.289a.75.75 0 00-.826.95l1.414 4.925A1.5 1.5 0 005.135 9.25h6.115a.75.75 0 010 1.5H5.135a1.5 1.5 0 00-1.442 1.086l-1.414 4.926a.75.75 0 00.826.95 28.896 28.896 0 0015.293-7.154.75.75 0 000-1.112A28.896 28.896 0 003.105 2.289z"></path>
-</svg>
-</button>
-</div>
-</div>
-</footer>
-</div>
 
 
 

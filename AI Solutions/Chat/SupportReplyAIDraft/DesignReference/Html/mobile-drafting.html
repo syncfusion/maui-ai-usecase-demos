@@ -65,7 +65,7 @@ License still shows as expired after renewal
 </section>
 <!-- END: TopHeader -->
 <!-- BEGIN: ConversationHistory -->
-<section aria-label="Customer conversation transcript" class="flex-1 px-4 pt-3.5 pb-72 overflow-y-auto">
+<section aria-label="Customer conversation transcript" class="flex-1 px-4 pt-3.5 overflow-y-auto pb-5">
 <!-- Conversation section title -->
 <div class="mb-3">
 <div class="flex items-center gap-1.5 text-slate-800 text-[13px] font-bold">
@@ -140,52 +140,34 @@ License still shows as expired after renewal
             I restarted the application, but the expired-license message is still displayed. What should I do next?
           </div>
 <!-- In-progress Inline Indicator replaces Draft Reply button -->
-<div class="ml-auto mt-1 flex items-center gap-1.5 text-blue-600/70 text-xs font-semibold px-2 py-1 select-none">
-<svg class="animate-spin-custom w-3.5 h-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-<path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path>
-</svg>
-<span class="">Drafting reply...</span>
-</div>
+
 </div>
 </div>
 </section>
 <!-- END: ConversationHistory -->
 <!-- BEGIN: FixedReplyComposer -->
-<section aria-label="Reply Drafting Workspace" class="fixed bottom-0 w-full max-w-[390px] bg-white border-t border-slate-200 px-4 pt-3.5 pb-5 z-30 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
-<!-- Composer Top Bar -->
-<div class="flex items-center justify-between mb-2.5">
-<h3 class="text-sm font-bold text-slate-900">Reply</h3>
+<div class="fixed bottom-0 w-full max-w-[390px] bg-white/95 backdrop-blur border-t border-slate-200 z-30">
+  <!-- Compact drafting indicator row -->
+  <div class="flex items-center gap-2 px-4 pt-2.5 pb-1 text-slate-500 text-xs font-medium">
+
+
+  </div>
+  <!-- Compact Chat Composer Row -->
+  <div class="flex items-center gap-2 px-4 pb-3.5 pt-1.5">
+    <div class="flex-1 flex items-center bg-slate-100 border border-slate-200 rounded-full px-4 py-2.5 min-h-[48px]">
+      <input type="text" placeholder="Drafting reply..." disabled="" readonly="" class="w-full bg-transparent text-slate-400 text-sm font-normal border-none p-0 focus:ring-0 focus:outline-none cursor-not-allowed italic select-none">
+    </div>
+    <button type="button" disabled="" aria-label="Send reply" class="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 text-slate-300 flex items-center justify-center cursor-not-allowed select-none shrink-0">
+      <svg class="w-4 h-4 rotate-45 -mt-0.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </button>
+  </div>
 </div>
-<!-- Multiline Editor (Empty, Disabled, Showing Placeholder) -->
-<div class="relative w-full rounded-xl border border-slate-200 bg-slate-50/70 p-3 min-h-[96px] flex flex-col justify-start">
-<p class="text-[13px] text-slate-400 font-normal italic select-none">Preparing a reply...</p>
-</div>
-<!-- Mid-status Progress Bar: Finding Approved Knowledge -->
-<div class="mt-2.5 mb-3 flex items-center gap-2 text-slate-500 text-xs font-medium px-0.5">
-<svg class="animate-spin-custom w-3.5 h-3.5 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
-<path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path>
-</svg>
-<span class="text-slate-600">Reviewing the conversation...</span>
-</div>
-<!-- Action Buttons (Send Disabled, Discard Disabled, Regenerate Hidden) -->
-<div class="flex items-center justify-between gap-3 pt-1">
-<!-- Discard Button (Disabled) -->
-<button class="px-4 py-2.5 text-sm font-semibold text-slate-300 cursor-not-allowed select-none transition-colors" disabled="" type="button">
-          Discard
-        </button>
-<!-- Send Button (Disabled) -->
-<button class="flex-1 flex items-center justify-center gap-2 py-2.5 px-5 rounded-lg bg-blue-200 text-white text-sm font-semibold cursor-not-allowed opacity-80 select-none shadow-none" disabled="" type="button">
-<span class="">Send</span>
-<svg class="w-4 h-4 rotate-45 -mt-0.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-<path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</button>
-</div>
-</section>
 <!-- END: FixedReplyComposer -->
 </main>
+
+
 
 
 
