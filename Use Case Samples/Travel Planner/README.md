@@ -1,115 +1,154 @@
-# .NET MAUI Travel Planner (Syncfusion Showcase)
+# Travel Planner
 
-A .NET MAUI reference app that demonstrates how to build a conversational trip-planning experience with the **Syncfusion® .NET MAUI AIAssistView** control. The app drives the user through a guided multi-step conversation (destination, dates, trip type, interests), calls Azure OpenAI to generate a structured itinerary, and renders the results inside Syncfusion lists, ratings, calendar and maps.
+A .NET MAUI sample that uses a guided AI conversation to create a trip summary with places, hotels, food spots, ratings, and map locations.
 
-> Targeted at customers evaluating Syncfusion's MAUI suite — every value-bearing UI element in the sample is a Syncfusion control.
+## Overview
 
----
+Travel planning requires coordinating destination, dates, trip type, and interests. This sample guides travelers through those choices in a conversation and uses Azure OpenAI to generate a destination summary and recommendations. The result is displayed as categorized place lists and on a map. When AI configuration is absent or the response is unusable, the app displays clearly identified local sample itinerary data.
 
-## Controls demonstrated
+- **What it does:** Collects trip details and presents recommendations for top places, hotels, and food spots.
+- **Who it is for:** Users planning a trip and developers evaluating a conversational trip-planning experience in .NET MAUI.
+- **AI capability:** Azure OpenAI chat completions, prompted to return structured JSON recommendations.
+- **Outcome:** A consolidated trip summary and recommendation lists, with available location pins shown on a map.
 
-| Control                          | Used for                                                                |
-|----------------------------------|-------------------------------------------------------------------------|
-| `Syncfusion.Maui.AIAssistView`   | Guided conversation, suggestions, request/response items, custom editor |
-| `Syncfusion.Maui.Toolkit.BottomSheet` | Phone idiom floating chat surface                                  |
-| `Syncfusion.Maui.Toolkit.Chips`  | Interest filter (multi-select) and trip-type picker                     |
-| `Syncfusion.Maui.Calendar`       | Date-range picker for the trip                                          |
-| `Syncfusion.Maui.ListView`       | Top places / hotels / food-spot lists                                   |
-| `Syncfusion.Maui.Inputs.Rating`  | Place rating display                                                    |
-| `Syncfusion.Maui.Maps.MapTileLayer` | Main and summary maps with OpenStreetMap tiles and tap-to-pin     |
+## Key Features
 
-The AIAssistView showcases a custom **`EditorViewTemplate`**, a custom **`SuggestionTemplate`**, a custom **`ResponseLoaderView` ControlTemplate** and a custom **Syncfusion theme dictionary** (see `App.xaml`).
+- Guided conversation for destination, future travel dates, trip type, and interests.
+- Calendar date selection and chip-based trip-type and interest selection.
+- Azure OpenAI-generated destination summary and place, hotel, and food recommendations.
+- Recommendation cards with ratings and a map; local sample itinerary data keeps the interface demonstrable without a usable AI response.
 
----
+## AI Flow
+
+1. The user starts the conversation and provides a destination, dates, trip type, and interests.
+2. `TravelPlannerViewModel` prepares a `TripInput` from the collected values.
+3. `OpenAIServices` sends a chat-completions request to the configured Azure OpenAI deployment, asking for structured itinerary JSON.
+4. The service parses the response into a `TripRecommendation` containing the summary and recommendation lists.
+5. The ViewModel updates the bound summary and lists; the page renders cards and map locations when coordinates are available.
+6. If credentials are missing, the request fails, or a recommendation category is empty, the ViewModel uses local sample itinerary data and labels it as sample data.
+
+## Controls Used
+
+- `SfAIAssistView` - presents the guided conversation, request/response items, suggestions, and custom editor.
+- `SfBottomSheet` - hosts the floating conversation surface on phone layouts.
+- `SfChip` / `SfChipGroup` - presents trip-type suggestions and multi-select interests.
+- `SfCalendar` - selects the trip date range.
+- `SfListView` - displays top places, hotels, and food spots.
+- `SfRating` - displays recommendation ratings.
+- `SfMaps` (`MapTileLayer`) - displays maps and available recommendation location pins using OpenStreetMap tiles.
+
+## Architecture
+
+- **View:** `MainPage.xaml` and `MainPage.xaml.cs` provide the phone and larger-screen layouts, conversation surface, recommendation panels, and map.
+- **ViewModel:** `TravelPlannerViewModel` manages conversation state, user input, AI requests, local fallback data, and bound recommendation state.
+- **AI service:** `OpenAIServices` calls Azure OpenAI and parses recommendation responses.
+- **Models:** `TripInput`, `PlaceCard`, and `TripRecommendation` represent trip input and results; `MapMarkerLabel` supports map marker labels.
+- **Supporting UI and services:** XAML converters, `DotAnimationBehavior`, and platform keyboard services support presentation and input behavior.
+- **Startup:** `MauiProgram` registers the service, ViewModel, and page and configures Syncfusion controls; `App` registers the Syncfusion license.
 
 ## Prerequisites
 
-- .NET 10 SDK (10.0.401 or newer preview)
-- MAUI workload: `dotnet workload install maui-android maui-ios maui-maccatalyst`
-- An **Azure OpenAI** resource (chat deployment is sufficient; image generation is optional)
+- .NET 10 SDK (the existing sample README specifies 10.0.401 or newer preview).
+- MAUI workload for the target platform. The original sample setup specifies `dotnet workload install maui-android maui-ios maui-maccatalyst`. The project targets Android, iOS, and Mac Catalyst; Windows is added when building on Windows.
+- Visual Studio is not specified as a requirement by the project.
+- Syncfusion MAUI packages are referenced in `TravelPlanner.csproj`; a Syncfusion license key is read from `SYNCFUSION_LICENSE_KEY`.
+- An Azure OpenAI resource and chat deployment are needed for live AI recommendations. Without usable endpoint and key configuration, local sample data is used.
 
----
+## AI Configuration
 
-## AI / API setup
+`OpenAIServices` reads its Azure OpenAI settings from environment variables at application startup:
 
-Configure the following environment variables **before** running the sample. The app reads them on startup. If credentials are missing or the Azure OpenAI request fails or returns incomplete itinerary data, the app shows clearly labeled sample itinerary details instead.
+| Environment variable | Requirement | Default / purpose |
+| --- | --- | --- |
+| `AZURE_OPENAI_ENDPOINT` | Required for live AI | Azure OpenAI resource endpoint; trailing slash is trimmed. |
+| `AZURE_OPENAI_KEY` | Required for live AI | Azure OpenAI API key. |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT` | Optional | Defaults to `gpt-4o-mini`. |
+| `AZURE_OPENAI_API_VERSION` | Optional | Defaults to `2024-08-01-preview`. |
 
-| Variable                       | Required | Example                                            | Notes                                            |
-|--------------------------------|----------|----------------------------------------------------|--------------------------------------------------|
-| `AZURE_OPENAI_ENDPOINT`        | Yes*     | `https://YOUR-RESOURCE.openai.azure.com`           | Trimmed of trailing slash                        |
-| `AZURE_OPENAI_KEY`             | Yes*     | `…`                                                | Read by `OpenAIServices`                         |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT` | No       | `gpt-4o-mini`                                      | Defaults to `gpt-4o-mini`                        |
-| `AZURE_OPENAI_API_VERSION`     | No       | `2024-08-01-preview`                               | Defaults to `2024-08-01-preview`                 |
+The application sends the destination, dates, trip type, and selected interests to the configured service. The prompt requests a summary and structured lists of places, hotels, and food spots. Place images use the local `image_not_available.png` asset; the sample does not fetch images from third-party services.
 
-Place images use the local `image_not_available.png` placeholder. The app does not fetch images from third-party services.
+## Default Behavior
 
-\* When `AZURE_OPENAI_ENDPOINT` / `AZURE_OPENAI_KEY` are unset (or still `YOUR_AZURE_OPENAI_*`) the sample still builds and runs — the trip plan is generated from local mock data so you can preview the UI without a deployment.
+The sample uses a real Azure OpenAI service when the endpoint and key are configured. Otherwise, or when the request fails or any recommendation category is empty, it creates a local sample itinerary. Sample data is labeled in the conversation and is not represented as AI-generated or verified destination information. There is no separate offline AI model.
 
-Example (PowerShell):
+## Environment Variables / Secrets
 
-```powershell
-$env:AZURE_OPENAI_ENDPOINT = "https://YOUR-RESOURCE.openai.azure.com"
-$env:AZURE_OPENAI_KEY      = "..."
-$env:AZURE_OPENAI_CHAT_DEPLOYMENT = "gpt-4o-mini"
-```
+- `AZURE_OPENAI_ENDPOINT`
+- `AZURE_OPENAI_KEY`
+- `AZURE_OPENAI_CHAT_DEPLOYMENT` (optional; defaults to `gpt-4o-mini`)
+- `AZURE_OPENAI_API_VERSION` (optional; defaults to `2024-08-01-preview`)
+- `SYNCFUSION_LICENSE_KEY` (Syncfusion license registration)
 
-Example (bash):
+### Notes
 
-```bash
-export AZURE_OPENAI_ENDPOINT="https://YOUR-RESOURCE.openai.azure.com"
-export AZURE_OPENAI_KEY="..."
-export AZURE_OPENAI_CHAT_DEPLOYMENT="gpt-4o-mini"
-```
-
-The Syncfusion license key is **not** committed to this repository. Set the `SYNCFUSION_LICENSE_KEY` environment variable before running the sample. As a fallback during development, you can paste the key directly into `TravelPlanner/App.xaml.cs` (see the `// TODO` comment there) but never commit a real key to source.
+- Do not commit API keys or Syncfusion license keys to source control.
+- Supply credentials through environment variables or an appropriate secrets store.
+- If Azure OpenAI endpoint or key configuration is missing or contains placeholder values, the app uses local sample itinerary data. AI request failures or incomplete recommendation categories also cause local sample data to be used.
 
 ## Run
 
-```bash
-# Restore packages
+Restore and run from the `Use Case Samples/Travel Planner` directory:
+
+```sh
 dotnet restore TravelPlanner.slnx
 
-# Build & run for a specific target
+# Android
 dotnet build TravelPlanner/TravelPlanner.csproj -t:Run -f net10.0-android
+
+# iOS
 dotnet build TravelPlanner/TravelPlanner.csproj -t:Run -f net10.0-ios
+
+# Mac Catalyst
 dotnet build TravelPlanner/TravelPlanner.csproj -t:Run -f net10.0-maccatalyst
-# (Windows — run from a Windows host)
+
+# Windows (from a Windows host)
 dotnet build TravelPlanner/TravelPlanner.csproj -t:Run -f net10.0-windows10.0.19041.0
 ```
 
-When the app starts:
+Start the trip conversation and follow its prompts. Once recommendations are generated, open the trip details drawer to review the summary, lists, and map.
 
-1. Tap **Build trip with AI** (phone) or use the right-hand **Trip Assistant** panel (desktop/tablet).
-2. Answer the bot's guided questions: **destination → dates → trip type → interests**.
-3. The trip is built and the **right drawer** opens to show the consolidated summary (top places, hotels, food spots) with map pins.
+## Output
 
----
+The UI presents a guided trip-planning conversation alongside a map and a consolidated trip-details view. The details include a destination summary, top-place, hotel, and food-spot lists with ratings, and available location pins.
 
-## Project layout
+![Travel Planner UI](TravelPlanner/Resources/Images/Travel-Planner.gif)
 
-```
-TravelPlanner/
-├── App.xaml(.cs)                 # App-level resources, custom Syncfusion theme dictionary, license key
-├── AppShell.xaml(.cs)            # Shell host
-├── MainPage.xaml(.cs)            # View: phone (BottomSheet) + desktop (right panel) idiom variants
-├── MauiProgram.cs                # DI: OpenAIServices (singleton), ViewModel + MainPage (transient)
-├── Converters/                   # XAML value converters
-├── Models/TripItem.cs            # TripInput, PlaceCard, TripRecommendation
-├── Models/MapMarkerLabel.cs      # BindableObject wrapping marker text for tooltips
-├── Services/OpenAIServices.cs    # Azure OpenAI client (env-var driven)
-├── Services/IKeyboardService.cs  # Keyboard visibility contract
-├── Platforms/Android/KeyboardService_Android.cs
-├── Platforms/iOS/KeyboardService_iOS.cs
-└── ViewModels/
-    └── TravelPlannerViewModel.cs # All conversation/business logic and commands
-```
+## Project Structure
 
-The ViewModel owns the conversation state machine, the `OpenAIServices` call, the suggestions, the calendar pending range, the interests picker state, and exposes `ICommand`s for every user action. `MainPage.xaml.cs` only handles pure view concerns (drawer animation, marker rendering, current-location permissions).
+- `TravelPlanner/` - MAUI application project.
+- `TravelPlanner/MainPage.xaml` and `MainPage.xaml.cs` - page layout and view behavior.
+- `TravelPlanner/ViewModels/` - conversation and presentation logic.
+- `TravelPlanner/Models/` - trip input, recommendation, and map marker data structures.
+- `TravelPlanner/Services/` - Azure OpenAI and platform keyboard services.
+- `TravelPlanner/Converters/` - XAML value converters.
+- `TravelPlanner/Resources/` - styles, images, fonts, app icon, and other assets.
+- `TravelPlanner/Platforms/` - platform-specific application and keyboard service files.
 
----
+## Troubleshooting
 
-## Notes for contributors
+**Issue: Azure OpenAI recommendations are not being generated**
+**Cause:** Endpoint/key configuration is missing, contains placeholder values, or the Azure OpenAI request failed.
+**Fix:** Check `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_KEY`, and the optional deployment and API version settings. The app uses local sample itinerary data when live recommendations cannot be used.
 
-- The conversation flow is implemented as a `switch` on `ConversationStep` in `TravelPlannerViewModel.HandleUserInputAsync`. To add a new step, add an enum value, handle the case, and add the corresponding `ICommand`.
-- The map uses OpenStreetMap tile servers — no key required for development, but please respect the [tile usage policy](https://operations.osmfoundation.org/policies/tiles/).
-- Mock data (`GenerateFallbackPlaces`) is used when the AI call fails or returns empty so the UI is always demonstrable.
+**Issue: Build or workload errors**
+**Cause:** The required .NET SDK or platform MAUI workload is unavailable, or the target platform is not supported by the current host.
+**Fix:** Use the .NET 10 SDK, install the MAUI workload required for the target, and build Windows targets from a Windows host.
+
+**Issue: Recommendations contain sample data or are incomplete**
+**Cause:** Azure OpenAI is unavailable or returned incomplete recommendation categories.
+**Fix:** Review the trip inputs and Azure OpenAI settings. The sample deliberately falls back to local sample data in this case.
+
+## Security and Privacy Notes
+
+- Do not hard-code or commit API keys or license keys.
+- Destination, dates, trip type, and interests are sent to Azure OpenAI when live AI is configured; avoid entering sensitive information.
+- The request contains the trip details used to generate recommendations.
+- Use an appropriate secure mechanism to provide credentials.
+- Map tiles are loaded from OpenStreetMap tile servers. Place images are local placeholders; the sample does not fetch recommendation images from third-party services.
+
+## Supported Platforms
+
+- Android
+- iOS
+- Mac Catalyst
+- Windows (target configured on Windows)
