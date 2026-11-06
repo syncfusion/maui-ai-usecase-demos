@@ -17,18 +17,20 @@ public partial class ProcessDiagramPage : ContentPage
 
         Loaded += OnLoaded;
         SizeChanged += OnSizeChanged;
-        DiagramSurface.Created += (_, __) => DiagramSurface.FitToPage();
+        DiagramSurface.Created += (_, __) => ScheduleFitToPage();
     }
 
     private void OnLoaded(object? sender, EventArgs e)
     {
         ApplyLayout(Width);
         ApplyCurrentDiagram();
+        ScheduleFitToPage();
     }
 
     private void OnSizeChanged(object? sender, EventArgs e)
     {
         ApplyLayout(Width);
+        ScheduleFitToPage();
     }
 
     private void OnProcessDescriptionTextChanged(object? sender, TextChangedEventArgs e)
@@ -61,6 +63,7 @@ public partial class ProcessDiagramPage : ContentPage
         if (e.PropertyName == nameof(ProcessDiagramViewModel.CurrentDiagram))
         {
             ApplyCurrentDiagram();
+            ScheduleFitToPage();
         }
     }
 
@@ -91,7 +94,23 @@ public partial class ProcessDiagramPage : ContentPage
             DiagramSurface.Connectors.Add(connector);
         }
 
-        Dispatcher.Dispatch(() => DiagramSurface.FitToPage());
+        ScheduleFitToPage();
+    }
+
+    private void ScheduleFitToPage()
+    {
+        if (viewModel.CurrentDiagram is null)
+        {
+            return;
+        }
+
+        _ = FitToPageAsync();
+    }
+
+    private async Task FitToPageAsync()
+    {
+        await Task.Delay(50);
+        DiagramSurface.FitToPage();
     }
 
     private void ApplyLayout(double width)
