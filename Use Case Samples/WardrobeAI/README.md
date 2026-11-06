@@ -164,7 +164,3 @@ The UI includes a dashboard with a daily outfit and weather, a closet gallery, a
 - iOS
 - Windows (when building on Windows)
 - Mac Catalyst (when building on macOS)
-
-## License
-
-Syncfusion controls are subject to the Syncfusion license. A free community license may be available to qualifying users. No separate project license is specified in the sample directory.

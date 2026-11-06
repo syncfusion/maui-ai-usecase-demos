@@ -152,7 +152,3 @@ The UI presents a guided trip-planning conversation alongside a map and a consol
 - iOS
 - Mac Catalyst
 - Windows (target configured on Windows)
-
-## License
-
-No repository license or vendor disclaimer specific to this sample was identified in the project files. The project references Syncfusion MAUI packages; refer to the applicable Syncfusion license terms for their use.

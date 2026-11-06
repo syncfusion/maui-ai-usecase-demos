@@ -155,7 +155,3 @@ The UI is an AI chat titled “AI Model Router”. It shows user queries and res
 - iOS (project adds this target outside Linux)
 - Windows (when building on Windows)
 - Mac Catalyst (project adds this target outside Linux)
-
-## License
-
-No project-specific license or Syncfusion license registration is specified in the sample files. Syncfusion packages are referenced by the project; review the applicable Syncfusion licensing terms for use of those packages.
