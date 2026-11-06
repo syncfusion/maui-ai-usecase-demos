@@ -29,9 +29,9 @@ Different queries may need different model capabilities. This sample uses a low-
 
 ## Controls Used
 
-- `SfAIAssistView` — provides the chat conversation, message composer, attachment picker, and voice input UI.
-- `SfMarkdownViewer` — renders the model response as Markdown.
-- MAUI `ActivityIndicator` — indicates that the request is being processed.
+- `SfAIAssistView` - provides the chat conversation, message composer, attachment picker, and voice input UI.
+- `SfMarkdownViewer` - renders the model response as Markdown.
+- MAUI `ActivityIndicator` - indicates that the request is being processed.
 
 ## Architecture
 
@@ -114,14 +114,14 @@ The UI is an AI chat titled “AI Model Router”. It shows user queries and res
 
 ## Project Structure
 
-- `LLM_Routing/MainPage.xaml` and `MainPage.xaml.cs` — chat UI and AssistView request handling.
-- `LLM_Routing/ViewModels/` — presentation and chat orchestration logic.
-- `LLM_Routing/Models/` — chat response data structure.
-- `LLM_Routing/Services/AzureOpenAIService.cs` — model classification and response generation.
-- `LLM_Routing/Services/CostCalculator.cs` — token-cost estimation and formatting.
-- `LLM_Routing/Services/AIAssistTemplateSelector.cs` — response template selection.
-- `LLM_Routing/Resources/` — app icon, fonts, splash, and styles.
-- `LLM_Routing/Platforms/` and `Converters/` — platform files and XAML converters.
+- `LLM_Routing/MainPage.xaml` and `MainPage.xaml.cs` - chat UI and AssistView request handling.
+- `LLM_Routing/ViewModels/` - presentation and chat orchestration logic.
+- `LLM_Routing/Models/` - chat response data structure.
+- `LLM_Routing/Services/AzureOpenAIService.cs` - model classification and response generation.
+- `LLM_Routing/Services/CostCalculator.cs` - token-cost estimation and formatting.
+- `LLM_Routing/Services/AIAssistTemplateSelector.cs` - response template selection.
+- `LLM_Routing/Resources/` - app icon, fonts, splash, and styles.
+- `LLM_Routing/Platforms/` and `Converters/` - platform files and XAML converters.
 
 ## Troubleshooting
 
@@ -155,7 +155,3 @@ The UI is an AI chat titled “AI Model Router”. It shows user queries and res
 - iOS (project adds this target outside Linux)
 - Windows (when building on Windows)
 - Mac Catalyst (project adds this target outside Linux)
-
-## License
-
-No project-specific license or Syncfusion license registration is specified in the sample files. Syncfusion packages are referenced by the project; review the applicable Syncfusion licensing terms for use of those packages.

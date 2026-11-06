@@ -29,15 +29,15 @@ WardrobeAI helps users organize clothing and choose outfits for an occasion and 
 
 ## Controls Used
 
-- `SfTabView` — provides the main mobile tab navigation.
-- `SfChipGroup` — selects clothing filters, clothing attributes, occasions, and style preferences.
-- `SfComboBox` — selects clothing attributes in the Add Clothing popup.
-- `SfDatePicker` — selects the date for outfit planning.
-- `SfRadialGauge` — visualizes outfit match and planner scores.
-- `SfRotator` — presents outfit and shopping product cards.
-- `SfPopup` — presents Add Clothing, Plan an Outfit, and Add Style dialogs.
-- `SfAccordion` — expands the shopping recommendation methodology.
-- `SfAvatarView` — displays user/avatar visuals on the dashboard, side rail, and profile.
+- `SfTabView` - provides the main mobile tab navigation.
+- `SfChipGroup` - selects clothing filters, clothing attributes, occasions, and style preferences.
+- `SfComboBox` - selects clothing attributes in the Add Clothing popup.
+- `SfDatePicker` - selects the date for outfit planning.
+- `SfRadialGauge` - visualizes outfit match and planner scores.
+- `SfRotator` - presents outfit and shopping product cards.
+- `SfPopup` - presents Add Clothing, Plan an Outfit, and Add Style dialogs.
+- `SfAccordion` - expands the shopping recommendation methodology.
+- `SfAvatarView` - displays user/avatar visuals on the dashboard, side rail, and profile.
 
 ## Architecture
 
@@ -123,14 +123,14 @@ The UI includes a dashboard with a daily outfit and weather, a closet gallery, a
 
 ## Project Structure
 
-- `WardrobeAI/Views/` — Dashboard, Closet, Outfit Planner, Shopping, Profile, and host UI pages.
-- `WardrobeAI/ViewModels/` — presentation logic for pages and hosts.
-- `WardrobeAI/Models/` and `WardrobeAI/Contracts/` — data structures.
-- `WardrobeAI/AI/` — Azure OpenAI services, options, prompts, and recommendation logic.
-- `WardrobeAI/Services/` — weather, user, wardrobe, budget, navigation, and related services.
-- `WardrobeAI/Data/` and `WardrobeAI/Repositories/` — SQLite/EF Core persistence.
-- `WardrobeAI/Resources/` — images, fonts, styles, and bundled assets.
-- `WardrobeAI/Platforms/` — platform-specific implementation.
+- `WardrobeAI/Views/` - Dashboard, Closet, Outfit Planner, Shopping, Profile, and host UI pages.
+- `WardrobeAI/ViewModels/` - presentation logic for pages and hosts.
+- `WardrobeAI/Models/` and `WardrobeAI/Contracts/` - data structures.
+- `WardrobeAI/AI/` - Azure OpenAI services, options, prompts, and recommendation logic.
+- `WardrobeAI/Services/` - weather, user, wardrobe, budget, navigation, and related services.
+- `WardrobeAI/Data/` and `WardrobeAI/Repositories/` - SQLite/EF Core persistence.
+- `WardrobeAI/Resources/` - images, fonts, styles, and bundled assets.
+- `WardrobeAI/Platforms/` - platform-specific implementation.
 
 ## Troubleshooting
 
@@ -164,7 +164,3 @@ The UI includes a dashboard with a daily outfit and weather, a closet gallery, a
 - iOS
 - Windows (when building on Windows)
 - Mac Catalyst (when building on macOS)
-
-## License
-
-Syncfusion controls are subject to the Syncfusion license. A free community license may be available to qualifying users. No separate project license is specified in the sample directory.

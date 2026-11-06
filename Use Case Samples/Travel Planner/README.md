@@ -29,13 +29,13 @@ Travel planning requires coordinating destination, dates, trip type, and interes
 
 ## Controls Used
 
-- `SfAIAssistView` — presents the guided conversation, request/response items, suggestions, and custom editor.
-- `SfBottomSheet` — hosts the floating conversation surface on phone layouts.
-- `SfChip` / `SfChipGroup` — presents trip-type suggestions and multi-select interests.
-- `SfCalendar` — selects the trip date range.
-- `SfListView` — displays top places, hotels, and food spots.
-- `SfRating` — displays recommendation ratings.
-- `SfMaps` (`MapTileLayer`) — displays maps and available recommendation location pins using OpenStreetMap tiles.
+- `SfAIAssistView` - presents the guided conversation, request/response items, suggestions, and custom editor.
+- `SfBottomSheet` - hosts the floating conversation surface on phone layouts.
+- `SfChip` / `SfChipGroup` - presents trip-type suggestions and multi-select interests.
+- `SfCalendar` - selects the trip date range.
+- `SfListView` - displays top places, hotels, and food spots.
+- `SfRating` - displays recommendation ratings.
+- `SfMaps` (`MapTileLayer`) - displays maps and available recommendation location pins using OpenStreetMap tiles.
 
 ## Architecture
 
@@ -115,14 +115,14 @@ The UI presents a guided trip-planning conversation alongside a map and a consol
 
 ## Project Structure
 
-- `TravelPlanner/` — MAUI application project.
-- `TravelPlanner/MainPage.xaml` and `MainPage.xaml.cs` — page layout and view behavior.
-- `TravelPlanner/ViewModels/` — conversation and presentation logic.
-- `TravelPlanner/Models/` — trip input, recommendation, and map marker data structures.
-- `TravelPlanner/Services/` — Azure OpenAI and platform keyboard services.
-- `TravelPlanner/Converters/` — XAML value converters.
-- `TravelPlanner/Resources/` — styles, images, fonts, app icon, and other assets.
-- `TravelPlanner/Platforms/` — platform-specific application and keyboard service files.
+- `TravelPlanner/` - MAUI application project.
+- `TravelPlanner/MainPage.xaml` and `MainPage.xaml.cs` - page layout and view behavior.
+- `TravelPlanner/ViewModels/` - conversation and presentation logic.
+- `TravelPlanner/Models/` - trip input, recommendation, and map marker data structures.
+- `TravelPlanner/Services/` - Azure OpenAI and platform keyboard services.
+- `TravelPlanner/Converters/` - XAML value converters.
+- `TravelPlanner/Resources/` - styles, images, fonts, app icon, and other assets.
+- `TravelPlanner/Platforms/` - platform-specific application and keyboard service files.
 
 ## Troubleshooting
 
@@ -152,7 +152,3 @@ The UI presents a guided trip-planning conversation alongside a map and a consol
 - iOS
 - Mac Catalyst
 - Windows (target configured on Windows)
-
-## License
-
-No repository license or vendor disclaimer specific to this sample was identified in the project files. The project references Syncfusion MAUI packages; refer to the applicable Syncfusion license terms for their use.
