@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			 x:Class="HomeInventoryManager.Views.WarrantyPage"
+			 x:Name="warrantyPage"
+			 xmlns:chart="clr-namespace:Syncfusion.Maui.Toolkit.Charts;assembly=Syncfusion.Maui.Toolkit"
+			 xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+			 xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+			 xmlns:behaviors="clr-namespace:HomeInventoryManager.Behaviors"
+			 xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
+			 xmlns:sfavatar="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+			 xmlns:shimmer="clr-namespace:Syncfusion.Maui.Shimmer;assembly=Syncfusion.Maui.Core"
+			 xmlns:chip="clr-namespace:Syncfusion.Maui.Toolkit.Chips;assembly=Syncfusion.Maui.Toolkit"
+			 Shell.NavBarIsVisible="False"
+			 xmlns:model="clr-namespace:HomeInventoryManager.Model"
+			 xmlns:controls="clr-namespace:HomeInventoryManager.Views"			 
+			 BackgroundColor="White">
+
+	<Grid RowDefinitions="{OnIdiom Default='*', Phone='*,72'}"
+		  ColumnDefinitions="{OnIdiom Default='200,*', Phone='*'}">
+
+		<!-- Shared sidebar with active-tab-aware nav rows. -->
+		<controls:AppSideBar Grid.Row="{OnIdiom Default=0, Phone=1}"
+							 Grid.Column="{OnIdiom Default='0', Phone='0'}"
+							 ActiveTab="Warranty" />
+
+		<ScrollView  Grid.Row="{OnIdiom Default=0, Phone=0}"
+					 Grid.Column="{OnIdiom Default='1', Phone='0'}">
+
+			<VerticalStackLayout Padding="{OnIdiom Default=20, Phone=8}"
+								 Spacing="20"
+								 MaximumWidthRequest="1200"
+								 WidthRequest="{OnIdiom Default=-1, Phone=-1}"
+								 HorizontalOptions="Center">
+
+				<!--<ActivityIndicator IsRunning="{Binding IsBusy}"
+								   IsVisible="{Binding IsBusy}"
+								   Color="{StaticResource CardBorder}" />-->
+
+				<!-- HEADER -->
+
+				<Grid ColumnDefinitions="56,*">
+
+					<Border WidthRequest="56"
+							HeightRequest="56"
+							StrokeShape="RoundRectangle 28"
+							Stroke="#E2E8F0"
+							StrokeThickness="2">
+						<sfavatar:SfAvatarView ContentType="Custom"
+											   ImageSource="profile.png"
+											   Stroke="#E2E8F0" />
+					</Border>
+
+					<Label Grid.Column="1"
+						   Text="Warranty Center"
+						   FontSize="22"
+						   FontAttributes="Bold"
+						   TextColor="#0D33B8"
+						   VerticalOptions="Center"
+						   Margin="12,0,0,0" />
+
+				</Grid>
+
+				<!-- AI INSIGHT -->
+
+				<Border BackgroundColor="White"
+						Stroke="{StaticResource CardBorder}"
+						StrokeThickness="0.6"
+						StrokeShape="RoundRectangle 16"
+						Padding="16"
+						behaviors:AnimateOnTap.IsEnabled="True">
+
+					<Grid ColumnDefinitions="40,*">
+
+						<Border WidthRequest="40"
+								HeightRequest="40"
+								BackgroundColor="Transparent"
+								StrokeThickness="0"
+								VerticalOptions="Start">
+
+							<sfavatar:SfAvatarView ContentType="Custom"
+												   AvatarSize="Medium"
+												   Background="Transparent"
+												   ImageSource="insite.png">
+							</sfavatar:SfAvatarView>
+
+						</Border>
+
+						<VerticalStackLayout Grid.Column="1"
+											 Margin="12,0,0,0"
+											 Spacing="6">
+							<Label Text="Which appliances are nearing end-of-life?"
+								   FontFamily="OpenSansSemibold"
+								   FontAttributes="Bold"
+								   FontSize="16"
+								   TextColor="{StaticResource TextPrimary}" />
+							<shimmer:SfShimmer IsVisible="{Binding IsBusy}"
+							                   HeightRequest="65"
+											   Type="CirclePersona">
+							</shimmer:SfShimmer>
+							<Label Text="{Binding TopRiskSummary}"
+								   FontSize="13"
+								   TextColor="{StaticResource TextSecondary}"
+								   LineBreakMode="WordWrap" />
+						</VerticalStackLayout>
+
+					</Grid>
+
+				</Border>
+
+				<!-- 2g. Lifecycle Analytics (Bento Grid) -->
+				<Label Text="Lifecycle Analytics"
+					   FontFamily="OpenSansSemibold"
+					   FontAttributes="Bold"
+					   FontSize="18"
+					   Margin="{OnIdiom Default='0,8,0,0', Phone='0,2,0,0'}"
+					   TextColor="{StaticResource TextPrimary}" />
+
+				<Grid ColumnDefinitions="{OnIdiom Phone='*', Default='*,*'}"
+					  RowDefinitions="{OnIdiom Phone='*,*', Default='*'}"
+					  ColumnSpacing="12">
+					<!-- Age Distribution - SfCartesianChart (ColumnSeries) -->
+					<Border Grid.Column="{OnIdiom Phone='0', Default='0'}"
+							Grid.Row="{OnIdiom Phone='0', Default='0'}"
+							StrokeShape="RoundRectangle 16"
+							BackgroundColor="{StaticResource Surface}"
+							Stroke="{StaticResource CardBorder}"
+							StrokeThickness="0.6"
+							Padding="14"
+							behaviors:AnimateOnTap.IsEnabled="True">
+						<VerticalStackLayout Spacing="6">
+							<Label Text="Age Distribution"
+								   FontFamily="OpenSansSemibold"
+								   FontAttributes="Bold"
+								   FontSize="14"
+								   TextColor="{StaticResource TextPrimary}" />
+							<!--<Label Text="Appliances grouped by age"
+								   FontSize="11"
+								   TextColor="{StaticResource TextSecondary}" />-->
+							<shimmer:SfShimmer IsVisible="{Binding IsBusy}"
+											   HeightRequest="240"
+											   Type="CirclePersona">
+							</shimmer:SfShimmer>
+							<chart:SfCartesianChart HeightRequest="240"
+													IsVisible="{Binding IsBusyData}"
+													Margin="0,10,0,0">
+								<chart:SfCartesianChart.XAxes>
+									<chart:CategoryAxis>
+										<chart:CategoryAxis.LabelStyle>
+											<chart:ChartAxisLabelStyle FontSize="10"
+																	   TextColor="{StaticResource TextSecondary}" />
+										</chart:CategoryAxis.LabelStyle>
+										<chart:CategoryAxis.MajorTickStyle>
+											<chart:ChartAxisTickStyle TickSize="0" />
+										</chart:CategoryAxis.MajorTickStyle>
+										<chart:CategoryAxis.MajorGridLineStyle>
+											<chart:ChartLineStyle StrokeWidth="0" />
+										</chart:CategoryAxis.MajorGridLineStyle>
+										<chart:CategoryAxis.AxisLineStyle>
+											<chart:ChartLineStyle StrokeWidth="0" />
+										</chart:CategoryAxis.AxisLineStyle>
+									</chart:CategoryAxis>
+								</chart:SfCartesianChart.XAxes>
+								<chart:SfCartesianChart.YAxes>
+									<chart:NumericalAxis MaximumLabels="4">
+										<chart:NumericalAxis.LabelStyle>
+											<chart:ChartAxisLabelStyle FontSize="10"
+																	   TextColor="{StaticResource TextSecondary}" />
+										</chart:NumericalAxis.LabelStyle>
+										<chart:NumericalAxis.MajorTickStyle>
+											<chart:ChartAxisTickStyle TickSize="0" />
+										</chart:NumericalAxis.MajorTickStyle>
+										<chart:NumericalAxis.MajorGridLineStyle>
+											<chart:ChartLineStyle StrokeWidth="0" />
+										</chart:NumericalAxis.MajorGridLineStyle>
+										<chart:NumericalAxis.AxisLineStyle>
+											<chart:ChartLineStyle StrokeWidth="0" />
+										</chart:NumericalAxis.AxisLineStyle>
+									</chart:NumericalAxis>
+								</chart:SfCartesianChart.YAxes>
+								<chart:ColumnSeries ItemsSource="{Binding AgeDistribution}"
+													XBindingPath="Bucket"
+													YBindingPath="Count"
+													Fill="{StaticResource PrimaryColorLight}"
+													CornerRadius="6,6,0,0" />
+							</chart:SfCartesianChart>
+						</VerticalStackLayout>
+					</Border>
+
+					<!-- Replacement Forecast - SfCircularChart (DoughnutSeries) -->
+					<Border Grid.Column="{OnIdiom Phone='0', Default='1'}"
+							Grid.Row="{OnIdiom Phone='1', Default='0'}"
+							StrokeShape="RoundRectangle 16"
+							Margin="{OnIdiom Default='0', Phone='0,12,0,0'}"
+							BackgroundColor="{StaticResource Surface}"
+							Stroke="{StaticResource Gray400}"
+							StrokeThickness="0.6"
+							Padding="14"
+							behaviors:AnimateOnTap.IsEnabled="True">
+						<VerticalStackLayout Spacing="6">
+							<Label Text="Asset Health Overview"
+								   FontFamily="OpenSansSemibold"
+								   FontAttributes="Bold"
+								   FontSize="14"
+								   TextColor="{StaticResource TextPrimary}" />
+							<Label Text="Appliances at risk by category"
+								   FontSize="11"
+								   TextColor="{StaticResource TextSecondary}"
+								   IsVisible="False" />
+							<shimmer:SfShimmer IsVisible="{Binding IsBusy}"
+											   HeightRequest="250"
+											   Type="CirclePersona">
+							</shimmer:SfShimmer>
+							<chart:SfCircularChart WidthRequest="{OnIdiom Default='480', Phone='300'}"
+												   IsVisible="{Binding IsBusyData}"
+												   HeightRequest="250"
+													   Margin="0,6,0,0"
+													   VerticalOptions="Start"
+													   HorizontalOptions="Start">
+									<chart:SfCircularChart.Resources>
+										<DataTemplate x:Key="legendTemplate">
+											<HorizontalStackLayout HorizontalOptions="Start"
+																   Spacing="12">
+
+												<Rectangle WidthRequest="12"
+														   HeightRequest="12"
+														   Margin="5"
+														   Fill="{Binding IconBrush}"
+														   HorizontalOptions="Start"
+														   VerticalOptions="Center" />
+
+												<Label Text="{Binding Text}"
+													   FontSize="13"
+													   Margin="5"
+													   VerticalOptions="Center"
+													   HorizontalOptions="Start"
+													   LineBreakMode="WordWrap" />
+
+											</HorizontalStackLayout>
+										</DataTemplate>
+									</chart:SfCircularChart.Resources>
+
+									<chart:SfCircularChart.Legend>
+										<chart:ChartLegend ItemTemplate="{StaticResource legendTemplate}"
+														   IsFloating="True"
+														   OffsetY="10"
+														   Placement="{OnIdiom Default='Right', Phone='Right'}" />
+									</chart:SfCircularChart.Legend>
+									<chart:SfCircularChart.Series>
+										<chart:DoughnutSeries ItemsSource="{Binding ForecastSlices}"
+															  XBindingPath="Category"
+															  YBindingPath="Count"
+															  Stroke="White"
+															  StrokeWidth="2"
+															  InnerRadius="0.65">
+											<chart:DoughnutSeries.CenterView>
+												<VerticalStackLayout Spacing="0"
+																	 HorizontalOptions="Start"
+																	 VerticalOptions="Start">
+													<Label Text="5"
+														   FontFamily="OpenSansSemibold"
+														   FontAttributes="Bold"
+														   FontSize="28"
+														   TextColor="{StaticResource TextPrimary}"
+														   HorizontalOptions="Center" />
+													<Label Text="This Year"
+														   FontSize="10"
+														   TextColor="{StaticResource TextSecondary}"
+														   HorizontalOptions="Center" />
+												</VerticalStackLayout>
+											</chart:DoughnutSeries.CenterView>
+										</chart:DoughnutSeries>
+									</chart:SfCircularChart.Series>
+								</chart:SfCircularChart>
+								<!-- KPI overlay in the doughnut center -->
+								<!--<VerticalStackLayout Spacing="0"
+												 HorizontalOptions="Center"
+												 VerticalOptions="Center"
+												 InputTransparent="True">
+								<Label Text="{Binding ForecastKpiValue}"
+									   FontFamily="OpenSansSemibold"
+									   FontAttributes="Bold"
+									   FontSize="28"
+									   TextColor="{StaticResource TextPrimary}"
+									   HorizontalOptions="Center" />
+								<Label Text="This Year"
+									   FontSize="10"
+									   TextColor="{StaticResource TextSecondary}"
+									   HorizontalOptions="Center" />
+							</VerticalStackLayout>-->
+							<!--<Grid Margin="0,8,0,0"
+							  ColumnDefinitions="*,*,*,*"
+							  ColumnSpacing="4">
+							<VerticalStackLayout Grid.Column="0"
+												 Spacing="2"
+												 HorizontalOptions="Center">
+								<BoxView Color="#16A34A"
+										 WidthRequest="10"
+										 HeightRequest="10"
+										 CornerRadius="5"
+										 HorizontalOptions="Center" />
+								<Label Text="Healthy"
+									   FontSize="9"
+									   TextColor="{StaticResource TextSecondary}"
+									   HorizontalOptions="Center" />
+							</VerticalStackLayout>
+							<VerticalStackLayout Grid.Column="1"
+												 Spacing="2"
+												 HorizontalOptions="Center">
+								<BoxView Color="#0EA5E9"
+										 WidthRequest="10"
+										 HeightRequest="10"
+										 CornerRadius="5"
+										 HorizontalOptions="Center" />
+								<Label Text="Monitor"
+									   FontSize="9"
+									   TextColor="{StaticResource TextSecondary}"
+									   HorizontalOptions="Center" />
+							</VerticalStackLayout>
+							<VerticalStackLayout Grid.Column="2"
+												 Spacing="2"
+												 HorizontalOptions="Center">
+								<BoxView Color="#F59E0B"
+										 WidthRequest="10"
+										 HeightRequest="10"
+										 CornerRadius="5"
+										 HorizontalOptions="Center" />
+								<Label Text="Attention"
+									   FontSize="9"
+									   TextColor="{StaticResource TextSecondary}"
+									   HorizontalOptions="Center" />
+							</VerticalStackLayout>
+							<VerticalStackLayout Grid.Column="3"
+												 Spacing="2"
+												 HorizontalOptions="Center">
+								<BoxView Color="#DC2626"
+										 WidthRequest="10"
+										 HeightRequest="10"
+										 CornerRadius="5"
+										 HorizontalOptions="Center" />
+								<Label Text="High Risk"
+									   FontSize="9"
+									   TextColor="{StaticResource TextSecondary}"
+									   HorizontalOptions="Center" />
+							</VerticalStackLayout>
+						</Grid>-->
+						</VerticalStackLayout>
+					</Border>
+				</Grid>
+
+				<!-- ALL WARRANTIES HEADER -->
+
+				<Grid ColumnDefinitions="*"
+					  Margin="0,8,0,0">
+
+					<Label Text="Warranties"
+						   FontSize="22"
+						   FontAttributes="Bold"
+						   TextColor="#0F172A"
+						   VerticalOptions="Center" />
+
+				</Grid>
+
+				<!-- 2d. SfChipGroup filter / legend -->
+				<chip:SfChipGroup x:Name="FilterChipGroup"
+								  ChipType="Choice"
+								  ChoiceMode="Single"
+								  ChipStrokeThickness="1"
+								  ChipCornerRadius="16"
+								  ChipPadding="{OnIdiom Default='4,6', Phone='2,4'}"
+								  SelectedChipBackground="#7633DA"
+								  ChipTextColor="{AppThemeBinding Light=#313032, Dark=#FFFFFF}"
+								  SelectedChipTextColor="{AppThemeBinding Light=#FFFFFF, Dark=#FFFFFF}"
+								  ChipTextSize="12"
+								  ItemsSource="{Binding FilterChips}"
+								  DisplayMemberPath="Label"
+								  SelectedItem="{Binding SelectedFilterChip, Mode=TwoWay}">
+					<chip:SfChipGroup.ChipLayout>
+						<FlexLayout JustifyContent="Start"
+									Wrap="Wrap"
+									Direction="Row" />
+					</chip:SfChipGroup.ChipLayout>
+				</chip:SfChipGroup>
+
+				<shimmer:SfShimmer IsVisible="{Binding IsBusy}"
+				WidthRequest="300"
+								   Type="Shopping">
+				</shimmer:SfShimmer>
+
+				<!-- 2f. Appliance list (filtered) -->
+				<listView:SfListView x:Name="ApplianceListView"
+									 ItemsSource="{Binding FilteredAppliances}"
+									 AutoFitMode="DynamicHeight"
+									 IsScrollingEnabled="False"
+									 SelectionMode="None"
+									 ItemSpacing="{OnIdiom Default=16, Phone=6}">
+					<listView:SfListView.ItemsLayout>
+						<listView:GridLayout SpanCount="{OnIdiom Default=3, Phone=1}" />
+					</listView:SfListView.ItemsLayout>
+					<listView:SfListView.ItemTemplate>
+						<DataTemplate x:DataType="model:ApplianceHealth">
+							<Border StrokeShape="RoundRectangle 16"
+									BackgroundColor="{StaticResource Surface}"
+									Stroke="{StaticResource CardBorder}"
+									StrokeThickness="0.6"
+									behaviors:AnimateOnTap.IsEnabled="True"
+									Padding="0">
+								<Grid RowDefinitions="Auto,Auto">
+									<!-- Image with status badge overlay -->
+									<Grid Grid.Row="0"
+										  HeightRequest="{OnIdiom Default=240, Phone=160}">
+										<Image Source="{Binding Image}"
+											   Aspect="AspectFill">
+										</Image>
+										<Border BackgroundColor="{Binding CategoryColor}"
+												StrokeShape="RoundRectangle 10"
+												StrokeThickness="0"
+												Padding="10,4"
+												HorizontalOptions="Start"
+												VerticalOptions="Start"
+												Margin="12">
+											<HorizontalStackLayout Spacing="4">
+												<Label Text="{Binding ShortStatusLabel}"
+													   TextColor="White"
+													   FontFamily="OpenSansSemibold"
+													   FontAttributes="Bold"
+													   FontSize="11"
+													   VerticalOptions="Center" />
+											</HorizontalStackLayout>
+										</Border>
+									</Grid>
+									<!-- Card body -->
+									<VerticalStackLayout Grid.Row="1"
+														 Padding="14"
+														 Spacing="8">
+										<Grid ColumnDefinitions="*,Auto">
+											<VerticalStackLayout Grid.Column="0"
+																 Spacing="2">
+												<Label Text="{Binding ProductName}"
+													   FontFamily="OpenSansSemibold"
+													   FontAttributes="Bold"
+													   FontSize="16"
+													   TextColor="{StaticResource TextPrimary}" />
+												<Label Text="{Binding LocationAndYear}"
+													   FontSize="12"
+													   TextColor="{StaticResource TextSecondary}" />
+											</VerticalStackLayout>
+											<Label Grid.Column="1"
+												   Text="{Binding HealthScore, StringFormat='{0}/100'}"
+												   FontFamily="OpenSansSemibold"
+												   FontAttributes="Bold"
+												   FontSize="16"
+												   TextColor="{Binding CategoryColor}"
+												   VerticalOptions="Center" />
+										</Grid>
+										<!-- 2x2 metric grid -->
+										<Grid ColumnDefinitions="*,*"
+											  RowDefinitions="Auto,Auto"
+											  ColumnSpacing="10"
+											  RowSpacing="10"
+											  Margin="0,6,0,0">
+											<Border Grid.Column="0"
+													Grid.Row="0"
+													StrokeShape="RoundRectangle 10"
+													BackgroundColor="{StaticResource SurfaceAlt}"
+													Stroke="{StaticResource Gray400}"
+													StrokeThickness="0.6"
+													Padding="10,8">
+												<VerticalStackLayout Spacing="2">
+													<Label Text="Age"
+														   FontSize="10"
+														   TextColor="{StaticResource TextSecondary}" />
+													<Label Text="{Binding AgeDisplay}"
+														   FontFamily="OpenSansSemibold"
+														   FontAttributes="Bold"
+														   FontSize="14"
+														   TextColor="{StaticResource TextPrimary}" />
+												</VerticalStackLayout>
+											</Border>
+											<Border Grid.Column="1"
+													Grid.Row="0"
+													StrokeShape="RoundRectangle 10"
+													BackgroundColor="{StaticResource SurfaceAlt}"
+													Stroke="{StaticResource Gray400}"
+													StrokeThickness="0.6"
+													Padding="10,8">
+												<VerticalStackLayout Spacing="2">
+													<Label Text="Expected Lifespan"
+														   FontSize="10"
+														   TextColor="{StaticResource TextSecondary}" />
+													<Label Text="{Binding ExpectedLifespanDisplay}"
+														   FontFamily="OpenSansSemibold"
+														   FontAttributes="Bold"
+														   FontSize="14"
+														   TextColor="{StaticResource TextPrimary}" />
+												</VerticalStackLayout>
+											</Border>
+											<Border Grid.Column="0"
+													Grid.Row="1"
+													StrokeShape="RoundRectangle 10"
+													BackgroundColor="{StaticResource SurfaceAlt}"
+													Stroke="{StaticResource Gray400}"
+													StrokeThickness="0.6"
+													Padding="10,8">
+												<VerticalStackLayout Spacing="2">
+													<Label Text="Remaining Life"
+														   FontSize="10"
+														   TextColor="{StaticResource TextSecondary}" />
+													<Label Text="{Binding RemainingLifeDisplay}"
+														   FontFamily="OpenSansSemibold"
+														   FontAttributes="Bold"
+														   FontSize="14"
+														   TextColor="{Binding CategoryColor}" />
+												</VerticalStackLayout>
+											</Border>
+											<Border Grid.Column="1"
+													Grid.Row="1"
+													StrokeShape="RoundRectangle 10"
+													BackgroundColor="{StaticResource SurfaceAlt}"
+													Stroke="{StaticResource Gray400}"
+													StrokeThickness="0.6"
+													Padding="10,8">
+												<VerticalStackLayout Spacing="2">
+													<Label Text="Brand"
+														   FontSize="10"
+														   TextColor="{StaticResource TextSecondary}" />
+													<Label Text="{Binding Brand}"
+														   FontFamily="OpenSansSemibold"
+														   FontAttributes="Bold"
+														   FontSize="14"
+														   TextColor="{StaticResource TextPrimary}" />
+												</VerticalStackLayout>
+											</Border>
+										</Grid>
+										<!-- Action / Recommendation callout -->
+										<Border StrokeShape="RoundRectangle 10"
+												BackgroundColor="{Binding CategoryBackground}"
+												Stroke="{Binding CategoryColor}"
+												StrokeThickness="0.6"
+												Padding="10,8"
+												Margin="0,4,0,0">
+											<HorizontalStackLayout Spacing="8">
+												<Image Source="settings.png"
+													   WidthRequest="18"
+													   HeightRequest="18"
+													   VerticalOptions="Center" />
+												<Label Text="{Binding Recommendation}"
+													   FontSize="12"
+													   TextColor="{StaticResource TextPrimary}"
+													   VerticalOptions="Center"
+													   LineBreakMode="WordWrap" />
+											</HorizontalStackLayout>
+										</Border>
+									</VerticalStackLayout>
+								</Grid>
+							</Border>
+						</DataTemplate>
+					</listView:SfListView.ItemTemplate>
+				</listView:SfListView>
+
+			</VerticalStackLayout>
+
+		</ScrollView>
+
+	</Grid>
+
+</ContentPage>

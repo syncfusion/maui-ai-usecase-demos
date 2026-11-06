@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			 xmlns:models="clr-namespace:HomeInventoryManager.Model"
+			 xmlns:converters="clr-namespace:HomeInventoryManager.Converters"
+			 x:Class="HomeInventoryManager.Views.AppSideBar"
+			 x:Name="Root">
+
+	<ContentView.Resources>
+		<ResourceDictionary>
+			<converters:TabBackgroundConverter x:Key="TabBackgroundConverter" />
+			<converters:TabTextColorConverter x:Key="TabTextColorConverter" />
+			<converters:TabIconConverter x:Key="TabIconConverter" />
+		</ResourceDictionary>
+	</ContentView.Resources>
+
+	<Border StrokeThickness="0"
+			BackgroundColor="{StaticResource Gray100}"
+			Padding="8">
+		<VerticalStackLayout>
+		
+			<Grid ColumnDefinitions="{OnIdiom Default='180', Phone='92,92,92,92'}"
+				  RowDefinitions="{OnIdiom Default='52,52,52,52', Phone='Auto'}"
+				  IsVisible="{OnIdiom Default='True', Phone='False'}"
+				  HorizontalOptions="Start">
+
+				<!-- Dashboard -->
+				<Border Grid.Column="{OnIdiom Default='0', Phone='0'}"
+						Grid.Row="{OnIdiom Default='0', Phone='0'}"
+						StrokeThickness="0"
+						Padding="12,8"
+						BackgroundColor="{Binding ActiveTab,
+										 Source={x:Reference Root},
+										 Converter={StaticResource TabBackgroundConverter},
+										 ConverterParameter=Dashboard}"
+						StrokeShape="RoundRectangle 18">
+
+					<Border.GestureRecognizers>
+						<TapGestureRecognizer Tapped="OnDashboardTapped" />
+					</Border.GestureRecognizers>
+
+					<HorizontalStackLayout HorizontalOptions="Start"
+					VerticalOptions="Center"
+										   Spacing="8">
+
+						<Image HeightRequest="20"
+							   WidthRequest="20"
+							   Source="{Binding ActiveTab,
+							Source={x:Reference Root},
+							Converter={StaticResource TabIconConverter},
+							ConverterParameter=Dashboard}" />
+
+						<Label Text="Dashboard"
+							   FontSize="12"
+							   HorizontalTextAlignment="Center"
+							   TextColor="{Binding ActiveTab,
+										   Source={x:Reference Root},
+										   Converter={StaticResource TabTextColorConverter},
+										   ConverterParameter=Dashboard}" />
+					</HorizontalStackLayout>
+
+				</Border>
+
+				<!-- Inventory -->
+				<Border Grid.Column="{OnIdiom Default='0', Phone='1'}"
+						Grid.Row="{OnIdiom Default='1', Phone='0'}"
+						StrokeThickness="0"
+						Padding="12,8"
+						BackgroundColor="{Binding ActiveTab,
+										 Source={x:Reference Root},
+										 Converter={StaticResource TabBackgroundConverter},
+										 ConverterParameter=Inventory}"
+						StrokeShape="RoundRectangle 18">
+
+					<Border.GestureRecognizers>
+						<TapGestureRecognizer Tapped="OnInventoryTapped" />
+					</Border.GestureRecognizers>
+
+					<HorizontalStackLayout HorizontalOptions="Start"
+										   VerticalOptions="Center"
+										   Spacing="8">
+
+						<Image HeightRequest="20"
+							   WidthRequest="20"
+							   Source="{Binding ActiveTab,
+							Source={x:Reference Root},
+							Converter={StaticResource TabIconConverter},
+							ConverterParameter=Inventory}" />
+
+						<Label Text="Inventory"
+							   FontSize="12"
+							   HorizontalTextAlignment="Center"
+							   TextColor="{Binding ActiveTab,
+										   Source={x:Reference Root},
+										   Converter={StaticResource TabTextColorConverter},
+										   ConverterParameter=Inventory}" />
+					</HorizontalStackLayout>
+
+				</Border>
+
+				<!-- Scan -->
+				<Border Grid.Column="{OnIdiom Default='0', Phone='2'}"
+						Grid.Row="{OnIdiom Default='2', Phone='0'}"
+						StrokeThickness="0"
+						Padding="12,8"
+						BackgroundColor="{Binding ActiveTab,
+							 Source={x:Reference Root},
+							 Converter={StaticResource TabBackgroundConverter},
+							 ConverterParameter=Scan}"
+						StrokeShape="RoundRectangle 18">
+
+					<Border.GestureRecognizers>
+						<TapGestureRecognizer Tapped="OnScanTapped" />
+					</Border.GestureRecognizers>
+
+					<HorizontalStackLayout HorizontalOptions="Start"
+										   VerticalOptions="Center"
+										   Spacing="8">
+
+						<Image HeightRequest="20"
+							   WidthRequest="20"
+							   Source="{Binding ActiveTab,
+							Source={x:Reference Root},
+							Converter={StaticResource TabIconConverter},
+							ConverterParameter=Scan}" />
+
+						<Label Text="Scan"
+							   FontSize="12"
+							   HorizontalTextAlignment="Center"
+							   TextColor="{Binding ActiveTab,
+							   Source={x:Reference Root},
+							   Converter={StaticResource TabTextColorConverter},
+							   ConverterParameter=Scan}" />
+					</HorizontalStackLayout>
+
+				</Border>
+
+				<!-- Warranty -->
+				<Border Grid.Column="{OnIdiom Default='0', Phone='3'}"
+						Grid.Row="{OnIdiom Default='3', Phone='0'}"
+						StrokeThickness="0"
+						Padding="12,8"
+						BackgroundColor="{Binding ActiveTab,
+							 Source={x:Reference Root},
+							 Converter={StaticResource TabBackgroundConverter},
+							 ConverterParameter=Warranty}"
+						StrokeShape="RoundRectangle 18">
+
+					<Border.GestureRecognizers>
+						<TapGestureRecognizer Tapped="OnWarrantyTapped" />
+					</Border.GestureRecognizers>
+
+					<HorizontalStackLayout HorizontalOptions="Start"
+					VerticalOptions="Center"
+										 Spacing="8">
+
+						<Image HeightRequest="20"
+							   WidthRequest="20"
+							   Source="{Binding ActiveTab,
+							Source={x:Reference Root},
+							Converter={StaticResource TabIconConverter},
+							ConverterParameter=Warranty}" />
+
+						<Label Text="Warranty"
+							   FontSize="12"
+							   HorizontalTextAlignment="Center"
+							   TextColor="{Binding ActiveTab,
+							   Source={x:Reference Root},
+							   Converter={StaticResource TabTextColorConverter},
+							   ConverterParameter=Warranty}" />
+					</HorizontalStackLayout>
+
+				</Border>
+			</Grid>
+
+			<Grid ColumnDefinitions="{OnIdiom Default='Auto', Phone='92,92,92,92'}"
+				  RowDefinitions="{OnIdiom Default='70,70,70,70', Phone='Auto'}"
+				  IsVisible="{OnIdiom Default='False', Phone='True'}"
+				  HorizontalOptions="Start">
+
+				<!-- Dashboard -->
+				<Border Grid.Column="{OnIdiom Default='0', Phone='0'}"
+						Grid.Row="{OnIdiom Default='0', Phone='0'}"
+						StrokeThickness="0"
+						Padding="12,8"
+						BackgroundColor="{Binding ActiveTab,
+								 Source={x:Reference Root},
+								 Converter={StaticResource TabBackgroundConverter},
+								 ConverterParameter=Dashboard}"
+						StrokeShape="RoundRectangle 18">
+
+					<Border.GestureRecognizers>
+						<TapGestureRecognizer Tapped="OnDashboardTapped" />
+					</Border.GestureRecognizers>
+
+					<VerticalStackLayout HorizontalOptions="Center"
+										 Spacing="2">
+
+						<Image HeightRequest="20"
+							   WidthRequest="20"
+							   Source="{Binding ActiveTab,
+					Source={x:Reference Root},
+					Converter={StaticResource TabIconConverter},
+					ConverterParameter=Dashboard}" />
+
+						<Label Text="Dashboard"
+							   FontSize="12"
+							   HorizontalTextAlignment="Center"
+							   TextColor="{Binding ActiveTab,
+								   Source={x:Reference Root},
+								   Converter={StaticResource TabTextColorConverter},
+								   ConverterParameter=Dashboard}" />
+					</VerticalStackLayout>
+
+				</Border>
+
+				<!-- Inventory -->
+				<Border Grid.Column="{OnIdiom Default='0', Phone='1'}"
+						Grid.Row="{OnIdiom Default='1', Phone='0'}"
+						StrokeThickness="0"
+						Padding="12,8"
+						BackgroundColor="{Binding ActiveTab,
+								 Source={x:Reference Root},
+								 Converter={StaticResource TabBackgroundConverter},
+								 ConverterParameter=Inventory}"
+						StrokeShape="RoundRectangle 18">
+
+					<Border.GestureRecognizers>
+						<TapGestureRecognizer Tapped="OnInventoryTapped" />
+					</Border.GestureRecognizers>
+
+					<VerticalStackLayout HorizontalOptions="Center"
+										 Spacing="2">
+
+						<Image HeightRequest="20"
+							   WidthRequest="20"
+							   Source="{Binding ActiveTab,
+					Source={x:Reference Root},
+					Converter={StaticResource TabIconConverter},
+					ConverterParameter=Inventory}" />
+
+						<Label Text="Inventory"
+							   FontSize="12"
+							   HorizontalTextAlignment="Center"
+							   TextColor="{Binding ActiveTab,
+								   Source={x:Reference Root},
+								   Converter={StaticResource TabTextColorConverter},
+								   ConverterParameter=Inventory}" />
+					</VerticalStackLayout>
+
+				</Border>
+
+				<!-- Scan -->
+				<Border Grid.Column="{OnIdiom Default='0', Phone='2'}"
+						Grid.Row="{OnIdiom Default='2', Phone='0'}"
+						StrokeThickness="0"
+						Padding="12,8"
+						BackgroundColor="{Binding ActiveTab,
+					 Source={x:Reference Root},
+					 Converter={StaticResource TabBackgroundConverter},
+					 ConverterParameter=Scan}"
+						StrokeShape="RoundRectangle 18">
+
+					<Border.GestureRecognizers>
+						<TapGestureRecognizer Tapped="OnScanTapped" />
+					</Border.GestureRecognizers>
+
+					<VerticalStackLayout HorizontalOptions="Center"
+										 Spacing="2">
+
+						<Image HeightRequest="20"
+							   WidthRequest="20"
+							   Source="{Binding ActiveTab,
+					Source={x:Reference Root},
+					Converter={StaticResource TabIconConverter},
+					ConverterParameter=Scan}" />
+
+						<Label Text="Scan"
+							   FontSize="12"
+							   HorizontalTextAlignment="Center"
+							   TextColor="{Binding ActiveTab,
+					   Source={x:Reference Root},
+					   Converter={StaticResource TabTextColorConverter},
+					   ConverterParameter=Scan}" />
+					</VerticalStackLayout>
+
+				</Border>
+
+				<!-- Warranty -->
+				<Border Grid.Column="{OnIdiom Default='0', Phone='3'}"
+						Grid.Row="{OnIdiom Default='3', Phone='0'}"
+						StrokeThickness="0"
+						Padding="12,8"
+						BackgroundColor="{Binding ActiveTab,
+					 Source={x:Reference Root},
+					 Converter={StaticResource TabBackgroundConverter},
+					 ConverterParameter=Warranty}"
+						StrokeShape="RoundRectangle 18">
+
+					<Border.GestureRecognizers>
+						<TapGestureRecognizer Tapped="OnWarrantyTapped" />
+					</Border.GestureRecognizers>
+
+					<VerticalStackLayout HorizontalOptions="Center"
+										 Spacing="2">
+
+						<Image HeightRequest="20"
+							   WidthRequest="20"
+							   Source="{Binding ActiveTab,
+					Source={x:Reference Root},
+					Converter={StaticResource TabIconConverter},
+					ConverterParameter=Warranty}" />
+
+						<Label Text="Warranty"
+							   FontSize="12"
+							   HorizontalTextAlignment="Center"
+							   TextColor="{Binding ActiveTab,
+					   Source={x:Reference Root},
+					   Converter={StaticResource TabTextColorConverter},
+					   ConverterParameter=Warranty}" />
+					</VerticalStackLayout>
+
+				</Border>
+			</Grid>
+
+		</VerticalStackLayout>
+	</Border>
+
+</ContentView>

@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HomeInventoryManager.Views.DashboardPage"
+             xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+			 xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+             xmlns:model="clr-namespace:HomeInventoryManager.Model"
+			 xmlns:behaviors="clr-namespace:HomeInventoryManager.Behaviors"
+			 xmlns:controls="clr-namespace:HomeInventoryManager.Views"
+			 Background="White"
+			 xmlns:sfavatar="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             Shell.NavBarIsVisible="False">
+
+	<!-- Resources -->
+	<Grid RowDefinitions="{OnIdiom Default='*', Phone='*,72'}"
+		  ColumnDefinitions="{OnIdiom Default='200,*', Phone='*'}">
+		<!-- Shared sidebar with active-tab-aware nav rows. -->
+		<controls:AppSideBar Grid.Row="{OnIdiom Default=0, Phone=1}"
+							 ActiveTab="Dashboard" />
+
+		<ScrollView Grid.Row="{OnIdiom Default=0, Phone=0}"
+					Grid.Column="{OnIdiom Default='1', Phone='0'}">
+			<VerticalStackLayout Padding="{OnIdiom Default=20, Phone=8}"
+								 Spacing="20"
+								 MaximumWidthRequest="1200">
+
+				<!-- Header: avatar + greeting + notification + scan -->
+				<Grid ColumnDefinitions="58,*"
+					  ColumnSpacing="12"
+					  Padding="0,4,0,0">
+
+					<Border WidthRequest="56"
+							HeightRequest="56"
+							StrokeShape="RoundRectangle 28"
+							Stroke="#E2E8F0"
+							StrokeThickness="2">
+						<sfavatar:SfAvatarView ContentType="Custom"
+											   ImageSource="profile.png"
+											   AvatarShape="Circle"
+											   AvatarSize="Medium" />
+					</Border>
+
+					<VerticalStackLayout Grid.Column="1"
+										 VerticalOptions="Center"
+										 Spacing="2">
+						<Label Text="{Binding Greeting}"
+							   FontFamily="OpenSansSemibold"
+							   FontAttributes="Bold"
+							   FontSize="20"
+							   TextColor="{StaticResource TextPrimary}" />
+						<Label Text="{Binding Today}"
+							   Style="{StaticResource SubtleLabelStyle}" />
+					</VerticalStackLayout>
+
+				</Grid>
+
+				<listView:SfListView ItemsSource="{Binding Summary}"
+									 SelectionMode="None"
+									 IsScrollingEnabled="False"
+									 ItemSpacing="{OnIdiom Default='12', Phone='6,4'}"
+									 AutoFitMode="DynamicHeight">
+
+					<listView:SfListView.ItemsLayout>
+						<listView:GridLayout SpanCount="{OnIdiom Default=4, Phone=2}" />
+					</listView:SfListView.ItemsLayout>
+
+					<listView:SfListView.ItemTemplate>
+
+						<DataTemplate>
+
+							<Border StrokeShape="RoundRectangle 16"
+									Padding="18"
+									Style="{StaticResource CardElevatedStyle}"
+									behaviors:AnimateOnTap.IsEnabled="True">
+
+								<Grid ColumnDefinitions="*,Auto"
+									  RowDefinitions="Auto,Auto"
+									  RowSpacing="{OnIdiom Default=6, Phone=2}"
+									  ColumnSpacing="12">
+
+									<Label Grid.Column="0"
+										   Grid.Row="0"
+										   Text="{Binding Value}"
+										   FontSize="36"
+										   FontAttributes="Bold"
+										   TextColor="{Binding ValueColor}" />
+
+									<Label Grid.Column="0"
+										   Grid.Row="1"
+										   Text="{Binding Label}"
+										   FontSize="13"
+										   TextColor="#475569" />
+
+									<Border Grid.Column="1"
+											Grid.Row="0"
+											Grid.RowSpan="2"
+											BackgroundColor="Transparent"
+											WidthRequest="30"
+											StrokeThickness="0"
+											HeightRequest="30"
+											VerticalOptions="Start">
+
+										<Image Source="{Binding Icon}"
+											   HorizontalOptions="Center"
+											   VerticalOptions="Center" />
+
+									</Border>
+								</Grid>
+							</Border>
+						</DataTemplate>
+					</listView:SfListView.ItemTemplate>
+				</listView:SfListView>
+
+				<!-- AI Advisor card -->
+				<Grid ColumnDefinitions="{OnIdiom Default='*,*', Phone='*'}"
+					  RowDefinitions="{OnIdiom Default='*', Phone='*,*'}"
+					  Padding="6"
+					  ColumnSpacing="12"
+					  RowSpacing="8">
+					<Border Style="{StaticResource CardElevatedStyle}"
+							Grid.Row="0"
+							Grid.Column="0">
+						<VerticalStackLayout Spacing="14">
+							<Grid ColumnDefinitions="48,*"
+								  ColumnSpacing="12">
+								<Border WidthRequest="42"
+										HeightRequest="45"
+										StrokeThickness="0"
+										BackgroundColor="{StaticResource Surface}"
+										StrokeShape="RoundRectangle 14">
+									<sfavatar:SfAvatarView ContentType="Custom"
+														   ImageSource="aibackground.png"
+														   Stroke="#E2E8F0" />
+								</Border>
+								<VerticalStackLayout Grid.Column="1"
+													 VerticalOptions="Center"
+													 Spacing="2">
+									<Label Text="Smart Insights Based on Your Inventory"
+										   FontFamily="OpenSansSemibold"
+										   FontAttributes="Bold"
+										   FontSize="18"
+										   TextColor="{StaticResource TextPrimary}" />
+								</VerticalStackLayout>
+							</Grid>
+
+							<listView:SfListView ItemsSource="{Binding Recommendations}"
+												 SelectionMode="None"
+												 Margin="12,0,0,0"
+												 IsScrollingEnabled="False"
+												 ItemSpacing="8"
+												 AutoFitMode="DynamicHeight">
+								<listView:SfListView.ItemTemplate>
+									<DataTemplate>
+										<Grid ColumnDefinitions="Auto,*"
+											  ColumnSpacing="10"
+											  Padding="0,2">
+											<Image Source="{Binding Icon}"
+												   WidthRequest="18"
+												   HeightRequest="18"
+												   VerticalOptions="Center" />
+											<Label Grid.Column="1"
+												   Text="{Binding Message}"
+												   TextColor="{StaticResource TextPrimary}"
+												   FontSize="14"
+												   VerticalOptions="Center" />
+										</Grid>
+									</DataTemplate>
+								</listView:SfListView.ItemTemplate>
+							</listView:SfListView>
+
+							<buttons:SfButton Text="Open Warranty"
+											  WidthRequest="{OnIdiom Default='300', Phone='200'}"
+											  behaviors:AnimateOnTap.IsEnabled="True"
+											  Style="{StaticResource FormsButtonStyle}"
+											  Clicked="OpenAdvisor_Clicked" />
+						</VerticalStackLayout>
+					</Border>
+
+					<!-- Analytics chart -->
+					<Border Style="{StaticResource CardElevatedStyle}"
+							Margin="{OnIdiom Default='0', Phone='0,6,0,0'}"
+							Grid.Row="{OnIdiom Default='0', Phone='1'}"
+							Grid.Column="{OnIdiom Default='1', Phone='0'}">
+						<VerticalStackLayout Spacing="8"
+											 HorizontalOptions="Start">
+							<Label Text="Household Value Analytics"
+								   FontFamily="OpenSansSemibold"
+								   FontAttributes="Bold"
+								   Padding="0,0,0,8"
+								   FontSize="18"
+								   TextColor="{StaticResource TextPrimary}" />
+							<!--<Grid  ColumnDefinitions="{OnIdiom Default='*,*', Phone='*'}"
+							   RowDefinitions="{OnIdiom Default='*', Phone='*,*'}"
+							   HorizontalOptions="Center">-->
+
+							<chart:SfCircularChart WidthRequest="{OnIdiom Default='520', Phone='300'}"
+							HeightRequest="210"
+							VerticalOptions="Start"							
+												   HorizontalOptions="Start">
+								<chart:PieSeries ItemsSource="{Binding Analytics}"
+												 XBindingPath="Category"
+												 YBindingPath="Value"
+												 Radius="{OnIdiom Default='0.9', Phone='0.75'}"
+												 Stroke="White"
+												 StrokeWidth="2"
+												 EnableTooltip="True">
+
+								</chart:PieSeries>
+
+								<chart:SfCircularChart.Resources>
+									<DataTemplate x:Key="legendTemplate">
+										<HorizontalStackLayout HorizontalOptions="Start"
+															   Spacing="12">
+
+											<Rectangle WidthRequest="12"
+													   HeightRequest="12"
+													   Margin="5"
+													   Fill="{Binding IconBrush}"
+													   HorizontalOptions="Start"
+													   VerticalOptions="Center" />
+
+											<Label Text="{Binding Text}"
+												   FontSize="13"
+												   Margin="5"
+												   VerticalOptions="Center"
+												   HorizontalOptions="Start"
+												   LineBreakMode="WordWrap" />
+
+										</HorizontalStackLayout>
+									</DataTemplate>
+								</chart:SfCircularChart.Resources>
+								<chart:SfCircularChart.Legend>
+									<chart:ChartLegend ItemTemplate="{StaticResource legendTemplate}"
+													   IsFloating="True"
+													   OffsetY="10"
+													   Placement="{OnIdiom Default='Right', Phone='Right'}" />
+								</chart:SfCircularChart.Legend>
+							</chart:SfCircularChart>
+
+							<!-- Chart legend (dot + label) -->
+							<!--<listView:SfListView Grid.Row="{OnIdiom Default='0', Phone='1'}"
+												 Grid.Column="{OnIdiom Default='1', Phone='0'}"
+												 ItemsSource="{Binding Analytics}"
+												 SelectionMode="None"
+												 IsScrollingEnabled="False"
+												 ItemSpacing="10"
+												 AutoFitMode="DynamicHeight"
+												 HorizontalOptions="{OnIdiom Default='Center', Phone='Start'}"
+												 VerticalOptions="Center">
+								<listView:SfListView.ItemsLayout>
+									<listView:GridLayout SpanCount="{OnIdiom Default=1, Phone=2}" />
+								</listView:SfListView.ItemsLayout>
+								<listView:SfListView.ItemTemplate>
+									<DataTemplate>
+										<HorizontalStackLayout Spacing="10">
+											<BoxView WidthRequest="10"
+													 HeightRequest="10"
+													 CornerRadius="5"
+													 VerticalOptions="Center"
+													 Margin="4,0,0,0"
+													 Color="{Binding SliceColor}" />
+											<Label Text="{Binding Category}"
+												   VerticalOptions="Center"
+												   FontSize="13"
+												   TextColor="{StaticResource TextPrimary}" />
+										</HorizontalStackLayout>
+									</DataTemplate>
+								</listView:SfListView.ItemTemplate>
+							</listView:SfListView>-->
+							<!--</Grid>-->
+						</VerticalStackLayout>
+					</Border>
+				</Grid>
+
+				<!-- Upcoming Actions -->
+				<Grid HeightRequest="30"
+					  ColumnDefinitions="*">
+					<Label Text="Upcoming Actions"
+						   Style="{StaticResource SectionTitleStyle}" />
+				</Grid>
+
+				<listView:SfListView ItemsSource="{Binding UpcomingActions}"
+									 SelectionMode="None"
+									 IsScrollingEnabled="False"
+									 ItemSpacing="6,12,6,12"									 
+									 AutoFitMode="DynamicHeight">
+					<listView:SfListView.ItemsLayout>
+						<listView:GridLayout SpanCount="{OnIdiom Default=2, Phone=1}" />
+					</listView:SfListView.ItemsLayout>
+					<listView:SfListView.ItemTemplate>
+						<DataTemplate>
+							<Border Style="{StaticResource CardElevatedStyle}"
+									behaviors:AnimateOnTap.IsEnabled="True">
+								<Grid ColumnDefinitions="100,*"
+									  ColumnSpacing="8">
+									<Border WidthRequest="85"
+											HeightRequest="85"
+											StrokeShape="RoundRectangle 14"
+											BackgroundColor="#F1F5F9"
+											Stroke="{StaticResource CardBorder}"
+											StrokeThickness="0.6">
+										<Image Source="{Binding Image}"
+											   Aspect="AspectFill" />
+									</Border>
+									<VerticalStackLayout Grid.Column="1"
+														 Spacing="6">
+										<Label Text="{Binding ProductName}"
+											   FontFamily="OpenSansSemibold"
+											   FontAttributes="Bold"
+											   FontSize="16"
+											   TextColor="{StaticResource TextPrimary}" />
+										<Label Text="{Binding Description}"
+											   Style="{StaticResource SubtleLabelStyle}" />
+										<Border Padding="10,4"
+												StrokeShape="RoundRectangle 999"
+												BackgroundColor="#EEF2FF"
+												Stroke="{StaticResource Primary}"
+												StrokeThickness="0.6"
+												Margin="0,6,0,0"
+												HorizontalOptions="Start">
+											<Label Text="{Binding ActionText}"
+												   FontSize="11"
+												   FontAttributes="Bold"
+												   TextColor="{StaticResource Primary}" />
+										</Border>
+									</VerticalStackLayout>
+								</Grid>
+							</Border>
+						</DataTemplate>
+					</listView:SfListView.ItemTemplate>
+				</listView:SfListView>
+
+			</VerticalStackLayout>
+		</ScrollView>
+
+	</Grid>
+
+</ContentPage>
