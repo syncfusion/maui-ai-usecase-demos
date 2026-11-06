@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:chat="clr-namespace:Syncfusion.Maui.Chat;assembly=Syncfusion.Maui.Chat"
+             xmlns:viewModels="clr-namespace:SupportReplyAIDraft.ViewModels"
+             x:Class="SupportReplyAIDraft.Views.SupportChatPage"
+             x:Name="RootPage"
+             x:DataType="viewModels:SupportChatViewModel"
+             Title="Support Reply AI Draft"
+             BackgroundColor="{StaticResource AppBackground}">
+    <Grid>
+        <Grid.Padding>
+            <OnIdiom x:TypeArguments="Thickness">
+                <OnIdiom.Phone>0</OnIdiom.Phone>
+                <OnIdiom.Tablet>16</OnIdiom.Tablet>
+                <OnIdiom.Desktop>24</OnIdiom.Desktop>
+                <OnIdiom.Default>16</OnIdiom.Default>
+            </OnIdiom>
+        </Grid.Padding>
+
+        <Border Stroke="{StaticResource BubbleBorderColor}"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 4"
+                BackgroundColor="{StaticResource SurfaceColor}"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand">
+            <Border.Shadow>
+                <Shadow Brush="#24000000"
+                        Offset="0,8"
+                        Radius="18"
+                        Opacity="0.12" />
+            </Border.Shadow>
+
+            <Grid RowDefinitions="Auto,1,Auto,1,Auto,1,*,1,Auto"
+                  BackgroundColor="{StaticResource SurfaceColor}">
+                <Grid Grid.Row="0"
+                      Padding="16,10"
+                      ColumnDefinitions="Auto,Auto,*"
+                      ColumnSpacing="14">
+                    <HorizontalStackLayout Spacing="6"
+                                          VerticalOptions="Center">
+                        <Border HeightRequest="10"
+                                WidthRequest="10"
+                                BackgroundColor="#CBD5E1"
+                                StrokeShape="RoundRectangle 999" />
+                        <Border HeightRequest="10"
+                                WidthRequest="10"
+                                BackgroundColor="#CBD5E1"
+                                StrokeShape="RoundRectangle 999" />
+                        <Border HeightRequest="10"
+                                WidthRequest="10"
+                                BackgroundColor="#CBD5E1"
+                                StrokeShape="RoundRectangle 999" />
+                    </HorizontalStackLayout>
+
+                    <BoxView Grid.Column="1"
+                             WidthRequest="1"
+                             HeightRequest="24"
+                             Color="{StaticResource BubbleBorderColor}"
+                             VerticalOptions="Center" />
+
+                    <VerticalStackLayout Grid.Column="2"
+                                         Spacing="0"
+                                         VerticalOptions="Center">
+                        <Label Text="Support Reply AI Draft"
+                               Style="{StaticResource PageTitleStyle}" />
+                        <Label Text="Customer support workspace"
+                               Style="{StaticResource PageSubtitleStyle}" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <BoxView Grid.Row="1"
+                         HeightRequest="1"
+                         Color="{StaticResource BubbleBorderColor}" />
+
+                <Grid Grid.Row="2"
+                      Padding="16,12"
+                      ColumnDefinitions="*,Auto"
+                      ColumnSpacing="16">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="SUBJECT"
+                               TextColor="#8A97B2"
+                               FontSize="11"
+                               CharacterSpacing="1.2" />
+                        <Label Text="License still shows as expired after renewal"
+                               TextColor="{StaticResource TextPrimaryColor}"
+                               FontSize="15"
+                               FontAttributes="Bold"
+                               LineBreakMode="TailTruncation" />
+                    </VerticalStackLayout>
+
+                    <HorizontalStackLayout Grid.Column="1"
+                                           Spacing="12"
+                                           VerticalOptions="Center"
+                                           HorizontalOptions="End">
+                        <HorizontalStackLayout Spacing="6"
+                                               VerticalOptions="Center">
+                            <Label Text="Case ID:"
+                                   Style="{StaticResource MessageTimeStyle}" />
+                            <Border BackgroundColor="#EDF3FF"
+                                    Stroke="#D4E2FF"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 2"
+                                    Padding="8,3">
+                                <Label Text="CS-28417"
+                                       TextColor="{StaticResource AccentColor}"
+                                       FontSize="12"
+                                       FontAttributes="Bold" />
+                            </Border>
+                        </HorizontalStackLayout>
+
+                        <BoxView WidthRequest="1"
+                                 HeightRequest="16"
+                                 Color="{StaticResource BubbleBorderColor}"
+                                 VerticalOptions="Center" />
+
+                        <HorizontalStackLayout Spacing="6"
+                                               VerticalOptions="Center">
+                            <Label Text="Customer:"
+                                   Style="{StaticResource MessageTimeStyle}" />
+                            <Label Text="Alex Morgan"
+                                   Style="{StaticResource MessageAuthorStyle}" />
+                        </HorizontalStackLayout>
+
+                        <BoxView WidthRequest="1"
+                                 HeightRequest="16"
+                                 Color="{StaticResource BubbleBorderColor}"
+                                 VerticalOptions="Center" />
+
+                        <HorizontalStackLayout Spacing="6"
+                                               VerticalOptions="Center">
+                            <Label Text="Status:"
+                                   Style="{StaticResource MessageTimeStyle}" />
+                            <Border BackgroundColor="#F3F5F9"
+                                    Stroke="#D5DBE8"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 2"
+                                    Padding="8,3">
+                                <Label Text="Open"
+                                       TextColor="{StaticResource TextPrimaryColor}"
+                                       FontSize="12"
+                                       FontAttributes="Bold" />
+                            </Border>
+                        </HorizontalStackLayout>
+                    </HorizontalStackLayout>
+                </Grid>
+
+                <BoxView Grid.Row="3"
+                         HeightRequest="1"
+                         Color="{StaticResource BubbleBorderColor}" />
+
+                <Grid Grid.Row="4"
+                      Padding="16,12,16,10">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Conversation"
+                               Style="{StaticResource SectionTitleStyle}" />
+                        <Label Text="Select a customer message to draft a grounded reply."
+                               Style="{StaticResource SectionSubtitleStyle}" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <BoxView Grid.Row="5"
+                         HeightRequest="1"
+                         Color="{StaticResource BubbleBorderColor}" />
+
+                <Grid Grid.Row="6"
+                      Padding="16,10,16,12"
+                      BackgroundColor="#F7F9FC">
+                    <chat:SfChat x:Name="ConversationChat"
+                                 Messages="{Binding Messages}"
+                                 CurrentUser="{Binding CurrentUser}"
+                                 ShowMessageInputView="False"
+                                 VerticalOptions="FillAndExpand"
+                                 HorizontalOptions="FillAndExpand"
+                                 BackgroundColor="Transparent"
+                                 Margin="0" />
+                </Grid>
+
+                <BoxView Grid.Row="7"
+                         HeightRequest="1"
+                         Color="{StaticResource BubbleBorderColor}" />
+
+                <Grid Grid.Row="8"
+                      Padding="16,14,16,16"
+                      RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+                      RowSpacing="10"
+                      BackgroundColor="{StaticResource SurfaceColor}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="Reply"
+                                   Style="{StaticResource SectionTitleStyle}" />
+                            <Label Text="Review before sending"
+                                   IsVisible="{Binding HasValidatedDraft}"
+                                   Style="{StaticResource SectionSubtitleStyle}" />
+                        </VerticalStackLayout>
+
+                        <Border Grid.Column="1"
+                                IsVisible="{Binding HasValidatedDraft}"
+                                VerticalOptions="Start"
+                                Style="{StaticResource SelectedBadgeStyle}">
+                            <Label Text="AI draft"
+                                   Style="{StaticResource BadgeTextStyle}" />
+                        </Border>
+                    </Grid>
+
+                    <Border Grid.Row="1"
+                            IsVisible="{Binding ShowStatus}"
+                            Style="{StaticResource ErrorBannerStyle}">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <Label Text="!"
+                                   Style="{StaticResource ErrorIconStyle}" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="{Binding StatusTitle}"
+                                       Style="{StaticResource ErrorTitleStyle}" />
+                                <Label Text="{Binding StatusMessage}"
+                                       Style="{StaticResource ErrorMessageStyle}" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="2"
+                                    Text="Retry"
+                                    Command="{Binding RetryCommand}"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Padding="14,0"
+                                    HeightRequest="34"
+                                    VerticalOptions="Start" />
+                        </Grid>
+                    </Border>
+
+                    <VerticalStackLayout Grid.Row="2"
+                                         Spacing="8"
+                                         IsVisible="{Binding ShowRequestedInformation}">
+                        <Label Text="Requested information"
+                               Style="{StaticResource SectionSubtitleStyle}" />
+                        <FlexLayout BindableLayout.ItemsSource="{Binding RequestedInformation}"
+                                    Wrap="Wrap"
+                                    Direction="Row">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource PillStyle}"
+                                            Margin="0,0,8,8">
+                                        <Label Text="{Binding .}"
+                                               Style="{StaticResource PillTextStyle}" />
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Row="3"
+                                         Spacing="8"
+                                         IsVisible="{Binding HasWarnings}">
+                        <Label Text="Warnings"
+                               Style="{StaticResource SectionSubtitleStyle}" />
+                        <FlexLayout BindableLayout.ItemsSource="{Binding Warnings}"
+                                    Wrap="Wrap"
+                                    Direction="Row">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource PillStyle}"
+                                            Margin="0,0,8,8">
+                                        <Label Text="{Binding .}"
+                                               Style="{StaticResource PillTextStyle}" />
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                    </VerticalStackLayout>
+
+                    <Border Grid.Row="4"
+                            Stroke="{StaticResource BubbleBorderColor}"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 10"
+                            BackgroundColor="White"
+                            Padding="12">
+                        <Editor Text="{Binding ReplyText, Mode=TwoWay}"
+                                Placeholder="{Binding ReplyPlaceholder}"
+                                AutoSize="TextChanges"
+                                IsEnabled="{Binding IsComposerEnabled}"
+                                MinimumHeightRequest="120"
+                                Style="{StaticResource ReplyEditorStyle}" />
+                    </Border>
+
+                    <Grid Grid.Row="5"
+                          ColumnDefinitions="Auto,Auto,*,Auto"
+                          ColumnSpacing="10">
+                        <Button Text="Discard"
+                                Command="{Binding DiscardCommand}"
+                                IsEnabled="{Binding CanDiscard}"
+                                Style="{StaticResource SecondaryButtonStyle}" />
+                        <Button Grid.Column="1"
+                                Text="Regenerate"
+                                Command="{Binding RegenerateCommand}"
+                                IsVisible="{Binding CanRegenerate}"
+                                Style="{StaticResource SecondaryButtonStyle}" />
+                        <ActivityIndicator Grid.Column="2"
+                                           IsRunning="{Binding IsDrafting}"
+                                           IsVisible="{Binding IsDrafting}"
+                                           HorizontalOptions="End"
+                                           VerticalOptions="Center"
+                                           Color="{StaticResource AccentColor}" />
+                        <Button Grid.Column="3"
+                                Text="Send"
+                                Command="{Binding SendCommand}"
+                                IsEnabled="{Binding CanSend}"
+                                Style="{StaticResource PrimaryButtonStyle}" />
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</ContentPage>

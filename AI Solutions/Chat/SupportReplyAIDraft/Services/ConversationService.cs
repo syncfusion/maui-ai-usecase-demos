@@ -1,0 +1,49 @@
+using System.Collections.ObjectModel;
+using System.Linq;
+using Syncfusion.Maui.Chat;
+using SupportReplyAIDraft.Models;
+
+namespace SupportReplyAIDraft.Services;
+
+public sealed class ConversationService
+{
+    private readonly Author _customerAuthor = new() { Name = "Alex Morgan" };
+    private readonly Author _supportAuthor = new() { Name = "Jordan Lee" };
+
+    public Author SupportAuthor => _supportAuthor;
+
+    public ObservableCollection<object> CreateConversation()
+    {
+        return new ObservableCollection<object>
+        {
+            CreateTextMessage(_customerAuthor, "9:12 AM", "Hello, I renewed my Desktop Analytics Suite subscription yesterday, but the application still shows that my license has expired."),
+            CreateTextMessage(_supportAuthor, "9:15 AM", "Thanks for contacting support. Did the renewal complete successfully in your account?"),
+            CreateTextMessage(_customerAuthor, "9:17 AM", "Yes, the renewal was successful and I received a confirmation email."),
+            CreateTextMessage(_customerAuthor, "9:18 AM", "I restarted the application, but the expired-license message is still displayed. What should I do next?")
+        };
+    }
+
+    private static TextMessage CreateTextMessage(Author author, string timestamp, string text)
+    {
+        return new TextMessage
+        {
+            Author = author,
+            DateTime = DateTime.ParseExact(timestamp, "h:mm tt", System.Globalization.CultureInfo.InvariantCulture),
+            Text = text
+        };
+    }
+
+    public IReadOnlyList<string> BuildRecentContext(IEnumerable<object> conversation, string selectedMessageId)
+    {
+        var list = conversation.OfType<SupportConversationMessage>().ToList();
+        var index = list.FindIndex(item => item.Id == selectedMessageId);
+        if (index < 0)
+        {
+            return Array.Empty<string>();
+        }
+
+        return list.Take(index + 1)
+            .Select(item => $"{item.AuthorName} ({item.Timestamp}): {item.Text}")
+            .ToList();
+    }
+}
