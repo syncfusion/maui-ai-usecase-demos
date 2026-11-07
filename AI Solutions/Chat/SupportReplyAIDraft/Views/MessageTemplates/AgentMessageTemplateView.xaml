@@ -6,25 +6,37 @@
              x:DataType="chat:TextMessage">
     <Grid Padding="0,2"
           HorizontalOptions="End">
-        <Border StrokeShape="RoundRectangle 14"
-                BackgroundColor="{StaticResource AgentBubbleBackground}"
-                Stroke="{StaticResource AgentBorderColor}"
-                StrokeThickness="1"
-                Padding="14"
-                MaximumWidthRequest="730">
-            <VerticalStackLayout Spacing="8">
-                <HorizontalStackLayout Spacing="8"
-                                       VerticalOptions="Center"
-                                       HorizontalOptions="End">
-                    <Label Text="{Binding DateTime, StringFormat='{0:h:mm tt}'}"
-                           Style="{StaticResource MessageTimeStyle}" />
-                    <Label Text="{Binding Author.Name}"
-                           Style="{StaticResource MessageAuthorStyle}" />
-                </HorizontalStackLayout>
-                <Label Text="{Binding Text}"
-                       Style="{StaticResource MessageBodyStyle}"
-                       HorizontalTextAlignment="Start" />
-            </VerticalStackLayout>
-        </Border>
+        <Grid ColumnDefinitions="*,Auto"
+              ColumnSpacing="8"
+              HorizontalOptions="End">
+            <Border Grid.Column="0"
+                    StrokeShape="RoundRectangle 14"
+                    BackgroundColor="{StaticResource AgentBubbleBackground}"
+                    Stroke="{StaticResource AgentBorderColor}"
+                    StrokeThickness="1"
+                    Padding="14"
+                    MaximumWidthRequest="730"
+                    HorizontalOptions="End">
+                <VerticalStackLayout Spacing="8">
+                    <HorizontalStackLayout Spacing="8"
+                                           VerticalOptions="Center"
+                                           HorizontalOptions="End">
+                        <Label Text="{Binding DateTime, StringFormat='{0:h:mm tt}'}"
+                               Style="{StaticResource MessageTimeStyle}" />
+                        <Label Text="{Binding Author.Name}"
+                               Style="{StaticResource MessageAuthorStyle}" />
+                    </HorizontalStackLayout>
+                    <Label Text="{Binding Text}"
+                           Style="{StaticResource MessageBodyStyle}"
+                           HorizontalTextAlignment="Start" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Grid.Column="1"
+                    Style="{StaticResource AgentAvatarStyle}">
+                <Label Text="J"
+                       Style="{StaticResource AgentAvatarTextStyle}" />
+            </Border>
+        </Grid>
     </Grid>
 </ContentView>

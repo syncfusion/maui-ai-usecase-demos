@@ -7,76 +7,94 @@
              x:DataType="chat:TextMessage">
     <Grid Padding="0,2"
           HorizontalOptions="Start">
-        <Border x:Name="SelectionBorder"
-                StrokeShape="RoundRectangle 14"
-                Stroke="{StaticResource BubbleBorderColor}"
-                StrokeThickness="1"
-                BackgroundColor="{StaticResource SurfaceColor}"
-                Padding="14"
-                MaximumWidthRequest="730">
-            <Border.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=SelectMessageCommand}"
-                                      CommandParameter="{Binding .}" />
-            </Border.GestureRecognizers>
-            <Border.Triggers>
-                <DataTrigger TargetType="Border"
-                             Value="True">
-                    <DataTrigger.Binding>
-                        <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
-                            <Binding Path="." />
-                            <Binding Path="BindingContext.SelectedMessage"
-                                     Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
-                        </MultiBinding>
-                    </DataTrigger.Binding>
-                    <Setter Property="Stroke" Value="{StaticResource AccentColor}" />
-                    <Setter Property="StrokeThickness" Value="2" />
-                </DataTrigger>
-            </Border.Triggers>
+        <Grid ColumnDefinitions="Auto,*"
+              ColumnSpacing="8"
+              HorizontalOptions="Start">
+            <Border Style="{StaticResource CustomerAvatarStyle}">
+                <Label Text="A"
+                       Style="{StaticResource CustomerAvatarTextStyle}" />
+            </Border>
 
-            <VerticalStackLayout Spacing="8">
-                <HorizontalStackLayout Spacing="8"
-                                       VerticalOptions="Center">
-                    <Label Text="{Binding Author.Name}"
-                           Style="{StaticResource MessageAuthorStyle}" />
-                    <Label Text="{Binding DateTime, StringFormat='{0:h:mm tt}'}"
-                           Style="{StaticResource MessageTimeStyle}" />
-                </HorizontalStackLayout>
+            <Border Grid.Column="1"
+                    StrokeShape="RoundRectangle 14"
+                    Stroke="{StaticResource BubbleBorderColor}"
+                    StrokeThickness="1"
+                    BackgroundColor="{StaticResource SurfaceColor}"
+                    Padding="14"
+                    MaximumWidthRequest="730">
+                <Border.Triggers>
+                    <DataTrigger TargetType="Border"
+                                 Value="True">
+                        <DataTrigger.Binding>
+                            <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
+                                <Binding Path="." />
+                                <Binding Path="BindingContext.SelectedMessage"
+                                         Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
+                            </MultiBinding>
+                        </DataTrigger.Binding>
+                        <Setter Property="Stroke" Value="{StaticResource AccentColor}" />
+                        <Setter Property="StrokeThickness" Value="2" />
+                    </DataTrigger>
+                </Border.Triggers>
 
-                <HorizontalStackLayout Spacing="6"
-                                       IsVisible="False">
-                    <HorizontalStackLayout.IsVisible>
-                        <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
-                            <Binding Path="." />
-                            <Binding Path="BindingContext.SelectedMessage"
-                                     Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
-                        </MultiBinding>
-                    </HorizontalStackLayout.IsVisible>
-                    <Label Text="●"
-                           Style="{StaticResource SelectedTextStyle}" />
-                    <Label Text="Selected for reply"
-                           Style="{StaticResource SelectedTextStyle}" />
-                </HorizontalStackLayout>
+                <VerticalStackLayout Spacing="8">
+                    <VerticalStackLayout Spacing="8">
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.SelectMessageCommand}"
+                                                  CommandParameter="{Binding .}" />
+                        </VerticalStackLayout.GestureRecognizers>
 
-                <Label Text="{Binding Text}"
-                       Style="{StaticResource MessageBodyStyle}" />
+                        <HorizontalStackLayout Spacing="8"
+                                               VerticalOptions="Center">
+                            <Label Text="{Binding Author.Name}"
+                                   Style="{StaticResource MessageAuthorStyle}" />
+                            <Label Text="{Binding DateTime, StringFormat='{0:h:mm tt}'}"
+                                   Style="{StaticResource MessageTimeStyle}" />
+                        </HorizontalStackLayout>
 
-                <Label Text="✦ Draft Reply"
-                       IsVisible="False"
-                       TextColor="{StaticResource AccentColor}"
-                       FontSize="14"
-                       FontAttributes="Bold">
-                    <Label.IsVisible>
-                        <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
-                            <Binding Path="." />
-                            <Binding Path="BindingContext.SelectedMessage"
-                                     Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
-                        </MultiBinding>
-                    </Label.IsVisible>
-                    <Label.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=DraftReplyCommand}" />
-                    </Label.GestureRecognizers>
-                </Label>
-            </VerticalStackLayout>
-        </Border>
+                        <HorizontalStackLayout Spacing="6"
+                                               IsVisible="False">
+                            <HorizontalStackLayout.IsVisible>
+                                <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
+                                    <Binding Path="." />
+                                    <Binding Path="BindingContext.SelectedMessage"
+                                             Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
+                                </MultiBinding>
+                            </HorizontalStackLayout.IsVisible>
+                            <Label Text="●"
+                                   Style="{StaticResource SelectedTextStyle}" />
+                            <Label Text="Selected for reply"
+                                   Style="{StaticResource SelectedTextStyle}" />
+                        </HorizontalStackLayout>
+
+                        <Label Text="{Binding Text}"
+                               Style="{StaticResource MessageBodyStyle}" />
+                    </VerticalStackLayout>
+
+                    <Button Text="✦ Draft Reply"
+                            IsVisible="False"
+                            Padding="0"
+                            CornerRadius="0"
+                            BorderWidth="0"
+                            BackgroundColor="Transparent"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Center"
+                            TextColor="{StaticResource AccentColor}"
+                            FontSize="14"
+                            FontAttributes="Bold"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.DraftReplyCommand}"
+                            CommandParameter="{Binding .}"
+                            SemanticProperties.Description="Draft reply for selected customer message">
+                        <Button.IsVisible>
+                            <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
+                                <Binding Path="." />
+                                <Binding Path="BindingContext.SelectedMessage"
+                                         Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
+                            </MultiBinding>
+                        </Button.IsVisible>
+                    </Button>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
     </Grid>
 </ContentView>

@@ -18,7 +18,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
         Messages = _conversationService.CreateConversation();
 
         SelectMessageCommand = new Command<TextMessage>(SelectMessage);
-        DraftReplyCommand = new Command(DraftReply, () => CanDraftReply);
+        DraftReplyCommand = new Command<TextMessage>(DraftReply, CanActivateDraftReply);
         NativeSendCommand = new Command<object>(_ => { }, _ => false);
     }
 
@@ -52,9 +52,17 @@ public sealed partial class SupportChatViewModel : ObservableObject
         SelectedMessage = message;
     }
 
-    private void DraftReply()
+    private bool CanActivateDraftReply(TextMessage? message)
     {
-        if (!CanDraftReply)
+        return SelectedMessage is not null
+            && message is not null
+            && ReferenceEquals(message, SelectedMessage)
+            && _conversationService.IsCustomerMessage(message);
+    }
+
+    private void DraftReply(TextMessage? message)
+    {
+        if (!CanActivateDraftReply(message))
         {
             return;
         }
