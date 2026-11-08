@@ -20,6 +20,13 @@ public sealed partial class SupportChatViewModel : ObservableObject
     private const string DiscardSuggestion = "Discard";
     private const string RetrySuggestion = "Retry";
 
+    private static readonly ImageSource SuggestionImage = new FontImageSource
+    {
+        Glyph = "•",
+        Color = Colors.Transparent,
+        Size = 1
+    };
+
     private readonly ConversationService _conversationService;
     private readonly ISupportReplyService _supportReplyService;
     private readonly AsyncRelayCommand<TextMessage?> _draftReplyCommand;
@@ -458,7 +465,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
     {
         return new ChatSuggestions
         {
-            Items = new ObservableCollection<ISuggestion>(items.Select(text => new Suggestion(text)))
+            Items = new ObservableCollection<ISuggestion>(items.Select(text => new Suggestion(text, SuggestionImage)))
         };
     }
 

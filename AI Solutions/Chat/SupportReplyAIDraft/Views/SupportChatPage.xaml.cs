@@ -95,7 +95,7 @@ public partial class SupportChatPage : ContentPage
 
     private async Task<bool> ConfirmRegenerateAsync()
     {
-        return await DisplayAlert(
+        return await DisplayAlertAsync(
             "Replace draft?",
             "Regenerating will replace your current edited draft.",
             "Regenerate",
