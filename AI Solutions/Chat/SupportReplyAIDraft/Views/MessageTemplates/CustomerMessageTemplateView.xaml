@@ -66,7 +66,8 @@
                         </HorizontalStackLayout>
 
                         <HorizontalStackLayout Spacing="6"
-                                               IsVisible="False">
+                                               IsVisible="False"
+                                               VerticalOptions="Center">
                             <HorizontalStackLayout.IsVisible>
                                 <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
                                     <Binding Path="." />
@@ -74,8 +75,9 @@
                                              Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
                                 </MultiBinding>
                             </HorizontalStackLayout.IsVisible>
-                            <Label Text="●"
-                                   Style="{StaticResource SelectedTextStyle}" />
+                            <Label Text="✓"
+                                   FontSize="12"
+                                   TextColor="{StaticResource AccentColor}" />
                             <Label Text="Selected for reply"
                                    Style="{StaticResource SelectedTextStyle}" />
                         </HorizontalStackLayout>

@@ -18,6 +18,7 @@ public partial class SupportChatPage : ContentPage
         ConversationChat.MessageTemplate = new SupportReplyAIDraft.Views.MessageTemplates.SupportChatMessageTemplateSelector(ConversationChat);
 
         ViewModel.ConfirmRegenerateAsync = ConfirmRegenerateAsync;
+        ViewModel.ConfirmSelectionChangeAsync = ConfirmSelectionChangeAsync;
         ViewModel.PropertyChanged += OnViewModelPropertyChanged;
         ViewModel.OutgoingMessageSent += OnOutgoingMessageSent;
 
@@ -99,6 +100,11 @@ public partial class SupportChatPage : ContentPage
         e.HideAfterSelection = false;
 
         await ViewModel.HandleSuggestionActionAsync((e.SelectedItem as Suggestion)?.Text);
+
+        if (ConversationChat.Editor is not null && !string.Equals(ConversationChat.Editor.Text, ViewModel.EditorText, StringComparison.Ordinal))
+        {
+            ConversationChat.Editor.Text = ViewModel.EditorText;
+        }
     }
 
     private async Task<bool> ConfirmRegenerateAsync()
@@ -108,6 +114,15 @@ public partial class SupportChatPage : ContentPage
             "Regenerating will replace your current edited draft.",
             "Regenerate",
             "Cancel");
+    }
+
+    private async Task<bool> ConfirmSelectionChangeAsync()
+    {
+        return await DisplayAlertAsync(
+            "Discard current draft?",
+            "Selecting another customer message will discard the current draft.",
+            "Discard draft",
+            "Keep editing");
     }
 
     private void OnOutgoingMessageSent(TextMessage message)
