@@ -2,6 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:chat="clr-namespace:Syncfusion.Maui.Chat;assembly=Syncfusion.Maui.Chat"
+             xmlns:viewModels="clr-namespace:SupportReplyAIDraft.ViewModels"
              xmlns:views="clr-namespace:SupportReplyAIDraft.Views"
              x:Class="SupportReplyAIDraft.Views.MessageTemplates.CustomerMessageTemplateView"
              x:DataType="chat:TextMessage">
@@ -83,7 +84,8 @@
                                Style="{StaticResource MessageBodyStyle}" />
                     </VerticalStackLayout>
 
-                    <Button Text="✦ Draft Reply"
+                    <Button Text="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.DraftReplyButtonText}"
+                            IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.CanDraftReply}"
                             IsVisible="False"
                             Padding="0"
                             CornerRadius="0"
@@ -97,14 +99,102 @@
                             Command="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.DraftReplyCommand}"
                             CommandParameter="{Binding .}"
                             SemanticProperties.Description="Draft reply for selected customer message">
-                        <Button.IsVisible>
-                            <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
-                                <Binding Path="." />
-                                <Binding Path="BindingContext.SelectedMessage"
-                                         Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
-                            </MultiBinding>
-                        </Button.IsVisible>
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button"
+                                         Value="True">
+                                <DataTrigger.Binding>
+                                    <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
+                                        <Binding Path="." />
+                                        <Binding Path="BindingContext.SelectedMessage"
+                                                 Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <Setter Property="IsVisible" Value="True" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button"
+                                         Binding="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.IsDraftReplyVisible}"
+                                         Value="False">
+                                <Setter Property="IsVisible" Value="False" />
+                            </DataTrigger>
+                        </Button.Triggers>
                     </Button>
+
+                    <HorizontalStackLayout Spacing="8"
+                                           IsVisible="False"
+                                           VerticalOptions="Center">
+                        <HorizontalStackLayout.Triggers>
+                            <DataTrigger TargetType="HorizontalStackLayout"
+                                         Value="True">
+                                <DataTrigger.Binding>
+                                    <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
+                                        <Binding Path="." />
+                                        <Binding Path="BindingContext.SelectedMessage"
+                                                 Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <Setter Property="IsVisible" Value="True" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="HorizontalStackLayout"
+                                         Binding="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.IsDrafting}"
+                                         Value="False">
+                                <Setter Property="IsVisible" Value="False" />
+                            </DataTrigger>
+                        </HorizontalStackLayout.Triggers>
+                        <ActivityIndicator IsRunning="True"
+                                           Color="{StaticResource AccentColor}"
+                                           WidthRequest="16"
+                                           HeightRequest="16" />
+                        <Label Text="Drafting reply..."
+                               Style="{StaticResource MessageTimeStyle}"
+                               TextColor="{StaticResource AccentColor}" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.InlineMessage}"
+                           IsVisible="False"
+                           Style="{StaticResource MessageTimeStyle}">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label"
+                                         Value="True">
+                                <DataTrigger.Binding>
+                                    <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
+                                        <Binding Path="." />
+                                        <Binding Path="BindingContext.SelectedMessage"
+                                                 Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <Setter Property="IsVisible" Value="True" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label"
+                                         Binding="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.ShowReviewHint}"
+                                         Value="False">
+                                <Setter Property="IsVisible" Value="False" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+
+                    <Label Text="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.InlineMessage}"
+                           IsVisible="False"
+                           Style="{StaticResource MessageTimeStyle}"
+                           TextColor="{StaticResource DangerColor}">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label"
+                                         Value="True">
+                                <DataTrigger.Binding>
+                                    <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
+                                        <Binding Path="." />
+                                        <Binding Path="BindingContext.SelectedMessage"
+                                                 Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <Setter Property="IsVisible" Value="True" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label"
+                                         Binding="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.ShowErrorMessage}"
+                                         Value="False">
+                                <Setter Property="IsVisible" Value="False" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
                 </VerticalStackLayout>
             </Border>
         </Grid>

@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using Syncfusion.Maui.Chat;
-using SupportReplyAIDraft.Models;
 
 namespace SupportReplyAIDraft.Services;
 
@@ -29,7 +29,7 @@ public sealed class ConversationService
         return new TextMessage
         {
             Author = author,
-            DateTime = DateTime.ParseExact(timestamp, "h:mm tt", System.Globalization.CultureInfo.InvariantCulture),
+            DateTime = DateTime.ParseExact(timestamp, "h:mm tt", CultureInfo.InvariantCulture),
             Text = text
         };
     }
@@ -39,17 +39,17 @@ public sealed class ConversationService
         return message.Author?.Name == _customerAuthor.Name;
     }
 
-    public IReadOnlyList<string> BuildRecentContext(IEnumerable<object> conversation, string selectedMessageId)
+    public IReadOnlyList<string> BuildRecentContext(IEnumerable<object> conversation, TextMessage selectedMessage)
     {
-        var list = conversation.OfType<SupportConversationMessage>().ToList();
-        var index = list.FindIndex(item => item.Id == selectedMessageId);
+        var list = conversation.OfType<TextMessage>().ToList();
+        var index = list.FindIndex(item => ReferenceEquals(item, selectedMessage));
         if (index < 0)
         {
             return Array.Empty<string>();
         }
 
         return list.Take(index + 1)
-            .Select(item => $"{item.AuthorName} ({item.Timestamp}): {item.Text}")
+            .Select(item => $"{item.Author?.Name ?? "Unknown"} ({item.DateTime:h:mm tt}): {item.Text}")
             .ToList();
     }
 }
