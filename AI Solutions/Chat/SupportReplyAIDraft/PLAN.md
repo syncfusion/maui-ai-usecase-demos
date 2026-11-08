@@ -11,8 +11,10 @@ Gates are sequential. A later gate must not begin until the previous gate has hu
 6. Gate 6: Mobile correction
 
 ## Current Gate
-Gate 3: Message selection and Draft Reply.
+Gate 4: Azure OpenAI reply workflow.
 
-Scope: customer-message selection, selected-bubble marking, non-selectable support messages, and Draft Reply on the selected request, using SfChat message templates and the native disabled composer.
+Scope: draft generation, editing, Review and edit before sending, Regenerate, Discard, Retry, conditional Send, and sent-message insertion as Jordan Lee outgoing.
+
+Gate 4 requires human-confirmed runtime evidence before Gate 5 can begin.
 
 Stop condition: any need for a custom footer, external Editor, or alternative chat control requires human approval.
