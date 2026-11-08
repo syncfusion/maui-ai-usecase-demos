@@ -30,7 +30,6 @@ public sealed partial class SupportChatViewModel : ObservableObject
     private readonly ConversationService _conversationService;
     private readonly ISupportReplyService _supportReplyService;
     private readonly AsyncRelayCommand<TextMessage?> _draftReplyCommand;
-    private readonly AsyncRelayCommand<object?> _suggestionItemSelectedCommand;
     private readonly Command<object?> _nativeSendCommand;
 
     private CancellationTokenSource? _generationCancellationTokenSource;
@@ -55,9 +54,6 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
         _draftReplyCommand = new AsyncRelayCommand<TextMessage?>(DraftReplyAsync, CanActivateDraftReply);
         DraftReplyCommand = _draftReplyCommand;
-
-        _suggestionItemSelectedCommand = new AsyncRelayCommand<object?>(HandleSuggestionSelectionAsync);
-        SuggestionItemSelectedCommand = _suggestionItemSelectedCommand;
 
         _nativeSendCommand = new Command<object?>(SendNativeMessage, _ => CanSendMessage);
         NativeSendCommand = _nativeSendCommand;
@@ -107,7 +103,6 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
     public ICommand SelectMessageCommand { get; }
     public IAsyncRelayCommand<TextMessage?> DraftReplyCommand { get; }
-    public IAsyncRelayCommand<object?> SuggestionItemSelectedCommand { get; }
     public ICommand NativeSendCommand { get; }
 
     public Func<Task<bool>>? ConfirmRegenerateAsync { get; set; }
@@ -220,17 +215,8 @@ public sealed partial class SupportChatViewModel : ObservableObject
         await GenerateDraftAsync(preserveExistingDraftOnFailure: false);
     }
 
-    private async Task HandleSuggestionSelectionAsync(object? args)
+    public async Task HandleSuggestionActionAsync(string? text)
     {
-        if (args is not SuggestionItemSelectedEventArgs suggestionArgs)
-        {
-            return;
-        }
-
-        suggestionArgs.CancelSendMessage = true;
-        suggestionArgs.HideAfterSelection = false;
-
-        var text = (suggestionArgs.SelectedItem as Suggestion)?.Text;
         if (string.IsNullOrWhiteSpace(text))
         {
             return;
@@ -323,18 +309,31 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
     private void SendNativeMessage(object? args)
     {
-        if (args is SendMessageEventArgs sendArgs)
-        {
-            sendArgs.Handled = true;
-        }
-
-        if (!CanSendMessage)
+        if (args is not SendMessageEventArgs sendArgs)
         {
             return;
         }
 
-        var text = EditorText.Trim();
-        if (text.Length == 0)
+        sendArgs.Handled = true;
+
+        if (!IsComposerEnabled || IsComposerReadOnly)
+        {
+            return;
+        }
+
+        var submittedText = sendArgs.Message?.Text?.Trim() ?? string.Empty;
+        if (submittedText.Length == 0)
+        {
+            return;
+        }
+
+        if (IsWorkflowActionText(submittedText))
+        {
+            return;
+        }
+
+        var editorText = EditorText.Trim();
+        if (!string.Equals(submittedText, editorText, StringComparison.Ordinal))
         {
             return;
         }
@@ -343,7 +342,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
         {
             Author = _conversationService.SupportAuthor,
             DateTime = DateTime.Now,
-            Text = text
+            Text = submittedText
         };
 
         Messages.Add(outgoingMessage);
@@ -467,6 +466,13 @@ public sealed partial class SupportChatViewModel : ObservableObject
         {
             Items = new ObservableCollection<ISuggestion>(items.Select(text => new Suggestion(text, SuggestionImage)))
         };
+    }
+
+    private static bool IsWorkflowActionText(string text)
+    {
+        return text.Equals(RegenerateSuggestion, StringComparison.OrdinalIgnoreCase)
+            || text.Equals(DiscardSuggestion, StringComparison.OrdinalIgnoreCase)
+            || text.Equals(RetrySuggestion, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string CreateMessageId(TextMessage message)

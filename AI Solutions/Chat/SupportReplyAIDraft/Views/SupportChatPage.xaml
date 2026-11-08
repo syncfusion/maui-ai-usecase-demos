@@ -172,7 +172,7 @@
                                  TypingIndicator="{Binding TypingIndicator}"
                                  ShowTypingIndicator="{Binding ShowTypingIndicator}"
                                  Suggestions="{Binding ChatSuggestions}"
-                                 SuggestionItemSelectedCommand="{Binding SuggestionItemSelectedCommand}"
+                                 SuggestionItemSelected="OnSuggestionItemSelected"
                                  ShowMessageInputView="True"
                                  AllowMultilineInput="True"
                                  SendMessageCommand="{Binding NativeSendCommand}"

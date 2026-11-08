@@ -93,6 +93,14 @@ public partial class SupportChatPage : ContentPage
         ViewModel.UpdateEditorText(e.NewTextValue);
     }
 
+    private async void OnSuggestionItemSelected(object? sender, SuggestionItemSelectedEventArgs e)
+    {
+        e.CancelSendMessage = true;
+        e.HideAfterSelection = false;
+
+        await ViewModel.HandleSuggestionActionAsync((e.SelectedItem as Suggestion)?.Text);
+    }
+
     private async Task<bool> ConfirmRegenerateAsync()
     {
         return await DisplayAlertAsync(
