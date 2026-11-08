@@ -32,6 +32,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
     private CancellationTokenSource? _generationCancellationTokenSource;
     private int _generationVersion;
     private string _lastGeneratedDraft = string.Empty;
+    private string _lastStableDraftText = string.Empty;
     private WorkflowState _workflowState = WorkflowState.Initial;
     private bool _isHandlingSuggestionAction;
 
@@ -154,7 +155,18 @@ public sealed partial class SupportChatViewModel : ObservableObject
             return;
         }
 
-        EditorText = text ?? string.Empty;
+        var updatedText = text ?? string.Empty;
+        if (ShouldIgnoreWorkflowActionEditorEcho(updatedText))
+        {
+            return;
+        }
+
+        EditorText = updatedText;
+
+        if (HasDraft)
+        {
+            _lastStableDraftText = EditorText;
+        }
     }
 
     public async Task HandleSuggestionActionAsync(string? text)
@@ -260,7 +272,9 @@ public sealed partial class SupportChatViewModel : ObservableObject
             return;
         }
 
-        var preservedDraft = preserveExistingDraftOnFailure ? EditorText : string.Empty;
+        var preservedDraft = preserveExistingDraftOnFailure
+            ? GetDraftPreservationSnapshot()
+            : string.Empty;
 
         _generationCancellationTokenSource?.Cancel();
         _generationCancellationTokenSource = new CancellationTokenSource();
@@ -381,6 +395,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
                 IsComposerReadOnly = true;
                 ComposerPlaceholder = InitialPlaceholder;
                 EditorText = string.Empty;
+                _lastStableDraftText = string.Empty;
                 break;
 
             case WorkflowState.Selected:
@@ -396,6 +411,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
                 IsComposerReadOnly = true;
                 ComposerPlaceholder = InitialPlaceholder;
                 EditorText = string.Empty;
+                _lastStableDraftText = string.Empty;
                 break;
 
             case WorkflowState.Drafting:
@@ -427,6 +443,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
                 ComposerPlaceholder = string.Empty;
                 EditorText = generatedReply ?? string.Empty;
                 _lastGeneratedDraft = EditorText;
+                _lastStableDraftText = EditorText;
                 break;
 
             case WorkflowState.Error:
@@ -444,6 +461,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
                     IsComposerReadOnly = false;
                     ComposerPlaceholder = string.Empty;
                     EditorText = preservedDraft;
+                    _lastStableDraftText = EditorText;
                     break;
                 }
 
@@ -452,6 +470,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
                 IsComposerReadOnly = true;
                 ComposerPlaceholder = GenerationFailurePlaceholder;
                 EditorText = string.Empty;
+                _lastStableDraftText = string.Empty;
                 break;
         }
 
@@ -470,6 +489,25 @@ public sealed partial class SupportChatViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(CanSendMessage));
         _nativeSendCommand.ChangeCanExecute();
+    }
+
+    private bool ShouldIgnoreWorkflowActionEditorEcho(string text)
+    {
+        var trimmedText = text.Trim();
+        return HasDraft
+            && ChatSuggestions is not null
+            && IsWorkflowActionText(trimmedText)
+            && !string.Equals(_lastStableDraftText.Trim(), trimmedText, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private string GetDraftPreservationSnapshot()
+    {
+        if (!string.IsNullOrWhiteSpace(_lastStableDraftText))
+        {
+            return _lastStableDraftText;
+        }
+
+        return EditorText;
     }
 
     private static ChatSuggestions BuildSuggestions(params (string Text, ImageSource Icon)[] items)

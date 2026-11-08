@@ -42,7 +42,7 @@ public sealed class SupportReplyService : ISupportReplyService
         {
             var chatClient = _client.GetChatClient(_deploymentName);
 
-            var systemPrompt = "You are a customer-support drafting assistant. Return a single JSON object with fields reply, requiresMoreInformation, requestedInformation, and warnings. Do not include sourceIds. Do not include markdown fences. Do not include URLs. Keep the reply under 1000 characters. Do not send messages.";
+            var systemPrompt = "You are a customer-support drafting assistant. Return exactly one JSON object with fields reply, requiresMoreInformation, requestedInformation, and warnings. Do not include markdown fences, comments, or additional keys. Do not include sourceIds, links, account-action claims, or verification claims. Keep reply under 1000 characters. The reply must be customer-facing and ready to review/edit, but never sent automatically.";
             var userPrompt = BuildUserPrompt(request);
 
             var messages = new List<ChatMessage>
@@ -71,6 +71,6 @@ public sealed class SupportReplyService : ISupportReplyService
     private static string BuildUserPrompt(SupportReplyRequest request)
     {
         var context = string.Join('\n', request.RecentConversationContext.Select(item => $"- {item}"));
-        return $"Selected message:\n{request.SelectedMessageText}\n\nRecent conversation context:\n{context}\n\nWrite a concise, professional support reply that addresses the selected message. If more information is needed, request only the relevant missing details.";
+        return $"Selected message id: {request.SelectedMessageId}\nSelected message:\n{request.SelectedMessageText}\n\nRecent conversation context (bounded to messages up to and including the selected message):\n{context}\n\nGenerate one concise, professional support reply for the selected message only. If more information is needed, set requiresMoreInformation=true and include only the missing items in requestedInformation.";
     }
 }
