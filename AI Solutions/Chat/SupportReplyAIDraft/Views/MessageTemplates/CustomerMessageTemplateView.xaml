@@ -7,12 +7,24 @@
              x:DataType="chat:TextMessage">
     <Grid Padding="0,2"
           HorizontalOptions="Start">
-        <Grid ColumnDefinitions="Auto,*"
+        <Grid ColumnDefinitions="34,*"
               ColumnSpacing="8"
               HorizontalOptions="Start">
-            <Border Style="{StaticResource CustomerAvatarStyle}">
+            <Border WidthRequest="34"
+                    HeightRequest="34"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Start"
+                    StrokeShape="RoundRectangle 17"
+                    Stroke="#CFD7E4"
+                    StrokeThickness="1"
+                    BackgroundColor="#E7ECF3"
+                    Padding="0">
                 <Label Text="A"
-                       Style="{StaticResource CustomerAvatarTextStyle}" />
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"
+                       FontSize="12"
+                       FontAttributes="Bold"
+                       TextColor="#1E2A44" />
             </Border>
 
             <Border Grid.Column="1"

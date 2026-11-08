@@ -6,7 +6,7 @@
              x:DataType="chat:TextMessage">
     <Grid Padding="0,2"
           HorizontalOptions="End">
-        <Grid ColumnDefinitions="*,Auto"
+        <Grid ColumnDefinitions="*,34"
               ColumnSpacing="8"
               HorizontalOptions="End">
             <Border Grid.Column="0"
@@ -33,9 +33,21 @@
             </Border>
 
             <Border Grid.Column="1"
-                    Style="{StaticResource AgentAvatarStyle}">
+                    WidthRequest="34"
+                    HeightRequest="34"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Start"
+                    StrokeShape="RoundRectangle 17"
+                    Stroke="#1D4ED8"
+                    StrokeThickness="1"
+                    BackgroundColor="#2557FF"
+                    Padding="0">
                 <Label Text="J"
-                       Style="{StaticResource AgentAvatarTextStyle}" />
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"
+                       FontSize="12"
+                       FontAttributes="Bold"
+                       TextColor="White" />
             </Border>
         </Grid>
     </Grid>

@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SupportReplyAIDraft.Services;
@@ -66,5 +67,9 @@ public sealed partial class SupportChatViewModel : ObservableObject
         {
             return;
         }
+
+        var diagnostic = $"Draft Reply activated for: {message!.Text}";
+        Debug.WriteLine(diagnostic);
+        Console.WriteLine(diagnostic);
     }
 }
