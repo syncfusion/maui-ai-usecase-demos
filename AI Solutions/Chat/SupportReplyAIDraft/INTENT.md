@@ -8,6 +8,7 @@ The agent needs a controlled way to draft a professional reply to one selected c
 
 ## Intended Outcome
 Produce an editable reply draft that the agent can review, edit, regenerate, discard, and explicitly send.
+The sample supports two safe workflows: a manual typed reply and an AI-generated draft that always requires explicit Send.
 
 ## Goals
 - Display one fictional support conversation in a single SfChat surface

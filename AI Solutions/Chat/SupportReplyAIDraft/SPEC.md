@@ -177,6 +177,7 @@ Gates are sequential; a later gate must not begin until the previous gate has hu
 - Gate 2, SfChat reply-editor feasibility (Complete): public API limitation verified and the SfChat-native adaptation approved; no custom footer or external Editor.
 - Gate 3, Message selection and Draft Reply (In Progress): customer selection, selected state, and Draft Reply are runtime-verified; scope excludes AI generation.
 - Gate 4, Azure OpenAI reply workflow: draft generation, editing, Review and edit before sending, Regenerate, Discard, Retry, conditional Send, and sent-message insertion are runtime-verified.
+  - Current status: implementation updates are in progress; final Gate 4 completion still needs fresh human runtime evidence for the latest commit.
 - Gate 5, Desktop visual correction: all four desktop states are directly compared with DesignReference.
 - Gate 6, Mobile correction: all four mobile states are directly compared with DesignReference.
 

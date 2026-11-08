@@ -19,6 +19,7 @@ If the Syncfusion license key is empty, the app starts without registering a lic
 - the generated reply appears in the native chat composer with a `Review and edit before sending.` prompt
 - edit the text, or use the Regenerate and Discard suggestions; if generation fails, use Retry
 - send only with the chat Send button when you choose; the sent reply appears in the conversation as a support-agent message, and the AI never sends automatically
+- workflow-action labels (Draft Reply, Regenerate, Discard, Retry) are treated as control actions and are blocked from becoming outgoing chat messages
 
 ## Scope
 - only native MAUI XAML/C# is used

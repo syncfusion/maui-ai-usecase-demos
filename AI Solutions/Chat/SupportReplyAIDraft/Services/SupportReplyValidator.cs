@@ -1,16 +1,16 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using SupportReplyAIDraft.Models;
 
 namespace SupportReplyAIDraft.Services;
 
 public sealed class SupportReplyValidator
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
+    private static readonly HashSet<string> RequiredKeys = new(StringComparer.Ordinal)
     {
-        PropertyNameCaseInsensitive = true,
-        ReadCommentHandling = JsonCommentHandling.Disallow,
-        AllowTrailingCommas = false
+        "reply",
+        "requiresMoreInformation",
+        "requestedInformation",
+        "warnings"
     };
 
     public SupportReplyValidationResult Validate(string? rawJson)
@@ -28,38 +28,87 @@ public sealed class SupportReplyValidator
 
         try
         {
-            var response = JsonSerializer.Deserialize<SupportReplyEnvelope>(json, JsonOptions);
-            if (response is null)
+            using var document = JsonDocument.Parse(json, new JsonDocumentOptions
+            {
+                CommentHandling = JsonCommentHandling.Disallow,
+                AllowTrailingCommas = false
+            });
+
+            if (document.RootElement.ValueKind != JsonValueKind.Object)
             {
                 return SupportReplyValidationResult.Failure("The AI response was not valid JSON.");
             }
 
-            if (string.IsNullOrWhiteSpace(response.Reply))
+            var root = document.RootElement;
+            var keys = root.EnumerateObject().Select(property => property.Name).ToList();
+            if (keys.Count != RequiredKeys.Count
+                || keys.Any(key => !RequiredKeys.Contains(key)))
+            {
+                return SupportReplyValidationResult.Failure("The AI response was not valid JSON.");
+            }
+
+            if (!root.TryGetProperty("reply", out var replyElement)
+                || replyElement.ValueKind != JsonValueKind.String)
             {
                 return SupportReplyValidationResult.Failure("Reply is required.");
             }
 
-            var reply = response.Reply.Trim();
+            var reply = (replyElement.GetString() ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(reply))
+            {
+                return SupportReplyValidationResult.Failure("Reply is required.");
+            }
 
             if (reply.Length > 1000)
             {
                 return SupportReplyValidationResult.Failure("Reply exceeds the 1,000 character limit.");
             }
 
+            if (!root.TryGetProperty("requiresMoreInformation", out var requiresMoreInformationElement)
+                || (requiresMoreInformationElement.ValueKind != JsonValueKind.False
+                    && requiresMoreInformationElement.ValueKind != JsonValueKind.True))
+            {
+                return SupportReplyValidationResult.Failure("The AI response was not valid JSON.");
+            }
+
+            if (!root.TryGetProperty("requestedInformation", out var requestedInformationElement)
+                || requestedInformationElement.ValueKind != JsonValueKind.Array)
+            {
+                return SupportReplyValidationResult.Failure("The AI response was not valid JSON.");
+            }
+
+            if (!root.TryGetProperty("warnings", out var warningsElement)
+                || warningsElement.ValueKind != JsonValueKind.Array)
+            {
+                return SupportReplyValidationResult.Failure("The AI response was not valid JSON.");
+            }
+
+            var requestedInformation = ParseStringArray(requestedInformationElement);
+            if (requestedInformation is null)
+            {
+                return SupportReplyValidationResult.Failure("The AI response was not valid JSON.");
+            }
+
+            var warnings = ParseStringArray(warningsElement);
+            if (warnings is null)
+            {
+                return SupportReplyValidationResult.Failure("The AI response was not valid JSON.");
+            }
+
             if (ContainsUnsupportedContent(reply)
                 || ContainsUnsupportedClaim(reply)
-                || ContainsUnsupportedContent(response.RequestedInformation)
-                || ContainsUnsupportedContent(response.Warnings)
-                || HasDuplicateRequestedInformation(response.RequestedInformation))
+                || ContainsUnsupportedContent(requestedInformation)
+                || ContainsUnsupportedContent(warnings)
+                || HasDuplicateRequestedInformation(requestedInformation))
             {
                 return SupportReplyValidationResult.Failure("The AI response contains unsupported content.");
             }
 
             return SupportReplyValidationResult.Success(new SupportReplyResponse(
                 reply,
-                response.RequiresMoreInformation,
-                response.RequestedInformation ?? new List<string>(),
-                response.Warnings ?? new List<string>()));
+                requiresMoreInformationElement.GetBoolean(),
+                requestedInformation,
+                warnings));
         }
         catch (JsonException)
         {
@@ -129,18 +178,19 @@ public sealed class SupportReplyValidator
     private static bool ContainsAny(string value, params string[] phrases)
         => phrases.Any(phrase => value.Contains(phrase, StringComparison.OrdinalIgnoreCase));
 
-    private sealed class SupportReplyEnvelope
+    private static List<string>? ParseStringArray(JsonElement element)
     {
-        [JsonPropertyName("reply")]
-        public string? Reply { get; set; }
+        var values = new List<string>();
+        foreach (var item in element.EnumerateArray())
+        {
+            if (item.ValueKind != JsonValueKind.String)
+            {
+                return null;
+            }
 
-        [JsonPropertyName("requiresMoreInformation")]
-        public bool RequiresMoreInformation { get; set; }
+            values.Add(item.GetString() ?? string.Empty);
+        }
 
-        [JsonPropertyName("requestedInformation")]
-        public List<string>? RequestedInformation { get; set; }
-
-        [JsonPropertyName("warnings")]
-        public List<string>? Warnings { get; set; }
+        return values;
     }
 }

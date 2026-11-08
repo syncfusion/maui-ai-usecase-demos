@@ -16,6 +16,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
     private const string GenerationFailurePlaceholder = "Unable to generate a reply.";
     private const string ReviewAndEditMessage = "Review and edit before sending.";
     private const string GenerationFailureMessage = "We couldn’t generate a reply. Please try again.";
+    private const string DraftReplySuggestion = "Draft Reply";
     private const string RegenerateSuggestion = "Regenerate";
     private const string DiscardSuggestion = "Discard";
     private const string RetrySuggestion = "Retry";
@@ -520,9 +521,22 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
     private static bool IsWorkflowActionText(string text)
     {
-        return text.Equals(RegenerateSuggestion, StringComparison.OrdinalIgnoreCase)
-            || text.Equals(DiscardSuggestion, StringComparison.OrdinalIgnoreCase)
-            || text.Equals(RetrySuggestion, StringComparison.OrdinalIgnoreCase);
+        var normalized = NormalizeWorkflowActionText(text);
+        return normalized.Equals(DraftReplySuggestion, StringComparison.OrdinalIgnoreCase)
+            || normalized.Equals(RegenerateSuggestion, StringComparison.OrdinalIgnoreCase)
+            || normalized.Equals(DiscardSuggestion, StringComparison.OrdinalIgnoreCase)
+            || normalized.Equals(RetrySuggestion, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string NormalizeWorkflowActionText(string text)
+    {
+        var normalized = text.Trim();
+        if (normalized.StartsWith("✦", StringComparison.Ordinal))
+        {
+            normalized = normalized[1..].TrimStart();
+        }
+
+        return normalized;
     }
 
     private static ImageSource CreateSuggestionImage(string glyph, string color)

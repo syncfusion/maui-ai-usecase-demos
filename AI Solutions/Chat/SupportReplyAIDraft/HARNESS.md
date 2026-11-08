@@ -46,6 +46,8 @@ Gates are sequential. Do not begin a later gate until the previous gate has huma
 6. Gate 6: Mobile correction (all four states compared with DesignReference)
 Gate details and acceptance evidence are defined in `SPEC.md`; status is tracked in `TASKS.md`.
 
+Current checkpoint: Gate 4 is still in progress. Do not start Gate 5 or Gate 6 until human runtime evidence confirms the latest Gate 4 implementation.
+
 ## Document Governance
 - `HARNESS.md` changes only when permanent execution rules change.
 - `INTENT.md` changes only when approved product intent changes.

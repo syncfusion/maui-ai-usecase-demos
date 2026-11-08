@@ -16,5 +16,6 @@ Gate 4: Azure OpenAI reply workflow.
 Scope: draft generation, editing, Review and edit before sending, Regenerate, Discard, Retry, conditional Send, and sent-message insertion as Jordan Lee outgoing.
 
 Gate 4 requires human-confirmed runtime evidence before Gate 5 can begin.
+No Gate 5 or Gate 6 work is allowed while Gate 4 is still in progress.
 
 Stop condition: any need for a custom footer, external Editor, or alternative chat control requires human approval.
