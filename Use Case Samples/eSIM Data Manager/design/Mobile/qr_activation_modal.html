@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_blank" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.gstatic.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-secondary-fixed-variant": "#004e5c", "tertiary-fixed": "#6ffbbe", "tertiary": "#006141", "surface-container-high": "#dce9ff", "on-error-container": "#93000a", "surface-dim": "#cbdbf5", "on-tertiary": "#ffffff", "surface-variant": "#d3e4fe", "secondary": "#00687a", "on-secondary": "#ffffff", "primary-container": "#0d5cff", "on-tertiary-fixed": "#002113", "background": "#f8f9ff", "surface-tint": "#004fe4", "outline-variant": "#c3c5d9", "secondary-fixed": "#acedff", "surface-container-lowest": "#ffffff", "on-error": "#ffffff", "inverse-primary": "#b6c4ff", "surface-container-low": "#eff4ff", "secondary-container": "#57dffe", "on-primary-fixed-variant": "#003baf", "on-surface-variant": "#434656", "tertiary-fixed-dim": "#4edea3", "on-tertiary-fixed-variant": "#005236", "on-secondary-fixed": "#001f26", "tertiary-container": "#007c55", "outline": "#737688", "primary": "#0046cc", "surface-bright": "#f8f9ff", "on-secondary-container": "#006172", "on-background": "#0b1c30", "surface-container-highest": "#d3e4fe", "on-tertiary-container": "#b4ffd7", "primary-fixed": "#dce1ff", "inverse-surface": "#213145", "secondary-fixed-dim": "#4cd7f6", "primary-fixed-dim": "#b6c4ff", "on-primary-fixed": "#00164e", "on-surface": "#0b1c30", "error-container": "#ffdad6", "on-primary": "#ffffff", "error": "#ba1a1a", "inverse-on-surface": "#eaf1ff", "surface": "#f8f9ff", "surface-container": "#e5eeff", "on-primary-container": "#ecedff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-sm": "0.5rem", "space-xs": "0.25rem", "space-md": "1rem", "margin": "2rem", "gutter-mobile": "0.75rem", "gutter": "1.5rem", "space-lg": "1.5rem", "space-xl": "2.5rem", "margin-mobile": "1rem" }, fontFamily: { "display": ["Plus Jakarta Sans"], "label-sm": ["Inter"], "body-sm": ["Inter"], "headline-lg-mobile": ["Plus Jakarta Sans"], "body-md": ["Inter"], "display-mobile": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "label-md": ["Inter"], "data-metric": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "telecom-mono": ["JetBrains Mono"], "body-lg": ["Inter"] }, fontSize: { "display": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.03em", "fontWeight": "700" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.03em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }], "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.005em", "fontWeight": "400" }], "display-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "700" }], "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-md": ["13px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500" }], "data-metric": ["28px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "telecom-mono": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }], "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "400" }] } } } };</script><style>@layer base{html,body{width:100%;margin:0;padding:0;min-height:100%;}body{overscroll-behavior-y:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased pt-safe pb-safe min-h-screen flex flex-col"><main class="flex-1 flex flex-col relative w-full bg-surface"><div class="flex flex-col w-full px-margin-mobile pb-space-xl">
+<!-- Top Bar / Modal Navigation -->
+<div class="flex items-center justify-between py-space-sm">
+<button aria-label="Back" class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface shadow-sm active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+<div class="flex items-center gap-space-xs px-3 py-1 rounded-full bg-surface-container-highest">
+<span class="inline-block w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span>
+<span class="font-telecom-mono text-telecom-mono text-on-surface-variant font-medium">PROFILE READY</span>
+</div>
+<button aria-label="Close dialog" class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant shadow-sm active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Header Block -->
+<div class="flex flex-col items-center text-center mt-space-sm mb-space-md">
+<div class="w-12 h-12 rounded-2xl bg-surface-container-high flex items-center justify-center text-primary mb-space-sm shadow-sm">
+<span class="material-symbols-outlined text-[26px]">qr_code_scanner</span>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-semibold tracking-tight">
+      Activate Your eSIM
+    </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-[280px] mt-1">
+      Scan this QR code from your device settings or print/share to another screen.
+    </p>
+</div>
+<!-- Centerpiece: High-visibility QR Code Card -->
+<div class="flex flex-col items-center bg-surface-container-lowest rounded-2xl p-space-lg shadow-xl shadow-primary/5 relative">
+<!-- Live Status Chip -->
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low mb-space-md shadow-xs">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+<span class="font-label-md text-label-md text-on-surface font-medium flex items-center gap-1">
+<span>Ready to Install</span>
+<span class="text-outline">•</span>
+<span class="text-primary font-semibold">SoftBank 5G</span>
+</span>
+</div>
+<!-- QR Framing Container -->
+<div class="relative w-64 h-64 bg-surface-container-lowest p-3 rounded-2xl flex items-center justify-center shadow-inner">
+<!-- Target Corner Reticles -->
+<span class="absolute top-2 left-2 w-4 h-4 rounded-tl-lg bg-transparent shadow-[inset_3px_3px_0_0_#0046cc]"></span>
+<span class="absolute top-2 right-2 w-4 h-4 rounded-tr-lg bg-transparent shadow-[inset_-3px_3px_0_0_#0046cc]"></span>
+<span class="absolute bottom-2 left-2 w-4 h-4 rounded-bl-lg bg-transparent shadow-[inset_3px_-3px_0_0_#0046cc]"></span>
+<span class="absolute bottom-2 right-2 w-4 h-4 rounded-br-lg bg-transparent shadow-[inset_-3px_-3px_0_0_#0046cc]"></span>
+<!-- High-Precision SVG QR Code -->
+<svg class="w-full h-full text-on-background" fill="none" viewbox="0 0 230 230" xmlns="http://www.w3.org/2000/svg">
+<!-- Corner Markers -->
+<rect fill="currentColor" height="54" rx="8" width="54" x="15" y="15"></rect>
+<rect fill="#ffffff" height="38" rx="4" width="38" x="23" y="23"></rect>
+<rect fill="currentColor" height="22" rx="3" width="22" x="31" y="31"></rect>
+<rect fill="currentColor" height="54" rx="8" width="54" x="161" y="15"></rect>
+<rect fill="#ffffff" height="38" rx="4" width="38" x="169" y="23"></rect>
+<rect fill="currentColor" height="22" rx="3" width="22" x="177" y="31"></rect>
+<rect fill="currentColor" height="54" rx="8" width="54" x="15" y="161"></rect>
+<rect fill="#ffffff" height="38" rx="4" width="38" x="23" y="169"></rect>
+<rect fill="currentColor" height="22" rx="3" width="22" x="31" y="177"></rect>
+<!-- Matrix Pixel Blocks (Density Pattern) -->
+<rect fill="currentColor" height="18" rx="2" width="8" x="80" y="20"></rect>
+<rect fill="currentColor" height="8" rx="2" width="18" x="94" y="20"></rect>
+<rect fill="currentColor" height="8" rx="2" width="28" x="120" y="20"></rect>
+<rect fill="currentColor" height="22" rx="2" width="10" x="94" y="36"></rect>
+<rect fill="currentColor" height="10" rx="2" width="16" x="112" y="36"></rect>
+<rect fill="currentColor" height="12" rx="2" width="12" x="136" y="36"></rect>
+<rect fill="currentColor" height="10" rx="2" width="22" x="80" y="56"></rect>
+<rect fill="currentColor" height="18" rx="2" width="18" x="120" y="56"></rect>
+<rect fill="currentColor" height="24" rx="2" width="8" x="20" y="80"></rect>
+<rect fill="currentColor" height="8" rx="2" width="18" x="36" y="80"></rect>
+<rect fill="currentColor" height="14" rx="2" width="8" x="62" y="80"></rect>
+<rect fill="currentColor" height="14" rx="2" width="14" x="80" y="82"></rect>
+<rect fill="currentColor" height="8" rx="2" width="24" x="102" y="80"></rect>
+<rect fill="currentColor" height="22" rx="2" width="12" x="134" y="80"></rect>
+<rect fill="currentColor" height="8" rx="2" width="24" x="154" y="80"></rect>
+<rect fill="currentColor" height="10" rx="2" width="24" x="186" y="80"></rect>
+<rect fill="currentColor" height="8" rx="2" width="18" x="20" y="112"></rect>
+<rect fill="currentColor" height="24" rx="2" width="8" x="46" y="104"></rect>
+<rect fill="currentColor" height="10" rx="2" width="18" x="62" y="104"></rect>
+<rect fill="currentColor" height="24" rx="2" width="10" x="150" y="100"></rect>
+<rect fill="currentColor" height="8" rx="2" width="22" x="168" y="104"></rect>
+<rect fill="currentColor" height="22" rx="2" width="12" x="198" y="98"></rect>
+<rect fill="currentColor" height="12" rx="2" width="24" x="20" y="136"></rect>
+<rect fill="currentColor" height="8" rx="2" width="18" x="52" y="136"></rect>
+<rect fill="currentColor" height="22" rx="2" width="14" x="80" y="132"></rect>
+<rect fill="currentColor" height="8" rx="2" width="26" x="102" y="136"></rect>
+<rect fill="currentColor" height="18" rx="2" width="8" x="136" y="132"></rect>
+<rect fill="currentColor" height="12" rx="2" width="20" x="152" y="136"></rect>
+<rect fill="currentColor" height="20" rx="2" width="10" x="180" y="128"></rect>
+<rect fill="currentColor" height="12" rx="2" width="12" x="198" y="128"></rect>
+<rect fill="currentColor" height="18" rx="2" width="18" x="80" y="162"></rect>
+<rect fill="currentColor" height="8" rx="2" width="12" x="106" y="162"></rect>
+<rect fill="currentColor" height="12" rx="2" width="24" x="126" y="162"></rect>
+<rect fill="currentColor" height="18" rx="2" width="14" x="158" y="156"></rect>
+<rect fill="currentColor" height="10" rx="2" width="30" x="180" y="156"></rect>
+<rect fill="currentColor" height="8" rx="2" width="24" x="80" y="188"></rect>
+<rect fill="currentColor" height="24" rx="2" width="8" x="112" y="180"></rect>
+<rect fill="currentColor" height="12" rx="2" width="14" x="128" y="182"></rect>
+<rect fill="currentColor" height="28" rx="2" width="10" x="150" y="182"></rect>
+<rect fill="currentColor" height="14" rx="2" width="14" x="168" y="174"></rect>
+<rect fill="currentColor" height="22" rx="2" width="20" x="190" y="174"></rect>
+<rect fill="currentColor" height="12" rx="2" width="10" x="80" y="202"></rect>
+<rect fill="currentColor" height="8" rx="2" width="24" x="98" y="202"></rect>
+<rect fill="currentColor" height="12" rx="2" width="12" x="130" y="202"></rect>
+<rect fill="currentColor" height="16" rx="2" width="12" x="170" y="196"></rect>
+</svg>
+<!-- Central Telecom 5G Shield Watermark -->
+<div class="absolute inset-0 m-auto w-12 h-12 rounded-xl bg-surface-container-lowest shadow-md flex items-center justify-center p-1">
+<div class="w-full h-full rounded-lg bg-primary flex flex-col items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[16px] leading-none">signal_cellular_alt</span>
+<span class="font-telecom-mono text-[9px] font-bold tracking-tighter leading-none mt-0.5">5G</span>
+</div>
+</div>
+</div>
+<!-- Quick Expiration / Info Tag -->
+<div class="flex items-center gap-1.5 mt-space-md text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[15px] text-primary">verified_user</span>
+<span>Single-use eSIM cryptographic key</span>
+</div>
+</div>
+<!-- Activation Code & Manual Configuration Section -->
+<div class="flex flex-col bg-surface-container-low rounded-2xl p-space-md mt-space-md shadow-xs">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Activation Code</span>
+<span class="font-label-sm text-label-sm text-primary font-medium">LPA String</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-space-sm flex items-center justify-between gap-space-sm shadow-xs">
+<p class="font-telecom-mono text-telecom-mono text-on-surface truncate tracking-tight selection:bg-secondary-fixed" id="lpaString">
+        LPA:1$rsp.global-esim.net$JAP-89182390
+      </p>
+<button class="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container-high text-primary hover:bg-surface-container-highest transition-colors active:scale-95" id="copyBtn" type="button">
+<span class="material-symbols-outlined text-[16px]" id="copyIcon">content_copy</span>
+<span class="font-label-sm text-label-sm font-semibold" id="copyText">Copy</span>
+</button>
+</div>
+<!-- Quick Action Pair -->
+<div class="grid grid-cols-2 gap-space-sm mt-space-sm">
+<button class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-surface-container-lowest text-on-surface shadow-xs active:scale-98 transition-transform" id="copyAllBtn" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">file_copy</span>
+<span class="font-label-md text-label-md font-semibold">Copy Code</span>
+</button>
+<button class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-surface-container-lowest text-on-surface shadow-xs active:scale-98 transition-transform" id="shareBtn" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">share</span>
+<span class="font-label-md text-label-md font-semibold">Save / Share</span>
+</button>
+</div>
+</div>
+<!-- Installation Steps Onboarding Guide -->
+<div class="flex flex-col bg-surface-container-lowest rounded-2xl p-space-md mt-space-md shadow-xs">
+<div class="flex items-center justify-between mb-space-md">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+        Quick Setup Guide
+      </h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant">iOS &amp; Android</span>
+</div>
+<div class="flex flex-col gap-space-md">
+<!-- Step 1 -->
+<div class="flex items-start gap-space-md">
+<div class="w-7 h-7 rounded-full bg-surface-container-high text-primary font-display text-[13px] font-bold flex items-center justify-center shrink-0">
+          1
+        </div>
+<div class="flex flex-col min-w-0">
+<p class="font-body-md text-body-md text-on-surface font-medium leading-snug">
+            Open Mobile Network Settings
+          </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+            Navigate to <span class="text-on-surface font-semibold">Settings &gt; Cellular</span> or <span class="text-on-surface font-semibold">Mobile Service</span>.
+          </p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex items-start gap-space-md">
+<div class="w-7 h-7 rounded-full bg-surface-container-high text-primary font-display text-[13px] font-bold flex items-center justify-center shrink-0">
+          2
+        </div>
+<div class="flex flex-col min-w-0">
+<p class="font-body-md text-body-md text-on-surface font-medium leading-snug">
+            Tap “Add eSIM” &amp; Scan QR
+          </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+            Use your phone camera or select “Use QR Code” from the cellular prompt.
+          </p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex items-start gap-space-md">
+<div class="w-7 h-7 rounded-full bg-surface-container-high text-primary font-display text-[13px] font-bold flex items-center justify-center shrink-0">
+          3
+        </div>
+<div class="flex flex-col min-w-0">
+<p class="font-body-md text-body-md text-on-surface font-medium leading-snug">
+            Turn On Data Roaming
+          </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+            Switch this profile on and enable Data Roaming when entering Japan.
+          </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Accordion: Manual SM-DP+ & Details -->
+<div class="mt-space-md rounded-2xl bg-surface-container-low overflow-hidden transition-all">
+<button class="w-full flex items-center justify-between p-space-md text-left" id="manualDetailsToggle" type="button">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">tune</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Need Manual SM-DP+ Address?</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant transition-transform duration-200" id="manualDetailsIcon">expand_more</span>
+</button>
+<div class="hidden px-space-md pb-space-md flex flex-col gap-space-sm" id="manualDetailsContent">
+<div class="p-3 bg-surface-container-lowest rounded-xl">
+<span class="font-label-sm text-label-sm text-on-surface-variant block">SM-DP+ Server Address</span>
+<span class="font-telecom-mono text-telecom-mono text-on-surface font-medium selection:bg-secondary-fixed">rsp.global-esim.net</span>
+</div>
+<div class="p-3 bg-surface-container-lowest rounded-xl">
+<span class="font-label-sm text-label-sm text-on-surface-variant block">Activation Code Token</span>
+<span class="font-telecom-mono text-telecom-mono text-on-surface font-medium selection:bg-secondary-fixed">JAP-89182390</span>
+</div>
+</div>
+</div>
+<!-- Bottom Final Action -->
+<div class="mt-space-lg flex flex-col gap-space-sm">
+<button class="w-full py-3.5 px-space-lg rounded-xl bg-primary text-on-primary font-headline-sm text-headline-sm font-semibold shadow-md active:bg-primary/95 transition-all text-center" type="button">
+      I’ve Completed Setup
+    </button>
+<button class="w-full py-2.5 rounded-xl text-on-surface-variant font-label-md text-label-md font-semibold text-center hover:text-on-surface transition-colors" type="button">
+      Troubleshoot Connection
+    </button>
+</div>
+</div>
+<script>
+  (function() {
+    const lpaText = "LPA:1$rsp.global-esim.net$JAP-89182390";
+    const copyBtn = document.getElementById('copyBtn');
+    const copyAllBtn = document.getElementById('copyAllBtn');
+    const copyTextEl = document.getElementById('copyText');
+    const copyIconEl = document.getElementById('copyIcon');
+    const shareBtn = document.getElementById('shareBtn');
+    const toggleBtn = document.getElementById('manualDetailsToggle');
+    const contentEl = document.getElementById('manualDetailsContent');
+    const iconEl = document.getElementById('manualDetailsIcon');
+
+    function performCopy() {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(lpaText).then(showCopied).catch(fallback);
+      } else {
+        fallback();
+      }
+    }
+
+    function showCopied() {
+      if (!copyTextEl || !copyIconEl) return;
+      copyTextEl.textContent = 'Copied!';
+      copyIconEl.textContent = 'check';
+      setTimeout(() => {
+        copyTextEl.textContent = 'Copy';
+        copyIconEl.textContent = 'content_copy';
+      }, 2000);
+    }
+
+    function fallback() {
+      showCopied();
+    }
+
+    if (copyBtn) copyBtn.addEventListener('click', performCopy);
+    if (copyAllBtn) copyAllBtn.addEventListener('click', performCopy);
+
+    if (shareBtn) {
+      shareBtn.addEventListener('click', () => {
+        if (navigator.share) {
+          navigator.share({
+            title: 'SoftBank Japan 5G eSIM',
+            text: 'Here is your eSIM activation token: ' + lpaText,
+          }).catch(() => {});
+        } else {
+          performCopy();
+        }
+      });
+    }
+
+    if (toggleBtn && contentEl && iconEl) {
+      toggleBtn.addEventListener('click', () => {
+        const isHidden = contentEl.classList.contains('hidden');
+        if (isHidden) {
+          contentEl.classList.remove('hidden');
+          iconEl.style.transform = 'rotate(180deg)';
+        } else {
+          contentEl.classList.add('hidden');
+          iconEl.style.transform = 'rotate(0deg)';
+        }
+      });
+    }
+  })();
+</script></main></body></html>
