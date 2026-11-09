@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ESimDataManager.ViewModels"
+             xmlns:charts="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+             xmlns:cards="clr-namespace:Syncfusion.Maui.Cards;assembly=Syncfusion.Maui.Cards"
+             xmlns:gauge="clr-namespace:Syncfusion.Maui.Gauges;assembly=Syncfusion.Maui.Gauges"
+             xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
+             xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+             xmlns:badge="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
+             xmlns:barcode="clr-namespace:Syncfusion.Maui.Barcode;assembly=Syncfusion.Maui.Barcode"
+             x:Class="ESimDataManager.Views.MainPage"
+             x:DataType="vm:MainViewModel"
+             Title="eSIM Data Manager">
+    <Grid RowDefinitions="Auto,*" RowSpacing="0">
+        <Grid x:Name="WideNavigation" Grid.Row="0" Padding="24,14" ColumnDefinitions="*,Auto" BackgroundColor="White">
+            <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                <Label Text="◉" TextColor="#0756C9" FontSize="24" FontAttributes="Bold" />
+                <Label Text="eSIM Data Manager" FontSize="19" FontAttributes="Bold" />
+                <Label Text="DEMO" TextColor="#08785C" BackgroundColor="#E5F7F0" Padding="8,4" FontSize="11" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Grid.Column="1" Spacing="8">
+                <Button Text="Dashboard" Clicked="OnDashboard" />
+                <Button Text="My eSIMs" Clicked="OnEsims" />
+                <Button Text="Explore Plans" Clicked="OnExplore" />
+            </HorizontalStackLayout>
+        </Grid>
+        <Grid Grid.Row="1" RowDefinitions="*,Auto">
+            <ScrollView Grid.Row="0">
+                <VerticalStackLayout Padding="24,26" Spacing="20" MaximumWidthRequest="1200" HorizontalOptions="Center">
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                        <Label x:Name="PageTitle" Text="Your travel connectivity" FontSize="30" FontAttributes="Bold" />
+                        <Label x:Name="PageSubtitle" Grid.Row="1" Text="A simple overview of your demo eSIM plans." TextColor="#687B91" />
+                        <Label Grid.Column="1" Grid.RowSpan="2" Text="✈  TRAVEL READY" TextColor="#08785C" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" />
+                    </Grid>
+                    <VerticalStackLayout x:Name="DashboardView" Spacing="18">
+                        <cards:SfCardView BackgroundColor="White" BorderColor="#E1E9F3" BorderWidth="1" Padding="24" CornerRadius="22">
+                            <Grid ColumnDefinitions="*,280" ColumnSpacing="24">
+                                <VerticalStackLayout Spacing="14">
+                                    <HorizontalStackLayout Spacing="10">
+                                        <Label Text="● Connected" TextColor="#08785C" FontAttributes="Bold" />
+                                        <Label Text="SIMULATED PROFILE" TextColor="#687B91" FontSize="11" VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                    <Label Text="{Binding ActiveProfile.ProfileName}" FontSize="26" FontAttributes="Bold" />
+                                    <Label Text="{Binding ActiveProfile.Country}  ·  {Binding ActiveProfile.Carrier}  ·  {Binding ActiveProfile.Network}" TextColor="#687B91" />
+                                    <Label Text="Sample travel data profile · demo only" TextColor="#687B91" />
+                                    <Grid ColumnDefinitions="*,*,*" Margin="0,12,0,0">
+                                        <VerticalStackLayout><Label Text="DESTINATION" FontSize="10" TextColor="#687B91"/><Label Text="{Binding ActiveProfile.Country}" FontAttributes="Bold"/></VerticalStackLayout>
+                                        <VerticalStackLayout Grid.Column="1"><Label Text="NETWORK" FontSize="10" TextColor="#687B91"/><Label Text="{Binding ActiveProfile.Network}" FontAttributes="Bold"/></VerticalStackLayout>
+                                        <VerticalStackLayout Grid.Column="2"><Label Text="STATUS" FontSize="10" TextColor="#687B91"/><Label Text="{Binding ActiveProfile.Status}" FontAttributes="Bold"/></VerticalStackLayout>
+                                    </Grid>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" BackgroundColor="#F4F7FC" Padding="12" Spacing="4" VerticalOptions="Center">
+                                    <Label Text="DATA REMAINING" FontSize="11" TextColor="#687B91" HorizontalTextAlignment="Center" />
+                                    <Label Text="{Binding RemainingText}" FontSize="25" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                                    <Label Text="of {Binding Allocation, StringFormat='{0:0.#} GB'} · sample data" FontSize="12" TextColor="#687B91" HorizontalTextAlignment="Center" />
+                                    <ProgressBar Progress="{Binding AvailablePercent}" ProgressColor="#0756C9" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </cards:SfCardView>
+                        <Grid ColumnDefinitions="1.5*,*" ColumnSpacing="18">
+                            <Border BackgroundColor="White" Stroke="#E1E9F3" Padding="20" StrokeShape="RoundRectangle 18">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="Data usage" FontSize="18" FontAttributes="Bold" />
+                                    <Label Text="Used and remaining · session demo" TextColor="#687B91" FontSize="12" />
+                                    <Grid ColumnDefinitions="*,200" HeightRequest="210">
+                                        <VerticalStackLayout VerticalOptions="Center" Spacing="6"><Label Text="{Binding RemainingText}" FontSize="29" FontAttributes="Bold" TextColor="#0756C9"/><Label Text="remaining" TextColor="#687B91"/><Label Text="{Binding Consumed, StringFormat='{0:0.#} GB used'}" TextColor="#687B91"/></VerticalStackLayout>
+                                        <gauge:SfRadialGauge Grid.Column="1" HeightRequest="210" WidthRequest="200" AutomationProperties.Name="Data used percentage">
+                                            <gauge:SfRadialGauge.Axes><gauge:RadialAxis Minimum="0" Maximum="100" Interval="20" ShowLabels="False" ShowTicks="False" AxisLineWidth="12" AxisLineFill="#E6EDF7" StartAngle="270" EndAngle="270"><gauge:RadialAxis.Pointers><gauge:RangePointer Value="{Binding UsedPercent}" PointerWidth="12" Fill="#0756C9" /></gauge:RadialAxis.Pointers></gauge:RadialAxis></gauge:SfRadialGauge.Axes>
+                                        </gauge:SfRadialGauge>
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border Grid.Column="1" BackgroundColor="White" Stroke="#E1E9F3" Padding="20" StrokeShape="RoundRectangle 18">
+                                <VerticalStackLayout Spacing="9"><Label Text="Validity" FontSize="18" FontAttributes="Bold"/><Label Text="{Binding DaysRemaining, StringFormat='{0} days left'}" FontSize="25" FontAttributes="Bold" TextColor="#0756C9"/><Label Text="Expires {Binding ExpiryText}" TextColor="#687B91"/><Label Text="SIMULATED PLAN" TextColor="#08785C" FontSize="11" FontAttributes="Bold"/></VerticalStackLayout>
+                            </Border>
+                        </Grid>
+                        <Border BackgroundColor="White" Stroke="#E1E9F3" Padding="20" StrokeShape="RoundRectangle 18">
+                            <VerticalStackLayout><Label Text="Usage trend" FontSize="18" FontAttributes="Bold"/><Label Text="Last 7 days · illustrative data" TextColor="#687B91" FontSize="12"/><charts:SfCartesianChart HeightRequest="220"><charts:SfCartesianChart.XAxes><charts:CategoryAxis /></charts:SfCartesianChart.XAxes><charts:SfCartesianChart.YAxes><charts:NumericalAxis Minimum="0" /></charts:SfCartesianChart.YAxes><charts:LineSeries ItemsSource="{Binding Trend}" XBindingPath="Day" YBindingPath="UsedGb" StrokeWidth="3" EnableTooltip="True" /></charts:SfCartesianChart></VerticalStackLayout>
+                        </Border>
+                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                            <Button Text="＋  Buy eSIM" Clicked="OnExplore" BackgroundColor="#0756C9" TextColor="White" CornerRadius="14" HeightRequest="52" />
+                            <Button Grid.Column="1" Text="↗  Top Up Data" Clicked="OnTopUp" BackgroundColor="White" TextColor="#102A43" CornerRadius="14" HeightRequest="52" />
+                            <Button Grid.Column="2" Text="▦  Show QR" Clicked="OnQr" BackgroundColor="White" TextColor="#102A43" CornerRadius="14" HeightRequest="52" />
+                        </Grid>
+                        <Label Text="All profile, carrier, plan, price and usage information shown here is simulated sample data." TextColor="#687B91" FontSize="12" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="EsimsView" IsVisible="False" Spacing="14">
+                        <Grid ColumnDefinitions="*,Auto"><Label Text="Manage your profiles" FontSize="24" FontAttributes="Bold"/><Label Grid.Column="1" Text="{Binding Store.Profiles.Count, StringFormat='{0} profiles'}" TextColor="#687B91" VerticalOptions="Center"/></Grid>
+                        <tabView:SfTabView x:Name="ProfileTabs" HeightRequest="650" EnableSwiping="True">
+                            <tabView:SfTabView.Items>
+                                <tabView:SfTabItem Header="Active"><tabView:SfTabItem.Content><listView:SfListView ItemsSource="{Binding ActiveProfiles}" ItemSize="94" SelectionMode="Single" SelectionChanged="OnProfileSelected"><listView:SfListView.ItemTemplate><DataTemplate><Border Margin="5" Padding="12" BackgroundColor="White" Stroke="#E1E9F3" StrokeShape="RoundRectangle 14"><Grid ColumnDefinitions="*,Auto"><VerticalStackLayout><Label Text="{Binding ProfileName}" FontAttributes="Bold"/><Label Text="{Binding Country} · {Binding Carrier}" FontSize="12" TextColor="#687B91"/><Label Text="{Binding RemainingGb, StringFormat='{0:0.#} GB remaining'}" FontSize="12" TextColor="#0756C9"/></VerticalStackLayout><badge:SfBadgeView Grid.Column="1" BadgeText="ACTIVE" VerticalOptions="Center"><badge:SfBadgeView.Content><Label Text="" WidthRequest="2" HeightRequest="2" /></badge:SfBadgeView.Content><badge:SfBadgeView.BadgeSettings><badge:BadgeSettings FontSize="10" Background="#E5F7F0" TextColor="#08785C" /></badge:SfBadgeView.BadgeSettings></badge:SfBadgeView></Grid></Border></DataTemplate></listView:SfListView.ItemTemplate></listView:SfListView></tabView:SfTabItem.Content></tabView:SfTabItem>
+                                <tabView:SfTabItem Header="Ready to Install"><tabView:SfTabItem.Content><listView:SfListView ItemsSource="{Binding ReadyProfiles}" ItemSize="94" SelectionMode="Single" SelectionChanged="OnProfileSelected"><listView:SfListView.ItemTemplate><DataTemplate><Border Margin="5" Padding="12" BackgroundColor="White" Stroke="#E1E9F3" StrokeShape="RoundRectangle 14"><VerticalStackLayout><Label Text="{Binding ProfileName}" FontAttributes="Bold"/><Label Text="{Binding Country} · {Binding Carrier}" FontSize="12" TextColor="#687B91"/><Label Text="READY TO INSTALL · SIMULATED" FontSize="11" TextColor="#A76800"/></VerticalStackLayout></Border></DataTemplate></listView:SfListView.ItemTemplate></listView:SfListView></tabView:SfTabItem.Content></tabView:SfTabItem>
+                                <tabView:SfTabItem Header="Expired"><tabView:SfTabItem.Content><listView:SfListView ItemsSource="{Binding ExpiredProfiles}" ItemSize="94" SelectionMode="Single" SelectionChanged="OnProfileSelected"><listView:SfListView.ItemTemplate><DataTemplate><Border Margin="5" Padding="12" BackgroundColor="White" Stroke="#E1E9F3" StrokeShape="RoundRectangle 14"><VerticalStackLayout><Label Text="{Binding ProfileName}" FontAttributes="Bold"/><Label Text="{Binding Country} · {Binding Carrier}" FontSize="12" TextColor="#687B91"/><Label Text="EXPIRED" FontSize="11" TextColor="#A13D4B"/></VerticalStackLayout></Border></DataTemplate></listView:SfListView.ItemTemplate></listView:SfListView></tabView:SfTabItem.Content></tabView:SfTabItem>
+                            </tabView:SfTabView.Items>
+                        </tabView:SfTabView>
+                        <Border BackgroundColor="White" Stroke="#E1E9F3" Padding="20" StrokeShape="RoundRectangle 18">
+                            <VerticalStackLayout Spacing="9"><Label Text="Selected profile" FontSize="20" FontAttributes="Bold"/><Label Text="{Binding SelectedProfile.ProfileName, FallbackValue='Select a profile'}" FontSize="18" FontAttributes="Bold"/><Label Text="{Binding SelectedProfile.Country} · {Binding SelectedProfile.Carrier}" TextColor="#687B91"/><Label Text="{Binding SelectedProfile.Status, StringFormat='Status: {0}'}"/><Label Text="{Binding SelectedProfile.Iccid, StringFormat='Demo ICCID: {0}'}" FontSize="12"/><Label Text="{Binding SelectedProfile.AllocatedGb, StringFormat='Allocation: {0:0.#} GB'}"/><Label Text="{Binding SelectedProfile.ConsumedGb, StringFormat='Used: {0:0.#} GB'}"/><Label Text="{Binding SelectedProfile.RemainingGb, StringFormat='Remaining: {0:0.#} GB'}"/><Label Text="{Binding SelectedProfile.ExpiryDate, StringFormat='Expiry: {0:MMM d, yyyy}'}"/><Label Text="All values are fictional sample data." TextColor="#687B91" FontSize="12"/><expander:SfExpander><expander:SfExpander.Header><Label Text="Activation details (simulated)  ⌄" Padding="4,12" FontAttributes="Bold"/></expander:SfExpander.Header><expander:SfExpander.Content><VerticalStackLayout Padding="8"><barcode:SfBarcodeGenerator Value="{Binding SelectedProfile.ActivationCode, FallbackValue='SAMPLE-QR-NOT-REAL'}" HeightRequest="210" WidthRequest="210"><barcode:SfBarcodeGenerator.Symbology><barcode:QRCode /></barcode:SfBarcodeGenerator.Symbology></barcode:SfBarcodeGenerator><Label Text="{Binding SelectedProfile.ActivationCode}" FontSize="12"/><Label Text="This demo QR is not usable to install a real profile." TextColor="#A13D4B" FontSize="12"/></VerticalStackLayout></expander:SfExpander.Content></expander:SfExpander><Grid ColumnDefinitions="*,*,*" ColumnSpacing="8"><Button Text="Install Profile" Clicked="OnInstall"/><Button Grid.Column="1" Text="Top Up" Clicked="OnTopUp"/><Button Grid.Column="2" Text="Show QR / Copy" Clicked="OnQr"/></Grid><Button Text="Renew Plan" Clicked="OnRenew" BackgroundColor="#F4F7FC" TextColor="#102A43"/></VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout x:Name="ExploreView" IsVisible="False" Spacing="14">
+                        <Label Text="Find your next destination" FontSize="26" FontAttributes="Bold"/>
+                        <Label Text="Browse fictional sample plans · prices in USD" TextColor="#687B91"/>
+                        <SearchBar Placeholder="Search destinations, regions, carriers" Text="{Binding SearchText}" />
+                        <ScrollView Orientation="Horizontal" HeightRequest="52"><HorizontalStackLayout BindableLayout.ItemsSource="{Binding Destinations}" Spacing="8"><BindableLayout.ItemTemplate><DataTemplate><Button Text="{Binding .}" Clicked="OnDestinationSelected" Padding="14,7" CornerRadius="18" BackgroundColor="#E5EEFF" TextColor="#0756C9"/></DataTemplate></BindableLayout.ItemTemplate></HorizontalStackLayout></ScrollView>
+                        <Label Text="Filters" FontSize="17" FontAttributes="Bold"/>
+                        <FlexLayout Direction="Row" Wrap="Wrap" BindableLayout.ItemsSource="{Binding FilterOptions}"><BindableLayout.ItemTemplate><DataTemplate><Button Text="{Binding .}" Clicked="OnFilterSelected" Margin="3" Padding="10,6" CornerRadius="16" BackgroundColor="#EFF4FF" TextColor="#0756C9" FontSize="12"/></DataTemplate></BindableLayout.ItemTemplate></FlexLayout>
+                        <Button Text="Clear filters" Command="{Binding ClearFiltersCommand}" HorizontalOptions="Start" BackgroundColor="Transparent" TextColor="#0756C9"/>
+                        <Label Text="{Binding FilteredPlans.Count, StringFormat='{0} sample plans'}" TextColor="#687B91"/>
+                        <listView:SfListView ItemsSource="{Binding FilteredPlans}" ItemSize="205" SelectionMode="None">
+                            <listView:SfListView.ItemTemplate><DataTemplate><Border Margin="5" Padding="16" BackgroundColor="White" Stroke="#E1E9F3" StrokeShape="RoundRectangle 18"><Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="5"><HorizontalStackLayout Grid.ColumnSpan="2" Spacing="7"><Label Text="{Binding Country}" FontSize="20" FontAttributes="Bold"/><Label Text="SIMULATED" TextColor="#08785C" FontSize="10" VerticalOptions="Center"/></HorizontalStackLayout><Label Grid.Row="1" Text="{Binding Provider}" TextColor="#687B91"/><Label Grid.Row="2" Text="{Binding DataLabel} · {Binding ValidityDays} days · {Binding Network} · {Binding Coverage}"/><Label Grid.Row="3" Text="{Binding Price, StringFormat='${0:0.00}'}" FontSize="21" FontAttributes="Bold" TextColor="#0756C9"/><HorizontalStackLayout Grid.Row="3" Grid.Column="1"><Button Text="Details" Clicked="OnPlanDetails" CommandParameter="{Binding .}" BackgroundColor="#F4F7FC" TextColor="#102A43"/><Button Text="Buy" Clicked="OnBuyPlan" CommandParameter="{Binding .}" BackgroundColor="#0756C9" TextColor="White"/></HorizontalStackLayout></Grid></Border></DataTemplate></listView:SfListView.ItemTemplate>
+                        </listView:SfListView>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
+            <Grid x:Name="MobileNavigation" Grid.Row="1" ColumnDefinitions="*,*,*" Padding="4,8" BackgroundColor="White">
+                <Button Text="⌂  Home" Clicked="OnDashboard" BackgroundColor="Transparent" TextColor="#0756C9"/>
+                <Button Grid.Column="1" Text="▣  My eSIMs" Clicked="OnEsims" BackgroundColor="Transparent" TextColor="#0756C9"/>
+                <Button Grid.Column="2" Text="⌕  Explore" Clicked="OnExplore" BackgroundColor="Transparent" TextColor="#0756C9"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>

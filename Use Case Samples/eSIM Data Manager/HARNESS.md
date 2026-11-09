@@ -2,6 +2,10 @@
 
 This harness guides an AI coding agent implementing the sample defined in [`SPEC.md`](SPEC.md). The harness is for software development only: **the application itself has no AI feature**.
 
+## Implementation status
+
+Implementation is in progress. `README.md` summarizes the delivered shell, workflows, constraints, and environment checks. Do not treat design references as evidence of a completed runtime build: the current recorded host validation is structural only because it lacks a .NET SDK/compiler. Update `TASKS.md` after each task's stated checks have actually passed.
+
 ## Agent objective
 
 Implement the eSIM Data Manager as a compact, polished .NET MAUI MVVM showcase using Syncfusion MAUI controls. Satisfy the requirements and acceptance criteria in `SPEC.md`, and complete tasks in [`TASKS.md`](TASKS.md) in dependency order. Do not expand the product scope.
