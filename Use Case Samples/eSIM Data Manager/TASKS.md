@@ -1,86 +1,49 @@
 # eSIM Data Manager — Implementation Tasks
 
-Use this file with [`HARNESS.md`](HARNESS.md) and [`SPEC.md`](SPEC.md). Mark tasks complete only after the listed checks pass.
+Use this checklist with [`HARNESS.md`](HARNESS.md) and [`SPEC.md`](SPEC.md). This implementation follows the user's UI-focused structure preference: one MAUI app project, with no separate domain or test projects. This differs from the `SPEC.md` request for a standalone domain library and automated tests; those checks are intentionally omitted and are not claimed complete.
 
 Statuses: **Not started** · **In progress** · **Complete**
 
-## 1. Inspect and bootstrap
+## 1. App project and dependencies
 
-**Status:** In progress — structural implementation present; restore and build not verified.
+**Status:** In progress — app-only structure is present; restore/build not verified.
 
-- MAUI app targets Android, iOS, Mac Catalyst, and Windows according to the committed template's OS conditions.
-- Added a plain `net10.0` domain project, Syncfusion/MVVM dependencies, DI registration, and test project.
-- No license key, credentials, AI package, or external-service setting is included.
+- The MAUI app targets Android, iOS, Mac Catalyst, and Windows according to the committed template's OS conditions.
+- Models, in-memory sample state, and view model are included in the MAUI app project.
+- No credentials, AI package, external-service setting, separate domain project, or test project is included.
 
-**Checks:** Project structure and target framework conditions inspected. `dotnet` is unavailable, so restore/build checks remain pending.
+**Checks:** `dotnet` is unavailable; restore/build remain pending.
 
-## 2. Models and in-memory domain state
+## 2. App data and UI state
 
-**Status:** In progress — domain behavior and tests authored; tests not executed.
+**Status:** In progress — seeded data, search/filtering, and simulated in-memory purchase/activation/top-up actions are present in the app project.
 
-- Added fictional plan/profile/usage/top-up models and a deterministic session-only store.
-- Added local case-insensitive search and composable filters, purchase, activation, top-up, and expiry calculations.
-- Added xUnit assertions for seeded arithmetic, search/filter behavior, purchase, activation, exact top-up amounts, and expired-profile restrictions.
+**Checks:** No automated test project is included per UI-focused request. Review behavior manually after a successful MAUI build.
 
-**Checks:** XML parsing passed. Run `dotnet test` in a .NET 10-capable environment; no test result is claimed here.
+## 3. Responsive navigation
 
-## 3. App shell and responsive navigation
+**Status:** In progress — compact Shell tabs and wide-window persistent navigation are authored.
 
-**Status:** In progress — shell destinations authored; runtime behavior not verified.
+**Checks:** XML structural validation passed. Runtime layout across phone, tablet, and desktop sizes is unverified.
 
-- Added Dashboard, My eSIMs, Store, and Orders Shell destinations.
-- Compact default layouts use Shell tabs; Windows/Mac Catalyst use persistent desktop side navigation.
+## 4. UI views
 
-**Checks:** XML parses; target runtime and window-size behavior require MAUI build/run verification.
+**Status:** In progress — dashboard, profiles, plan exploration, and illustrative orders content are authored with Syncfusion controls and responsive layouts.
 
-## 4. Dashboard
+**Checks:** XAML parses structurally; control API compatibility, bindings, visual quality, and accessibility require MAUI build/runtime verification.
 
-**Status:** In progress — dashboard markup and view model authored.
+## 5. Simulated interactions
 
-- Active demo profile, balance, validity, seven-day chart, and quick actions are present.
-- Uses `SfRadialGauge` and `SfCartesianChart`; profile/plan status is labeled demo.
+**Status:** In progress — plan purchase, activation, top-up, and sample activation-code copy interactions are authored without external calls.
 
-**Checks:** Structural XML passed. Gauge/chart binding and empty-state behavior require runtime verification.
+**Checks:** Runtime interactions remain unverified. Activation code text is demo-only; generated QR visual is not implemented.
 
-## 5. My eSIMs and profile details
+## 6. Validation
 
-**Status:** In progress — active, ready, and expired profile categories are authored with `SfTabView` and `SfListView`, plus `SfBadgeView` and an `SfExpander` details section.
+**Status:** In progress.
 
-- Simulated activation, QR/code copy dialog, top-up, and renewal display action are wired.
-- Explicitly states activation is not OS-level provisioning and expired profiles cannot top up.
-
-**Checks:** Structural XML passed; selected profile details remain basic and the `SfTabView` binding/runtime behavior is unverified.
-
-## 6. Explore plans
-
-**Status:** In progress — local catalog, destination buttons, filters, and responsive plan cards are authored.
-
-- Search uses country, region, provider; filters cover coverage/network/type/validity and clear action.
-- Buy action presents illustrative tax/price confirmation and adds a Ready to Install profile.
-
-**Checks:** Domain tests authored but unrun. Verify multi-filter behavior, purchase flow, and app UI at runtime.
-
-## 7. Purchase, QR, and top-up experiences
-
-**Status:** In progress — simulated dialogs and state transitions authored.
-
-- Purchase, activation, top-up confirmation, and copy-code paths do not call external services.
-- Activation details are plain sample text. A generated QR is not wired into the activation dialog yet; do not treat the sample code as a scannable QR.
-
-**Checks:** No compilation or runtime verification. Add/verify QR visual and dialog presentation before completion.
-
-## 8. Accessibility, UX and consistency pass
-
-**Status:** In progress — demo labels, touch controls, and scrolling layouts authored.
-
-**Checks:** Manual accessibility, text scaling, keyboard/focus, no-profile state, and responsive checks have not been run.
-
-## 9. Verification and delivery documentation
-
-**Status:** In progress — `README.md` records implementation and limitations.
-
-- XAML, project, and solution XML parsing passed using Python `xml.etree.ElementTree`.
+- XAML, project, and solution XML parsed successfully with Python `xml.etree.ElementTree`.
 - `git diff --check` passed.
-- `dotnet --info` failed with `dotnet: not found`; NuGet restore, compilation, xUnit tests, and runtime checks are not verified.
+- `.NET SDK/compiler` was unavailable (`dotnet: not found`), so restore, build, and runtime checks were not run.
 
-**Checks:** Run build/tests on a .NET MAUI-equipped host; inspect final diff for scope and correctness before marking complete.
+**Checks:** Do not claim app compilation, test success, or runtime behavior until verified in a .NET MAUI-capable environment.

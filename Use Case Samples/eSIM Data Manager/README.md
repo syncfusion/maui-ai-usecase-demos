@@ -10,12 +10,10 @@ A fictional traveler eSIM workflow showcase built with .NET MAUI, MVVM, and Sync
 - Simulated activation, sample activation details/code with clipboard action, and selectable 1/3/5 GB sample top-ups.
 - Compact bottom-tab navigation and wide-window persistent navigation.
 
-## Architecture
+## Project structure
 
-- `eSIMDataManager/`: .NET MAUI application and view model.
-- `ESimDomain.csproj`: session-scoped data models and deterministic in-memory store.
-- `eSIMDataManager.Tests/`: domain logic unit tests.
-- `SPEC.md`: product contract; `HARNESS.md`: development constraints; `TASKS.md`: acceptance checklist.
+- `eSIMDataManager/eSIMDataManager/`: the single .NET MAUI app project, including its view model, sample models, and in-memory demo state.
+- `SPEC.md`: product contract; `HARNESS.md`: development constraints; `TASKS.md`: implementation checklist.
 
 ## Controls
 
@@ -23,4 +21,4 @@ The UI uses Syncfusion `SfRadialGauge`, `SfCartesianChart`, `SfListView`, and `S
 
 ## Validation
 
-XAML, project, and solution XML parsing and `git diff --check` passed in the authoring environment. A .NET SDK/compiler is unavailable in that environment, so NuGet restore, compilation, unit tests, and runtime checks have not been run. Do not interpret structural validation as a build or test pass.
+XAML, project, and solution XML parsing and `git diff --check` passed in the authoring environment. A .NET SDK/compiler is unavailable in that environment, so NuGet restore, compilation, and runtime checks have not been run. Automated test-project validation is not included in this UI-focused sample.

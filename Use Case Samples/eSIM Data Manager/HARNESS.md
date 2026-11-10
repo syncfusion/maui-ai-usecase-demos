@@ -23,7 +23,7 @@ Implement the eSIM Data Manager as a compact, polished .NET MAUI MVVM showcase u
 - No backend, database, filesystem persistence, preferences, secure storage, network service, actual eSIM provisioning, or payment processing.
 - Keep sample data deterministic, local, fictional, and in memory for the current process only.
 - Clearly label simulated transactions, plans/providers, activation code/QR, and provisioning. Never suggest a sample QR installs a real eSIM.
-- Keep business transitions and calculations testable outside view code. Share one in-memory source of truth across view models/screens.
+- Keep business transitions and calculations in the app's view-model/store source files; share one in-memory source of truth across the UI. The current UI-focused project intentionally does not split the domain into a separate project.
 - Use the existing project’s target framework and package versions unless a required change is justified by the spec.
 - Use Syncfusion controls specified in the spec when compatible; verify APIs against installed package versions and follow existing repository patterns. Do not guess control properties.
 - Protect user data: collect no payment or identity information and do not introduce credentials or external calls.
@@ -45,5 +45,5 @@ Implement the eSIM Data Manager as a compact, polished .NET MAUI MVVM showcase u
 - Tasks in `TASKS.md` have completion evidence and are not marked complete on assumption alone.
 - Android, iOS, Windows, and Mac Catalyst targets are configured as appropriate to project conventions; host limitations are distinguished from code failures.
 - Search/filter, purchase, activation, usage, and top-up state changes work across screens in the same session.
-- Tests cover the business logic and all changes pass available checks.
+- Business logic remains in the MAUI app project. The user-requested UI-focused project does not include a separate unit-test project; validation claims must reflect checks actually run.
 - App behavior remains offline and session-only, with demo/simulation labels visible at relevant decision points.
