@@ -15,8 +15,8 @@ public partial class DashboardPage : ContentPage
         SizeChanged += (_, _) => popupActions.PopupView.WidthRequest = Math.Min(580, Width - 32);
     }
 
-    private async void StoreClicked(object? sender, EventArgs e) => await Navigation.PushAsync(new StorePage((MainViewModel)BindingContext));
-    private async void ProfilesClicked(object? sender, EventArgs e) => await Navigation.PushAsync(new ProfilesPage((MainViewModel)BindingContext));
+    private void StoreClicked(object? sender, EventArgs e) => Shell.Current.GoToAsync("//store");
+    private void ProfilesClicked(object? sender, EventArgs e) => Shell.Current.GoToAsync("//profiles");
     private void QrActiveClicked(object? sender, EventArgs e) => popupActions.QrActiveClicked(sender, e);
     private void TopUpActiveClicked(object? sender, EventArgs e) => popupActions.TopUpActiveClicked(sender, e);
 }

@@ -45,7 +45,7 @@ public class DemoPage
             popupContent.Children.Add(new Label { Text = $"{plan.Country} · {plan.Provider} · {plan.DataLabel} · {plan.ValidityDays} days", TextColor = Color.FromArgb("#63748B") });
             popupContent.Children.Add(new Label { Text = $"Plan: ${plan.Price:0.00}  |  Illustrative tax: ${ViewModel.SelectedPlanTax:0.00}  |  Total: ${ViewModel.SelectedPlanTotal:0.00} USD", FontAttributes = FontAttributes.Bold });
             var confirm = new Syncfusion.Maui.Buttons.SfButton { Text = "Confirm demo purchase" };
-            confirm.Clicked += async (_, _) => { ViewModel.Store.Purchase(plan); popup.Dismiss(); await Application.Current!.Windows[0].Page!.Navigation.PushAsync(new ProfilesPage(ViewModel)); };
+            confirm.Clicked += (_, _) => { ViewModel.Store.Purchase(plan); popup.Dismiss(); _ = Shell.Current.GoToAsync("//profiles"); };
             popupContent.Children.Add(confirm);
             var cancel = new Syncfusion.Maui.Buttons.SfButton { Text = "Cancel" };
             cancel.Clicked += (_, _) => popup.Dismiss();

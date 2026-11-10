@@ -188,7 +188,7 @@ public partial class MainViewModel : ObservableObject
         SelectedProfile = store.Purchase(plan);
         IsPurchaseInProgress = false;
         await Application.Current.Windows[0].Page!.DisplayAlert("Plan added", "Your sample eSIM is ready to install. This is a simulation only; no eSIM was provisioned.", "View profiles");
-        await Application.Current.Windows[0].Page!.Navigation.PushAsync(new ProfilesPage(this));
+        await Shell.Current.GoToAsync("//profiles");
     }
 
     [RelayCommand]
