@@ -1,10 +1,10 @@
-using Microsoft.Extensions.DependencyInjection;
+using eSIMDataManager.ViewModels;
 
 namespace eSIMDataManager;
 
 public partial class AppShell : Shell
 {
-    public AppShell(IServiceProvider services)
+    public AppShell(MainViewModel viewModel)
     {
         InitializeComponent();
 
@@ -13,7 +13,7 @@ public partial class AppShell : Shell
                      .SelectMany(tabBar => tabBar.Items)
                      .SelectMany(tab => tab.Items))
         {
-            shellContent.ContentTemplate = new DataTemplate(() => services.GetRequiredService<MainPage>());
+            shellContent.ContentTemplate = new DataTemplate(() => new MainPage(viewModel));
         }
     }
 }

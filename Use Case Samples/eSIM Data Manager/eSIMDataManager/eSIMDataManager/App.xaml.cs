@@ -1,10 +1,12 @@
+using eSIMDataManager.ViewModels;
+
 namespace eSIMDataManager;
 
 public partial class App : Application
 {
-    public App(AppShell shell)
+    public App(MainViewModel viewModel)
     {
         InitializeComponent();
-        MainPage = shell;
+        MainPage = new AppShell(viewModel);
     }
 }
