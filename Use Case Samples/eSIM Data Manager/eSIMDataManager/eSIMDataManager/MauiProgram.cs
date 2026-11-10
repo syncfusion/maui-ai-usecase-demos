@@ -18,6 +18,7 @@ namespace eSIMDataManager
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                     fonts.AddFont("Inter.ttf", "Inter");
+                    fonts.AddFont("MauiMaterialAssets.ttf", "MaterialAssets");
                 });
 
 #if DEBUG
