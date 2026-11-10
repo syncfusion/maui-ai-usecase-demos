@@ -12,9 +12,7 @@ public partial class AppShell : Shell
         section.Items.Add(CreatePage("Dashboard", "dashboard", () => new DashboardPage(viewModel)));
         section.Items.Add(CreatePage("My eSIMs", "profiles", () => new ProfilesPage(viewModel)));
         section.Items.Add(CreatePage("Store", "store", () => new StorePage(viewModel)));
-        var shellItem = new ShellItem();
-        shellItem.Items.Add(section);
-        Items.Add(shellItem);
+        Items.Add(new ShellItem { Items = { section } });
     }
 
     private static ShellContent CreatePage(string title, string route, Func<Page> pageFactory) => new()

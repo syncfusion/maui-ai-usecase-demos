@@ -4,9 +4,9 @@
         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="18">
             <Label Text="eSIM Data Manager" FontSize="19" FontAttributes="Bold" TextColor="#102B52" VerticalOptions="Center"/>
             <HorizontalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="4">
-                <sfButton:SfButton Text="Dashboard" Clicked="DashboardClicked" Style="{StaticResource NavigationActiveButton}"/>
-                <sfButton:SfButton Grid.Column="1" Text="My eSIMs" Clicked="ProfilesClicked" Style="{StaticResource LinkButton}"/>
-                <sfButton:SfButton Grid.Column="2" Text="Store" Clicked="StoreClicked" Style="{StaticResource LinkButton}"/>
+                <sfButton:SfButton Text="Dashboard" Clicked="DashboardClicked" Style="{StaticResource NavigationInactiveButton}"/>
+                <sfButton:SfButton Grid.Column="1" Text="My eSIMs" Clicked="ProfilesClicked" Style="{StaticResource NavigationInactiveButton}"/>
+                <sfButton:SfButton Grid.Column="2" Text="Store" Clicked="StoreClicked" Style="{StaticResource NavigationInactiveButton}"/>
             </HorizontalStackLayout>
             <Label Grid.Column="2" Text="Global Traveler · Roaming Online" TextColor="#006B4F" FontSize="12" VerticalOptions="Center"/>
         </Grid>

@@ -8,7 +8,7 @@ public sealed class EsimStore
     public ObservableCollection<EsimProfile> Profiles { get; } = [];
     public IReadOnlyList<Plan> Plans { get; } =
     [
-        new("jp-5-15", "Japan", "Asia", "Sakura Connect (demo)", 5, 15, 8.50m, NetworkType.FiveG, CoverageType.Local, PlanType.Limited),
+        new("jp-5-15", "Japan", "Asia", "SoftBank Crop", 5, 15, 8.50m, NetworkType.FiveG, CoverageType.Local, PlanType.Limited),
         new("us-10-30", "USA", "North America", "Liberty Connect (demo)", 10, 30, 18m, NetworkType.FiveG, CoverageType.Local, PlanType.Limited),
         new("fr-5-7", "France", "Europe", "HexaTel (demo)", 5, 7, 7m, NetworkType.FourG, CoverageType.Local, PlanType.Limited),
         new("kr-10-15", "Korea", "Asia", "SeoulWave (demo)", 10, 15, 12m, NetworkType.FiveG, CoverageType.Local, PlanType.Limited),
@@ -25,7 +25,7 @@ public sealed class EsimStore
     {
         var active = new EsimProfile
         {
-            Id = "demo-jp-active", ProfileName = "Japan Unlimited 5G", Country = "Japan", Carrier = "Sakura Connect (demo)", Network = NetworkType.FiveG,
+            Id = "demo-jp-active", ProfileName = "Japan Unlimited 5G", Country = "Japan", Carrier = "SoftBank Crop", Network = NetworkType.FiveG,
             Status = ProfileStatus.Active, Iccid = "DEMO-8931-0248", ActivationCode = "LPA:1$demo.carrier.example$SAMPLEJP001",
             AllocatedGb = 10, ConsumedGb = 6.8, ActivationDate = DateTime.Today.AddDays(-4), ExpiryDate = DateTime.Today.AddDays(6),
             DailyUsage = [new("Mon", .8), new("Tue", 1.1), new("Wed", .9), new("Thu", 1.4), new("Fri", 1.0), new("Sat", .9), new("Sun", .7)]
