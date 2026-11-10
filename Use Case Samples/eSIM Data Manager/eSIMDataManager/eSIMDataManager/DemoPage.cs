@@ -101,6 +101,6 @@ public class DemoPage
         ViewModel.SelectedPlan = (sender as Element)?.BindingContext as Plan;
         ShowDemoPopup("Purchase Plan · Demo checkout");
     }
-    public void DestinationClicked(object? sender, EventArgs e) { if (sender is Button button && button.Text is not null) ViewModel.SelectCountry(button.Text); }
-    public void FilterClicked(object? sender, EventArgs e) { if (sender is Button button && button.Text is not null) ViewModel.ToggleFilter(button.Text); }
+    public void DestinationClicked(object? sender, EventArgs e) { if (sender is Syncfusion.Maui.Buttons.SfButton button && button.Text is not null) ViewModel.SelectCountry(button.Text); }
+    public void FilterClicked(object? sender, EventArgs e) { if (sender is Syncfusion.Maui.Buttons.SfButton button && button.Text is not null) ViewModel.ToggleFilter(button.Text); }
 }

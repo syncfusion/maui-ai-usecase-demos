@@ -27,11 +27,11 @@ public partial class MainPage : ContentPage
 
     private void DestinationClicked(object? sender, EventArgs e)
     {
-        if (sender is Button button && button.Text is not null) ViewModel.SelectCountry(button.Text);
+        if (sender is Syncfusion.Maui.Buttons.SfButton button && button.Text is not null) ViewModel.SelectCountry(button.Text);
     }
 
     private void FilterClicked(object? sender, EventArgs e)
     {
-        if (sender is Button button && button.Text is not null) ViewModel.ToggleFilter(button.Text);
+        if (sender is Syncfusion.Maui.Buttons.SfButton button && button.Text is not null) ViewModel.ToggleFilter(button.Text);
     }
 }
