@@ -8,24 +8,9 @@
              x:DataType="viewModels:SupportChatViewModel"
              Title="Support Reply AI Draft"
              BackgroundColor="{StaticResource AppBackground}">
-    <Grid>
-        <Border Stroke="{StaticResource BubbleBorderColor}"
-                StrokeThickness="1"
-                StrokeShape="RoundRectangle 4"
-                BackgroundColor="{StaticResource SurfaceColor}"
-                Margin="0"
-                Padding="0"
-                HorizontalOptions="FillAndExpand"
-                VerticalOptions="FillAndExpand">
-            <Border.Shadow>
-                <Shadow Brush="#24000000"
-                        Offset="0,8"
-                        Radius="18"
-                        Opacity="0.12" />
-            </Border.Shadow>
-
-            <Grid RowDefinitions="Auto,1,Auto,1,Auto,1,*"
-                  BackgroundColor="{StaticResource SurfaceColor}">
+    <Grid BackgroundColor="{StaticResource SurfaceColor}">
+        <Grid RowDefinitions="Auto,1,Auto,1,Auto,1,*"
+              BackgroundColor="{StaticResource SurfaceColor}">
                 <Grid Grid.Row="0"
                       Padding="12,8"
                       ColumnDefinitions="Auto,Auto,*"
@@ -226,7 +211,7 @@
                          Color="{StaticResource BubbleBorderColor}" />
 
                 <Grid Grid.Row="6"
-                      Padding="8,8,8,8"
+                      Padding="0"
                       BackgroundColor="#F7F9FC">
                     <chat:SfChat x:Name="ConversationChat"
                                  Messages="{Binding Messages}"
@@ -238,12 +223,12 @@
                                  ShowMessageInputView="True"
                                  AllowMultilineInput="True"
                                  SendMessageCommand="{Binding NativeSendCommand}"
-                                 VerticalOptions="FillAndExpand"
+                                 VerticalOptions="Start"
                                  HorizontalOptions="FillAndExpand"
                                  BackgroundColor="Transparent"
                                  Margin="0" />
                 </Grid>
             </Grid>
-        </Border>
+        </Grid>
     </Grid>
 </ContentPage>
