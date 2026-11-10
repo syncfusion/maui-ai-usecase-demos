@@ -23,9 +23,10 @@ namespace eSIMDataManager
     		builder.Logging.AddDebug();
 #endif
 
+            builder.Services.AddSingleton<AppShell>();
             builder.Services.AddSingleton<EsimStore>();
             builder.Services.AddSingleton<MainViewModel>();
-            builder.Services.AddSingleton<MainPage>();
+            builder.Services.AddTransient<MainPage>();
 
             return builder.Build();
         }

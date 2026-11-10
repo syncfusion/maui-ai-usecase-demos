@@ -9,7 +9,6 @@ namespace eSIMDataManager.ViewModels;
 public partial class MainViewModel : ObservableObject
 {
     private readonly EsimStore store;
-    private string searchText = string.Empty;
     private string? selectedCountry;
     private CoverageType? selectedCoverage;
     private NetworkType? selectedNetwork;
@@ -43,6 +42,7 @@ public partial class MainViewModel : ObservableObject
     public string ExpiryText => ActiveProfile?.ExpiryDate.ToString("MMM d, yyyy") ?? "—";
     public int DaysRemaining => ActiveProfile?.DaysRemaining ?? 0;
     public bool HasActiveProfile => ActiveProfile is not null;
+    public int ProfilesCount => store.Profiles.Count;
     public bool HasSelectedProfile => SelectedProfile is not null;
     public bool IsSelectedProfileReady => SelectedProfile?.Status == ProfileStatus.ReadyToInstall;
     public bool IsSelectedProfileActive => SelectedProfile?.Status == ProfileStatus.Active;
@@ -103,6 +103,7 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(ExpiryText));
         OnPropertyChanged(nameof(DaysRemaining));
         OnPropertyChanged(nameof(HasActiveProfile));
+        OnPropertyChanged(nameof(ProfilesCount));
         RefreshPlans();
     }
 

@@ -23,6 +23,7 @@ public partial class MainPage : ContentPage
     private async void ActivateItemClicked(object? sender, EventArgs e) => await ViewModel.InstallProfileCommand.ExecuteAsync((sender as Element)?.BindingContext as eSIMDataManager.Models.EsimProfile);
     private async void RenewItemClicked(object? sender, EventArgs e) => await ViewModel.RenewCommand.ExecuteAsync((sender as Element)?.BindingContext as eSIMDataManager.Models.EsimProfile);
     private async void QrSelectedClicked(object? sender, EventArgs e) => await ViewModel.ShowQrCommand.ExecuteAsync(ViewModel.SelectedProfile);
+    private async void BuyPlanClicked(object? sender, EventArgs e) => await ViewModel.BuyPlanCommand.ExecuteAsync((sender as Element)?.BindingContext as eSIMDataManager.Models.Plan);
 
     private void DestinationClicked(object? sender, EventArgs e)
     {
