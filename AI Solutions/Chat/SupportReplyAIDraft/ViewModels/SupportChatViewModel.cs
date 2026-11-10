@@ -16,6 +16,8 @@ public sealed partial class SupportChatViewModel : ObservableObject
     private const string GenerationFailurePlaceholder = "Unable to generate a reply.";
     private const string ReviewAndEditMessage = "Review and edit before sending.";
     private const string GenerationFailureMessage = "We couldn’t generate a reply. Please try again.";
+    private const string MissingCredentialsMessage = "Azure OpenAI credentials are unavailable or invalid. Configure the Azure settings and retry.";
+    private const string InvalidAiResponseMessage = "The AI returned an invalid reply. Please retry.";
     private const string DraftReplySuggestion = "Draft Reply";
     private const string RegenerateSuggestion = "Regenerate";
     private const string DiscardSuggestion = "Discard";
@@ -208,6 +210,11 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
             if (text.Equals(RetrySuggestion, StringComparison.OrdinalIgnoreCase))
             {
+                if (SelectedMessage is null)
+                {
+                    return;
+                }
+
                 await GenerateDraftAsync(preserveExistingDraftOnFailure: HasDraft);
             }
         }
@@ -304,7 +311,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
                 return;
             }
 
-            TransitionTo(WorkflowState.Error, preserveDraft: preserveExistingDraftOnFailure, preservedDraft: preservedDraft);
+            TransitionTo(WorkflowState.Error, preserveDraft: preserveExistingDraftOnFailure, preservedDraft: preservedDraft, errorMessage: validation.ErrorMessage);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -317,7 +324,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
                 return;
             }
 
-            TransitionTo(WorkflowState.Error, preserveDraft: preserveExistingDraftOnFailure, preservedDraft: preservedDraft);
+            TransitionTo(WorkflowState.Error, preserveDraft: preserveExistingDraftOnFailure, preservedDraft: preservedDraft, errorMessage: InvalidAiResponseMessage);
         }
     }
 
@@ -376,7 +383,8 @@ public sealed partial class SupportChatViewModel : ObservableObject
         WorkflowState state,
         string? generatedReply = null,
         bool preserveDraft = false,
-        string preservedDraft = "")
+        string preservedDraft = "",
+        string? errorMessage = null)
     {
         _workflowState = state;
 
@@ -452,7 +460,16 @@ public sealed partial class SupportChatViewModel : ObservableObject
                 ShowTypingIndicator = false;
                 ShowErrorMessage = true;
                 ShowReviewHint = false;
-                InlineMessage = GenerationFailureMessage;
+                InlineMessage = string.IsNullOrWhiteSpace(errorMessage) || errorMessage == "The AI service is currently unavailable."
+                    ? GenerationFailureMessage
+                    : errorMessage;
+                if (InlineMessage.Contains("credential", StringComparison.OrdinalIgnoreCase)
+                    || InlineMessage.Contains("endpoint", StringComparison.OrdinalIgnoreCase)
+                    || InlineMessage.Contains("deployment", StringComparison.OrdinalIgnoreCase))
+                {
+                    InlineMessage = MissingCredentialsMessage;
+                }
+
                 ChatSuggestions = BuildSuggestions((RetrySuggestion, RefreshSuggestionImage));
 
                 if (preserveDraft && !string.IsNullOrWhiteSpace(preservedDraft))

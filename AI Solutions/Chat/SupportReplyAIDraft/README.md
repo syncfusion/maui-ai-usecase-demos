@@ -9,7 +9,8 @@ Set these environment variables before using the sample:
 - `AZURE_OPENAI_DEPLOYMENT_NAME`
 - `SYNCFUSION_LICENSE_KEY`
 
-If the Azure OpenAI settings are missing or invalid, the sample shows a controlled guidance message and preserves the conversation state.
+The Azure environment variables take precedence when all three are set. If any is missing, the sample loads the full Azure configuration from the packaged `azure-openai.local.json` file. The project includes that local file as a MAUI asset only when it exists in the project folder. Keep the file local and never commit it.
+If neither source provides valid settings, the sample shows a controlled guidance message and preserves the conversation state.
 If the Syncfusion license key is empty, the app starts without registering a license.
 
 ## Workflow
