@@ -101,10 +101,11 @@ public partial class MainViewModel : ObservableObject
         AverageTrend.Clear();
         if (ActiveProfile is not null)
         {
+            var averageUsage = ActiveProfile.DailyUsage.Average(point => point.UsedGb);
             foreach (var point in ActiveProfile.DailyUsage)
             {
                 Trend.Add(point);
-                AverageTrend.Add(point with { UsedGb = .97 });
+                AverageTrend.Add(point with { UsedGb = averageUsage });
             }
         }
         OnPropertyChanged(nameof(ActiveProfile));
