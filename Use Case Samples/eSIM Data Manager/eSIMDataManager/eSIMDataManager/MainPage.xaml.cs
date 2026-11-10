@@ -10,7 +10,7 @@ public partial class MainPage : ContentPage
         BindingContext = viewModel;
     }
 
-    private async void DashboardClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("//dashboard");
-    private async void ProfilesClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("//profiles");
-    private async void StoreClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("//store");
+    private async void DashboardClicked(object? sender, EventArgs e) => await Navigation.PopToRootAsync();
+    private async void ProfilesClicked(object? sender, EventArgs e) => await Navigation.PushAsync(new ProfilesPage((MainViewModel)BindingContext));
+    private async void StoreClicked(object? sender, EventArgs e) => await Navigation.PushAsync(new StorePage((MainViewModel)BindingContext));
 }
