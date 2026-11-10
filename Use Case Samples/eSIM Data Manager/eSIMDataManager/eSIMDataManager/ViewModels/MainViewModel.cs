@@ -20,6 +20,7 @@ public partial class MainViewModel : ObservableObject
     public ObservableCollection<EsimProfile> ReadyProfiles { get; } = [];
     public ObservableCollection<EsimProfile> ExpiredProfiles { get; } = [];
     public ObservableCollection<DailyUsage> Trend { get; } = [];
+    public ObservableCollection<DailyUsage> AverageTrend { get; } = [];
     public IReadOnlyList<UsageSegment> ConsumptionSegments => [new("Consumed", Consumed), new("Remaining", Remaining)];
     public double UsedFraction => UsedPercent / 100d;
     public double ValidityFraction => Math.Clamp(DaysRemaining / 14d, 0, 1);
@@ -97,7 +98,15 @@ public partial class MainViewModel : ObservableObject
         Sync(ExpiredProfiles, store.Profiles.Where(p => p.Status == ProfileStatus.Expired));
         if (SelectedProfile is null || !store.Profiles.Contains(SelectedProfile)) SelectedProfile = store.SelectedProfile ?? store.Profiles.FirstOrDefault();
         Trend.Clear();
-        if (ActiveProfile is not null) foreach (var point in ActiveProfile.DailyUsage) Trend.Add(point);
+        AverageTrend.Clear();
+        if (ActiveProfile is not null)
+        {
+            foreach (var point in ActiveProfile.DailyUsage)
+            {
+                Trend.Add(point);
+                AverageTrend.Add(point with { UsedGb = .97 });
+            }
+        }
         OnPropertyChanged(nameof(ActiveProfile));
         OnPropertyChanged(nameof(Remaining));
         OnPropertyChanged(nameof(Consumed));
