@@ -1,4 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using Syncfusion.Maui.Core.Hosting;
+using eSIMDataManager.Services;
+using eSIMDataManager.ViewModels;
 
 namespace eSIMDataManager
 {
@@ -9,6 +12,7 @@ namespace eSIMDataManager
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .ConfigureSyncfusionCore()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -18,6 +22,10 @@ namespace eSIMDataManager
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
+
+            builder.Services.AddSingleton<EsimStore>();
+            builder.Services.AddSingleton<MainViewModel>();
+            builder.Services.AddSingleton<MainPage>();
 
             return builder.Build();
         }

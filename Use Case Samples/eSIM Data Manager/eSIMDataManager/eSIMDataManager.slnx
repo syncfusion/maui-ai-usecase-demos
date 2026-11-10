@@ -1,3 +1,5 @@
 <Solution>
   <Project Path="eSIMDataManager/eSIMDataManager.csproj" />
+  <Project Path="../ESimDomain.csproj" />
+  <Project Path="eSIMDataManager.Tests/eSIMDataManager.Tests.csproj" />
 </Solution>

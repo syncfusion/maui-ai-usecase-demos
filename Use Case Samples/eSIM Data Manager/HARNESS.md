@@ -4,7 +4,7 @@ This harness guides an AI coding agent implementing the sample defined in [`SPEC
 
 ## Implementation status
 
-Implementation is in progress. `README.md` summarizes the delivered shell, workflows, constraints, and environment checks. Do not treat design references as evidence of a completed runtime build: the current recorded host validation is structural only because it lacks a .NET SDK/compiler. Update `TASKS.md` after each task's stated checks have actually passed.
+Implementation is in progress. The current implementation includes the shared MAUI shell, in-memory domain workflows, dashboard and plan/profile content, and domain unit tests. `README.md` records environment checks. A .NET SDK/compiler is unavailable, so restore, compilation, tests, and runtime verification remain unverified. Do not treat structural XML checks as build evidence or mark the associated `TASKS.md` checks complete without running them.
 
 ## Agent objective
 
