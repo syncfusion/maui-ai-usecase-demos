@@ -2,12 +2,19 @@ using eSIMDataManager.ViewModels;
 
 namespace eSIMDataManager;
 
-public partial class StorePage : DemoPage
+public partial class StorePage : ContentPage
 {
-    public StorePage(MainViewModel viewModel) : base(viewModel)
+    private readonly DemoPage popupActions;
+
+    public StorePage(MainViewModel viewModel)
     {
         InitializeComponent();
+        popupActions = new DemoPage(viewModel);
         BindingContext = viewModel;
-        InitializePopupHost();
+        Content = new Grid { Children = { Content, popupActions.PopupView } };
     }
+
+    private void BuyPlanClicked(object? sender, EventArgs e) => popupActions.BuyPlanClicked(sender, e);
+    private void DestinationClicked(object? sender, EventArgs e) => popupActions.DestinationClicked(sender, e);
+    private void FilterClicked(object? sender, EventArgs e) => popupActions.FilterClicked(sender, e);
 }

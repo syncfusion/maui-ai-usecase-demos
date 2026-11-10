@@ -5,26 +5,22 @@ using Syncfusion.Maui.Popup;
 
 namespace eSIMDataManager;
 
-public class DemoPage : ContentPage
+public class DemoPage
 {
-    protected MainViewModel ViewModel { get; }
+    private MainViewModel ViewModel { get; }
 
-    private SfPopup popup = new() { ShowHeader = false, ShowFooter = false, WidthRequest = 580, HeightRequest = 650, StaysOpen = true };
-    private VerticalStackLayout popupContent = new() { Spacing = 14, Padding = 22 };
+    private readonly SfPopup popup = new() { ShowHeader = false, ShowFooter = false, WidthRequest = 580, HeightRequest = 650, StaysOpen = true };
+    private readonly VerticalStackLayout popupContent = new() { Spacing = 14, Padding = 22 };
     private EsimProfile? popupProfile;
 
-    protected DemoPage(MainViewModel viewModel)
+    public DemoPage(MainViewModel viewModel)
     {
         ViewModel = viewModel;
         popup.ContentTemplate = new DataTemplate(() => popupContent);
 
     }
 
-    protected void InitializePopupHost()
-    {
-        var pageContent = Content;
-        Content = new Grid { Children = { pageContent, popup } };
-    }
+    public SfPopup PopupView => popup;
 
     protected void ShowDemoPopup(string title, EsimProfile? profile = null)
     {
@@ -68,14 +64,14 @@ public class DemoPage : ContentPage
         popup.Show();
     }
 
-    protected async void DashboardClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("//dashboard");
-    protected async void ProfilesClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("//profiles");
-    protected async void StoreClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("//store");
-    protected async void OrdersClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("//orders");
-    protected void QrActiveClicked(object? sender, EventArgs e) => ShowDemoPopup("Install & Activate eSIM", ViewModel.ActiveProfile);
-    protected async void TopUpActiveClicked(object? sender, EventArgs e) => await OpenTopUp(ViewModel.ActiveProfile);
-    protected void QrItemClicked(object? sender, EventArgs e) => ShowDemoPopup("Install & Activate eSIM", (sender as Element)?.BindingContext as EsimProfile);
-    protected async void TopUpItemClicked(object? sender, EventArgs e) => await OpenTopUp((sender as Element)?.BindingContext as EsimProfile);
+    public async void DashboardClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("//dashboard");
+    public async void ProfilesClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("//profiles");
+    public async void StoreClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("//store");
+    public async void OrdersClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("//orders");
+    public void QrActiveClicked(object? sender, EventArgs e) => ShowDemoPopup("Install & Activate eSIM", ViewModel.ActiveProfile);
+    public async void TopUpActiveClicked(object? sender, EventArgs e) => await OpenTopUp(ViewModel.ActiveProfile);
+    public void QrItemClicked(object? sender, EventArgs e) => ShowDemoPopup("Install & Activate eSIM", (sender as Element)?.BindingContext as EsimProfile);
+    public async void TopUpItemClicked(object? sender, EventArgs e) => await OpenTopUp((sender as Element)?.BindingContext as EsimProfile);
 
     private async Task OpenTopUp(EsimProfile? profile)
     {
@@ -97,14 +93,14 @@ public class DemoPage : ContentPage
         popupContent.Children.Add(close);
         popup.Show();
     }
-    protected void ActivateItemClicked(object? sender, EventArgs e) => ShowDemoPopup("Activate Profile · Demo", (sender as Element)?.BindingContext as EsimProfile);
-    protected async void RenewItemClicked(object? sender, EventArgs e) => await ViewModel.RenewCommand.ExecuteAsync((sender as Element)?.BindingContext as EsimProfile);
-    protected void QrSelectedClicked(object? sender, EventArgs e) => ShowDemoPopup("Install & Activate eSIM", ViewModel.SelectedProfile);
-    protected void BuyPlanClicked(object? sender, EventArgs e)
+    public void ActivateItemClicked(object? sender, EventArgs e) => ShowDemoPopup("Activate Profile · Demo", (sender as Element)?.BindingContext as EsimProfile);
+    public async void RenewItemClicked(object? sender, EventArgs e) => await ViewModel.RenewCommand.ExecuteAsync((sender as Element)?.BindingContext as EsimProfile);
+    public void QrSelectedClicked(object? sender, EventArgs e) => ShowDemoPopup("Install & Activate eSIM", ViewModel.SelectedProfile);
+    public void BuyPlanClicked(object? sender, EventArgs e)
     {
         ViewModel.SelectedPlan = (sender as Element)?.BindingContext as Plan;
         ShowDemoPopup("Purchase Plan · Demo checkout");
     }
-    protected void DestinationClicked(object? sender, EventArgs e) { if (sender is Button button && button.Text is not null) ViewModel.SelectCountry(button.Text); }
-    protected void FilterClicked(object? sender, EventArgs e) { if (sender is Button button && button.Text is not null) ViewModel.ToggleFilter(button.Text); }
+    public void DestinationClicked(object? sender, EventArgs e) { if (sender is Button button && button.Text is not null) ViewModel.SelectCountry(button.Text); }
+    public void FilterClicked(object? sender, EventArgs e) { if (sender is Button button && button.Text is not null) ViewModel.ToggleFilter(button.Text); }
 }
