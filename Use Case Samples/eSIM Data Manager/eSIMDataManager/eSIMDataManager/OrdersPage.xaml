@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="eSIMDataManager.OrdersPage" Title="Orders" BackgroundColor="#F5F7FC">
+    <VerticalStackLayout Padding="30" Spacing="18">
+        <Label Text="Recent Activity" FontSize="28" FontAttributes="Bold" TextColor="#102B52"/>
+        <Label Text="ORDER HISTORY · SIMULATED" FontSize="12" FontAttributes="Bold" TextColor="#63748B"/>
+        <Border Padding="20" BackgroundColor="White" Stroke="#E3E8F2"><VerticalStackLayout Spacing="10"><Label Text="Japan Unlimited 5G" FontSize="18" FontAttributes="Bold" TextColor="#102B52"/><Label Text="Sample profile added · $0.00 recorded as demo data" TextColor="#63748B"/><Label Text="France City Break" FontSize="18" FontAttributes="Bold" TextColor="#102B52"/><Label Text="Sample profile ready · $0.00 recorded as demo data" TextColor="#63748B"/><Label Text="No real payment or transaction processing is implemented." TextColor="#8B5B00"/></VerticalStackLayout></Border>
+    </VerticalStackLayout>
+</ContentPage>
