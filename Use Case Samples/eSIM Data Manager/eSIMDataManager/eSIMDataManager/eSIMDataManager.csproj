@@ -74,6 +74,7 @@
         <PackageReference Include="Syncfusion.Maui.Charts" Version="34.2.6" />
         <PackageReference Include="Syncfusion.Maui.ListView" Version="34.2.6" />
         <PackageReference Include="Syncfusion.Maui.TabView" Version="34.2.6" />
+        <PackageReference Include="Syncfusion.Maui.Expander" Version="34.2.6" />
         <PackageReference Include="Syncfusion.Maui.Cards" Version="34.2.6" />
         <PackageReference Include="Syncfusion.Maui.Barcode" Version="34.2.6" />
 	</ItemGroup>
