@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Shell x:Class="eSIMDataManager.AppShell" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:eSIMDataManager" xmlns:sfTab="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView" FlyoutBehavior="Disabled">
-    <sfTab:SfTabView x:Name="TopTabs" SelectionChanged="TopTabs_SelectionChanged">
-        <sfTab:SfTabView.Items>
-            <sfTab:SfTabItem Header="Dashboard"><sfTab:SfTabItem.Content><local:DashboardPage /></sfTab:SfTabItem.Content></sfTab:SfTabItem>
-            <sfTab:SfTabItem Header="My eSIMs"><sfTab:SfTabItem.Content><local:ProfilesPage /></sfTab:SfTabItem.Content></sfTab:SfTabItem>
-            <sfTab:SfTabItem Header="Store"><sfTab:SfTabItem.Content><local:StorePage /></sfTab:SfTabItem.Content></sfTab:SfTabItem>
-            <sfTab:SfTabItem Header="Orders"><sfTab:SfTabItem.Content><local:OrdersPage /></sfTab:SfTabItem.Content></sfTab:SfTabItem>
-        </sfTab:SfTabView.Items>
-    </sfTab:SfTabView>
-</Shell>
+<Shell x:Class="eSIMDataManager.AppShell"
+       xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       FlyoutBehavior="Disabled" />

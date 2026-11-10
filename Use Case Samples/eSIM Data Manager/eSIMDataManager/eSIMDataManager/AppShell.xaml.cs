@@ -1,21 +1,21 @@
 using eSIMDataManager.ViewModels;
+using Syncfusion.Maui.Buttons;
 using Syncfusion.Maui.TabView;
 
 namespace eSIMDataManager;
 
 public partial class AppShell : Shell
 {
+    private readonly SfTabView topTabs;
+
     public AppShell(MainViewModel viewModel)
     {
         InitializeComponent();
-        TopTabs.Items[0].Content = new DashboardPage(viewModel);
-        TopTabs.Items[1].Content = new ProfilesPage(viewModel);
-        TopTabs.Items[2].Content = new StorePage(viewModel);
-    }
-
-    private void TopTabs_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        Title = TopTabs.Items[e.NewIndex].Header?.ToString();
-        if (e.NewIndex == 3) TopTabs.Items[3].Content = new OrdersPage();
+        topTabs = new SfTabView();
+        topTabs.Items.Add(new SfTabItem { Header = "Dashboard", Content = new DashboardPage(viewModel) });
+        topTabs.Items.Add(new SfTabItem { Header = "My eSIMs", Content = new ProfilesPage(viewModel) });
+        topTabs.Items.Add(new SfTabItem { Header = "Explore Plans", Content = new StorePage(viewModel) });
+        topTabs.Items.Add(new SfTabItem { Header = "Orders", Content = new OrdersPage() });
+        Content = topTabs;
     }
 }
