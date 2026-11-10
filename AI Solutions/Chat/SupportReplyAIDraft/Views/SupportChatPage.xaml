@@ -9,19 +9,12 @@
              Title="Support Reply AI Draft"
              BackgroundColor="{StaticResource AppBackground}">
     <Grid>
-        <Grid.Padding>
-            <OnIdiom x:TypeArguments="Thickness">
-                <OnIdiom.Phone>0</OnIdiom.Phone>
-                <OnIdiom.Tablet>16</OnIdiom.Tablet>
-                <OnIdiom.Desktop>24</OnIdiom.Desktop>
-                <OnIdiom.Default>16</OnIdiom.Default>
-            </OnIdiom>
-        </Grid.Padding>
-
         <Border Stroke="{StaticResource BubbleBorderColor}"
                 StrokeThickness="1"
                 StrokeShape="RoundRectangle 4"
                 BackgroundColor="{StaticResource SurfaceColor}"
+                Margin="0"
+                Padding="0"
                 HorizontalOptions="FillAndExpand"
                 VerticalOptions="FillAndExpand">
             <Border.Shadow>
@@ -34,9 +27,9 @@
             <Grid RowDefinitions="Auto,1,Auto,1,Auto,1,*"
                   BackgroundColor="{StaticResource SurfaceColor}">
                 <Grid Grid.Row="0"
-                      Padding="16,10"
+                      Padding="12,8"
                       ColumnDefinitions="Auto,Auto,*"
-                      ColumnSpacing="14">
+                      ColumnSpacing="12">
                     <HorizontalStackLayout Spacing="6"
                                            VerticalOptions="Center">
                         <Border HeightRequest="10"
@@ -74,10 +67,71 @@
                          Color="{StaticResource BubbleBorderColor}" />
 
                 <Grid Grid.Row="2"
-                      Padding="16,12"
-                      ColumnDefinitions="*,Auto"
-                      ColumnSpacing="16">
-                    <VerticalStackLayout Spacing="2">
+                      Padding="12,10"
+                      RowDefinitions="Auto,Auto"
+                      RowSpacing="6">
+                    <Grid RowDefinitions="Auto"
+                          ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="10"
+                          VerticalOptions="Center"
+                          x:Name="SubjectRowWide">
+                        <Label Text="SUBJECT"
+                               TextColor="#8A97B2"
+                               FontSize="11"
+                               CharacterSpacing="1.2"
+                               VerticalOptions="Center" />
+                        <Label Grid.Column="1"
+                               Text="License still shows as expired after renewal"
+                               TextColor="{StaticResource TextPrimaryColor}"
+                               FontSize="15"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center" />
+                        <Grid Grid.Column="2"
+                              ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+                              ColumnSpacing="10"
+                              VerticalOptions="Center"
+                              HorizontalOptions="End">
+                            <Label Text="Case ID:"
+                                   Style="{StaticResource MessageTimeStyle}"
+                                   VerticalOptions="Center" />
+                            <Border Grid.Column="1"
+                                    BackgroundColor="#EDF3FF"
+                                    Stroke="#D4E2FF"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 2"
+                                    Padding="8,3"
+                                    VerticalOptions="Center">
+                                <Label Text="CS-28417"
+                                       TextColor="{StaticResource AccentColor}"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="Center" />
+                            </Border>
+                            <BoxView Grid.Column="2"
+                                     WidthRequest="1"
+                                     HeightRequest="16"
+                                     Color="{StaticResource BubbleBorderColor}"
+                                     VerticalOptions="Center" />
+                            <Label Grid.Column="3"
+                                   Text="Customer: Alex Morgan"
+                                   Style="{StaticResource MessageAuthorStyle}"
+                                   VerticalOptions="Center" />
+                            <BoxView Grid.Column="4"
+                                     WidthRequest="1"
+                                     HeightRequest="16"
+                                     Color="{StaticResource BubbleBorderColor}"
+                                     VerticalOptions="Center" />
+                            <Label Grid.Column="5"
+                                   Text="Status: Open"
+                                   Style="{StaticResource MessageTimeStyle}"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                    </Grid>
+
+                    <VerticalStackLayout Grid.Row="1"
+                                         x:Name="SubjectRowNarrow"
+                                         IsVisible="False"
+                                         Spacing="4">
                         <Label Text="SUBJECT"
                                TextColor="#8A97B2"
                                FontSize="11"
@@ -87,62 +141,70 @@
                                FontSize="15"
                                FontAttributes="Bold"
                                LineBreakMode="TailTruncation" />
+                        <VerticalStackLayout Spacing="4">
+                            <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                <Label Text="Case ID:"
+                                       Style="{StaticResource MessageTimeStyle}" />
+                                <Border BackgroundColor="#EDF3FF"
+                                        Stroke="#D4E2FF"
+                                        StrokeThickness="1"
+                                        StrokeShape="RoundRectangle 2"
+                                        Padding="8,3"
+                                        VerticalOptions="Center">
+                                    <Label Text="CS-28417"
+                                           TextColor="{StaticResource AccentColor}"
+                                           FontSize="12"
+                                           FontAttributes="Bold" />
+                                </Border>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                <Label Text="Customer:"
+                                       Style="{StaticResource MessageTimeStyle}" />
+                                <Label Text="Alex Morgan"
+                                       Style="{StaticResource MessageAuthorStyle}" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                <Label Text="Status:"
+                                       Style="{StaticResource MessageTimeStyle}" />
+                                <Border BackgroundColor="#F3F5F9"
+                                        Stroke="#D5DBE8"
+                                        StrokeThickness="1"
+                                        StrokeShape="RoundRectangle 2"
+                                        Padding="8,3"
+                                        VerticalOptions="Center">
+                                    <Label Text="Open"
+                                           TextColor="{StaticResource TextPrimaryColor}"
+                                           FontSize="12"
+                                           FontAttributes="Bold" />
+                                </Border>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
 
-                    <HorizontalStackLayout Grid.Column="1"
-                                           Spacing="12"
-                                           VerticalOptions="Center"
-                                           HorizontalOptions="End">
-                        <HorizontalStackLayout Spacing="6"
-                                               VerticalOptions="Center">
-                            <Label Text="Case ID:"
-                                   Style="{StaticResource MessageTimeStyle}" />
-                            <Border BackgroundColor="#EDF3FF"
-                                    Stroke="#D4E2FF"
-                                    StrokeThickness="1"
-                                    StrokeShape="RoundRectangle 2"
-                                    Padding="8,3">
-                                <Label Text="CS-28417"
-                                       TextColor="{StaticResource AccentColor}"
-                                       FontSize="12"
-                                       FontAttributes="Bold" />
-                            </Border>
-                        </HorizontalStackLayout>
-
-                        <BoxView WidthRequest="1"
-                                 HeightRequest="16"
-                                 Color="{StaticResource BubbleBorderColor}"
-                                 VerticalOptions="Center" />
-
-                        <HorizontalStackLayout Spacing="6"
-                                               VerticalOptions="Center">
-                            <Label Text="Customer:"
-                                   Style="{StaticResource MessageTimeStyle}" />
-                            <Label Text="Alex Morgan"
-                                   Style="{StaticResource MessageAuthorStyle}" />
-                        </HorizontalStackLayout>
-
-                        <BoxView WidthRequest="1"
-                                 HeightRequest="16"
-                                 Color="{StaticResource BubbleBorderColor}"
-                                 VerticalOptions="Center" />
-
-                        <HorizontalStackLayout Spacing="6"
-                                               VerticalOptions="Center">
-                            <Label Text="Status:"
-                                   Style="{StaticResource MessageTimeStyle}" />
-                            <Border BackgroundColor="#F3F5F9"
-                                    Stroke="#D5DBE8"
-                                    StrokeThickness="1"
-                                    StrokeShape="RoundRectangle 2"
-                                    Padding="8,3">
-                                <Label Text="Open"
-                                       TextColor="{StaticResource TextPrimaryColor}"
-                                       FontSize="12"
-                                       FontAttributes="Bold" />
-                            </Border>
-                        </HorizontalStackLayout>
-                    </HorizontalStackLayout>
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroupList>
+                            <VisualStateGroup x:Name="ResponsiveSubjectRowStates">
+                                <VisualState x:Name="Wide">
+                                    <VisualState.StateTriggers>
+                                        <AdaptiveTrigger MinWindowWidth="900" />
+                                    </VisualState.StateTriggers>
+                                    <VisualState.Setters>
+                                        <Setter TargetName="SubjectRowWide" Property="IsVisible" Value="True" />
+                                        <Setter TargetName="SubjectRowNarrow" Property="IsVisible" Value="False" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Narrow">
+                                    <VisualState.StateTriggers>
+                                        <AdaptiveTrigger MinWindowWidth="0" />
+                                    </VisualState.StateTriggers>
+                                    <VisualState.Setters>
+                                        <Setter TargetName="SubjectRowWide" Property="IsVisible" Value="False" />
+                                        <Setter TargetName="SubjectRowNarrow" Property="IsVisible" Value="True" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateGroupList>
+                    </VisualStateManager.VisualStateGroups>
                 </Grid>
 
                 <BoxView Grid.Row="3"
@@ -150,7 +212,7 @@
                          Color="{StaticResource BubbleBorderColor}" />
 
                 <Grid Grid.Row="4"
-                      Padding="16,12,16,10">
+                      Padding="12,10,12,8">
                     <VerticalStackLayout Spacing="2">
                         <Label Text="Conversation"
                                Style="{StaticResource SectionTitleStyle}" />
@@ -164,7 +226,7 @@
                          Color="{StaticResource BubbleBorderColor}" />
 
                 <Grid Grid.Row="6"
-                      Padding="16,10,16,12"
+                      Padding="8,8,8,8"
                       BackgroundColor="#F7F9FC">
                     <chat:SfChat x:Name="ConversationChat"
                                  Messages="{Binding Messages}"

@@ -10,11 +10,12 @@
           HorizontalOptions="Start">
         <Grid ColumnDefinitions="34,*"
               ColumnSpacing="8"
-              HorizontalOptions="Start">
+              HorizontalOptions="Start"
+              VerticalOptions="Center">
             <Border WidthRequest="34"
                     HeightRequest="34"
                     HorizontalOptions="Center"
-                    VerticalOptions="Start"
+                    VerticalOptions="Center"
                     StrokeShape="RoundRectangle 17"
                     Stroke="#CFD7E4"
                     StrokeThickness="1"
@@ -33,8 +34,10 @@
                     Stroke="{StaticResource BubbleBorderColor}"
                     StrokeThickness="1"
                     BackgroundColor="{StaticResource SurfaceColor}"
-                    Padding="14"
-                    MaximumWidthRequest="730">
+                    Padding="12"
+                    MaximumWidthRequest="720"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Center">
                 <Border.Triggers>
                     <DataTrigger TargetType="Border"
                                  Value="True">
@@ -50,8 +53,8 @@
                     </DataTrigger>
                 </Border.Triggers>
 
-                <VerticalStackLayout Spacing="8">
-                    <VerticalStackLayout Spacing="8">
+                <VerticalStackLayout Spacing="6">
+                    <VerticalStackLayout Spacing="6">
                         <VerticalStackLayout.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.SelectMessageCommand}"
                                                   CommandParameter="{Binding .}" />
