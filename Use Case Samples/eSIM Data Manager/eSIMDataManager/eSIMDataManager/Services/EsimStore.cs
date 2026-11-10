@@ -28,7 +28,7 @@ public sealed class EsimStore
             Id = "demo-jp-active", ProfileName = "Japan Unlimited 5G", Country = "Japan", Carrier = "Sakura Connect (demo)", Network = NetworkType.FiveG,
             Status = ProfileStatus.Active, Iccid = "DEMO-8931-0248", ActivationCode = "LPA:1$demo.carrier.example$SAMPLEJP001",
             AllocatedGb = 10, ConsumedGb = 6.8, ActivationDate = DateTime.Today.AddDays(-4), ExpiryDate = DateTime.Today.AddDays(6),
-            DailyUsage = [new("Mon", .42), new("Tue", .68), new("Wed", .91), new("Thu", .56), new("Fri", .74), new("Sat", .52), new("Sun", .97)]
+            DailyUsage = [new("Mon", .8), new("Tue", 1.1), new("Wed", .9), new("Thu", 1.4), new("Fri", 1.0), new("Sat", .9), new("Sun", .7)]
         };
         Profiles.Add(active);
         Profiles.Add(new EsimProfile

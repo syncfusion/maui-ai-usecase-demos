@@ -31,4 +31,5 @@ public sealed class EsimProfile
 }
 
 public sealed record DailyUsage(string Day, double UsedGb);
+public sealed record UsageSegment(string Label, double Value);
 public sealed record TopUpPack(double DataGb, decimal Price);

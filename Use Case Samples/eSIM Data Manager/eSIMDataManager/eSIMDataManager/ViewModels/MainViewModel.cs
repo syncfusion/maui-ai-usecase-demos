@@ -20,6 +20,11 @@ public partial class MainViewModel : ObservableObject
     public ObservableCollection<EsimProfile> ReadyProfiles { get; } = [];
     public ObservableCollection<EsimProfile> ExpiredProfiles { get; } = [];
     public ObservableCollection<DailyUsage> Trend { get; } = [];
+    public IReadOnlyList<UsageSegment> ConsumptionSegments => [new("Consumed", Consumed), new("Remaining", Remaining)];
+    public double UsedFraction => UsedPercent / 100d;
+    public double ValidityFraction => Math.Clamp(DaysRemaining / 14d, 0, 1);
+    public string ActivationDateText => ActiveProfile?.ActivationDate?.ToString("MMM d, yyyy") ?? "—";
+    public double SevenDayTotal => Trend.Sum(point => point.UsedGb);
     public IReadOnlyList<string> Destinations { get; } = ["Japan", "USA", "France", "Korea", "Singapore", "Thailand"];
     public IReadOnlyList<string> FilterOptions { get; } = ["Local", "Regional", "Global", "4G", "5G", "Limited", "Unlimited", "7 Days", "15 Days", "30 Days"];
     public IReadOnlyList<TopUpPack> TopUpPacks => EsimStore.TopUpPacks;
@@ -104,6 +109,11 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(DaysRemaining));
         OnPropertyChanged(nameof(HasActiveProfile));
         OnPropertyChanged(nameof(ProfilesCount));
+        OnPropertyChanged(nameof(ConsumptionSegments));
+        OnPropertyChanged(nameof(UsedFraction));
+        OnPropertyChanged(nameof(ValidityFraction));
+        OnPropertyChanged(nameof(ActivationDateText));
+        OnPropertyChanged(nameof(SevenDayTotal));
         RefreshPlans();
     }
 
@@ -134,6 +144,14 @@ public partial class MainViewModel : ObservableObject
         selectedType = SelectedFilterLabel switch { "Limited" => PlanType.Limited, "Unlimited" => PlanType.Unlimited, _ => null };
         selectedValidity = SelectedFilterLabel switch { "7 Days" => 7, "15 Days" => 15, "30 Days" => 30, _ => null };
         RefreshPlans();
+    }
+
+    [RelayCommand]
+    private async Task ExportLog()
+    {
+        var csv = "Event,Details,Timestamp\nPlan Activated,Tokyo Haneda (HND) Terminal 3,Sample data\nData Session Recorded,1.2 GB High-Speed Roaming,Sample data\nTop-Up Purchased,+3 GB Speed Booster Pack,Sample data\nPlan Renewed,Auto-renewal (simulated),Sample data";
+        await Clipboard.Default.SetTextAsync(csv);
+        await Application.Current!.Windows[0].Page!.DisplayAlert("Demo roaming log", "A fictional sample CSV log has been copied to the clipboard.", "OK");
     }
 
     [RelayCommand]
