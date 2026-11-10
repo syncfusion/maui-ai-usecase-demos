@@ -4,7 +4,8 @@
              xmlns:chat="clr-namespace:Syncfusion.Maui.Chat;assembly=Syncfusion.Maui.Chat"
              x:Class="SupportReplyAIDraft.Views.MessageTemplates.AgentMessageTemplateView"
              x:DataType="chat:TextMessage">
-    <Grid Padding="0,2"
+    <Grid Padding="0"
+          Margin="0,0,0,8"
           HorizontalOptions="End">
         <Grid ColumnDefinitions="*,34"
               ColumnSpacing="8"
@@ -16,7 +17,7 @@
                     Stroke="{StaticResource AgentBorderColor}"
                     StrokeThickness="1"
                     Padding="12"
-                    MaximumWidthRequest="720"
+                    MaximumWidthRequest="{OnIdiom Phone=320, Tablet=460, Desktop=620, Default=620}"
                     HorizontalOptions="End"
                     VerticalOptions="Center">
                 <VerticalStackLayout Spacing="8">
@@ -38,7 +39,7 @@
                     WidthRequest="34"
                     HeightRequest="34"
                     HorizontalOptions="Center"
-                    VerticalOptions="Start"
+                    VerticalOptions="Center"
                     StrokeShape="RoundRectangle 17"
                     Stroke="#1D4ED8"
                     StrokeThickness="1"

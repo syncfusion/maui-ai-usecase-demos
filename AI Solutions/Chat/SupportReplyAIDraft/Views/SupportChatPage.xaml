@@ -3,18 +3,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:chat="clr-namespace:Syncfusion.Maui.Chat;assembly=Syncfusion.Maui.Chat"
              xmlns:viewModels="clr-namespace:SupportReplyAIDraft.ViewModels"
+             xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
              x:Class="SupportReplyAIDraft.Views.SupportChatPage"
              x:Name="RootPage"
              x:DataType="viewModels:SupportChatViewModel"
              Title="Support Reply AI Draft"
-             BackgroundColor="{StaticResource AppBackground}">
+             Padding="0"
+             ios:Page.UseSafeArea="False"
+             BackgroundColor="{StaticResource SurfaceColor}">
     <Grid BackgroundColor="{StaticResource SurfaceColor}">
         <Grid RowDefinitions="Auto,1,Auto,1,Auto,1,*"
               BackgroundColor="{StaticResource SurfaceColor}">
                 <Grid Grid.Row="0"
-                      Padding="12,8"
+                      Padding="10,6"
                       ColumnDefinitions="Auto,Auto,*"
-                      ColumnSpacing="12">
+                      ColumnSpacing="10">
                     <HorizontalStackLayout Spacing="6"
                                            VerticalOptions="Center">
                         <Border HeightRequest="10"
@@ -52,14 +55,14 @@
                          Color="{StaticResource BubbleBorderColor}" />
 
                 <Grid Grid.Row="2"
-                      Padding="12,10"
+                      Padding="10,8"
                       RowDefinitions="Auto,Auto"
                       RowSpacing="6">
                     <Grid RowDefinitions="Auto"
                           ColumnDefinitions="Auto,*,Auto"
                           ColumnSpacing="10"
                           VerticalOptions="Center"
-                          x:Name="SubjectRowWide">
+                          IsVisible="{OnIdiom Phone=False, Tablet=True, Desktop=True, Default=True}">
                         <Label Text="SUBJECT"
                                TextColor="#8A97B2"
                                FontSize="11"
@@ -70,7 +73,9 @@
                                TextColor="{StaticResource TextPrimaryColor}"
                                FontSize="15"
                                FontAttributes="Bold"
-                               VerticalOptions="Center" />
+                               VerticalOptions="Center"
+                               LineBreakMode="TailTruncation"
+                               MaxLines="1" />
                         <Grid Grid.Column="2"
                               ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
                               ColumnSpacing="10"
@@ -114,8 +119,7 @@
                     </Grid>
 
                     <VerticalStackLayout Grid.Row="1"
-                                         x:Name="SubjectRowNarrow"
-                                         IsVisible="False"
+                                         IsVisible="{OnIdiom Phone=True, Tablet=False, Desktop=False, Default=False}"
                                          Spacing="4">
                         <Label Text="SUBJECT"
                                TextColor="#8A97B2"
@@ -125,8 +129,14 @@
                                TextColor="{StaticResource TextPrimaryColor}"
                                FontSize="15"
                                FontAttributes="Bold"
-                               LineBreakMode="TailTruncation" />
-                        <VerticalStackLayout Spacing="4">
+                               LineBreakMode="WordWrap" />
+                        <FlexLayout Direction="Row"
+                                    Wrap="Wrap"
+                                    AlignItems="Center"
+                                    AlignContent="Start"
+                                    JustifyContent="Start"
+                                    RowSpacing="6"
+                                    ColumnSpacing="10">
                             <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
                                 <Label Text="Case ID:"
                                        Style="{StaticResource MessageTimeStyle}" />
@@ -163,33 +173,8 @@
                                            FontAttributes="Bold" />
                                 </Border>
                             </HorizontalStackLayout>
-                        </VerticalStackLayout>
+                        </FlexLayout>
                     </VerticalStackLayout>
-
-                    <VisualStateManager.VisualStateGroups>
-                        <VisualStateGroupList>
-                            <VisualStateGroup x:Name="ResponsiveSubjectRowStates">
-                                <VisualState x:Name="Wide">
-                                    <VisualState.StateTriggers>
-                                        <AdaptiveTrigger MinWindowWidth="900" />
-                                    </VisualState.StateTriggers>
-                                    <VisualState.Setters>
-                                        <Setter TargetName="SubjectRowWide" Property="IsVisible" Value="True" />
-                                        <Setter TargetName="SubjectRowNarrow" Property="IsVisible" Value="False" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                                <VisualState x:Name="Narrow">
-                                    <VisualState.StateTriggers>
-                                        <AdaptiveTrigger MinWindowWidth="0" />
-                                    </VisualState.StateTriggers>
-                                    <VisualState.Setters>
-                                        <Setter TargetName="SubjectRowWide" Property="IsVisible" Value="False" />
-                                        <Setter TargetName="SubjectRowNarrow" Property="IsVisible" Value="True" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateGroupList>
-                    </VisualStateManager.VisualStateGroups>
                 </Grid>
 
                 <BoxView Grid.Row="3"
@@ -197,7 +182,7 @@
                          Color="{StaticResource BubbleBorderColor}" />
 
                 <Grid Grid.Row="4"
-                      Padding="12,10,12,8">
+                      Padding="{OnIdiom Phone='10,8,10,6', Tablet='12,8,12,6', Desktop='14,8,14,6'}">
                     <VerticalStackLayout Spacing="2">
                         <Label Text="Conversation"
                                Style="{StaticResource SectionTitleStyle}" />
@@ -211,7 +196,7 @@
                          Color="{StaticResource BubbleBorderColor}" />
 
                 <Grid Grid.Row="6"
-                      Padding="0"
+                      Padding="{OnIdiom Phone='8,6,8,8', Tablet='12,8,12,12', Desktop='14,8,14,14'}"
                       BackgroundColor="#F7F9FC">
                     <chat:SfChat x:Name="ConversationChat"
                                  Messages="{Binding Messages}"
@@ -223,7 +208,8 @@
                                  ShowMessageInputView="True"
                                  AllowMultilineInput="True"
                                  SendMessageCommand="{Binding NativeSendCommand}"
-                                 VerticalOptions="Start"
+                                 MessageSpacing="10"
+                                 VerticalOptions="FillAndExpand"
                                  HorizontalOptions="FillAndExpand"
                                  BackgroundColor="Transparent"
                                  Margin="0" />
