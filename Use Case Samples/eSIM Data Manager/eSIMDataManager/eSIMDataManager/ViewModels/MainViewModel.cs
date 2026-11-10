@@ -42,7 +42,7 @@ public partial class MainViewModel : ObservableObject
     public double Consumed => ActiveProfile?.ConsumedGb ?? 0;
     public double Allocation => ActiveProfile?.AllocatedGb ?? 0;
     public double UsedPercent => ActiveProfile?.UsagePercent ?? 0;
-    public double AvailablePercent => (100 - UsedPercent) / 100d;
+    public double AvailablePercent => 100 - UsedPercent;
     public string RemainingText => $"{Remaining:0.#} GB";
     public string ExpiryText => ActiveProfile?.ExpiryDate.ToString("MMM d, yyyy") ?? "—";
     public int DaysRemaining => ActiveProfile?.DaysRemaining ?? 0;

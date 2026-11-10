@@ -8,15 +8,16 @@ public partial class AppShell : Shell
     {
         InitializeComponent();
 
-        var tabBar = new TabBar();
-        tabBar.Items.Add(CreateTab("Dashboard", "dashboard", () => new DashboardPage(viewModel)));
-        tabBar.Items.Add(CreateTab("My eSIMs", "profiles", () => new ProfilesPage(viewModel)));
-        tabBar.Items.Add(CreateTab("Explore Plans", "store", () => new StorePage(viewModel)));
-        tabBar.Items.Add(CreateTab("Orders", "orders", () => new OrdersPage()));
-        Items.Add(tabBar);
+        var section = new ShellSection { Route = "main" };
+        section.Items.Add(CreatePage("Dashboard", "dashboard", () => new DashboardPage(viewModel)));
+        section.Items.Add(CreatePage("My eSIMs", "profiles", () => new ProfilesPage(viewModel)));
+        section.Items.Add(CreatePage("Store", "store", () => new StorePage(viewModel)));
+        var shellItem = new ShellItem();
+        shellItem.Items.Add(section);
+        Items.Add(shellItem);
     }
 
-    private static ShellContent CreateTab(string title, string route, Func<Page> pageFactory) => new()
+    private static ShellContent CreatePage(string title, string route, Func<Page> pageFactory) => new()
     {
         Title = title,
         Route = route,

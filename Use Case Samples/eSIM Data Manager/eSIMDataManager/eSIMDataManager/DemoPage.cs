@@ -64,10 +64,6 @@ public class DemoPage
         popup.Show();
     }
 
-    public async void DashboardClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("//dashboard");
-    public async void ProfilesClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("//profiles");
-    public async void StoreClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("//store");
-    public async void OrdersClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("//orders");
     public void QrActiveClicked(object? sender, EventArgs e) => ShowDemoPopup("Install & Activate eSIM", ViewModel.ActiveProfile);
     public async void TopUpActiveClicked(object? sender, EventArgs e) => await OpenTopUp(ViewModel.ActiveProfile);
     public void QrItemClicked(object? sender, EventArgs e) => ShowDemoPopup("Install & Activate eSIM", (sender as Element)?.BindingContext as EsimProfile);

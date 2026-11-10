@@ -14,6 +14,8 @@ public partial class ProfilesPage : ContentPage
         Content = new Grid { Children = { Content, popupActions.PopupView } };
     }
 
+    private void DashboardClicked(object? sender, EventArgs e) => Shell.Current.GoToAsync("//dashboard");
+    private void StoreClicked(object? sender, EventArgs e) => Shell.Current.GoToAsync("//store");
     private void ActivateItemClicked(object? sender, EventArgs e) => popupActions.ActivateItemClicked(sender, e);
     private void ProfilesClicked(object? sender, EventArgs e) => popupActions.ProfilesClicked(sender, e);
     private void QrItemClicked(object? sender, EventArgs e) => popupActions.QrItemClicked(sender, e);
