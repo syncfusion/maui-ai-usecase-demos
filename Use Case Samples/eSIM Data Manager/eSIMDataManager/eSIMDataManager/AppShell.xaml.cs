@@ -15,10 +15,15 @@ public partial class AppShell : Shell
         Items.Add(new ShellItem { Items = { section } });
     }
 
-    private static ShellContent CreatePage(string title, string route, Func<Page> pageFactory) => new()
+    private static ShellContent CreatePage(string title, string route, Func<Page> pageFactory)
     {
-        Title = title,
-        Route = route,
-        ContentTemplate = new DataTemplate(() => pageFactory())
-    };
+        var content = new ShellContent
+        {
+            Title = title,
+            Route = route,
+            ContentTemplate = new DataTemplate(() => pageFactory())
+        };
+        Shell.SetNavBarIsVisible(content, false);
+        return content;
+    }
 }
