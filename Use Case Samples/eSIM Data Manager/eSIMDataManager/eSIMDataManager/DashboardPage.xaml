@@ -107,7 +107,7 @@
                                                     <gauge:RadialLineStyle Thickness="18" ThicknessUnit="Pixel" Fill="#E5EDFF"/>
                                                 </gauge:RadialAxis.AxisLineStyle>
                                                 <gauge:RadialAxis.Ranges>
-                                                    <gauge:RadialRange StartValue="0" EndValue="{Binding UsedPercent}" Fill="#005F88" StartWidth="18" EndWidth="18" WidthUnit="Pixel" RangeCap="Round"/>
+                                                    <gauge:RadialRange StartValue="0" EndValue="{Binding UsedPercent}" Fill="#005F88" StartWidth="18" EndWidth="18" WidthUnit="Pixel"/>
                                                 </gauge:RadialAxis.Ranges>
                                             </gauge:RadialAxis>
                                         </gauge:SfRadialGauge.Axes>
