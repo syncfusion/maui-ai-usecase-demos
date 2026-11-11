@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"secondary":"#00687a","surface-bright":"#f8f9ff","secondary-fixed-dim":"#4cd7f6","on-surface-variant":"#434656","on-error":"#ffffff","primary":"#0046cc","outline-variant":"#c3c5d9","tertiary":"#006141","surface-container":"#e5eeff","inverse-on-surface":"#eaf1ff","on-surface":"#0b1c30","surface":"#f8f9ff","tertiary-container":"#007c55","primary-fixed-dim":"#b6c4ff","on-secondary-fixed-variant":"#004e5c","on-tertiary-container":"#b4ffd7","on-secondary":"#ffffff","background":"#f8f9ff","error":"#ba1a1a","inverse-primary":"#b6c4ff","on-error-container":"#93000a","on-secondary-fixed":"#001f26","surface-container-low":"#eff4ff","on-background":"#0b1c30","surface-container-highest":"#d3e4fe","inverse-surface":"#213145","on-primary-container":"#ecedff","tertiary-fixed":"#6ffbbe","on-tertiary-fixed":"#002113","secondary-fixed":"#acedff","on-primary-fixed-variant":"#003baf","primary-container":"#0d5cff","on-tertiary-fixed-variant":"#005236","surface-tint":"#004fe4","on-primary":"#ffffff","surface-dim":"#cbdbf5","primary-fixed":"#dce1ff","tertiary-fixed-dim":"#4edea3","outline":"#737688","surface-container-high":"#dce9ff","secondary-container":"#57dffe","surface-container-lowest":"#ffffff","surface-variant":"#d3e4fe","on-secondary-container":"#006172","error-container":"#ffdad6","on-primary-fixed":"#00164e","on-tertiary":"#ffffff"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-xl":"2.5rem","gutter":"1.5rem","space-md":"1rem","margin":"2rem","space-xs":"0.25rem","space-lg":"1.5rem","gutter-mobile":"0.75rem","margin-mobile":"1rem","space-sm":"0.5rem"},fontFamily:{"body-lg":["Inter"],"headline-sm":["Plus Jakarta Sans"],"display-mobile":["Plus Jakarta Sans"],"telecom-mono":["JetBrains Mono"],"body-sm":["Inter"],"body-md":["Inter"],"label-sm":["Inter"],"data-metric":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-md":["Inter"],"headline-lg-mobile":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"display":["Plus Jakarta Sans"]},fontSize:{"body-lg":["16px",{lineHeight:"24px",letterSpacing:"-0.01em",fontWeight:"400"}],"headline-sm":["18px",{lineHeight:"24px",letterSpacing:"-0.01em",fontWeight:"600"}],"display-mobile":["32px",{lineHeight:"40px",letterSpacing:"-0.025em",fontWeight:"700"}],"telecom-mono":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"500"}],"body-sm":["12px",{lineHeight:"16px",letterSpacing:"0em",fontWeight:"400"}],"body-md":["14px",{lineHeight:"20px",letterSpacing:"-0.005em",fontWeight:"400"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.03em",fontWeight:"600"}],"data-metric":["28px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-lg":["32px",{lineHeight:"40px",letterSpacing:"-0.025em",fontWeight:"600"}],"label-md":["13px",{lineHeight:"16px",letterSpacing:"0.01em",fontWeight:"500"}],"headline-lg-mobile":["24px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"600"}],"headline-md":["22px",{lineHeight:"28px",letterSpacing:"-0.015em",fontWeight:"600"}],"display":["48px",{lineHeight:"56px",letterSpacing:"-0.03em",fontWeight:"700"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-margin flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><img alt="eSIM Data Manager Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WehuYywJ70KOzaLzq98K5dPfyEyU-UMQpEqTPYAXxc7j13V5FGIMlj15wLe9ps-H_MNOpp-g23OQfVQSikze5BsnyXKTWKf_zPnh2996MxlQRb2tJSjThpzvLAiCc_--JTb_aJg83s9v9UPdbSjTydQhFfbidfuop3f_oilOpQ6Owmi_IqWW5bRAW_ErHqpOH9ZYMIAjP9b55Os2KMmUmDKd1Tm1VCw6KGYc6umrgZFw"/><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">eSIM Data Manager</span></div><div class="h-5 w-px bg-surface-container-high hidden md:block"></div><nav class="hidden md:flex items-center gap-space-xs p-1 bg-surface-container-low rounded-xl" data-active-classes="bg-surface-container-high text-primary font-semibold"><a aria-current="page" class="px-space-md py-1.5 rounded-lg transition-all bg-surface-container-high text-primary font-semibold" data-path="dashboard" href="#">Dashboard</a><a class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md" data-path="my-esims" href="#">My eSIMs</a><a class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md" data-path="store" href="#">Store</a><a class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md" data-path="orders" href="#">Orders</a></nav></div><div class="flex items-center gap-space-md"><div class="relative hidden lg:flex items-center"><span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px] pointer-events-none">search</span><input class="w-64 pl-9 pr-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface placeholder:text-on-surface-variant font-body-sm text-body-sm focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search countries, ICCID, orders..." type="text"/></div><button aria-label="Search" class="lg:hidden p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">search</span></button><button aria-label="Notifications" class="relative p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface-container-lowest"></span></button><div class="h-5 w-px bg-surface-container-high"></div><div class="flex items-center gap-space-sm pl-space-xs"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3I3exIbi1Oe_eN6KLYsc0XY6T9RIDU8ddEylCsp15d7VsbVJDTlSqDDvTBY9g6GQiQ-rtvBrMgM-Yx0sv3XB7Xg-1RwEsCytwC1bQ-J9kYLbEfhQB48v6ccJ0ic_njgQ2U15SGhMdohFd1IB-GeiK6jl7huCS5r5H1RbVdgHiLV_osHUhd_WBNfSdgkndoSDXHauz78HXfTQRwhsNx5CBNXaI24g5QQFpQDc5MYqk"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-tertiary-container ring-2 ring-surface-container-lowest" title="Active Telecom Signal"></span></div><div class="hidden xl:flex flex-col text-left"><span class="font-label-md text-label-md text-on-surface leading-tight">Global Traveler</span><span class="font-telecom-mono text-telecom-mono text-tertiary-container leading-tight">Roaming Online</span></div></div></div></div></header><main class="w-full pt-16 bg-surface min-h-[calc(100vh-80px)]"><div class="max-w-7xl mx-auto px-margin py-space-lg"><div class="flex flex-col w-full">
+<div class="flex flex-col gap-space-lg w-full">
+<!-- Active Profile Hero Card -->
+<section class="relative overflow-hidden rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm">
+<div class="absolute -right-24 -top-24 w-96 h-96 rounded-full bg-gradient-to-br from-secondary-fixed/30 to-primary-fixed-dim/20 blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-space-lg">
+<div class="flex flex-col gap-space-sm max-w-2xl">
+<div class="flex flex-wrap items-center gap-space-sm">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-label-md text-label-md">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary-container opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary-container"></span>
+</span>
+              Connected • Roaming Live
+            </span>
+<span class="font-telecom-mono text-telecom-mono text-on-surface-variant bg-surface-container-low px-2.5 py-1 rounded-md">
+              Tier-1 Routing
+            </span>
+</div>
+<div class="flex items-baseline gap-space-sm mt-1">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Japan Unlimited 5G</h1>
+<span class="font-body-lg text-body-lg text-secondary font-medium">SoftBank Corp.</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Primary Travel Data Profile • Direct carrier peering via Tokyo Core Datacenter
+          </p>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-md pt-space-xs mt-2">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Destination</span>
+<span class="font-headline-sm text-headline-sm text-on-surface mt-0.5">Japan 🇯🇵</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Radio Spec</span>
+<span class="font-headline-sm text-headline-sm text-on-surface mt-0.5">5G mmWave</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Local Roamer</span>
+<span class="font-headline-sm text-headline-sm text-on-surface mt-0.5">SoftBank 440-20</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">APN Profile</span>
+<span class="font-headline-sm text-headline-sm text-on-surface mt-0.5 font-telecom-mono">global.data</span>
+</div>
+</div>
+</div>
+<!-- Telemetry & ICCID Container -->
+<div class="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end justify-between gap-space-md bg-surface-container-low/70 p-space-md rounded-xl">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-1.5" title="Signal: -74 dBm (Full Reception)">
+<div class="w-1.5 h-3 rounded-full bg-primary-container"></div>
+<div class="w-1.5 h-4 rounded-full bg-primary-container"></div>
+<div class="w-1.5 h-5 rounded-full bg-primary-container"></div>
+<div class="w-1.5 h-6 rounded-full bg-primary-container"></div>
+<div class="w-1.5 h-7 rounded-full bg-primary-container"></div>
+</div>
+<div class="flex flex-col">
+<span class="font-telecom-mono text-telecom-mono text-on-surface font-semibold">18ms Latency</span>
+<span class="font-label-sm text-label-sm text-tertiary-container font-semibold">99.98% Uptime</span>
+</div>
+<svg class="w-16 h-8 text-primary/30 ml-2" fill="none" viewbox="0 0 64 32">
+<path d="M2 16 Q 16 2, 32 16 T 62 16" stroke="currentColor" stroke-linecap="round" stroke-width="2.5"></path>
+<circle class="fill-primary-container" cx="32" cy="16" r="3"></circle>
+</svg>
+</div>
+<div class="w-full lg:w-auto flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Hardware ICCID Number</span>
+<div class="flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-lg shadow-sm">
+<code class="font-telecom-mono text-telecom-mono text-on-surface tracking-wide" id="iccid-text">8981 0200 4819 5012 34 F</code>
+<button aria-label="Copy ICCID" class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded" id="copy-iccid-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+<span class="text-tertiary-container font-label-sm text-label-sm opacity-0 transition-opacity" id="copy-confirmation">Copied to clipboard</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Actions Action Bar -->
+<section class="grid grid-cols-1 sm:grid-cols-3 gap-space-md">
+<button class="group flex items-center justify-between p-space-md rounded-xl bg-primary-container text-on-primary shadow-sm hover:shadow-md transition-all" type="button">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest/15 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">add_shopping_cart</span>
+</div>
+<div class="flex flex-col text-left">
+<span class="font-headline-sm text-headline-sm leading-snug">Buy New eSIM</span>
+<span class="font-body-sm text-body-sm text-on-primary/80">Add region or 160+ countries</span>
+</div>
+</div>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<button class="group flex items-center justify-between p-space-md rounded-xl bg-surface-container-lowest text-on-surface shadow-sm hover:shadow-md transition-all" type="button">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-secondary-fixed/50 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">bolt</span>
+</div>
+<div class="flex flex-col text-left">
+<span class="font-headline-sm text-headline-sm leading-snug">Top Up Data</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Add 1GB, 3GB, or 10GB boost</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">add</span>
+</button>
+<button class="group flex items-center justify-between p-space-md rounded-xl bg-surface-container-lowest text-on-surface shadow-sm hover:shadow-md transition-all" onclick="document.getElementById('qr-modal').classList.remove('hidden')" type="button">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+</div>
+<div class="flex flex-col text-left">
+<span class="font-headline-sm text-headline-sm leading-snug">Show QR Code</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Manual install &amp; activation</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">visibility</span>
+</button>
+</section>
+<!-- Analytics & Gauge Section (60% / 40% Desktop Split) -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-stretch">
+<!-- Left: Circular Gauge & Consumption Status (7 of 12 cols ≈ 58-60%) -->
+<div class="lg:col-span-7 bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">Data Consumption</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">High-Speed 5G Volume Balance</span>
+</div>
+<span class="font-telecom-mono text-telecom-mono bg-surface-container-low text-primary px-3 py-1 rounded-full font-semibold">
+            Cycle 3 of 4
+          </span>
+</div>
+<div class="flex flex-col sm:flex-row items-center gap-space-lg my-auto py-space-sm">
+<!-- Radial Progress Gauge (Inline SVG) -->
+<div class="relative w-48 h-48 flex-shrink-0 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 160 160">
+<!-- Background Circle Track -->
+<circle class="text-surface-container" cx="80" cy="80" fill="none" r="64" stroke="currentColor" stroke-width="14"></circle>
+<!-- Active Gradient Arc (68% used -> 32% remaining) -->
+<circle class="transition-all duration-1000 ease-out" cx="80" cy="80" fill="none" r="64" stroke="url(#dataGradient)" stroke-dasharray="402.12" stroke-dashoffset="128.67" stroke-linecap="round" stroke-width="14"></circle>
+<defs>
+<lineargradient id="dataGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#0046cc"></stop>
+<stop offset="100%" stop-color="#00687a"></stop>
+</lineargradient>
+</defs>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="font-data-metric text-data-metric text-on-surface leading-none">32%</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-1 uppercase tracking-wider">Remaining</span>
+</div>
+</div>
+<!-- Gauged Metrics Column -->
+<div class="flex flex-col justify-center gap-space-sm w-full">
+<div>
+<span class="font-display text-display text-on-surface leading-none tracking-tight">3.2</span>
+<span class="font-headline-lg text-headline-lg text-on-surface-variant ml-1 font-semibold">GB Free</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Out of <span class="font-semibold text-on-surface">10.0 GB</span> high-speed high-priority roaming pool.
+            </p>
+<div class="mt-space-xs flex flex-col gap-1.5">
+<div class="flex justify-between font-label-md text-label-md">
+<span class="text-on-surface-variant">Used: 6.8 GB</span>
+<span class="text-primary font-semibold">Est. Burn: ~0.8 GB/day</span>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container-low overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 68%;"></div>
+</div>
+</div>
+<div class="flex items-center gap-space-sm mt-space-xs text-tertiary">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="font-body-sm text-body-sm font-medium">Standard speed (128 kbps) unlimited backup included</span>
+</div>
+</div>
+</div>
+<div class="pt-space-md mt-space-md bg-surface-container-low/50 -mx-space-lg -mb-space-lg px-space-lg py-space-sm flex items-center justify-between rounded-b-2xl">
+<span class="font-label-md text-label-md text-on-surface-variant">Hotspot &amp; Tethering: Supported (Unlimited)</span>
+<a class="font-label-md text-label-md text-primary font-semibold hover:underline" href="#">View Policy</a>
+</div>
+</div>
+<!-- Right: Stacked Cards (5 of 12 cols ≈ 40-42%) -->
+<div class="lg:col-span-5 flex flex-col gap-space-lg justify-between">
+<!-- Stack Card 1: Expiration & Days Remaining -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col justify-between flex-1">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Plan Validity</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mt-0.5">6 Days Left</h2>
+</div>
+<div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">schedule</span>
+</div>
+</div>
+<div class="my-space-md">
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Active until <strong class="text-on-surface">Nov 28, 2025 at 23:59 JST</strong>
+</p>
+<!-- Timeline Marker Visualizer -->
+<div class="mt-3 flex items-center gap-1.5">
+<div class="h-1.5 flex-1 rounded-full bg-primary"></div>
+<div class="h-1.5 flex-1 rounded-full bg-primary"></div>
+<div class="h-1.5 flex-1 rounded-full bg-primary"></div>
+<div class="h-1.5 flex-1 rounded-full bg-primary"></div>
+<div class="h-1.5 flex-1 rounded-full bg-surface-container-high"></div>
+<div class="h-1.5 flex-1 rounded-full bg-surface-container-high"></div>
+</div>
+</div>
+<div class="flex items-center justify-between font-label-md text-label-md text-on-surface-variant pt-space-xs">
+<span>Activated: Nov 14, 2025</span>
+<span class="text-tertiary font-medium">Automatic Grace +24h</span>
+</div>
+</div>
+<!-- Stack Card 2: Subscription & Auto-Renew -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col justify-between flex-1">
+<div class="flex items-start justify-between">
+<div>
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface">Unlimited 5G Traveler</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed text-label-sm font-label-sm font-semibold">Active Tier</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">$19.00 USD / 14-day renewal</p>
+</div>
+<div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">autorenew</span>
+</div>
+</div>
+<div class="my-space-md flex items-center justify-between bg-surface-container-low p-space-md rounded-xl">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-on-surface">Auto-Renew Protection</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Prevent roaming service drops</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between font-label-md text-label-md text-on-surface-variant">
+<span>Billed to: Visa •••• 4242</span>
+<button class="text-primary hover:underline font-semibold" type="button">Change Method</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Lower Grid: Consumption Insights Chart & Activity Timeline -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- Usage Insights Chart Card (Left 8 Cols ≈ 66%) -->
+<div class="lg:col-span-8 bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm mb-space-md">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Last 7 Days Consumption</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Daily roaming payload telemetry vs. average profile baseline</p>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container-low p-1 rounded-lg self-start">
+<button class="px-3 py-1 rounded bg-surface-container-lowest text-primary font-label-md text-label-md font-semibold shadow-sm" type="button">Daily</button>
+<button class="px-3 py-1 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors" type="button">Hourly</button>
+</div>
+</div>
+<!-- Inline SVG Area Chart with Tooltip -->
+<div class="relative w-full pt-4">
+<!-- Peak Tooltip Marker -->
+<div class="absolute top-2 left-[57%] -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none">
+<div class="bg-inverse-surface text-inverse-on-surface px-2.5 py-1 rounded-md shadow-md font-telecom-mono text-telecom-mono">
+              Thu: 1.4 GB (Peak)
+            </div>
+<div class="w-1.5 h-1.5 bg-inverse-surface rotate-45 -mt-1"></div>
+</div>
+<svg class="w-full h-56 overflow-visible" fill="none" viewbox="0 0 700 200">
+<defs>
+<lineargradient id="chartAreaGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#0d5cff" stop-opacity="0.28"></stop>
+<stop offset="100%" stop-color="#0d5cff" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Horizontal Grid lines -->
+<line stroke="#eff4ff" stroke-width="1.5" x1="0" x2="700" y1="40" y2="40"></line>
+<line stroke="#eff4ff" stroke-width="1.5" x1="0" x2="700" y1="90" y2="90"></line>
+<line stroke="#eff4ff" stroke-width="1.5" x1="0" x2="700" y1="140" y2="140"></line>
+<!-- Benchmark Average Dashed Line (~1.0 GB) -->
+<line opacity="0.4" stroke="#737688" stroke-dasharray="4 4" stroke-width="1.5" x1="0" x2="700" y1="100" y2="100"></line>
+<text class="font-telecom-mono text-[10px]" fill="#737688" x="640" y="94">Avg 0.97 GB</text>
+<!-- Area Fill -->
+<path d="M 50 120 
+                 L 150 90 
+                 L 250 110 
+                 L 350 40 
+                 L 450 100 
+                 L 550 110 
+                 L 650 130 
+                 L 650 180 
+                 L 50 180 Z" fill="url(#chartAreaGradient)"></path>
+<!-- Line Stroke -->
+<path d="M 50 120 
+                 L 150 90 
+                 L 250 110 
+                 L 350 40 
+                 L 450 100 
+                 L 550 110 
+                 L 650 130" stroke="#0d5cff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+<!-- Data Points -->
+<circle class="fill-surface-container-lowest stroke-primary" cx="50" cy="120" r="4" stroke-width="2.5"></circle>
+<circle class="fill-surface-container-lowest stroke-primary" cx="150" cy="90" r="4" stroke-width="2.5"></circle>
+<circle class="fill-surface-container-lowest stroke-primary" cx="250" cy="110" r="4" stroke-width="2.5"></circle>
+<circle class="fill-primary stroke-surface-container-lowest" cx="350" cy="40" r="6" stroke-width="2.5"></circle>
+<circle class="fill-surface-container-lowest stroke-primary" cx="450" cy="100" r="4" stroke-width="2.5"></circle>
+<circle class="fill-surface-container-lowest stroke-primary" cx="550" cy="110" r="4" stroke-width="2.5"></circle>
+<circle class="fill-surface-container-lowest stroke-primary" cx="650" cy="130" r="4" stroke-width="2.5"></circle>
+<!-- X-Axis Labels -->
+<text class="font-label-sm text-[11px]" fill="#737688" text-anchor="middle" x="50" y="196">Mon (0.8)</text>
+<text class="font-label-sm text-[11px]" fill="#737688" text-anchor="middle" x="150" y="196">Tue (1.1)</text>
+<text class="font-label-sm text-[11px]" fill="#737688" text-anchor="middle" x="250" y="196">Wed (0.9)</text>
+<text class="font-label-sm text-[11px] font-bold" fill="#0046cc" text-anchor="middle" x="350" y="196">Thu (1.4)</text>
+<text class="font-label-sm text-[11px]" fill="#737688" text-anchor="middle" x="450" y="196">Fri (1.0)</text>
+<text class="font-label-sm text-[11px]" fill="#737688" text-anchor="middle" x="550" y="196">Sat (0.9)</text>
+<text class="font-label-sm text-[11px]" fill="#737688" text-anchor="middle" x="650" y="196">Sun (0.7)</text>
+</svg>
+</div>
+<div class="mt-space-md grid grid-cols-3 gap-space-sm pt-space-md bg-surface-container-low/40 rounded-xl p-space-sm text-center">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block">Total 7-Day</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">6.80 GB</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block">Median Speed</span>
+<span class="font-headline-sm text-headline-sm text-tertiary-container font-semibold">242 Mbps</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block">Protocol Peak</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Video 4K / Maps</span>
+</div>
+</div>
+</div>
+<!-- Activity Timeline Panel (Right 4 Cols ≈ 34%) -->
+<div class="lg:col-span-4 bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col">
+<div class="flex items-center justify-between mb-space-md">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Recent Activity</h2>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">history</span>
+</div>
+<div class="flex flex-col gap-space-md relative pl-3">
+<!-- Timeline Vertical Track -->
+<div class="absolute left-[1.375rem] top-3 bottom-3 w-0.5 bg-surface-container-high -translate-x-1/2"></div>
+<!-- Event 1 -->
+<div class="flex items-start gap-space-md relative z-10">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center flex-shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md font-semibold text-on-surface">Plan Activated</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tokyo Haneda (HND) Terminal 3</span>
+<span class="font-telecom-mono text-telecom-mono text-outline mt-0.5">Nov 14, 08:31 JST</span>
+</div>
+</div>
+<!-- Event 2 -->
+<div class="flex items-start gap-space-md relative z-10">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center flex-shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">cell_tower</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md font-semibold text-on-surface">Data Session Recorded</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">1.2 GB High-Speed Roaming</span>
+<span class="font-telecom-mono text-telecom-mono text-outline mt-0.5">Yesterday, 18:42 JST</span>
+</div>
+</div>
+<!-- Event 3 -->
+<div class="flex items-start gap-space-md relative z-10">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center flex-shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md font-semibold text-on-surface">Top-Up Purchased</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">+3 GB Speed Booster Pack</span>
+<span class="font-telecom-mono text-telecom-mono text-outline mt-0.5">Nov 21, 14:15 JST</span>
+</div>
+</div>
+<!-- Event 4 -->
+<div class="flex items-start gap-space-md relative z-10">
+<div class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center flex-shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">refresh</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md font-semibold text-on-surface">Plan Renewed</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Auto-renewal processed ($19.00)</span>
+<span class="font-telecom-mono text-telecom-mono text-outline mt-0.5">Nov 14, 08:30 JST</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm bg-surface-container-low/50 rounded-lg p-2 text-center">
+<button class="font-label-md text-label-md text-primary font-semibold hover:underline" type="button">
+            Export Roaming Log (CSV)
+          </button>
+</div>
+</div>
+</section>
+</div>
+<!-- QR Activation Modal Dialog (Client Side Toggleable) -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/60 backdrop-blur-sm p-4" id="qr-modal">
+<div class="bg-surface-container-lowest rounded-2xl max-w-md w-full p-space-lg shadow-xl flex flex-col items-center text-center relative">
+<button class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface p-1 rounded-lg" onclick="document.getElementById('qr-modal').classList.add('hidden')" type="button">
+<span class="material-symbols-outlined">close</span>
+</button>
+<div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary mb-space-sm">
+<span class="material-symbols-outlined text-[28px]">qr_code_2</span>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-on-surface">Scan to Install eSIM</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1 mb-space-md">
+        Open Camera on your eSIM-compatible phone and point at this code.
+      </p>
+<!-- Clean Vector QR Code Simulation -->
+<div class="p-4 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 flex items-center justify-center">
+<svg class="w-48 h-48" fill="currentColor" viewbox="0 0 100 100">
+<!-- Outer Positioning Markers -->
+<rect fill="#0b1c30" height="24" rx="3" width="24" x="10" y="10"></rect>
+<rect fill="#ffffff" height="16" rx="2" width="16" x="14" y="14"></rect>
+<rect fill="#0b1c30" height="8" width="8" x="18" y="18"></rect>
+<rect fill="#0b1c30" height="24" rx="3" width="24" x="66" y="10"></rect>
+<rect fill="#ffffff" height="16" rx="2" width="16" x="70" y="14"></rect>
+<rect fill="#0b1c30" height="8" width="8" x="74" y="18"></rect>
+<rect fill="#0b1c30" height="24" rx="3" width="24" x="10" y="66"></rect>
+<rect fill="#ffffff" height="16" rx="2" width="16" x="14" y="70"></rect>
+<rect fill="#0b1c30" height="8" width="8" x="18" y="74"></rect>
+<!-- Sample Dense Matrix Points -->
+<rect fill="#0d5cff" height="6" width="6" x="42" y="12"></rect>
+<rect fill="#0b1c30" height="6" width="6" x="52" y="12"></rect>
+<rect fill="#0b1c30" height="6" width="6" x="42" y="22"></rect>
+<rect fill="#0d5cff" height="6" width="6" x="42" y="32"></rect>
+<rect fill="#0b1c30" height="6" width="6" x="52" y="32"></rect>
+<rect fill="#0b1c30" height="6" width="6" x="12" y="42"></rect>
+<rect fill="#0d5cff" height="6" width="6" x="22" y="42"></rect>
+<rect fill="#0b1c30" height="6" width="6" x="32" y="42"></rect>
+<rect fill="#0b1c30" height="6" width="6" x="42" y="42"></rect>
+<rect fill="#0d5cff" height="6" width="6" x="52" y="42"></rect>
+<rect fill="#0b1c30" height="6" width="6" x="62" y="42"></rect>
+<rect fill="#0b1c30" height="6" width="6" x="72" y="42"></rect>
+<rect fill="#0d5cff" height="6" width="6" x="82" y="42"></rect>
+<rect fill="#0b1c30" height="6" width="6" x="42" y="62"></rect>
+<rect fill="#0d5cff" height="6" width="6" x="52" y="62"></rect>
+<rect fill="#0b1c30" height="6" width="6" x="62" y="62"></rect>
+<rect fill="#0b1c30" height="6" width="6" x="72" y="62"></rect>
+<rect fill="#0b1c30" height="6" width="6" x="82" y="62"></rect>
+<rect fill="#0d5cff" height="6" width="6" x="42" y="72"></rect>
+<rect fill="#0b1c30" height="6" width="6" x="52" y="82"></rect>
+<rect fill="#0d5cff" height="6" width="6" x="62" y="82"></rect>
+<rect fill="#0b1c30" height="6" width="6" x="72" y="72"></rect>
+<rect fill="#0b1c30" height="6" width="6" x="82" y="82"></rect>
+</svg>
+</div>
+<div class="mt-space-md w-full bg-surface-container-low p-space-sm rounded-xl text-left">
+<span class="font-label-sm text-label-sm text-on-surface-variant block">SM-DP+ Address:</span>
+<code class="font-telecom-mono text-telecom-mono text-on-surface block break-all">rsp.esim-cloud.net$QD91-X992-JP5G</code>
+</div>
+<button class="mt-space-md w-full py-2.5 bg-primary text-on-primary rounded-xl font-label-md text-label-md font-semibold" onclick="document.getElementById('qr-modal').classList.add('hidden')" type="button">
+        Done
+      </button>
+</div>
+</div>
+<!-- Interactive JavaScript logic -->
+<script>
+    document.getElementById('copy-iccid-btn')?.addEventListener('click', function() {
+      const iccid = document.getElementById('iccid-text')?.innerText || '';
+      navigator.clipboard.writeText(iccid).then(() => {
+        const confirmMsg = document.getElementById('copy-confirmation');
+        if (confirmMsg) {
+          confirmMsg.classList.remove('opacity-0');
+          setTimeout(() => {
+            confirmMsg.classList.add('opacity-0');
+          }, 2000);
+        }
+      });
+    });
+  </script>
+</div></div></main><footer class="w-full bg-surface-container-lowest shadow-[0_-1px_6px_rgba(0,0,0,0.02)] py-space-md"><div class="max-w-7xl mx-auto px-margin flex flex-col sm:flex-row items-center justify-between gap-space-sm text-on-surface-variant"><div class="flex items-center gap-space-sm"><span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span><span class="font-telecom-mono text-telecom-mono text-on-surface-variant">Core Signal: 5G Ultra-Low Latency Mesh</span></div><div class="font-body-sm text-body-sm">© 2024 eSIM Data Manager. Precision Connectivity Platform.</div></div></footer></body></html>
