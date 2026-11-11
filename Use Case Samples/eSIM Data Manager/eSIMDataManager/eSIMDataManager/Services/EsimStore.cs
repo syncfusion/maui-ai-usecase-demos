@@ -25,7 +25,7 @@ public sealed class EsimStore
     {
         var active = new EsimProfile
         {
-            Id = "demo-jp-active", ProfileName = "Japan Unlimited 5G", Country = "Japan", Carrier = "SoftBank Crop", Network = NetworkType.FiveG,
+            Id = "demo-jp-active", ProfileName = "Japan 5G Explorer", Country = "Japan", Carrier = "SoftBank Crop", Network = NetworkType.FiveG,
             Status = ProfileStatus.Active, Iccid = "DEMO-8931-0248", ActivationCode = "LPA:1$demo.carrier.example$SAMPLEJP001",
             AllocatedGb = 10, ConsumedGb = 6.8, ActivationDate = DateTime.Today.AddDays(-4), ExpiryDate = DateTime.Today.AddDays(6),
             DailyUsage = [new("Mon", .8), new("Tue", 1.1), new("Wed", .9), new("Thu", 1.4), new("Fri", 1.0), new("Sat", .9), new("Sun", .7)]
