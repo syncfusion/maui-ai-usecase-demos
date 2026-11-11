@@ -8,14 +8,12 @@ public sealed class EsimStore
     public ObservableCollection<EsimProfile> Profiles { get; } = [];
     public IReadOnlyList<Plan> Plans { get; } =
     [
-        new("jp-5-15", "Japan", "Asia", "SoftBank Crop", 5, 15, 8.50m, NetworkType.FiveG, CoverageType.Local, PlanType.Limited),
-        new("us-10-30", "USA", "North America", "Liberty Connect (demo)", 10, 30, 18m, NetworkType.FiveG, CoverageType.Local, PlanType.Limited),
-        new("fr-5-7", "France", "Europe", "HexaTel (demo)", 5, 7, 7m, NetworkType.FourG, CoverageType.Local, PlanType.Limited),
-        new("kr-10-15", "Korea", "Asia", "SeoulWave (demo)", 10, 15, 12m, NetworkType.FiveG, CoverageType.Local, PlanType.Limited),
-        new("sg-3-7", "Singapore", "Asia", "LionCity Data (demo)", 3, 7, 5m, NetworkType.FiveG, CoverageType.Local, PlanType.Limited),
-        new("th-5-15", "Thailand", "Asia", "Siam Connect (demo)", 5, 15, 6.50m, NetworkType.FourG, CoverageType.Local, PlanType.Limited),
-        new("asia-unl-15", "Asia Regional", "Asia", "RoamSphere (demo)", 0, 15, 29m, NetworkType.FiveG, CoverageType.Regional, PlanType.Unlimited),
-        new("global-5-30", "Global", "Worldwide", "WorldLink (demo)", 5, 30, 24m, NetworkType.FourG, CoverageType.Global, PlanType.Limited),
+        new("jp-5-15", "Japan", "Moshi Moshi 5G", "SoftBank Corp.", 5, 15, 8.50m, NetworkType.FiveG, CoverageType.Local, PlanType.Limited),
+        new("jp-unl-7", "Japan", "Tokyo Unlimited Pass", "NTT Docomo", 0, 7, 14m, NetworkType.FiveG, CoverageType.Local, PlanType.Unlimited),
+        new("us-10-30", "United States", "Coast-to-Coast 5G", "T-Mobile / AT&T Auto", 10, 30, 18m, NetworkType.FiveG, CoverageType.Local, PlanType.Limited),
+        new("eu-20-30", "Europe Regional", "EuroConnect 33 Nations", "Orange & Vodafone", 20, 30, 26.50m, NetworkType.FiveG, CoverageType.Regional, PlanType.Limited),
+        new("kr-5-10", "South Korea", "Seoul FastPass 5G", "SK Telecom", 5, 10, 9.20m, NetworkType.FiveG, CoverageType.Local, PlanType.Limited),
+        new("fr-10-15", "France", "Bonjour High-Speed", "Bouygues Telecom", 10, 15, 12m, NetworkType.FiveG, CoverageType.Local, PlanType.Limited),
     ];
     public event EventHandler? Changed;
     public EsimProfile? SelectedProfile { get; set; }

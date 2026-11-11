@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:list="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView" xmlns:sfButton="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons" xmlns:sfInput="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core" xmlns:models="clr-namespace:eSIMDataManager.Models" xmlns:vm="clr-namespace:eSIMDataManager.ViewModels" x:Class="eSIMDataManager.StorePage" x:DataType="vm:MainViewModel" BackgroundColor="#F7F9FF">
+    <ContentPage.Resources>
+        <Style x:Key="StoreFilterButton" TargetType="sfButton:SfButton" BasedOn="{StaticResource SecondaryButton}">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="MinimumHeightRequest" Value="34" />
+            <Setter Property="MinimumWidthRequest" Value="0" />
+        </Style>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <ScrollView>
             <VerticalStackLayout Padding="{OnIdiom Phone=16, Tablet=24, Desktop=26}" Spacing="18">
@@ -22,27 +30,27 @@
                         </Border>
                         <FlexLayout Wrap="Wrap" Direction="Row" AlignItems="Center">
                             <Label Text="Trending:" FontSize="11" TextColor="#24334A" Margin="0,0,8,5" />
-                            <sfButton:SfButton Text="🇯🇵 Japan" Clicked="DestinationClicked" Style="{StaticResource SecondaryButton}" Margin="0,0,5,5" />
-                            <sfButton:SfButton Text="🇺🇸 USA" Clicked="DestinationClicked" Style="{StaticResource SecondaryButton}" Margin="0,0,5,5" />
-                            <sfButton:SfButton Text="🇫🇷 France" Clicked="DestinationClicked" Style="{StaticResource SecondaryButton}" Margin="0,0,5,5" />
-                            <sfButton:SfButton Text="🇰🇷 Korea" Clicked="DestinationClicked" Style="{StaticResource SecondaryButton}" Margin="0,0,5,5" />
-                            <sfButton:SfButton Text="🇸🇬 Singapore" Clicked="DestinationClicked" Style="{StaticResource SecondaryButton}" Margin="0,0,5,5" />
-                            <sfButton:SfButton Text="🇹🇭 Thailand" Clicked="DestinationClicked" Style="{StaticResource SecondaryButton}" Margin="0,0,5,5" />
+                            <sfButton:SfButton Text="🇯🇵 Japan" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start" Margin="0,0,5,5" />
+                            <sfButton:SfButton Text="🇺🇸 USA" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start" Margin="0,0,5,5" />
+                            <sfButton:SfButton Text="🇫🇷 France" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start" Margin="0,0,5,5" />
+                            <sfButton:SfButton Text="🇰🇷 Korea" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start" Margin="0,0,5,5" />
+                            <sfButton:SfButton Text="🇸🇬 Singapore" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start" Margin="0,0,5,5" />
+                            <sfButton:SfButton Text="🇹🇭 Thailand" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start" Margin="0,0,5,5" />
                         </FlexLayout>
-                        <FlexLayout Wrap="Wrap" Direction="Row"><sfButton:SfButton Text="🇪🇺 Europe (33)" Clicked="DestinationClicked" Style="{StaticResource SecondaryButton}" Margin="0,0,6,0"/><sfButton:SfButton Text="🌐 Asia-Pacific" Clicked="DestinationClicked" Style="{StaticResource SecondaryButton}" /></FlexLayout>
+                        <FlexLayout Wrap="Wrap" Direction="Row"><sfButton:SfButton Text="🇪🇺 Europe (33)" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start" Margin="0,0,6,0"/><sfButton:SfButton Text="🌐 Asia-Pacific" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start" /></FlexLayout>
                     </VerticalStackLayout>
                 </Border>
                 <Border BackgroundColor="White" Stroke="#E8EDF5" StrokeShape="RoundRectangle 12" Padding="8">
                     <FlexLayout Wrap="Wrap" Direction="Row" AlignItems="Center">
-                        <sfButton:SfButton Text="All" Clicked="FilterClicked" Style="{StaticResource SecondaryButton}"/><sfButton:SfButton Text="Local" Clicked="FilterClicked" Style="{StaticResource SecondaryButton}"/><sfButton:SfButton Text="Regional" Clicked="FilterClicked" Style="{StaticResource SecondaryButton}"/><sfButton:SfButton Text="Global" Clicked="FilterClicked" Style="{StaticResource SecondaryButton}"/>
-                        <sfButton:SfButton Text="5G" Clicked="FilterClicked" Style="{StaticResource SecondaryButton}"/><sfButton:SfButton Text="Unlimited" Clicked="FilterClicked" Style="{StaticResource SecondaryButton}"/><sfButton:SfButton Text="15 Days" Clicked="FilterClicked" Style="{StaticResource SecondaryButton}"/><Label Text="Sort by:" FontSize="10" VerticalOptions="Center"/><sfButton:SfButton Text="Recommended⌄" Style="{StaticResource SecondaryButton}"/>
+                        <sfButton:SfButton Text="All" Clicked="FilterClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start"/><sfButton:SfButton Text="Local" Clicked="FilterClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start"/><sfButton:SfButton Text="Regional" Clicked="FilterClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start"/><sfButton:SfButton Text="Global" Clicked="FilterClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start"/>
+                        <sfButton:SfButton Text="All Networks⌄" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start"/><sfButton:SfButton Text="All Quotas⌄" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start"/><sfButton:SfButton Text="Any Duration⌄" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start"/><Label Text="Sort by:" FontSize="10" VerticalOptions="Center"/><sfButton:SfButton Text="Recommended⌄" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start"/>
                     </FlexLayout>
                 </Border>
                 <Grid ColumnDefinitions="{OnIdiom Phone='*', Default='2*,*'}" ColumnSpacing="18" RowDefinitions="{OnIdiom Phone='Auto,Auto', Default='Auto'}">
                     <VerticalStackLayout Spacing="12">
                         <Grid ColumnDefinitions="*,Auto"><Label Text="Available eSIM Plans  ·  6 Plans" FontSize="16" FontAttributes="Bold" TextColor="#101C2D"/><Label Grid.Column="1" Text="● Real-time Network Inventory" FontSize="10" TextColor="#00845A" VerticalOptions="Center"/></Grid>
-                        <list:SfListView ItemsSource="{Binding FilteredPlans}" SelectionMode="None" ItemSize="320" IsScrollBarVisible="False"><list:SfListView.ItemsLayout><list:GridLayout SpanCount="{OnIdiom Phone=1, Tablet=2, Desktop=2}" /></list:SfListView.ItemsLayout><list:SfListView.ItemTemplate><DataTemplate x:DataType="models:Plan">
-                            <Border BackgroundColor="White" Stroke="#E9EDF5" StrokeThickness="1" StrokeShape="RoundRectangle 15" Padding="15" Margin="0,0,10,10">
+                        <FlexLayout BindableLayout.ItemsSource="{Binding FilteredPlans}" Wrap="Wrap" Direction="Row" AlignItems="Stretch" AlignContent="Start" HorizontalOptions="Fill"><BindableLayout.ItemTemplate><DataTemplate x:DataType="models:Plan">
+                            <Border BackgroundColor="White" Stroke="#E9EDF5" StrokeThickness="1" StrokeShape="RoundRectangle 15" Padding="15" Margin="0,0,10,10" FlexLayout.Basis="{OnIdiom Phone='100%', Default='49%'}">
                                 <VerticalStackLayout Spacing="9">
                                     <Grid ColumnDefinitions="Auto,*,Auto"><Label Text="🌐" FontSize="22" VerticalOptions="Center"/><VerticalStackLayout Grid.Column="1" Margin="8,0"><Label Text="{Binding Country}" FontSize="15" FontAttributes="Bold" TextColor="#101C2D"/><Label Text="{Binding Region}" FontSize="10" TextColor="#667085"/></VerticalStackLayout><Border Grid.Column="2" BackgroundColor="#D8F7FF" StrokeThickness="0" StrokeShape="RoundRectangle 5" Padding="7,4"><Label Text="{Binding Network, StringFormat='5G {0}'}" FontSize="9" TextColor="#005E78"/></Border></Grid>
                                     <Border BackgroundColor="#F0F5FF" StrokeThickness="0" StrokeShape="RoundRectangle 7" Padding="8,3" HorizontalOptions="Start"><Label Text="{Binding Provider, StringFormat='● Carrier: {0}'}" FontSize="10" TextColor="#20324C"/></Border>
@@ -52,7 +60,7 @@
                                     <Grid ColumnDefinitions="*,Auto"><VerticalStackLayout Spacing="0"><Label Text="Total Price" FontSize="9"/><Label Text="{Binding Price, StringFormat='${0:0.00} USD'}" FontSize="22" FontAttributes="Bold" TextColor="#101C2D"/></VerticalStackLayout><sfButton:SfButton Grid.Column="1" Text="Buy Plan  →" Clicked="BuyPlanClicked" Style="{StaticResource PrimaryButton}" VerticalOptions="Center"/></Grid>
                                 </VerticalStackLayout>
                             </Border>
-                        </DataTemplate></list:SfListView.ItemTemplate></list:SfListView>
+                        </DataTemplate></BindableLayout.ItemTemplate></FlexLayout>
                         <Border BackgroundColor="White" Stroke="#E9EDF5" StrokeShape="RoundRectangle 14" Padding="18"><VerticalStackLayout HorizontalOptions="Center"><Label Text="Showing 6 of 148 verified eSIM packages for the selected filters" FontSize="10" TextColor="#667085"/><sfButton:SfButton Text="Load More Destinations" Style="{StaticResource SecondaryButton}" Margin="0,8,0,0"/></VerticalStackLayout></Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="{OnIdiom Phone=0, Default=1}" Grid.Row="{OnIdiom Phone=1, Default=0}" Spacing="12">
