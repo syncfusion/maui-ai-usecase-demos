@@ -5,6 +5,7 @@ namespace eSIMDataManager;
 public partial class ProfilesPage : ContentPage
 {
     private readonly DemoPage popupActions;
+    private bool? isCompactWorkspace;
 
     public ProfilesPage(MainViewModel viewModel)
     {
@@ -21,15 +22,29 @@ public partial class ProfilesPage : ContentPage
         if (sender is Grid grid)
         {
             var compact = grid.Width < 850;
-            grid.ColumnDefinitions[0].Width = compact ? new GridLength(1, GridUnitType.Star) : new GridLength(0.85, GridUnitType.Star);
-            grid.ColumnDefinitions[1].Width = compact ? new GridLength(1, GridUnitType.Star) : new GridLength(1.7, GridUnitType.Star);
-            if (grid.RowDefinitions.Count < 2)
+            if (isCompactWorkspace == compact)
+                return;
+
+            isCompactWorkspace = compact;
+            if (compact)
             {
+                grid.ColumnDefinitions[0].Width = GridLength.Star;
+                grid.ColumnDefinitions[1].Width = GridLength.Star;
+                grid.RowDefinitions.Clear();
                 grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
                 grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+                grid.SetColumn(grid.Children[1], 0);
+                grid.SetRow(grid.Children[1], 1);
             }
-            grid.SetColumn(grid.Children[1], compact ? 0 : 1);
-            grid.SetRow(grid.Children[1], compact ? 1 : 0);
+            else
+            {
+                grid.ColumnDefinitions[0].Width = new GridLength(0.85, GridUnitType.Star);
+                grid.ColumnDefinitions[1].Width = new GridLength(1.7, GridUnitType.Star);
+                grid.RowDefinitions.Clear();
+                grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+                grid.SetColumn(grid.Children[1], 1);
+                grid.SetRow(grid.Children[1], 0);
+            }
         }
     }
     private async void CopyIccidClicked(object? sender, EventArgs e) { await Clipboard.Default.SetTextAsync("898102004819501234F"); await DisplayAlert("Copied", "Sample ICCID copied.", "OK"); }
