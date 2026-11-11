@@ -26,7 +26,6 @@
 		       <MauiXaml Update="MyPage.xaml" Inflator="Default" /> (reverts to defaults: Runtime for Debug, XamlC for Release)
 		       <MauiXaml Update="MyPage.xaml" Inflator="Runtime" /> (force runtime inflation) -->
 		<MauiXamlInflator>SourceGen</MauiXamlInflator>
-		<MauiXaml Update="DashboardPage.xaml" Inflator="Runtime" />
 
 		<!-- Display name -->
 		<ApplicationTitle>eSIMDataManager</ApplicationTitle>
@@ -47,6 +46,10 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<MauiXaml Update="DashboardPage.xaml" Inflator="Runtime" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<!-- App Icon -->
