@@ -1,0 +1,219 @@
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "workspace",
+      "catalogId": "syncfusion-a2ui-catalog"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "workspace",
+      "components": [
+        {
+          "id": "root",
+          "component": "Column",
+          "padding": "24px",
+          "gap": "20px",
+          "maxWidth": "1100px",
+          "margin": "0 auto",
+          "children": [
+            "successMessage",
+            "heroCard",
+            "passengerCard"
+          ]
+        },
+        {
+          "id": "successMessage",
+          "component": "SyncfusionMessage",
+          "severity": "Success",
+          "variant": "Filled",
+          "showIcon": true,
+          "content": "Booking confirmed successfully! Your e-ticket has been issued and sent to the passenger email addresses."
+        },
+        {
+          "id": "heroCard",
+          "component": "SyncfusionCard",
+          "title": "Booking Details",
+          "subtitle": "Confirmation Code: ST9K4P • Round Trip • New York (JFK) ↔ Los Angeles (LAX) • 1 Adult • Dec 14 – Dec 21, 2026",
+          "style": {
+            "padding": "24px",
+            "borderRadius": "24px",
+            "boxShadow": "0 8px 24px rgba(15,23,42,0.18)",
+            "width": "100%",
+            "maxWidth": "1080px",
+            "margin": "0 auto",
+            "color": "#ffffff"
+          },
+          "children": [
+            "flightsRow"
+          ]
+        },
+        {
+          "id": "flightsRow",
+          "component": "Row",
+          "gap": "16px",
+          "children": [
+            "outboundCard",
+            "returnCard"
+          ]
+        },
+        {
+          "id": "outboundCard",
+          "component": "SyncfusionCard",
+          "title": "Outbound",
+          "subtitle": "Delta Air Lines • Confirmed • DL-401",
+          "style": {
+            "padding": "20px",
+            "borderRadius": "18px",
+            "boxShadow": "0 4px 14px rgba(0,0,0,0.12)",
+            "width": "100%",
+            "background": "rgba(255,255,255,0.12)",
+            "border": "1px solid rgba(255,255,255,0.18)",
+            "color": "#ffffff"
+          },
+          "children": [
+            "outboundText"
+          ],
+          "weight": 1
+        },
+        {
+          "id": "outboundText",
+          "component": "Text",
+          "text": "6:00 AM JFK → 9:15 AM LAX\nNon-Stop • 5h 15m\nSeat 12A/12B • Terminal 4\nStatus: Ticketed",
+          "style": {
+            "whiteSpace": "pre-line",
+            "lineHeight": "1.8",
+            "fontSize": "14px",
+            "color": "#e5eefc"
+          }
+        },
+        {
+          "id": "returnCard",
+          "component": "SyncfusionCard",
+          "title": "Return",
+          "subtitle": "American Airlines • Confirmed • AA 839",
+          "style": {
+            "padding": "20px",
+            "borderRadius": "18px",
+            "boxShadow": "0 4px 14px rgba(0,0,0,0.12)",
+            "width": "100%",
+            "background": "rgba(255,255,255,0.12)",
+            "backdropFilter": "blur(6px)",
+            "border": "1px solid rgba(255,255,255,0.18)",
+            "color": "#ffffff"
+          },
+          "children": [
+            "returnText"
+          ],
+          "weight": 1
+        },
+        {
+          "id": "returnText",
+          "component": "Text",
+          "text": "2:00 PM LAX → 10:30 PM JFK\n1 Stop (ORD) • 8h 30m\nSeat 12A/12B • Terminal 5\nStatus: Ticketed",
+          "style": {
+            "whiteSpace": "pre-line",
+            "lineHeight": "1.8",
+            "fontSize": "14px",
+            "color": "#e5eefc"
+          }
+        },
+        {
+          "id": "passengerCard",
+          "component": "SyncfusionCard",
+          "title": "Passenger Information",
+          "subtitle": "Issued passengers and travel details",
+          "style": {
+            "padding": "20px",
+            "borderRadius": "18px",
+            "boxShadow": "0 2px 10px rgba(15,23,42,0.08)",
+            "width": "100%",
+            "maxWidth": "1080px",
+            "margin": "0 auto",
+            "background": "#ffffff"
+          },
+          "children": [
+            "passengerGrid"
+          ]
+        },
+        {
+          "id": "passengerGrid",
+          "component": "SyncfusionDataGrid",
+          "dataSource": {
+            "path": "/passengers"
+          },
+          "height": "auto",
+          "cssClass": "a2ui-grid a2ui-grid--clean",
+          "enableScroll": false,
+          "allowPaging": false,
+          "allowSorting": false,
+          "columns": [
+            {
+              "field": "passenger",
+              "headerText": "Passenger",
+              "width": "180"
+            },
+            {
+              "field": "email",
+              "headerText": "Email",
+              "width": "220"
+            },
+            {
+              "field": "phone",
+              "headerText": "Phone",
+              "width": "160"
+            },
+            {
+              "field": "passport",
+              "headerText": "Nationality/Passport",
+              "width": "220"
+            },
+            {
+              "field": "seatMeal",
+              "headerText": "Seat/Meal",
+              "width": "170"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "workspace",
+      "path": "/passengers",
+      "value": [
+        {
+          "passenger": "Olivia Bennett",
+          "email": "olivia.bennett@skytravels.com",
+          "phone": "+1 (917) 555-0142",
+          "passport": "USA / XJ482991",
+          "seatMeal": "12A / Vegetarian"
+        },
+        {
+          "passenger": "Ethan Carter",
+          "email": "ethan.carter@skytravels.com",
+          "phone": "+1 (646) 555-0189",
+          "passport": "USA / QP773104",
+          "seatMeal": "12B / Standard"
+        }
+      ]
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "workspace",
+      "path": "/_suggestions",
+      "value": [
+        "🎟️ Add e-ticket download",
+        "🧳 Show baggage allowance",
+        "📍 Add terminal and gate details",
+        "📅 Add return trip to calendar"
+      ]
+    }
+  }
+]

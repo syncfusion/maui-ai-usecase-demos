@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:a2ui="clr-namespace:Syncfusion.Maui.A2UI.Hosting;assembly=Syncfusion.Maui.A2UI"
+             xmlns:chat="clr-namespace:Syncfusion.Maui.Chat;assembly=Syncfusion.Maui.Chat"
+             xmlns:syncTheme="clr-namespace:Syncfusion.Maui.Themes;assembly=Syncfusion.Maui.Core"
+             x:Class="SkyBook.Maui.MainPage"
+             Title="SkyBook"
+             Background="{StaticResource PageGradient}">
+
+  <Grid RowDefinitions="Auto,Auto,*">
+
+    <!-- ===== Header (React: .app-header) ===== -->
+    <Border Grid.Row="0" Padding="28,12" StrokeThickness="0" BackgroundColor="#d9ffffff">
+      <Grid ColumnDefinitions="*,Auto">
+        <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+          <Border WidthRequest="38" HeightRequest="38" StrokeThickness="0" StrokeShape="RoundRectangle 11"
+                            Background="{StaticResource BrandGradient}">
+            <Label Text="✈" FontSize="20" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+          </Border>
+          <VerticalStackLayout VerticalOptions="Center">
+            <Label Text="SkyBook" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource CInk}"
+                               SemanticProperties.HeadingLevel="Level1" />
+            <Label Text="Enterprise Flight Booking" FontSize="12" TextColor="{StaticResource CMuted}" />
+          </VerticalStackLayout>
+        </HorizontalStackLayout>
+        <Button x:Name="HomeButton" Grid.Column="1" Text="← Home" Style="{StaticResource PillButton}"
+                        IsVisible="False" Clicked="OnHomeClicked" AutomationId="home" VerticalOptions="Center" />
+      </Grid>
+    </Border>
+
+    <!-- ===== Compact-width tabs (React: .mobile-tabs) ===== -->
+    <Grid x:Name="MobileTabs" Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="6" Padding="12,8,12,0" IsVisible="False">
+      <Button x:Name="ChatTabButton" Text="Chat" Clicked="OnChatTab" CornerRadius="10" FontSize="13" FontAttributes="Bold" />
+      <Button x:Name="ViewTabButton" Grid.Column="1" Text="Booking view" Clicked="OnViewTab" CornerRadius="10" FontSize="13" FontAttributes="Bold" />
+    </Grid>
+
+    <!-- ===== Body ===== -->
+    <Grid x:Name="Body" Grid.Row="2" Padding="24,20,24,24" ColumnSpacing="20" RowSpacing="12">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition x:Name="ChatColumn" Width="*" />
+        <ColumnDefinition x:Name="SurfaceColumn" Width="0" />
+      </Grid.ColumnDefinitions>
+
+      <!-- Chat pane -->
+      <Border x:Name="ChatPane" Style="{StaticResource PanelBorder}" Padding="0" BackgroundColor="White">
+        <Grid RowDefinitions="Auto,*,Auto">
+
+          <!-- Chat-room header -->
+          <VerticalStackLayout x:Name="ChatHeader" Grid.Row="0" Padding="16,12" Spacing="8" IsVisible="False">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+              <Border WidthRequest="44" HeightRequest="44" StrokeThickness="0" StrokeShape="RoundRectangle 22"
+                                    Background="{StaticResource BrandGradient}">
+                <Label Text="✦" FontSize="22" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+              </Border>
+              <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                <Label Text="SkyBook Assistant 🛡" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource CInk}" />
+                <Label Text="● Online" FontSize="12" TextColor="{StaticResource CAccent}" />
+              </VerticalStackLayout>
+              <Button x:Name="ClearButton" Grid.Column="2" Text="Clear" FontSize="12" Padding="12,4" CornerRadius="999"
+                                    BackgroundColor="White" BorderColor="{StaticResource CLine}" BorderWidth="1"
+                                    TextColor="{StaticResource CMuted}" Clicked="OnClearClicked" IsEnabled="False" AutomationId="clear" />
+            </Grid>
+            <HorizontalStackLayout x:Name="StagePillRow" Spacing="8" IsVisible="False">
+              <Label Text="CURRENT STEP" FontSize="10.5" FontAttributes="Bold" CharacterSpacing="1" TextColor="{StaticResource CMuted}" VerticalOptions="Center" />
+              <Border Padding="12,5" StrokeThickness="0" StrokeShape="RoundRectangle 999" Background="{StaticResource BrandGradient}">
+                <Label x:Name="StagePillLabel" FontSize="12" FontAttributes="Bold" TextColor="White" />
+              </Border>
+            </HorizontalStackLayout>
+          </VerticalStackLayout>
+
+          <!-- Welcome (React: bannerTemplate / WelcomeBanner) -->
+          <ScrollView x:Name="WelcomeScroll" Grid.Row="0" Grid.RowSpan="3" Orientation="Vertical"
+                                VerticalScrollBarVisibility="Default" HorizontalScrollBarVisibility="Never">
+            <VerticalStackLayout x:Name="WelcomeStack" Spacing="14" Padding="24"
+                                             MaximumWidthRequest="1100" HorizontalOptions="Fill" VerticalOptions="Start">
+              <Border HorizontalOptions="Center" Padding="12,5" StrokeShape="RoundRectangle 999" Stroke="#bfdbfe" BackgroundColor="#eff6ff">
+                <Label Text="●  Enterprise AI Travel Assistant" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource CPrimaryDark}" />
+              </Border>
+              <Label HorizontalTextAlignment="Center" FontSize="34" FontAttributes="Bold" TextColor="{StaticResource CInk}"
+                                   SemanticProperties.HeadingLevel="Level2">
+                <Label.FormattedText>
+                  <FormattedString>
+                    <Span Text="Plan and book business travel" />
+                    <Span Text=" in minutes." TextColor="{StaticResource CPrimary}" />
+                  </FormattedString>
+                </Label.FormattedText>
+              </Label>
+              <Label Text="Start with a step below or simply ask SkyBook to help plan and book your trip."
+                                   HorizontalTextAlignment="Center" FontSize="16" FontAttributes="Bold" TextColor="#334155" />
+              <HorizontalStackLayout x:Name="JourneyRow" HorizontalOptions="Center" Spacing="12" Margin="0,0,0,8" />
+              <!-- Cards: 3 / 2 / 1 columns, rebuilt in ArrangeStageCards() on resize -->
+              <Grid x:Name="StageGrid" ColumnSpacing="16" RowSpacing="16" HorizontalOptions="Fill" />
+              <Border x:Name="AskPanel" StrokeShape="RoundRectangle 16" Stroke="#c7d7fe" Background="{StaticResource AskPanelGradient}" Padding="16">
+                <VerticalStackLayout Spacing="10">
+                  <HorizontalStackLayout Spacing="8">
+                    <Border WidthRequest="30" HeightRequest="30" StrokeThickness="0" StrokeShape="RoundRectangle 10" Background="{StaticResource BrandGradient}">
+                      <Label Text="✦" FontSize="15" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                    <Label Text="Ask SkyBook to…" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource CInk}" VerticalOptions="Center" />
+                  </HorizontalStackLayout>
+                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <Border StrokeShape="RoundRectangle 10" Stroke="{StaticResource CLine}" BackgroundColor="White" Padding="10,10,0,0">
+                      <Editor x:Name="WelcomeEditor" StyleId="Borderless" BackgroundColor="Transparent" AutoSize="TextChanges" MaximumHeightRequest="140" MinimumHeightRequest="44"
+                                                    Placeholder="Try: &quot;Find me a flight from New York to London next Friday&quot;"
+                                                    TextChanged="OnWelcomeTextChanged" Completed="OnWelcomeSend" AutomationId="welcome-input" />
+                    </Border>
+                    <Button x:Name="WelcomeSendButton" Grid.Column="1" Text="Ask SkyBook" Clicked="OnWelcomeSend"
+                                                BackgroundColor="{StaticResource CPrimary}" TextColor="White" CornerRadius="8" IsEnabled="False" VerticalOptions="Start" HeightRequest="52"
+                                                AutomationId="welcome-send" />
+                  </Grid>
+                </VerticalStackLayout>
+              </Border>
+            </VerticalStackLayout>
+          </ScrollView>
+
+          <!-- Conversation (React: SfAIAssistView equivalent) -->
+          <chat:SfChat x:Name="Chat" Grid.Row="1" Grid.RowSpan="2" IsVisible="False"
+                                 Messages="{Binding Messages}"
+                                 CurrentUser="{Binding CurrentUser}"
+                                 TypingIndicator="{Binding TypingIndicator}"
+                                 ShowTypingIndicator="{Binding ShowTypingIndicator}"
+                                 MessageShape="RoundedRectangle"
+                                 ShowOutgoingMessageAvatar="False"
+                                 ShowIncomingMessageAuthorName="False"
+                                 ShowIncomingMessageAvatar="False"
+                                 BackgroundColor="White"
+                                 AutomationId="chat">
+            <chat:SfChat.Resources>
+              <syncTheme:SyncfusionThemeDictionary>
+                <syncTheme:SyncfusionThemeDictionary.MergedDictionaries>
+                  <ResourceDictionary>
+                    <x:String x:Key="SfChatTheme">CustomTheme</x:String>
+                    <Color x:Key="SfChatBackground">White</Color>
+                    <Color x:Key="SfChatOutgoingMessageBackground">#2563EB</Color>
+                    <Color x:Key="SfChatOutgoingMessageTextColor">White</Color>
+                    <Color x:Key="SfChatIncomingMessageBackground">White</Color>
+                    <Color x:Key="SfChatIncomingMessageTextColor">#0F172A</Color>
+                    <Color x:Key="SfChatIncomingMessageTimestampTextColor">#94A3B8</Color>
+                    <Color x:Key="SfChatOutgoingMessageTimestampTextColor">#94A3B8</Color>
+                    <Color x:Key="SfChatEditorBackground">White</Color>
+                    <Color x:Key="SfChatEditorStroke">#E2E8F0</Color>
+                    <Color x:Key="SfChatFocusedEditorStroke">#CBD5E1</Color>
+                    <Color x:Key="SfChatEditorPlaceholderTextColor">#94A3B8</Color>
+                    <Color x:Key="SfChatEditorTextColor">#0F172A</Color>
+                    <Color x:Key="SfChatSendButtonBackground">#2563EB</Color>
+                    <Color x:Key="SfChatSendButtonColor">White</Color>
+                    <Color x:Key="SfChatMessageInputViewBackground">White</Color>
+                  </ResourceDictionary>
+                </syncTheme:SyncfusionThemeDictionary.MergedDictionaries>
+              </syncTheme:SyncfusionThemeDictionary>
+            </chat:SfChat.Resources>
+          </chat:SfChat>
+        </Grid>
+      </Border>
+
+      <!-- Surface pane (React: .surface-pane) -->
+      <Border x:Name="SurfacePane" Grid.Column="1" Style="{StaticResource PanelBorder}" Padding="0" IsVisible="False" StrokeShape="RoundRectangle 16">
+        <Grid RowDefinitions="Auto,Auto,*">
+          <Grid x:Name="Stepper" Grid.Row="0" Padding="24,14" ColumnSpacing="0" BackgroundColor="#f8fafc" IsVisible="False" />
+          <ActivityIndicator x:Name="SurfaceLoading" Grid.Row="1" IsVisible="False" IsRunning="False" HeightRequest="20" Color="{StaticResource CPrimary}" />
+          <ScrollView x:Name="SurfaceScroll" Grid.Row="2" IsVisible="False">
+            <a2ui:A2uiSurface x:Name="SurfaceView" />
+          </ScrollView>
+          <ScrollView x:Name="Placeholder" Grid.Row="2">
+            <VerticalStackLayout Padding="24" Spacing="14" HorizontalOptions="Center" MaximumWidthRequest="520">
+              <Border WidthRequest="80" HeightRequest="80" StrokeThickness="0" StrokeShape="RoundRectangle 24" HorizontalOptions="Center"
+                                    Background="{StaticResource BrandGradient}">
+                <Label Text="✈" FontSize="44" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+              </Border>
+              <Label Text="Your booking workspace" FontSize="20" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{StaticResource CInk}" />
+              <Label Text="Pick a step or ask SkyBook. Live flight search, results and confirmation will appear here in real time."
+                                   HorizontalTextAlignment="Center" TextColor="{StaticResource CMuted}" />
+              <Border StrokeShape="RoundRectangle 16" Stroke="{StaticResource CLine}" BackgroundColor="White" Padding="16,14">
+                <VerticalStackLayout Spacing="12">
+                  <Grid ColumnDefinitions="Auto,*">
+                    <Border Padding="9,3" StrokeThickness="0" BackgroundColor="#eff6ff" StrokeShape="RoundRectangle 999">
+                      <Label Text="SAMPLE TRIP" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource CPrimaryDark}" />
+                    </Border>
+                    <Label Grid.Column="1" Text="Mar 12 – 18 · 1 traveller · Economy" FontSize="12" TextColor="#475569" HorizontalOptions="End" />
+                  </Grid>
+                  <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                    <VerticalStackLayout>
+                      <Label Text="JFK" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource CInk}" />
+                      <Label Text="New York" FontSize="12" TextColor="{StaticResource CMuted}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                      <Label Text="✈ - - - - - - - - -" HorizontalTextAlignment="Center" TextColor="#60a5fa" />
+                      <Label Text="7h 10m · Non-stop" FontSize="11.5" HorizontalTextAlignment="Center" TextColor="{StaticResource CMuted}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="End">
+                      <Label Text="LHR" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="End" TextColor="{StaticResource CInk}" />
+                      <Label Text="London" FontSize="12" HorizontalTextAlignment="End" TextColor="{StaticResource CMuted}" />
+                    </VerticalStackLayout>
+                  </Grid>
+                  <BoxView HeightRequest="1" Color="{StaticResource CLine}" />
+                  <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="24 flights found" FontSize="13" TextColor="#475569" />
+                    <Label Grid.Column="1" Text="from $549" FontSize="15" FontAttributes="Bold" TextColor="#0f766e" />
+                  </Grid>
+                </VerticalStackLayout>
+              </Border>
+              <VerticalStackLayout x:Name="PlaceholderSteps" Spacing="8" />
+            </VerticalStackLayout>
+          </ScrollView>
+        </Grid>
+      </Border>
+    </Grid>
+  </Grid>
+</ContentPage>

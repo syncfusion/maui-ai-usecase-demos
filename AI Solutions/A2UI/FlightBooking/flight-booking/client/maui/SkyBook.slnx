@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SkyBook.Core/SkyBook.Core.csproj" />
+    <Project Path="src/SkyBook.Maui/SkyBook.Maui.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SkyBook.Core.Tests/SkyBook.Core.Tests.csproj" />
+    <Project Path="tests/SkyBook.Designs.Tests/SkyBook.Designs.Tests.csproj" />
+  </Folder>
+</Solution>

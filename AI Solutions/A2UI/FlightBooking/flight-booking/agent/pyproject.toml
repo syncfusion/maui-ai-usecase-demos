@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "flight-booking-agent"
+version = "0.1.0"
+description = "Flight-booking agent built on the syncfusion-a2ui-agent ADK"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Syncfusion" }]
+keywords = ["a2ui", "a2a", "syncfusion", "agent", "flight-booking"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+# Runtime deps. The ADK is consumed directly from its GitHub repo via a
+# PEP 508 direct reference, so a single `pip install flight-booking/agent`
+# pulls the ADK and the local package in one go. python-dotenv is used
+# by the example scripts to load `.env`.
+dependencies = [
+    "syncfusion-a2ui-agent @ git+https://github.com/syncfusion/syncfusion-a2ui-agent.git",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.5",
+]
+
+[project.scripts]
+# After `pip install flight-booking/agent`, this becomes available on PATH:
+flight-booking    = "flight_booking_agent.flight_booking_agent:main"
+
+[tool.hatch.build.targets.wheel]
+# Standard project layout: package files live in flight_booking_agent/
+# next to pyproject.toml. The wheel installs them under that directory
+# name, so the importable name is `flight_booking_agent`.
+packages = ["flight_booking_agent"]
+
+[tool.hatch.metadata]
+# Allow the ADK to be specified as a PEP 508 direct reference (git+URL)
+# in `project.dependencies`, so a single `pip install flight-booking/agent`
+# pulls the ADK from GitHub and installs both packages in one go.
+allow-direct-references = true
+

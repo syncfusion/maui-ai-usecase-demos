@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Design tokens ported from App.css (":root" block) and the stage / chat colours. -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <Color x:Key="CPrimary">#2563eb</Color>
+    <Color x:Key="CPrimaryDark">#1d4ed8</Color>
+    <Color x:Key="CAccent">#14a37f</Color>
+    <Color x:Key="CAccentGreen">#22ad78</Color>
+    <Color x:Key="CInk">#0f172a</Color>
+    <Color x:Key="CMuted">#64748b</Color>
+    <Color x:Key="CLine">#e2e8f0</Color>
+    <Color x:Key="CSurface">#ffffff</Color>
+    <Color x:Key="CPageBg">#eef1f6</Color>
+
+    <LinearGradientBrush x:Key="BrandGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#2563eb" Offset="0" />
+        <GradientStop Color="#22ad78" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="UserBubbleGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#2563eb" Offset="0" />
+        <GradientStop Color="#1d4ed8" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="PageGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#f6f8fc" Offset="0" />
+        <GradientStop Color="#eef1f6" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="AskPanelGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#f5f8ff" Offset="0" />
+        <GradientStop Color="#f0fdf9" Offset="1" />
+    </LinearGradientBrush>
+
+    <Style x:Key="PanelBorder" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource CSurface}" />
+        <Setter Property="Stroke" Value="{StaticResource CLine}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 16" />
+    </Style>
+    <Style x:Key="PillButton" TargetType="Button">
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CornerRadius" Value="999" />
+        <Setter Property="Padding" Value="16,8" />
+        <Setter Property="Background" Value="{StaticResource BrandGradient}" />
+    </Style>
+</ResourceDictionary>

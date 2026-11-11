@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Loads the agent's designs_maui/*.json into the real Syncfusion.Maui.A2UI SurfaceHost (plain net10.0, no device). -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1" />
+    <PackageReference Include="Syncfusion.Maui.A2UI" Version="$(SyncfusionVersion)" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\..\..\agent\flight_booking_agent\designs_maui\*.json" Link="designs_maui\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup><ProjectReference Include="..\..\src\SkyBook.Core\SkyBook.Core.csproj" /></ItemGroup>
+  <ItemGroup><Compile Include="..\..\src\SkyBook.Maui\Ui\*.cs" LinkBase="Ui" /></ItemGroup>
+</Project>
