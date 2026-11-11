@@ -84,8 +84,42 @@
                                 <Border Stroke="#EEF2F8" StrokeThickness="1" StrokeShape="RoundRectangle 18" Padding="0"><Grid ColumnDefinitions="48,*,Auto,Auto" ColumnSpacing="10" Padding="10,15"><Label Text="US" FontSize="20" TextColor="#101C2D" VerticalOptions="Center" HorizontalTextAlignment="Center"/><VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center"><Label Text="United States" FontSize="16" FontAttributes="Bold" TextColor="#101C2D"/><HorizontalStackLayout Spacing="7"><Label Text="★ 4.8" FontSize="13" FontAttributes="Bold" TextColor="#F39200"/><Label Text="·" FontSize="13" TextColor="#344054"/><Label Text="10 Carriers" FontFamily="monospace" FontSize="13" TextColor="#344054"/></HorizontalStackLayout></VerticalStackLayout><Label Grid.Column="2" Text="From $8.00" FontSize="16" FontAttributes="Bold" TextColor="#101C2D" VerticalOptions="Center"/><Label Grid.Column="3" Text="›" FontSize="26" TextColor="#344054" VerticalOptions="Center"/></Grid></Border>
                             </VerticalStackLayout>
                         </Border>
-                        <Border BackgroundColor="#EEF3FF" StrokeThickness="0" StrokeShape="RoundRectangle 15" Padding="15"><VerticalStackLayout Spacing="9"><Label Text="◇  Why eSIM Data Manager?" FontSize="16" FontAttributes="Bold" TextColor="#101C2D"/><Label Text="▧  100% Digital Delivery&#10;       Install in seconds. No postage, no plastic, no kiosk queue." FontSize="11"/><Label Text="▤  Keep WhatsApp &amp; SIM&#10;       Receive home 2FA bank texts while roaming." FontSize="11"/><Label Text="＄  Zero Bill Shock&#10;       Prepaid transparency. Never return home to an accidental bill." FontSize="11"/><Label Text="◉  24/7 Global SLA Support&#10;       Real telecom network engineers ready to help wherever you land." FontSize="11"/></VerticalStackLayout></Border>
-                        <Border BackgroundColor="#084BE8" StrokeThickness="0" StrokeShape="RoundRectangle 15" Padding="16"><VerticalStackLayout Spacing="9"><Label Text="● FLIGHT CONCIERGE ACTIVE" FontSize="10" TextColor="#D9E7FF"/><Label Text="Need help choosing a plan?" FontSize="16" FontAttributes="Bold" TextColor="White"/><Label Text="Tell us your trip schedule and handset model. We will pick the highest signal carrier for you." FontSize="11" TextColor="White"/><sfButton:SfButton Text="□  Chat with Roaming Advisor" Style="{StaticResource SecondaryButton}" Background="#FFFFFF" TextColor="#0645D8"/></VerticalStackLayout></Border>
+                        <Border BackgroundColor="#EEF3FF" StrokeThickness="0" StrokeShape="RoundRectangle 22" Padding="26,24">
+                            <VerticalStackLayout Spacing="0">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" Margin="4,0,0,20">
+                                    <Label Text="&#xE734;" FontFamily="MaterialAssets" FontSize="25" TextColor="#008B63" VerticalOptions="Center"/>
+                                    <Label Grid.Column="1" Text="Why eSIM Data Manager?" FontSize="23" FontAttributes="Bold" TextColor="#101C2D" VerticalOptions="Center"/>
+                                </Grid>
+                                <Grid ColumnDefinitions="54,*" ColumnSpacing="12" Margin="0,0,0,19">
+                                    <Border WidthRequest="50" HeightRequest="58" BackgroundColor="White" StrokeThickness="0" StrokeShape="RoundRectangle 18"><Label Text="&#xE753;" FontFamily="MaterialAssets" FontSize="24" TextColor="#0752DB" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center"><Label Text="100% Digital Delivery" FontSize="17" FontAttributes="Bold" TextColor="#101C2D"/><Label Text="Install in seconds. No postage, no plastic, no kiosk queue." FontSize="16" TextColor="#344054" LineBreakMode="WordWrap"/></VerticalStackLayout>
+                                </Grid>
+                                <Grid ColumnDefinitions="54,*" ColumnSpacing="12" Margin="0,0,0,19">
+                                    <Border WidthRequest="50" HeightRequest="58" BackgroundColor="White" StrokeThickness="0" StrokeShape="RoundRectangle 18"><Label Text="&#xE8BD;" FontFamily="MaterialAssets" FontSize="24" TextColor="#0752DB" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center"><Label Text="Keep WhatsApp &amp; SIM" FontSize="17" FontAttributes="Bold" TextColor="#101C2D"/><Label Text="Receive home 2FA bank texts while roaming on local high-speed data." FontSize="16" TextColor="#344054" LineBreakMode="WordWrap"/></VerticalStackLayout>
+                                </Grid>
+                                <Grid ColumnDefinitions="54,*" ColumnSpacing="12" Margin="0,0,0,19">
+                                    <Border WidthRequest="50" HeightRequest="58" BackgroundColor="White" StrokeThickness="0" StrokeShape="RoundRectangle 18"><Label Text="&#xE8C7;" FontFamily="MaterialAssets" FontSize="24" TextColor="#0752DB" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center"><Label Text="Zero Bill Shock" FontSize="17" FontAttributes="Bold" TextColor="#101C2D"/><Label Text="Prepaid transparency. Never return home to an accidental $500 bill." FontSize="16" TextColor="#344054" LineBreakMode="WordWrap"/></VerticalStackLayout>
+                                </Grid>
+                                <Grid ColumnDefinitions="54,*" ColumnSpacing="12">
+                                    <Border WidthRequest="50" HeightRequest="58" BackgroundColor="White" StrokeThickness="0" StrokeShape="RoundRectangle 18"><Label Text="&#xE720;" FontFamily="MaterialAssets" FontSize="24" TextColor="#0752DB" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center"><Label Text="24/7 Global SLA Support" FontSize="17" FontAttributes="Bold" TextColor="#101C2D"/><Label Text="Real telecom network engineers ready to help whenever you land." FontSize="16" TextColor="#344054" LineBreakMode="WordWrap"/></VerticalStackLayout>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border BackgroundColor="#0D50EA" StrokeThickness="0" StrokeShape="RoundRectangle 22" Padding="28,26">
+                            <VerticalStackLayout Spacing="0">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Margin="0,0,0,20">
+                                    <Ellipse WidthRequest="11" HeightRequest="11" Fill="#35D69A" VerticalOptions="Center"/>
+                                    <Label Grid.Column="1" Text="FLIGHT CONCIERGE ACTIVE" FontFamily="monospace" FontSize="14" CharacterSpacing="1.1" TextColor="#E7F0FF" VerticalOptions="Center"/>
+                                    <Label Grid.Column="2" Text="&#xE897;" FontFamily="MaterialAssets" FontSize="22" TextColor="White" VerticalOptions="Center"/>
+                                </Grid>
+                                <Label Text="Need help choosing a plan?" FontSize="25" FontAttributes="Bold" TextColor="White" Margin="0,0,0,4"/>
+                                <Label Text="Tell us your trip schedule and handset model. We will pick the highest signal carrier for you." FontSize="16" TextColor="White" LineBreakMode="WordWrap" Margin="0,0,0,24"/>
+                                <sfButton:SfButton Text="&#xE8BD;   Chat with Roaming Advisor" FontFamily="MaterialAssets" FontSize="17" FontAttributes="Bold" HeightRequest="54" CornerRadius="14" Padding="14,10" Background="#FFFFFF" TextColor="#0645D8" HorizontalOptions="Fill"/>
+                            </VerticalStackLayout>
+                        </Border>
                     </VerticalStackLayout>
                 </Grid>
                 <Grid ColumnDefinitions="*,Auto" Padding="0,8"><Label Text="●  Core Signal: 5G Ultra-Low Latency Mesh" FontSize="10" TextColor="#344054"/><Label Grid.Column="1" Text="© 2024 eSIM Data Manager. Precision Connectivity Platform." FontSize="10" TextColor="#667085"/></Grid>
