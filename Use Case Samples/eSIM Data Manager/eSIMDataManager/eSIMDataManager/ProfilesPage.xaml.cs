@@ -28,8 +28,8 @@ public partial class ProfilesPage : ContentPage
                 grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
                 grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
             }
-            Grid.SetColumn(grid.Children[1], compact ? 0 : 1);
-            Grid.SetRow(grid.Children[1], compact ? 1 : 0);
+            grid.SetColumn(grid.Children[1], compact ? 0 : 1);
+            grid.SetRow(grid.Children[1], compact ? 1 : 0);
         }
     }
     private async void CopyIccidClicked(object? sender, EventArgs e) { await Clipboard.Default.SetTextAsync("898102004819501234F"); await DisplayAlert("Copied", "Sample ICCID copied.", "OK"); }
