@@ -21,7 +21,6 @@ public partial class MainViewModel : ObservableObject
     public ObservableCollection<EsimProfile> ExpiredProfiles { get; } = [];
     public ObservableCollection<DailyUsage> Trend { get; } = [];
     public ObservableCollection<DailyUsage> AverageTrend { get; } = [];
-    public double UsedFraction => UsedPercent / 100d;
     public double ValidityFraction => Math.Clamp(DaysRemaining / 14d, 0, 1);
     public string ActivationDateText => ActiveProfile?.ActivationDate?.ToString("MMM d, yyyy") ?? "—";
     public double SevenDayTotal => Trend.Sum(point => point.UsedGb);
@@ -118,7 +117,6 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(DaysRemaining));
         OnPropertyChanged(nameof(HasActiveProfile));
         OnPropertyChanged(nameof(ProfilesCount));
-        OnPropertyChanged(nameof(UsedFraction));
         OnPropertyChanged(nameof(ValidityFraction));
         OnPropertyChanged(nameof(ActivationDateText));
         OnPropertyChanged(nameof(SevenDayTotal));
