@@ -24,7 +24,7 @@
      </VerticalStackLayout>
     </Grid>
    </VerticalStackLayout></ScrollView>
-   <Grid Grid.Row="1" BackgroundColor="White" Padding="{OnIdiom Phone=14, Default=28},12" ColumnDefinitions="*,Auto"><Label Text="●  Core Signal: 5G Ultra-Low Latency Mesh" FontFamily="monospace" FontSize="12" TextColor="#006141"/><Label Grid.Column="1" Text="© 2024 eSIM Data Manager. Precision Connectivity Platform." FontSize="12"/></Grid>
+   <Grid Grid.Row="1" BackgroundColor="White" Padding="{OnIdiom Phone='14,12', Default='28,12'}" ColumnDefinitions="*,Auto"><Label Text="●  Core Signal: 5G Ultra-Low Latency Mesh" FontFamily="monospace" FontSize="12" TextColor="#006141"/><Label Grid.Column="1" Text="© 2024 eSIM Data Manager. Precision Connectivity Platform." FontSize="12"/></Grid>
   </Grid>
  </ContentPage.Content>
 </ContentPage>
