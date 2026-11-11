@@ -25,7 +25,7 @@ public sealed class EsimStore
     {
         var active = new EsimProfile
         {
-            Id = "demo-jp-active", ProfileName = "Japan Unlimited 5G", Country = "Japan", Carrier = "SoftBank Crop", Network = NetworkType.FiveG,
+            Id = "demo-jp-active", ProfileName = "Japan 5G Explorer", Country = "Japan", Carrier = "SoftBank Crop", Network = NetworkType.FiveG,
             Status = ProfileStatus.Active, Iccid = "DEMO-8931-0248", ActivationCode = "LPA:1$demo.carrier.example$SAMPLEJP001",
             AllocatedGb = 10, ConsumedGb = 6.8, ActivationDate = DateTime.Today.AddDays(-4), ExpiryDate = DateTime.Today.AddDays(6),
             DailyUsage = [new("Mon", .8), new("Tue", 1.1), new("Wed", .9), new("Thu", 1.4), new("Fri", 1.0), new("Sat", .9), new("Sun", .7)]
@@ -42,6 +42,18 @@ public sealed class EsimStore
             Id = "demo-us-expired", ProfileName = "USA Road Trip", Country = "USA", Carrier = "Liberty Connect (demo)", Network = NetworkType.FiveG,
             Status = ProfileStatus.Expired, Iccid = "DEMO-8931-0200", ActivationCode = "LPA:1$demo.carrier.example$SAMPLEUS000",
             AllocatedGb = 5, ConsumedGb = 5, ActivationDate = DateTime.Today.AddDays(-40), ExpiryDate = DateTime.Today.AddDays(-10)
+        });
+        Profiles.Add(new EsimProfile
+        {
+            Id = "demo-th-expired", ProfileName = "Thailand Unlimited", Country = "Thailand", Carrier = "AIS / TrueMove (demo)", Network = NetworkType.FourG,
+            Status = ProfileStatus.Expired, Iccid = "DEMO-8931-0201", ActivationCode = "LPA:1$demo.carrier.example$SAMPLETH000",
+            AllocatedGb = 15, ConsumedGb = 15, ActivationDate = DateTime.Today.AddDays(-120), ExpiryDate = DateTime.Today.AddDays(-90)
+        });
+        Profiles.Add(new EsimProfile
+        {
+            Id = "demo-it-expired", ProfileName = "Italy City Explorer", Country = "Italy", Carrier = "Roma Mobile (demo)", Network = NetworkType.FourG,
+            Status = ProfileStatus.Expired, Iccid = "DEMO-8931-0202", ActivationCode = "LPA:1$demo.carrier.example$SAMPLEIT000",
+            AllocatedGb = 3, ConsumedGb = 2.7, ActivationDate = DateTime.Today.AddDays(-75), ExpiryDate = DateTime.Today.AddDays(-60)
         });
         SelectedProfile = active;
     }

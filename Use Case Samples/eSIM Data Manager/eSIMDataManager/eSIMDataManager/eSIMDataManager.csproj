@@ -25,7 +25,7 @@
 		     For individual files, you can override by setting Inflator metadata:
 		       <MauiXaml Update="MyPage.xaml" Inflator="Default" /> (reverts to defaults: Runtime for Debug, XamlC for Release)
 		       <MauiXaml Update="MyPage.xaml" Inflator="Runtime" /> (force runtime inflation) -->
-		<MauiXamlInflator>SourceGen</MauiXamlInflator>
+		<MauiXamlInflator>Runtime</MauiXamlInflator>
 
 		<!-- Display name -->
 		<ApplicationTitle>eSIMDataManager</ApplicationTitle>
@@ -48,7 +48,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<MauiXaml Update="DashboardPage.xaml" Inflator="Runtime" />
+		<MauiXaml Update="DashboardPage.xaml;ProfilesPage.xaml" Inflator="Runtime" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -78,6 +78,7 @@
         <PackageReference Include="Syncfusion.Maui.Charts" Version="34.2.6" />
         <PackageReference Include="Syncfusion.Maui.ListView" Version="34.2.6" />
         <PackageReference Include="Syncfusion.Maui.TabView" Version="34.2.6" />
+        <PackageReference Include="Syncfusion.Maui.ProgressBar" Version="34.2.6" />
         <PackageReference Include="Syncfusion.Maui.Expander" Version="34.2.6" />
         <PackageReference Include="Syncfusion.Maui.Cards" Version="34.2.6" />
         <PackageReference Include="Syncfusion.Maui.Barcode" Version="34.2.6" />

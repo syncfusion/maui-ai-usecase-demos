@@ -2,6 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:charts="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+             xmlns:gauge="clr-namespace:Syncfusion.Maui.Gauges;assembly=Syncfusion.Maui.Gauges"
+             xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
              xmlns:sfButton="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
              xmlns:vm="clr-namespace:eSIMDataManager.ViewModels"
              xmlns:models="clr-namespace:eSIMDataManager.Models"
@@ -99,16 +101,35 @@
                             <Grid Grid.Row="0" ColumnDefinitions="*,Auto"><VerticalStackLayout Spacing="3"><Label Text="Data Consumption" FontSize="22" FontAttributes="Bold" FontFamily="Inter" TextColor="#101D35"/><Label Text="High-Speed 5G Volume Balance" FontFamily="Inter" FontSize="13" TextColor="#63748B"/></VerticalStackLayout><Border Grid.Column="1" BackgroundColor="#EEF3FF" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="13,7" VerticalOptions="Start"><Label Text="Cycle 3 of 4" FontFamily="Inter" FontSize="12" FontAttributes="Bold" TextColor="#003ED6"/></Border></Grid>
                             <Grid Grid.Row="1" ColumnDefinitions="220,*" RowDefinitions="Auto" ColumnSpacing="24" RowSpacing="18" VerticalOptions="Center" Margin="0,20,0,0">
                                 <Grid Grid.Row="0" Grid.Column="0" WidthRequest="220" HeightRequest="220" HorizontalOptions="Start">
-                                    <charts:SfCircularChart>
-                                        <charts:DoughnutSeries ItemsSource="{Binding ConsumptionSegments}" XBindingPath="Label" YBindingPath="Value" InnerRadius="0.72"><charts:DoughnutSeries.PaletteBrushes><SolidColorBrush Color="#005F88"/><SolidColorBrush Color="#E5EDFF"/></charts:DoughnutSeries.PaletteBrushes></charts:DoughnutSeries>
-                                    </charts:SfCircularChart>
+                                    <gauge:SfRadialGauge>
+                                        <gauge:SfRadialGauge.Axes>
+                                            <gauge:RadialAxis Minimum="0" Maximum="100" StartAngle="270" EndAngle="270" ShowLabels="False" ShowTicks="False" RadiusFactor="0.9">
+                                                <gauge:RadialAxis.AxisLineStyle>
+                                                    <gauge:RadialLineStyle Thickness="18" ThicknessUnit="Pixel" Fill="#E5EDFF"/>
+                                                </gauge:RadialAxis.AxisLineStyle>
+                                                <gauge:RadialAxis.Pointers>
+                                                    <gauge:RangePointer Value="{Binding UsedPercent}" PointerWidth="18" WidthUnit="Pixel" CornerStyle="BothCurve">
+                                                        <gauge:RangePointer.GradientStops>
+                                                            <gauge:GaugeGradientStop Value="0" Color="#087FA3"/>
+                                                            <gauge:GaugeGradientStop Value="100" Color="#005F88"/>
+                                                        </gauge:RangePointer.GradientStops>
+                                                    </gauge:RangePointer>
+                                                </gauge:RadialAxis.Pointers>
+                                            </gauge:RadialAxis>
+                                        </gauge:SfRadialGauge.Axes>
+                                    </gauge:SfRadialGauge>
                                     <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="0"><Label Text="{Binding AvailablePercent, StringFormat='{0:0}%'}" FontSize="25" FontAttributes="Bold" TextColor="#101D35" HorizontalTextAlignment="Center"/><Label Text="REMAINING" FontSize="11" TextColor="#303A50" HorizontalTextAlignment="Center"/></VerticalStackLayout>
                                 </Grid>
                                 <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="10" VerticalOptions="Center">
                                     <HorizontalStackLayout Spacing="7" VerticalOptions="Center"><Label Text="{Binding RemainingText}" FontSize="{OnIdiom Phone=38, Default=48}" FontAttributes="Bold" FontFamily="Inter" TextColor="#101D35"/><Label Text="Free" FontSize="29" FontFamily="Inter" TextColor="#454C60" VerticalOptions="Center"/></HorizontalStackLayout>
                                     <Label Text="Out of 10.0 GB high-speed high-priority roaming pool." FontFamily="Inter" FontSize="14" TextColor="#48566C" LineBreakMode="WordWrap" />
-                                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8" Margin="0,6,0,0"><Label Text="{Binding Consumed, StringFormat='Used: {0:0.#} GB'}" FontFamily="Inter" FontSize="13" TextColor="#48566C" LineBreakMode="WordWrap"/><Label Grid.Column="1" Text="Est. Burn: ~0.8 GB/day" FontFamily="Inter" FontSize="13" FontAttributes="Bold" TextColor="#003ED6" LineBreakMode="WordWrap"/></Grid>
-                                    <ProgressBar Progress="{Binding UsedFraction}" ProgressColor="#1E5BFF" BackgroundColor="#EAF0FF" HeightRequest="9" HorizontalOptions="Fill"/>
+                                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8" Margin="0,6,0,0"><Label Text="{Binding Consumed, StringFormat='Used: {0:0.#} GB'}" FontFamily="Inter" FontSize="13" TextColor="#48566C" LineBreakMode="WordWrap"/><Label Grid.Column="1" Text="Est. Burn: ~0.8 GB/day" FontFamily="Inter" FontSize="13" FontAttributes="Bold" TextColor="#003ED6" HorizontalTextAlignment="End" LineBreakMode="WordWrap"/></Grid>
+                                    <progressBar:SfLinearProgressBar Progress="{Binding UsedPercent}" TrackHeight="12" ProgressHeight="12" TrackCornerRadius="6" ProgressCornerRadius="6" TrackFill="#EAF0FF" HorizontalOptions="Fill">
+                                        <progressBar:SfLinearProgressBar.GradientStops>
+                                            <progressBar:ProgressGradientStop Value="0" Color="#4583FF"/>
+                                            <progressBar:ProgressGradientStop Value="100" Color="#1E5BFF"/>
+                                        </progressBar:SfLinearProgressBar.GradientStops>
+                                    </progressBar:SfLinearProgressBar>
                                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="7" Margin="0,4,0,0"><Label Text="&#xE723;" FontFamily="UiKitIcons" FontSize="16" TextColor="#006B4F" VerticalOptions="Start"/><Label Grid.Column="1" Text="Standard speed (128 kbps) unlimited backup included" TextColor="#006B4F" FontFamily="Inter" FontSize="13" LineBreakMode="WordWrap"/></Grid>
                                 </VerticalStackLayout>
                             </Grid>
