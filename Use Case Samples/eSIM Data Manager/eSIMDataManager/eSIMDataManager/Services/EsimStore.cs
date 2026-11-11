@@ -43,6 +43,18 @@ public sealed class EsimStore
             Status = ProfileStatus.Expired, Iccid = "DEMO-8931-0200", ActivationCode = "LPA:1$demo.carrier.example$SAMPLEUS000",
             AllocatedGb = 5, ConsumedGb = 5, ActivationDate = DateTime.Today.AddDays(-40), ExpiryDate = DateTime.Today.AddDays(-10)
         });
+        Profiles.Add(new EsimProfile
+        {
+            Id = "demo-th-expired", ProfileName = "Thailand Unlimited", Country = "Thailand", Carrier = "AIS / TrueMove (demo)", Network = NetworkType.FourG,
+            Status = ProfileStatus.Expired, Iccid = "DEMO-8931-0201", ActivationCode = "LPA:1$demo.carrier.example$SAMPLETH000",
+            AllocatedGb = 15, ConsumedGb = 15, ActivationDate = DateTime.Today.AddDays(-120), ExpiryDate = DateTime.Today.AddDays(-90)
+        });
+        Profiles.Add(new EsimProfile
+        {
+            Id = "demo-it-expired", ProfileName = "Italy City Explorer", Country = "Italy", Carrier = "Roma Mobile (demo)", Network = NetworkType.FourG,
+            Status = ProfileStatus.Expired, Iccid = "DEMO-8931-0202", ActivationCode = "LPA:1$demo.carrier.example$SAMPLEIT000",
+            AllocatedGb = 3, ConsumedGb = 2.7, ActivationDate = DateTime.Today.AddDays(-75), ExpiryDate = DateTime.Today.AddDays(-60)
+        });
         SelectedProfile = active;
     }
 

@@ -27,6 +27,7 @@ public sealed class EsimProfile
     public DateTime ExpiryDate { get; set; }
     public int DaysRemaining => Math.Max(0, (ExpiryDate.Date - DateTime.Today).Days);
     public double UsagePercent => AllocatedGb <= 0 ? 0 : Math.Clamp(ConsumedGb / AllocatedGb * 100, 0, 100);
+    public double UsageFraction => UsagePercent / 100;
     public List<DailyUsage> DailyUsage { get; init; } = [];
 }
 
