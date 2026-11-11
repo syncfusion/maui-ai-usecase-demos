@@ -64,9 +64,14 @@
                         <Border Grid.Column="1" Grid.RowSpan="4" IsVisible="{OnIdiom Phone=False, Default=True}" BackgroundColor="#F0F5FF" StrokeThickness="0" Padding="18" WidthRequest="260">
                             <VerticalStackLayout Spacing="10">
                                 <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="12" VerticalOptions="Center">
-                                    <Label Text="&#xE70C;" FontFamily="MaterialAssets" FontSize="20" TextColor="#1E5BFF" VerticalOptions="Center"/>
+                                    <HorizontalStackLayout Spacing="7" VerticalOptions="Center">
+                                        <Border WidthRequest="8" HeightRequest="20" BackgroundColor="#1E5BFF" StrokeThickness="0" StrokeShape="RoundRectangle 4" VerticalOptions="Center"/>
+                                        <Border WidthRequest="8" HeightRequest="26" BackgroundColor="#1E5BFF" StrokeThickness="0" StrokeShape="RoundRectangle 4" VerticalOptions="Center"/>
+                                        <Border WidthRequest="8" HeightRequest="32" BackgroundColor="#1E5BFF" StrokeThickness="0" StrokeShape="RoundRectangle 4" VerticalOptions="Center"/>
+                                        <Border WidthRequest="8" HeightRequest="38" BackgroundColor="#1E5BFF" StrokeThickness="0" StrokeShape="RoundRectangle 4" VerticalOptions="Center"/>
+                                        <Border WidthRequest="8" HeightRequest="44" BackgroundColor="#1E5BFF" StrokeThickness="0" StrokeShape="RoundRectangle 4" VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
                                     <VerticalStackLayout Grid.Column="1" Spacing="1"><Label Text="18ms Latency" FontFamily="Inter" FontSize="13" FontAttributes="Bold" TextColor="#101D35"/><Label Text="99.98% Uptime" FontFamily="Inter" TextColor="#00805A" FontSize="12"/></VerticalStackLayout>
-                                    <sfButton:SfButton Grid.Column="2" Text="&#xE725;" FontFamily="UiKitIcons" FontSize="20" Background="Transparent" TextColor="#9EBBFA" VerticalOptions="Center"/>
                                 </Grid>
                                 <Label Text="Hardware ICCID Number" FontFamily="Inter" FontSize="11" TextColor="#48566C" Margin="0,8,0,0" />
                                 <Border BackgroundColor="White" Stroke="#E4EAF5" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12,10"><Grid ColumnDefinitions="*,Auto"><Label Text="{Binding ActiveProfile.Iccid, FallbackValue='8981 0200 4819 5012 34 F'}" FontFamily="Inter" FontSize="13" TextColor="#101D35" VerticalOptions="Center"/><Label Grid.Column="1" Text="&#xE7A0;" FontFamily="MaterialAssets" FontSize="20" TextColor="#344258" VerticalOptions="Center"/></Grid></Border>
