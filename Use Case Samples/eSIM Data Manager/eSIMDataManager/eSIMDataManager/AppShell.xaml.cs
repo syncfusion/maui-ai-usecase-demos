@@ -9,21 +9,26 @@ public partial class AppShell : Shell
         InitializeComponent();
 
         var section = new ShellSection { Route = "main" };
-        section.Items.Add(CreatePage("Dashboard", "dashboard", () => new DashboardPage(viewModel)));
-        section.Items.Add(CreatePage("My eSIMs", "profiles", () => new ProfilesPage(viewModel)));
-        section.Items.Add(CreatePage("Store", "store", () => new StorePage(viewModel)));
-        Items.Add(new ShellItem { Items = { section } });
+        section.Items.Add(CreatePage("dashboard", () => new DashboardPage(viewModel)));
+        section.Items.Add(CreatePage("profiles", () => new ProfilesPage(viewModel)));
+        section.Items.Add(CreatePage("store", () => new StorePage(viewModel)));
+        Shell.SetTabBarIsVisible(section, false);
+        var shellItem = new ShellItem { Items = { section } };
+        Shell.SetFlyoutBehavior(shellItem, FlyoutBehavior.Disabled);
+        Shell.SetNavBarIsVisible(shellItem, false);
+        Shell.SetTabBarIsVisible(shellItem, false);
+        Items.Add(shellItem);
     }
 
-    private static ShellContent CreatePage(string title, string route, Func<Page> pageFactory)
+    private static ShellContent CreatePage(string route, Func<Page> pageFactory)
     {
         var content = new ShellContent
         {
-            Title = title,
             Route = route,
             ContentTemplate = new DataTemplate(() => pageFactory())
         };
         Shell.SetNavBarIsVisible(content, false);
+        Shell.SetTabBarIsVisible(content, false);
         return content;
     }
 }
