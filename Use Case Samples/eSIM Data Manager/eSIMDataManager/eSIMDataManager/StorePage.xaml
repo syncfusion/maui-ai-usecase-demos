@@ -50,14 +50,14 @@
                         </FlexLayout>
                     </VerticalStackLayout>
                 </Border>
-                <Border BackgroundColor="White" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="8">
+                <Border BackgroundColor="#EEF3FF" StrokeThickness="0" StrokeShape="RoundRectangle 10" Padding="4">
                     <Grid ColumnDefinitions="Auto,2,Auto,Auto,Auto,*,Auto,Auto" ColumnSpacing="8">
-                        <Border Grid.Column="0" BackgroundColor="#EEF3FF" StrokeThickness="0" StrokeShape="RoundRectangle 11" Padding="4">
+                        <Border Grid.Column="0" BackgroundColor="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 7" Padding="0">
                             <HorizontalStackLayout Spacing="2">
-                                <sfButton:SfButton Text="All" Clicked="FilterClicked" Background="{Binding AllCoverageBackground}" TextColor="{Binding AllCoverageTextColor}" FontSize="16" Padding="12,3" MinimumHeightRequest="34" MinimumWidthRequest="58" CornerRadius="8" />
-                                <sfButton:SfButton Text="Local" Clicked="FilterClicked" Background="{Binding LocalCoverageBackground}" TextColor="{Binding LocalCoverageTextColor}" FontSize="16" Padding="12,3" MinimumHeightRequest="34" MinimumWidthRequest="70" CornerRadius="8" />
-                                <sfButton:SfButton Text="Regional" Clicked="FilterClicked" Background="{Binding RegionalCoverageBackground}" TextColor="{Binding RegionalCoverageTextColor}" FontSize="16" Padding="12,3" MinimumHeightRequest="34" MinimumWidthRequest="82" CornerRadius="8" />
-                                <sfButton:SfButton Text="Global" Clicked="FilterClicked" Background="{Binding GlobalCoverageBackground}" TextColor="{Binding GlobalCoverageTextColor}" FontSize="16" Padding="12,3" MinimumHeightRequest="34" MinimumWidthRequest="78" CornerRadius="8" />
+                                <sfButton:SfButton Text="All" Clicked="FilterClicked" Background="{Binding AllCoverageBackground}" TextColor="{Binding AllCoverageTextColor}" FontSize="12" Padding="10,3" MinimumHeightRequest="28" MinimumWidthRequest="44" CornerRadius="7" />
+                                <sfButton:SfButton Text="Local" Clicked="FilterClicked" Background="{Binding LocalCoverageBackground}" TextColor="{Binding LocalCoverageTextColor}" FontSize="12" Padding="10,3" MinimumHeightRequest="28" MinimumWidthRequest="44" CornerRadius="7" />
+                                <sfButton:SfButton Text="Regional" Clicked="FilterClicked" Background="{Binding RegionalCoverageBackground}" TextColor="{Binding RegionalCoverageTextColor}" FontSize="12" Padding="10,3" MinimumHeightRequest="28" MinimumWidthRequest="58" CornerRadius="7" />
+                                <sfButton:SfButton Text="Global" Clicked="FilterClicked" Background="{Binding GlobalCoverageBackground}" TextColor="{Binding GlobalCoverageTextColor}" FontSize="12" Padding="10,3" MinimumHeightRequest="28" MinimumWidthRequest="48" CornerRadius="7" />
                             </HorizontalStackLayout>
                         </Border>
                         <BoxView Grid.Column="1" WidthRequest="2" HeightRequest="30" Color="#E2E9F5" VerticalOptions="Center" />
