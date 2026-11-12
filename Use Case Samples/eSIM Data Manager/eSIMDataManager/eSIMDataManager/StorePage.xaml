@@ -51,9 +51,8 @@
                     </VerticalStackLayout>
                 </Border>
                 <Border BackgroundColor="White" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="8">
-                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                    <Grid ColumnDefinitions="256,2,158,178,136,*,Auto,188" ColumnSpacing="8" WidthRequest="1000" HorizontalOptions="Start">
-                        <buttons:SfSegmentedControl Grid.Column="0" WidthRequest="256" ItemsSource="{Binding CoverageOptions}" SelectedIndex="{Binding CoverageFilterIndex}" SelectionChanged="CoverageSelectionChanged" SelectionMode="Single" SegmentHeight="32" SegmentWidth="64" SegmentCornerRadius="6" Background="#EEF3FF" SegmentBackground="#EEF3FF" Stroke="Transparent" StrokeThickness="0" ShowSeparator="False" EnableRippleEffect="False">
+                    <Grid ColumnDefinitions="336,2,158,178,136,*,Auto,188" ColumnSpacing="8">
+                        <buttons:SfSegmentedControl Grid.Column="0" WidthRequest="336" ItemsSource="{Binding CoverageOptions}" SelectedIndex="{Binding CoverageFilterIndex}" SelectionChanged="CoverageSelectionChanged" SelectionMode="Single" SegmentHeight="32" SegmentWidth="84" SegmentCornerRadius="6" Background="#EEF3FF" SegmentBackground="#EEF3FF" Stroke="Transparent" StrokeThickness="0" ShowSeparator="False" EnableRippleEffect="False">
                             <buttons:SfSegmentedControl.SelectionIndicatorSettings>
                                 <buttons:SelectionIndicatorSettings SelectionIndicatorPlacement="Fill" Background="White" TextColor="#1E5BFF" Stroke="Transparent" StrokeThickness="0" />
                             </buttons:SfSegmentedControl.SelectionIndicatorSettings>
@@ -68,7 +67,6 @@
                         <Label Grid.Column="6" Text="Sort by:" FontSize="13" FontAttributes="Bold" TextColor="#24334A" VerticalOptions="Center" HorizontalOptions="End" />
                         <editors:SfComboBox Grid.Column="7" ItemsSource="{Binding SortFilterOptions}" SelectedItem="{Binding SelectedSortOption, Mode=TwoWay}" SelectionChanged="SortFilterSelected" IsEditable="False" IsClearButtonVisible="False" ShowBorder="False" BackgroundColor="#EEF3FF" TextColor="#172842" FontSize="14" HeightRequest="42" WidthRequest="188" DropDownPlacement="Bottom" MaxDropDownHeight="260"/>
                     </Grid>
-                    </ScrollView>
                 </Border>
                 <Grid ColumnDefinitions="{OnIdiom Phone='*', Default='2*,*'}" ColumnSpacing="18" RowDefinitions="{OnIdiom Phone='Auto,Auto', Default='Auto'}">
                     <VerticalStackLayout Spacing="12">
