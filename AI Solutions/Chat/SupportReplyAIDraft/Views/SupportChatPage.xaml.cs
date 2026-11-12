@@ -9,36 +9,57 @@ public partial class SupportChatPage : ContentPage
 {
     private bool _isUpdatingEditorText;
 
-    public SupportChatPage(SupportChatViewModel viewModel)
+    public SupportChatPage(
+        SupportChatViewModel viewModel)
     {
         ViewModel = viewModel;
+
         InitializeComponent();
+
         BindingContext = ViewModel;
 
-        ConversationChat.MessageTemplate = new SupportReplyAIDraft.Views.MessageTemplates.SupportChatMessageTemplateSelector(ConversationChat);
+        ConversationChat.MessageTemplate =
+            new SupportReplyAIDraft.Views.MessageTemplates
+                .SupportChatMessageTemplateSelector(
+                    ConversationChat);
 
-        ViewModel.ConfirmRegenerateAsync = ConfirmRegenerateAsync;
-        ViewModel.ConfirmSelectionChangeAsync = ConfirmSelectionChangeAsync;
-        ViewModel.PropertyChanged += OnViewModelPropertyChanged;
-        ViewModel.OutgoingMessageSent += OnOutgoingMessageSent;
+        ViewModel.ConfirmRegenerateAsync =
+            ConfirmRegenerateAsync;
+
+        ViewModel.ConfirmSelectionChangeAsync =
+            ConfirmSelectionChangeAsync;
+
+        ViewModel.PropertyChanged +=
+            OnViewModelPropertyChanged;
+
+        ViewModel.OutgoingMessageSent +=
+            OnOutgoingMessageSent;
 
         Loaded += OnLoaded;
     }
 
     public SupportChatViewModel ViewModel { get; }
 
-    public ICommand SelectMessageCommand => ViewModel.SelectMessageCommand;
-    public ICommand DraftReplyCommand => ViewModel.DraftReplyCommand;
+    public ICommand SelectMessageCommand =>
+        ViewModel.SelectMessageCommand;
 
-    private void OnLoaded(object? sender, EventArgs e)
+    public ICommand DraftReplyCommand =>
+        ViewModel.DraftReplyCommand;
+
+    private void OnLoaded(
+        object? sender,
+        EventArgs e)
     {
         AttachEditorHandlers();
         UpdateComposerState();
     }
 
-    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void OnViewModelPropertyChanged(
+        object? sender,
+        PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(SupportChatViewModel.SelectedMessage)
+        if (e.PropertyName is
+            nameof(SupportChatViewModel.SelectedMessage)
             or nameof(SupportChatViewModel.ComposerPlaceholder)
             or nameof(SupportChatViewModel.IsComposerEnabled)
             or nameof(SupportChatViewModel.IsComposerReadOnly)
@@ -55,8 +76,11 @@ public partial class SupportChatPage : ContentPage
             return;
         }
 
-        ConversationChat.Editor.TextChanged -= OnEditorTextChanged;
-        ConversationChat.Editor.TextChanged += OnEditorTextChanged;
+        ConversationChat.Editor.TextChanged -=
+            OnEditorTextChanged;
+
+        ConversationChat.Editor.TextChanged +=
+            OnEditorTextChanged;
     }
 
     private void UpdateComposerState()
@@ -67,15 +91,25 @@ public partial class SupportChatPage : ContentPage
         }
 
         _isUpdatingEditorText = true;
+
         try
         {
-            ConversationChat.Editor.IsEnabled = ViewModel.IsComposerEnabled;
-            ConversationChat.Editor.IsReadOnly = ViewModel.IsComposerReadOnly;
-            ConversationChat.Editor.Placeholder = ViewModel.ComposerPlaceholder;
+            ConversationChat.Editor.IsEnabled =
+                ViewModel.IsComposerEnabled;
 
-            if (!string.Equals(ConversationChat.Editor.Text, ViewModel.EditorText, StringComparison.Ordinal))
+            ConversationChat.Editor.IsReadOnly =
+                ViewModel.IsComposerReadOnly;
+
+            ConversationChat.Editor.Placeholder =
+                ViewModel.ComposerPlaceholder;
+
+            if (!string.Equals(
+                    ConversationChat.Editor.Text,
+                    ViewModel.EditorText,
+                    StringComparison.Ordinal))
             {
-                ConversationChat.Editor.Text = ViewModel.EditorText;
+                ConversationChat.Editor.Text =
+                    ViewModel.EditorText;
             }
         }
         finally
@@ -84,26 +118,46 @@ public partial class SupportChatPage : ContentPage
         }
     }
 
-    private void OnEditorTextChanged(object? sender, TextChangedEventArgs e)
+    private void OnEditorTextChanged(
+        object? sender,
+        TextChangedEventArgs e)
     {
         if (_isUpdatingEditorText)
         {
             return;
         }
 
-        ViewModel.UpdateEditorText(e.NewTextValue);
+        ViewModel.UpdateEditorText(
+            e.NewTextValue);
     }
 
-    private async void OnSuggestionItemSelected(object? sender, SuggestionItemSelectedEventArgs e)
+    private async void OnSuggestionItemSelected(
+        object? sender,
+        SuggestionItemSelectedEventArgs e)
     {
         e.CancelSendMessage = true;
         e.HideAfterSelection = false;
 
-        await ViewModel.HandleSuggestionActionAsync((e.SelectedItem as Suggestion)?.Text);
+        var selectedText =
+            (e.SelectedItem as Suggestion)?.Text;
 
-        if (ConversationChat.Editor is not null && !string.Equals(ConversationChat.Editor.Text, ViewModel.EditorText, StringComparison.Ordinal))
+        ViewModel.BeginSuggestionAction();
+
+        try
         {
-            ConversationChat.Editor.Text = ViewModel.EditorText;
+            // Restore the view-model draft immediately so the
+            // Syncfusion suggestion text never remains in the editor.
+            UpdateComposerState();
+
+            await ViewModel.HandleSuggestionActionAsync(
+                selectedText);
+
+            UpdateComposerState();
+        }
+        finally
+        {
+            ViewModel.EndSuggestionAction();
+            UpdateComposerState();
         }
     }
 
@@ -125,7 +179,8 @@ public partial class SupportChatPage : ContentPage
             "Keep editing");
     }
 
-    private void OnOutgoingMessageSent(TextMessage message)
+    private void OnOutgoingMessageSent(
+        TextMessage message)
     {
         ConversationChat.ScrollToMessage(message);
     }

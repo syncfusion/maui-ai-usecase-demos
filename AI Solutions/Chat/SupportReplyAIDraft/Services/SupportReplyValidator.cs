@@ -5,192 +5,455 @@ namespace SupportReplyAIDraft.Services;
 
 public sealed class SupportReplyValidator
 {
-    private static readonly HashSet<string> RequiredKeys = new(StringComparer.Ordinal)
-    {
-        "reply",
-        "requiresMoreInformation",
-        "requestedInformation",
-        "warnings"
-    };
+    private const int MaximumReplyLength = 1000;
 
-    public SupportReplyValidationResult Validate(string? rawJson)
-    {
-        if (string.IsNullOrWhiteSpace(rawJson))
+    private static readonly HashSet<string> AllowedKeys =
+        new(StringComparer.Ordinal)
         {
-            return SupportReplyValidationResult.Failure("The AI response was empty.");
+            "reply",
+            "requiresMoreInformation",
+            "requestedInformation",
+            "warnings"
+        };
+
+    public SupportReplyValidationResult Validate(string? rawResponse)
+    {
+        if (string.IsNullOrWhiteSpace(rawResponse))
+        {
+            return SupportReplyValidationResult.Failure(
+                "The AI returned an empty reply. Please try again.");
         }
 
-        var json = ExtractJson(rawJson);
-        if (json is null)
+        var normalizedResponse = rawResponse.Trim();
+        var json = ExtractJson(normalizedResponse);
+
+        if (json is not null)
         {
-            return SupportReplyValidationResult.Failure("The AI response was not valid JSON.");
+            var jsonValidation = ValidateJson(json);
+            if (jsonValidation.IsValid)
+            {
+                return jsonValidation;
+            }
+
+            if (LooksLikeJson(normalizedResponse))
+            {
+                return SupportReplyValidationResult.Failure(
+                    "We couldn’t process the generated reply. Please try again.");
+            }
         }
 
+        return ValidatePlainTextFallback(normalizedResponse);
+    }
+
+    private static SupportReplyValidationResult ValidateJson(string json)
+    {
         try
         {
-            using var document = JsonDocument.Parse(json, new JsonDocumentOptions
-            {
-                CommentHandling = JsonCommentHandling.Disallow,
-                AllowTrailingCommas = false
-            });
+            using var document = JsonDocument.Parse(
+                json,
+                new JsonDocumentOptions
+                {
+                    CommentHandling = JsonCommentHandling.Skip,
+                    AllowTrailingCommas = true
+                });
 
             if (document.RootElement.ValueKind != JsonValueKind.Object)
             {
-                return SupportReplyValidationResult.Failure("The AI response was not valid JSON.");
+                return SupportReplyValidationResult.Failure(
+                    "We couldn’t process the generated reply. Please try again.");
             }
 
             var root = document.RootElement;
-            var keys = root.EnumerateObject().Select(property => property.Name).ToList();
-            if (keys.Count != RequiredKeys.Count
-                || keys.Any(key => !RequiredKeys.Contains(key)))
+
+            var suppliedKeys = root
+                .EnumerateObject()
+                .Select(property => property.Name)
+                .ToList();
+
+            if (suppliedKeys.Any(key => !AllowedKeys.Contains(key)))
             {
-                return SupportReplyValidationResult.Failure("The AI response was not valid JSON.");
+                return SupportReplyValidationResult.Failure(
+                    "The generated reply contained unsupported data.");
             }
 
-            if (!root.TryGetProperty("reply", out var replyElement)
-                || replyElement.ValueKind != JsonValueKind.String)
+            if (!TryGetString(root, "reply", out var reply))
             {
-                return SupportReplyValidationResult.Failure("Reply is required.");
+                return SupportReplyValidationResult.Failure(
+                    "The generated reply was empty. Please try again.");
             }
 
-            var reply = (replyElement.GetString() ?? string.Empty).Trim();
-            if (string.IsNullOrWhiteSpace(reply))
+            reply = NormalizeReply(reply);
+
+            var replyValidation = ValidateReplyText(reply);
+            if (replyValidation is not null)
             {
-                return SupportReplyValidationResult.Failure("Reply is required.");
+                return SupportReplyValidationResult.Failure(replyValidation);
             }
 
-            if (reply.Length > 1000)
+            var requiresMoreInformation =
+                TryGetBoolean(root, "requiresMoreInformation", out var requires)
+                    ? requires
+                    : false;
+
+            var requestedInformation =
+                TryGetStringArray(root, "requestedInformation", out var requested)
+                    ? requested
+                    : new List<string>();
+
+            var warnings =
+                TryGetStringArray(root, "warnings", out var parsedWarnings)
+                    ? parsedWarnings
+                    : new List<string>();
+
+            requestedInformation = NormalizeList(requestedInformation);
+            warnings = NormalizeList(warnings);
+
+            if (requestedInformation.Any(ContainsUnsupportedContent)
+                || warnings.Any(ContainsUnsupportedContent))
             {
-                return SupportReplyValidationResult.Failure("Reply exceeds the 1,000 character limit.");
+                return SupportReplyValidationResult.Failure(
+                    "The generated reply contained unsupported data.");
             }
 
-            if (!root.TryGetProperty("requiresMoreInformation", out var requiresMoreInformationElement)
-                || (requiresMoreInformationElement.ValueKind != JsonValueKind.False
-                    && requiresMoreInformationElement.ValueKind != JsonValueKind.True))
+            if (HasDuplicates(requestedInformation))
             {
-                return SupportReplyValidationResult.Failure("The AI response was not valid JSON.");
+                requestedInformation = requestedInformation
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
             }
 
-            if (!root.TryGetProperty("requestedInformation", out var requestedInformationElement)
-                || requestedInformationElement.ValueKind != JsonValueKind.Array)
+            if (!requiresMoreInformation)
             {
-                return SupportReplyValidationResult.Failure("The AI response was not valid JSON.");
+                requestedInformation.Clear();
+            }
+            else if (requestedInformation.Count == 0)
+            {
+                requiresMoreInformation = false;
             }
 
-            if (!root.TryGetProperty("warnings", out var warningsElement)
-                || warningsElement.ValueKind != JsonValueKind.Array)
-            {
-                return SupportReplyValidationResult.Failure("The AI response was not valid JSON.");
-            }
-
-            var requestedInformation = ParseStringArray(requestedInformationElement);
-            if (requestedInformation is null)
-            {
-                return SupportReplyValidationResult.Failure("The AI response was not valid JSON.");
-            }
-
-            var warnings = ParseStringArray(warningsElement);
-            if (warnings is null)
-            {
-                return SupportReplyValidationResult.Failure("The AI response was not valid JSON.");
-            }
-
-            if (ContainsUnsupportedContent(reply)
-                || ContainsUnsupportedClaim(reply)
-                || ContainsUnsupportedContent(requestedInformation)
-                || ContainsUnsupportedContent(warnings)
-                || HasDuplicateRequestedInformation(requestedInformation))
-            {
-                return SupportReplyValidationResult.Failure("The AI response contains unsupported content.");
-            }
-
-            return SupportReplyValidationResult.Success(new SupportReplyResponse(
-                reply,
-                requiresMoreInformationElement.GetBoolean(),
-                requestedInformation,
-                warnings));
+            return SupportReplyValidationResult.Success(
+                new SupportReplyResponse(
+                    reply,
+                    requiresMoreInformation,
+                    requestedInformation,
+                    warnings));
         }
         catch (JsonException)
         {
-            return SupportReplyValidationResult.Failure("The AI response was not valid JSON.");
+            return SupportReplyValidationResult.Failure(
+                "We couldn’t process the generated reply. Please try again.");
         }
     }
 
-    private static string? ExtractJson(string rawJson)
+    private static SupportReplyValidationResult ValidatePlainTextFallback(
+        string rawResponse)
     {
-        var trimmed = rawJson.Trim();
-        if (trimmed.StartsWith("```", StringComparison.Ordinal))
+        var plainText = RemoveMarkdownFence(rawResponse);
+        plainText = NormalizeReply(plainText);
+
+        var validationError = ValidateReplyText(plainText);
+        if (validationError is not null)
         {
-            var firstLineEnd = trimmed.IndexOf('\n');
-            if (firstLineEnd >= 0)
-            {
-                trimmed = trimmed[(firstLineEnd + 1)..];
-            }
-
-            if (trimmed.EndsWith("```", StringComparison.Ordinal))
-            {
-                trimmed = trimmed[..^3];
-            }
-
-            trimmed = trimmed.Trim();
+            return SupportReplyValidationResult.Failure(validationError);
         }
 
-        return trimmed.StartsWith('{') && trimmed.EndsWith('}') ? trimmed : null;
+        return SupportReplyValidationResult.Success(
+            new SupportReplyResponse(
+                plainText,
+                false,
+                Array.Empty<string>(),
+                new[]
+                {
+                    "The model returned plain text instead of structured JSON."
+                }));
+    }
+
+    private static string? ValidateReplyText(string reply)
+    {
+        if (string.IsNullOrWhiteSpace(reply))
+        {
+            return "The generated reply was empty. Please try again.";
+        }
+
+        if (reply.Length > MaximumReplyLength)
+        {
+            return
+                $"The generated reply exceeded the {MaximumReplyLength:N0} character limit.";
+        }
+
+        if (ContainsUnsupportedContent(reply))
+        {
+            return "The generated reply contained unsupported content.";
+        }
+
+        if (ContainsUnsupportedClaim(reply))
+        {
+            return
+                "The generated reply made an unsupported customer-account claim.";
+        }
+
+        return null;
+    }
+
+    private static string NormalizeReply(string value)
+    {
+        var lines = value
+            .Replace("\r\n", "\n", StringComparison.Ordinal)
+            .Replace('\r', '\n')
+            .Split('\n')
+            .Select(line => line.TrimEnd())
+            .ToList();
+
+        while (lines.Count > 0
+               && string.IsNullOrWhiteSpace(lines[0]))
+        {
+            lines.RemoveAt(0);
+        }
+
+        while (lines.Count > 0
+               && string.IsNullOrWhiteSpace(lines[^1]))
+        {
+            lines.RemoveAt(lines.Count - 1);
+        }
+
+        return string.Join(Environment.NewLine, lines).Trim();
+    }
+
+    private static List<string> NormalizeList(
+        IEnumerable<string> values)
+    {
+        return values
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(value => value.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    private static string? ExtractJson(string rawResponse)
+    {
+        var trimmed = RemoveMarkdownFence(rawResponse);
+
+        if (trimmed.StartsWith('{')
+            && trimmed.EndsWith('}'))
+        {
+            return trimmed;
+        }
+
+        var start = trimmed.IndexOf('{');
+        if (start < 0)
+        {
+            return null;
+        }
+
+        var depth = 0;
+        var insideString = false;
+        var escaped = false;
+
+        for (var index = start; index < trimmed.Length; index++)
+        {
+            var character = trimmed[index];
+
+            if (insideString)
+            {
+                if (escaped)
+                {
+                    escaped = false;
+                    continue;
+                }
+
+                if (character == '\\')
+                {
+                    escaped = true;
+                    continue;
+                }
+
+                if (character == '"')
+                {
+                    insideString = false;
+                }
+
+                continue;
+            }
+
+            if (character == '"')
+            {
+                insideString = true;
+                continue;
+            }
+
+            if (character == '{')
+            {
+                depth++;
+                continue;
+            }
+
+            if (character != '}')
+            {
+                continue;
+            }
+
+            depth--;
+
+            if (depth == 0)
+            {
+                return trimmed[start..(index + 1)];
+            }
+        }
+
+        return null;
+    }
+
+    private static string RemoveMarkdownFence(string value)
+    {
+        var trimmed = value.Trim();
+
+        if (!trimmed.StartsWith("```", StringComparison.Ordinal))
+        {
+            return trimmed;
+        }
+
+        var firstNewLine = trimmed.IndexOf('\n');
+        if (firstNewLine >= 0)
+        {
+            trimmed = trimmed[(firstNewLine + 1)..];
+        }
+
+        if (trimmed.EndsWith("```", StringComparison.Ordinal))
+        {
+            trimmed = trimmed[..^3];
+        }
+
+        return trimmed.Trim();
+    }
+
+    private static bool LooksLikeJson(string value)
+    {
+        var trimmed = RemoveMarkdownFence(value);
+        return trimmed.StartsWith('{')
+            || trimmed.StartsWith('[');
+    }
+
+    private static bool TryGetString(
+        JsonElement root,
+        string propertyName,
+        out string value)
+    {
+        value = string.Empty;
+
+        if (!root.TryGetProperty(propertyName, out var element)
+            || element.ValueKind != JsonValueKind.String)
+        {
+            return false;
+        }
+
+        value = element.GetString() ?? string.Empty;
+        return true;
+    }
+
+    private static bool TryGetBoolean(
+        JsonElement root,
+        string propertyName,
+        out bool value)
+    {
+        value = false;
+
+        if (!root.TryGetProperty(propertyName, out var element)
+            || element.ValueKind is not (
+                JsonValueKind.True or JsonValueKind.False))
+        {
+            return false;
+        }
+
+        value = element.GetBoolean();
+        return true;
+    }
+
+    private static bool TryGetStringArray(
+        JsonElement root,
+        string propertyName,
+        out List<string> values)
+    {
+        values = new List<string>();
+
+        if (!root.TryGetProperty(propertyName, out var element))
+        {
+            return true;
+        }
+
+        if (element.ValueKind != JsonValueKind.Array)
+        {
+            return false;
+        }
+
+        foreach (var item in element.EnumerateArray())
+        {
+            if (item.ValueKind != JsonValueKind.String)
+            {
+                return false;
+            }
+
+            values.Add(item.GetString() ?? string.Empty);
+        }
+
+        return true;
     }
 
     private static bool ContainsUnsupportedContent(string value)
-        => value.Contains("http://", StringComparison.OrdinalIgnoreCase)
-        || value.Contains("https://", StringComparison.OrdinalIgnoreCase)
-        || value.Contains("sourceId", StringComparison.OrdinalIgnoreCase)
-        || value.Contains("knowledge", StringComparison.OrdinalIgnoreCase)
-        || value.Contains("webview", StringComparison.OrdinalIgnoreCase);
+    {
+        return value.Contains("http://", StringComparison.OrdinalIgnoreCase)
+            || value.Contains("https://", StringComparison.OrdinalIgnoreCase)
+            || value.Contains("sourceId", StringComparison.OrdinalIgnoreCase)
+            || value.Contains(
+                "knowledge base id",
+                StringComparison.OrdinalIgnoreCase)
+            || value.Contains("webview", StringComparison.OrdinalIgnoreCase)
+            || value.Contains(
+                "api key",
+                StringComparison.OrdinalIgnoreCase)
+            || value.Contains(
+                "password",
+                StringComparison.OrdinalIgnoreCase)
+            || value.Contains(
+                "authentication code",
+                StringComparison.OrdinalIgnoreCase);
+    }
 
     private static bool ContainsUnsupportedClaim(string value)
-        => ContainsAny(value,
+    {
+        return ContainsAny(
+            value,
             "we have verified",
             "i have verified",
             "confirmed on our end",
             "your account has been updated",
             "your issue is resolved",
             "guarantee",
-            "promise",
-            "will be resolved",
+            "we promise",
+            "will definitely be resolved",
             "refund has been issued",
             "license has been reset",
-            "we reviewed your account");
-
-    private static bool ContainsUnsupportedContent(IEnumerable<string>? values)
-        => values is not null && values.Any(ContainsUnsupportedContent);
-
-    private static bool HasDuplicateRequestedInformation(IEnumerable<string>? values)
-    {
-        if (values is null)
-        {
-            return false;
-        }
-
-        var items = values.Where(item => !string.IsNullOrWhiteSpace(item))
-            .Select(item => item.Trim())
-            .ToList();
-        return items.Count != items.Distinct(StringComparer.OrdinalIgnoreCase).Count();
+            "we reviewed your account",
+            "we checked your account",
+            "we have escalated",
+            "i have escalated");
     }
 
-    private static bool ContainsAny(string value, params string[] phrases)
-        => phrases.Any(phrase => value.Contains(phrase, StringComparison.OrdinalIgnoreCase));
-
-    private static List<string>? ParseStringArray(JsonElement element)
+    private static bool ContainsAny(
+        string value,
+        params string[] phrases)
     {
-        var values = new List<string>();
-        foreach (var item in element.EnumerateArray())
-        {
-            if (item.ValueKind != JsonValueKind.String)
-            {
-                return null;
-            }
+        return phrases.Any(
+            phrase => value.Contains(
+                phrase,
+                StringComparison.OrdinalIgnoreCase));
+    }
 
-            values.Add(item.GetString() ?? string.Empty);
-        }
+    private static bool HasDuplicates(IEnumerable<string> values)
+    {
+        var items = values.ToList();
 
-        return values;
+        return items.Count != items
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Count();
     }
 }

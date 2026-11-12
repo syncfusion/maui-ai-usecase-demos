@@ -1,57 +1,98 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:chat="clr-namespace:Syncfusion.Maui.Chat;assembly=Syncfusion.Maui.Chat"
-             x:Class="SupportReplyAIDraft.Views.MessageTemplates.AgentMessageTemplateView"
-             x:DataType="chat:TextMessage">
-    <Grid Padding="0"
-          Margin="0,0,0,8"
-          HorizontalOptions="End">
-        <Grid ColumnDefinitions="*,34"
-              ColumnSpacing="8"
-              HorizontalOptions="End"
-              VerticalOptions="Center">
-            <Border Grid.Column="0"
-                    StrokeShape="RoundRectangle 14"
+
+<ContentView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:chat="clr-namespace:Syncfusion.Maui.Chat;assembly=Syncfusion.Maui.Chat"
+    x:Class="SupportReplyAIDraft.Views.MessageTemplates.AgentMessageTemplateView"
+    x:DataType="chat:TextMessage">
+
+    <Grid
+        Padding="0"
+        Margin="0,0,0,8"
+        HorizontalOptions="End"
+        VerticalOptions="Start">
+
+        <Grid
+            ColumnDefinitions="*,32"
+            ColumnSpacing="12"
+            HorizontalOptions="End"
+            VerticalOptions="Start">
+
+            <VerticalStackLayout
+                Grid.Column="0"
+                Spacing="4"
+                HorizontalOptions="End"
+                VerticalOptions="Start">
+
+                <!-- Agent timestamp and name -->
+                <HorizontalStackLayout
+                    Spacing="8"
+                    HorizontalOptions="End"
+                    VerticalOptions="Center">
+
+                    <Label
+                        Text="{Binding DateTime, StringFormat='{0:h:mm tt}'}"
+                        Style="{StaticResource MessageTimeStyle}"
+                        LineBreakMode="NoWrap"
+                        VerticalTextAlignment="Center"
+                        VerticalOptions="Center" />
+
+                    <Label
+                        Text="{Binding Author.Name}"
+                        Style="{StaticResource MessageAuthorStyle}"
+                        LineBreakMode="NoWrap"
+                        VerticalTextAlignment="Center"
+                        VerticalOptions="Center" />
+
+                </HorizontalStackLayout>
+
+                <!-- Agent message bubble -->
+                <Border
+                    Padding="12"
+                    MaximumWidthRequest="{OnIdiom Phone=320, Tablet=500, Desktop=680, Default=680}"
+                    HorizontalOptions="End"
+                    VerticalOptions="Start"
                     BackgroundColor="{StaticResource AgentBubbleBackground}"
                     Stroke="{StaticResource AgentBorderColor}"
                     StrokeThickness="1"
-                    Padding="12"
-                    MaximumWidthRequest="{OnIdiom Phone=320, Tablet=460, Desktop=620, Default=620}"
-                    HorizontalOptions="End"
-                    VerticalOptions="Center">
-                <VerticalStackLayout Spacing="8">
-                    <HorizontalStackLayout Spacing="8"
-                                           VerticalOptions="Center"
-                                           HorizontalOptions="End">
-                        <Label Text="{Binding DateTime, StringFormat='{0:h:mm tt}'}"
-                               Style="{StaticResource MessageTimeStyle}" />
-                        <Label Text="{Binding Author.Name}"
-                               Style="{StaticResource MessageAuthorStyle}" />
-                    </HorizontalStackLayout>
-                    <Label Text="{Binding Text}"
-                           Style="{StaticResource MessageBodyStyle}"
-                           HorizontalTextAlignment="Start" />
-                </VerticalStackLayout>
+                    StrokeShape="RoundRectangle 8">
+
+                    <Label
+                        Text="{Binding Text}"
+                        Style="{StaticResource MessageBodyStyle}"
+                        HorizontalTextAlignment="Start"
+                        VerticalTextAlignment="Start" />
+
+                </Border>
+
+            </VerticalStackLayout>
+
+            <!-- Circular agent avatar -->
+            <Border
+                Grid.Column="1"
+                WidthRequest="32"
+                HeightRequest="32"
+                Padding="0"
+                HorizontalOptions="Center"
+                VerticalOptions="Start"
+                BackgroundColor="#2557FF"
+                Stroke="#1D4ED8"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 16">
+
+                <Label
+                    Text="JL"
+                    FontSize="11"
+                    FontAttributes="Bold"
+                    TextColor="White"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center" />
+
             </Border>
 
-            <Border Grid.Column="1"
-                    WidthRequest="34"
-                    HeightRequest="34"
-                    HorizontalOptions="Center"
-                    VerticalOptions="Center"
-                    StrokeShape="RoundRectangle 17"
-                    Stroke="#1D4ED8"
-                    StrokeThickness="1"
-                    BackgroundColor="#2557FF"
-                    Padding="0">
-                <Label Text="J"
-                       HorizontalTextAlignment="Center"
-                       VerticalTextAlignment="Center"
-                       FontSize="12"
-                       FontAttributes="Bold"
-                       TextColor="White" />
-            </Border>
         </Grid>
+
     </Grid>
+
 </ContentView>

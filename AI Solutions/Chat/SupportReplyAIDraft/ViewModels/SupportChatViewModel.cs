@@ -11,20 +11,37 @@ namespace SupportReplyAIDraft.ViewModels;
 
 public sealed partial class SupportChatViewModel : ObservableObject
 {
-    private const string InitialPlaceholder = "Select a customer message to begin.";
-    private const string DraftingPlaceholder = "Drafting reply...";
-    private const string GenerationFailurePlaceholder = "Unable to generate a reply.";
-    private const string ReviewAndEditMessage = "Review and edit before sending.";
-    private const string GenerationFailureMessage = "We couldn’t generate a reply. Please try again.";
-    private const string MissingCredentialsMessage = "Azure OpenAI credentials are unavailable or invalid. Configure the Azure settings and retry.";
-    private const string InvalidAiResponseMessage = "The AI returned an invalid reply. Please retry.";
+    private const string InitialPlaceholder =
+        "Select a customer message to begin.";
+
+    private const string GenerationFailurePlaceholder =
+        "Unable to generate a reply.";
+
+    private const string ReviewAndEditMessage =
+        "Review and edit before sending.";
+
+    private const string GenerationFailureMessage =
+        "We couldn’t generate a reply. Please try again.";
+
+    private const string RegenerationFailureMessage =
+        "We couldn’t regenerate the reply. Your previous draft has been preserved. Please try again.";
+
+    private const string MissingCredentialsMessage =
+        "Azure OpenAI credentials are unavailable or invalid. Configure the Azure settings and retry.";
+
+    private const string InvalidAiResponseMessage =
+        "We couldn’t process the generated reply. Please try again.";
+
     private const string DraftReplySuggestion = "Draft Reply";
     private const string RegenerateSuggestion = "Regenerate";
     private const string DiscardSuggestion = "Discard";
     private const string RetrySuggestion = "Retry";
 
-    private static readonly ImageSource RefreshSuggestionImage = CreateSuggestionImage("↻", "#004ac6");
-    private static readonly ImageSource DiscardSuggestionImage = CreateSuggestionImage("✕", "#737686");
+    private static readonly ImageSource RefreshSuggestionImage =
+        CreateSuggestionImage("↻", "#004ac6");
+
+    private static readonly ImageSource DiscardSuggestionImage =
+        CreateSuggestionImage("✕", "#737686");
 
     private readonly ConversationService _conversationService;
     private readonly ISupportReplyService _supportReplyService;
@@ -39,7 +56,9 @@ public sealed partial class SupportChatViewModel : ObservableObject
     private WorkflowState _workflowState = WorkflowState.Initial;
     private bool _isHandlingSuggestionAction;
 
-    public SupportChatViewModel(ConversationService conversationService, ISupportReplyService supportReplyService)
+    public SupportChatViewModel(
+        ConversationService conversationService,
+        ISupportReplyService supportReplyService)
     {
         _conversationService = conversationService;
         _supportReplyService = supportReplyService;
@@ -49,24 +68,38 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
         TypingIndicator = new ChatTypingIndicator
         {
-            Text = DraftingPlaceholder
+            Text = "Drafting reply..."
         };
-        TypingIndicator.Authors.Add(_conversationService.SupportAuthor);
 
-        _selectMessageCommand = new AsyncRelayCommand<TextMessage?>(SelectMessageAsync);
+        TypingIndicator.Authors.Add(
+            _conversationService.SupportAuthor);
+
+        _selectMessageCommand =
+            new AsyncRelayCommand<TextMessage?>(SelectMessageAsync);
+
         SelectMessageCommand = _selectMessageCommand;
 
-        _draftReplyCommand = new AsyncRelayCommand<TextMessage?>(DraftReplyAsync, CanActivateDraftReply);
+        _draftReplyCommand =
+            new AsyncRelayCommand<TextMessage?>(
+                DraftReplyAsync,
+                CanActivateDraftReply);
+
         DraftReplyCommand = _draftReplyCommand;
 
-        _nativeSendCommand = new Command<object?>(SendNativeMessage, _ => CanSendMessage);
+        _nativeSendCommand =
+            new Command<object?>(
+                SendNativeMessage,
+                _ => CanSendMessage);
+
         NativeSendCommand = _nativeSendCommand;
 
         TransitionTo(WorkflowState.Initial);
     }
 
     public ObservableCollection<object> Messages { get; }
+
     public Author CurrentUser { get; }
+
     public ChatTypingIndicator TypingIndicator { get; }
 
     [ObservableProperty]
@@ -105,20 +138,34 @@ public sealed partial class SupportChatViewModel : ObservableObject
     [ObservableProperty]
     private string inlineMessage = string.Empty;
 
+    [ObservableProperty]
+    private string progressMessage = string.Empty;
+
     public IAsyncRelayCommand<TextMessage?> SelectMessageCommand { get; }
+
     public IAsyncRelayCommand<TextMessage?> DraftReplyCommand { get; }
+
     public ICommand NativeSendCommand { get; }
 
     public Func<Task<bool>>? ConfirmRegenerateAsync { get; set; }
+
     public Func<Task<bool>>? ConfirmSelectionChangeAsync { get; set; }
 
-    public bool CanDraftReply => _workflowState == WorkflowState.Selected && SelectedMessage is not null;
+    public bool CanDraftReply =>
+        _workflowState == WorkflowState.Selected
+        && SelectedMessage is not null;
 
-    public bool IsDraftReplyVisible => _workflowState == WorkflowState.Selected && SelectedMessage is not null;
+    public bool IsDraftReplyVisible =>
+        _workflowState == WorkflowState.Selected
+        && SelectedMessage is not null;
 
     public string DraftReplyButtonText => "✦ Draft Reply";
 
-    public bool CanSendMessage => IsComposerEnabled && !IsComposerReadOnly && !string.IsNullOrWhiteSpace(EditorText);
+    public bool CanSendMessage =>
+        IsComposerEnabled
+        && !IsComposerReadOnly
+        && !IsDrafting
+        && !string.IsNullOrWhiteSpace(EditorText);
 
     public event Action<TextMessage>? OutgoingMessageSent;
 
@@ -128,7 +175,10 @@ public sealed partial class SupportChatViewModel : ObservableObject
         {
             TransitionTo(WorkflowState.Initial);
         }
-        else if (_workflowState == WorkflowState.Initial || _workflowState == WorkflowState.Sent || _workflowState == WorkflowState.Discarded)
+        else if (_workflowState is
+                 WorkflowState.Initial
+                 or WorkflowState.Sent
+                 or WorkflowState.Discarded)
         {
             TransitionTo(WorkflowState.Selected);
         }
@@ -151,14 +201,27 @@ public sealed partial class SupportChatViewModel : ObservableObject
         NotifySendBindings();
     }
 
+    public void BeginSuggestionAction()
+    {
+        _isHandlingSuggestionAction = true;
+    }
+
+    public void EndSuggestionAction()
+    {
+        _isHandlingSuggestionAction = false;
+    }
+
     public void UpdateEditorText(string? text)
     {
-        if (_isHandlingSuggestionAction || !IsComposerEnabled || IsComposerReadOnly)
+        if (_isHandlingSuggestionAction
+            || !IsComposerEnabled
+            || IsComposerReadOnly)
         {
             return;
         }
 
         var updatedText = text ?? string.Empty;
+
         if (ShouldIgnoreWorkflowActionEditorEcho(updatedText))
         {
             return;
@@ -174,48 +237,69 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
     public async Task HandleSuggestionActionAsync(string? text)
     {
-        if (string.IsNullOrWhiteSpace(text))
+        if (string.IsNullOrWhiteSpace(text) || IsDrafting)
         {
             return;
         }
 
         _isHandlingSuggestionAction = true;
+
         try
         {
-            if (text.Equals(DiscardSuggestion, StringComparison.OrdinalIgnoreCase))
+            var action = NormalizeWorkflowActionText(text);
+
+            if (action.Equals(
+                    DiscardSuggestion,
+                    StringComparison.OrdinalIgnoreCase))
             {
+                _generationCancellationTokenSource?.Cancel();
+                _lastGeneratedDraft = string.Empty;
                 TransitionTo(WorkflowState.Discarded);
                 return;
             }
 
-            if (text.Equals(RegenerateSuggestion, StringComparison.OrdinalIgnoreCase))
+            if (action.Equals(
+                    RegenerateSuggestion,
+                    StringComparison.OrdinalIgnoreCase))
             {
-                if (SelectedMessage is null)
+                if (SelectedMessage is null || !HasDraft)
                 {
                     return;
                 }
 
-                if (HasDraft && HasDraftBeenEdited())
+                if (HasDraftBeenEdited())
                 {
-                    var confirmed = ConfirmRegenerateAsync is null || await ConfirmRegenerateAsync();
+                    var confirmed =
+                        ConfirmRegenerateAsync is null
+                        || await ConfirmRegenerateAsync();
+
                     if (!confirmed)
                     {
                         return;
                     }
                 }
 
-                await GenerateDraftAsync(preserveExistingDraftOnFailure: HasDraft);
+                await GenerateDraftAsync(
+                    GenerationOperation.Regenerate,
+                    preserveExistingDraftOnFailure: true);
+
                 return;
             }
 
-            if (text.Equals(RetrySuggestion, StringComparison.OrdinalIgnoreCase))
+            if (action.Equals(
+                    RetrySuggestion,
+                    StringComparison.OrdinalIgnoreCase))
             {
                 if (SelectedMessage is null)
                 {
                     return;
                 }
 
-                await GenerateDraftAsync(preserveExistingDraftOnFailure: HasDraft);
+                await GenerateDraftAsync(
+                    HasDraft
+                        ? GenerationOperation.Regenerate
+                        : GenerationOperation.Retry,
+                    preserveExistingDraftOnFailure: HasDraft);
             }
         }
         finally
@@ -226,7 +310,9 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
     private async Task SelectMessageAsync(TextMessage? message)
     {
-        if (message is null || !_conversationService.IsCustomerMessage(message) || IsDrafting)
+        if (message is null
+            || !_conversationService.IsCustomerMessage(message)
+            || IsDrafting)
         {
             return;
         }
@@ -238,7 +324,10 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
         if (HasDraft)
         {
-            var confirmed = ConfirmSelectionChangeAsync is null || await ConfirmSelectionChangeAsync();
+            var confirmed =
+                ConfirmSelectionChangeAsync is null
+                || await ConfirmSelectionChangeAsync();
+
             if (!confirmed)
             {
                 return;
@@ -270,52 +359,92 @@ public sealed partial class SupportChatViewModel : ObservableObject
             return;
         }
 
-        await GenerateDraftAsync(preserveExistingDraftOnFailure: false);
+        await GenerateDraftAsync(
+            GenerationOperation.Initial,
+            preserveExistingDraftOnFailure: false);
     }
 
-    private async Task GenerateDraftAsync(bool preserveExistingDraftOnFailure)
+    private async Task GenerateDraftAsync(
+        GenerationOperation operation,
+        bool preserveExistingDraftOnFailure)
     {
-        if (SelectedMessage is null)
+        if (SelectedMessage is null || IsDrafting)
         {
             return;
         }
 
-        var preservedDraft = preserveExistingDraftOnFailure
-            ? GetDraftPreservationSnapshot()
-            : string.Empty;
+        var preservedDraft =
+            preserveExistingDraftOnFailure
+                ? GetDraftPreservationSnapshot()
+                : string.Empty;
 
         _generationCancellationTokenSource?.Cancel();
-        _generationCancellationTokenSource = new CancellationTokenSource();
-        var cancellationToken = _generationCancellationTokenSource.Token;
+        _generationCancellationTokenSource =
+            new CancellationTokenSource();
+
+        var cancellationToken =
+            _generationCancellationTokenSource.Token;
+
         var generationVersion = ++_generationVersion;
 
-        TransitionTo(WorkflowState.Drafting);
+        TransitionTo(
+            operation switch
+            {
+                GenerationOperation.Regenerate =>
+                    WorkflowState.Regenerating,
+
+                GenerationOperation.Retry =>
+                    WorkflowState.Retrying,
+
+                _ =>
+                    WorkflowState.Drafting
+            },
+            preservedDraft: preservedDraft);
 
         var request = new SupportReplyRequest(
             CreateMessageId(SelectedMessage),
             SelectedMessage.Text ?? string.Empty,
-            _conversationService.BuildRecentContext(Messages, SelectedMessage));
+            _conversationService.BuildRecentContext(
+                Messages,
+                SelectedMessage));
 
         try
         {
-            var validation = await _supportReplyService.DraftReplyAsync(request, cancellationToken);
+            var validation =
+                await _supportReplyService.DraftReplyAsync(
+                    request,
+                    cancellationToken);
 
             if (generationVersion != _generationVersion)
             {
                 return;
             }
 
-            if (validation.IsValid && validation.Response is not null)
+            if (validation.IsValid
+                && validation.Response is not null)
             {
-                TransitionTo(WorkflowState.Generated, generatedReply: validation.Response.Reply);
+                TransitionTo(
+                    WorkflowState.Generated,
+                    generatedReply:
+                        validation.Response.Reply);
+
                 return;
             }
 
-            TransitionTo(WorkflowState.Error, preserveDraft: preserveExistingDraftOnFailure, preservedDraft: preservedDraft, errorMessage: validation.ErrorMessage);
+            TransitionTo(
+                WorkflowState.Error,
+                preserveDraft:
+                    preserveExistingDraftOnFailure,
+                preservedDraft:
+                    preservedDraft,
+                errorMessage:
+                    validation.ErrorMessage);
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        catch (OperationCanceledException)
+            when (cancellationToken.IsCancellationRequested)
         {
-            // Cancelled request is intentionally ignored.
+            // Cancellation is expected when a request is replaced
+            // or the workflow is reset.
         }
         catch
         {
@@ -324,7 +453,14 @@ public sealed partial class SupportChatViewModel : ObservableObject
                 return;
             }
 
-            TransitionTo(WorkflowState.Error, preserveDraft: preserveExistingDraftOnFailure, preservedDraft: preservedDraft, errorMessage: InvalidAiResponseMessage);
+            TransitionTo(
+                WorkflowState.Error,
+                preserveDraft:
+                    preserveExistingDraftOnFailure,
+                preservedDraft:
+                    preservedDraft,
+                errorMessage:
+                    InvalidAiResponseMessage);
         }
     }
 
@@ -337,24 +473,30 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
         sendArgs.Handled = true;
 
-        if (_isHandlingSuggestionAction || !IsComposerEnabled || IsComposerReadOnly)
+        if (_isHandlingSuggestionAction
+            || IsDrafting
+            || !IsComposerEnabled
+            || IsComposerReadOnly)
         {
             return;
         }
 
-        var submittedText = sendArgs.Message?.Text?.Trim() ?? string.Empty;
-        if (submittedText.Length == 0)
-        {
-            return;
-        }
+        var submittedText =
+            sendArgs.Message?.Text?.Trim()
+            ?? string.Empty;
 
-        if (IsWorkflowActionText(submittedText))
+        if (submittedText.Length == 0
+            || IsWorkflowActionText(submittedText))
         {
             return;
         }
 
         var editorText = EditorText.Trim();
-        if (!string.Equals(submittedText, editorText, StringComparison.Ordinal))
+
+        if (!string.Equals(
+                submittedText,
+                editorText,
+                StringComparison.Ordinal))
         {
             return;
         }
@@ -371,12 +513,17 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
         SelectedMessage = null;
         _lastGeneratedDraft = string.Empty;
+
         TransitionTo(WorkflowState.Sent);
     }
 
     private bool HasDraftBeenEdited()
     {
-        return HasDraft && !string.Equals(EditorText.Trim(), _lastGeneratedDraft.Trim(), StringComparison.Ordinal);
+        return HasDraft
+            && !string.Equals(
+                EditorText.Trim(),
+                _lastGeneratedDraft.Trim(),
+                StringComparison.Ordinal);
     }
 
     private void TransitionTo(
@@ -392,10 +539,8 @@ public sealed partial class SupportChatViewModel : ObservableObject
         {
             case WorkflowState.Initial:
             case WorkflowState.Sent:
-                _generationCancellationTokenSource?.Cancel();
-                IsDrafting = false;
+                ResetGenerationState();
                 HasDraft = false;
-                ShowTypingIndicator = false;
                 ShowReviewHint = false;
                 ShowErrorMessage = false;
                 InlineMessage = string.Empty;
@@ -409,9 +554,8 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
             case WorkflowState.Selected:
             case WorkflowState.Discarded:
-                IsDrafting = false;
+                ResetGenerationState();
                 HasDraft = false;
-                ShowTypingIndicator = false;
                 ShowReviewHint = false;
                 ShowErrorMessage = false;
                 InlineMessage = string.Empty;
@@ -424,29 +568,48 @@ public sealed partial class SupportChatViewModel : ObservableObject
                 break;
 
             case WorkflowState.Drafting:
-                IsDrafting = true;
+                StartGenerationState("Drafting reply...");
                 HasDraft = false;
-                ShowTypingIndicator = true;
-                ShowReviewHint = false;
-                ShowErrorMessage = false;
-                InlineMessage = string.Empty;
-                ChatSuggestions = null;
                 IsComposerEnabled = false;
                 IsComposerReadOnly = true;
-                ComposerPlaceholder = DraftingPlaceholder;
+                ComposerPlaceholder = InitialPlaceholder;
                 EditorText = string.Empty;
                 break;
 
-            case WorkflowState.Generated:
-                IsDrafting = false;
+            case WorkflowState.Retrying:
+                StartGenerationState("Retrying draft...");
+                HasDraft = false;
+                IsComposerEnabled = false;
+                IsComposerReadOnly = true;
+                ComposerPlaceholder = InitialPlaceholder;
+                EditorText = string.Empty;
+                break;
+
+            case WorkflowState.Regenerating:
+                StartGenerationState("Regenerating reply...");
                 HasDraft = true;
-                ShowTypingIndicator = false;
+                IsComposerEnabled = true;
+                IsComposerReadOnly = true;
+                ComposerPlaceholder = string.Empty;
+                EditorText = preservedDraft;
+                _lastStableDraftText = preservedDraft;
+                break;
+
+            case WorkflowState.Generated:
+                ResetGenerationState();
+                HasDraft = true;
                 ShowReviewHint = true;
                 ShowErrorMessage = false;
                 InlineMessage = ReviewAndEditMessage;
+
                 ChatSuggestions = BuildSuggestions(
-                    (RegenerateSuggestion, RefreshSuggestionImage),
-                    (DiscardSuggestion, DiscardSuggestionImage));
+                    (
+                        RegenerateSuggestion,
+                        RefreshSuggestionImage),
+                    (
+                        DiscardSuggestion,
+                        DiscardSuggestionImage));
+
                 IsComposerEnabled = true;
                 IsComposerReadOnly = false;
                 ComposerPlaceholder = string.Empty;
@@ -456,25 +619,27 @@ public sealed partial class SupportChatViewModel : ObservableObject
                 break;
 
             case WorkflowState.Error:
-                IsDrafting = false;
-                ShowTypingIndicator = false;
+                ResetGenerationState();
                 ShowErrorMessage = true;
                 ShowReviewHint = false;
-                InlineMessage = string.IsNullOrWhiteSpace(errorMessage) || errorMessage == "The AI service is currently unavailable."
-                    ? GenerationFailureMessage
-                    : errorMessage;
-                if (InlineMessage.Contains("credential", StringComparison.OrdinalIgnoreCase)
-                    || InlineMessage.Contains("endpoint", StringComparison.OrdinalIgnoreCase)
-                    || InlineMessage.Contains("deployment", StringComparison.OrdinalIgnoreCase))
-                {
-                    InlineMessage = MissingCredentialsMessage;
-                }
 
-                ChatSuggestions = BuildSuggestions((RetrySuggestion, RefreshSuggestionImage));
+                InlineMessage = CreateUserFacingError(
+                    errorMessage,
+                    preserveDraft);
 
-                if (preserveDraft && !string.IsNullOrWhiteSpace(preservedDraft))
+                if (preserveDraft
+                    && !string.IsNullOrWhiteSpace(preservedDraft))
                 {
                     HasDraft = true;
+
+                    ChatSuggestions = BuildSuggestions(
+                        (
+                            RegenerateSuggestion,
+                            RefreshSuggestionImage),
+                        (
+                            DiscardSuggestion,
+                            DiscardSuggestionImage));
+
                     IsComposerEnabled = true;
                     IsComposerReadOnly = false;
                     ComposerPlaceholder = string.Empty;
@@ -484,9 +649,17 @@ public sealed partial class SupportChatViewModel : ObservableObject
                 }
 
                 HasDraft = false;
+
+                ChatSuggestions = BuildSuggestions(
+                    (
+                        RetrySuggestion,
+                        RefreshSuggestionImage));
+
                 IsComposerEnabled = false;
                 IsComposerReadOnly = true;
-                ComposerPlaceholder = GenerationFailurePlaceholder;
+                ComposerPlaceholder =
+                    GenerationFailurePlaceholder;
+
                 EditorText = string.Empty;
                 _lastStableDraftText = string.Empty;
                 break;
@@ -495,11 +668,78 @@ public sealed partial class SupportChatViewModel : ObservableObject
         NotifyStateBindings();
     }
 
+    private void StartGenerationState(string message)
+    {
+        IsDrafting = true;
+
+        // The finalized selected-message card is the single
+        // progress location. Native SfChat typing progress is
+        // disabled to avoid duplicate indicators.
+        ShowTypingIndicator = false;
+
+        ProgressMessage = message;
+        ShowReviewHint = false;
+        ShowErrorMessage = false;
+        InlineMessage = string.Empty;
+        ChatSuggestions = null;
+    }
+
+    private void ResetGenerationState()
+    {
+        IsDrafting = false;
+        ShowTypingIndicator = false;
+        ProgressMessage = string.Empty;
+    }
+
+    private string CreateUserFacingError(
+        string? errorMessage,
+        bool preservedDraft)
+    {
+        if (preservedDraft)
+        {
+            return RegenerationFailureMessage;
+        }
+
+        if (string.IsNullOrWhiteSpace(errorMessage)
+            || errorMessage.Equals(
+                "The AI service is currently unavailable.",
+                StringComparison.OrdinalIgnoreCase)
+            || errorMessage.Contains(
+                "valid JSON",
+                StringComparison.OrdinalIgnoreCase)
+            || errorMessage.Contains(
+                "process the generated reply",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return GenerationFailureMessage;
+        }
+
+        if (errorMessage.Contains(
+                "credential",
+                StringComparison.OrdinalIgnoreCase)
+            || errorMessage.Contains(
+                "authentication",
+                StringComparison.OrdinalIgnoreCase)
+            || errorMessage.Contains(
+                "endpoint",
+                StringComparison.OrdinalIgnoreCase)
+            || errorMessage.Contains(
+                "deployment",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return MissingCredentialsMessage;
+        }
+
+        return errorMessage;
+    }
+
     private void NotifyStateBindings()
     {
         OnPropertyChanged(nameof(CanDraftReply));
         OnPropertyChanged(nameof(IsDraftReplyVisible));
+
         _draftReplyCommand.NotifyCanExecuteChanged();
+
         NotifySendBindings();
     }
 
@@ -509,18 +749,23 @@ public sealed partial class SupportChatViewModel : ObservableObject
         _nativeSendCommand.ChangeCanExecute();
     }
 
-    private bool ShouldIgnoreWorkflowActionEditorEcho(string text)
+    private bool ShouldIgnoreWorkflowActionEditorEcho(
+        string text)
     {
-        var trimmedText = text.Trim();
-        return HasDraft
-            && ChatSuggestions is not null
-            && IsWorkflowActionText(trimmedText)
-            && !string.Equals(_lastStableDraftText.Trim(), trimmedText, StringComparison.OrdinalIgnoreCase);
+        var normalizedText =
+            NormalizeWorkflowActionText(text);
+
+        return IsWorkflowActionText(normalizedText)
+            && !string.Equals(
+                _lastStableDraftText.Trim(),
+                normalizedText,
+                StringComparison.OrdinalIgnoreCase);
     }
 
     private string GetDraftPreservationSnapshot()
     {
-        if (!string.IsNullOrWhiteSpace(_lastStableDraftText))
+        if (!string.IsNullOrWhiteSpace(
+                _lastStableDraftText))
         {
             return _lastStableDraftText;
         }
@@ -528,35 +773,59 @@ public sealed partial class SupportChatViewModel : ObservableObject
         return EditorText;
     }
 
-    private static ChatSuggestions BuildSuggestions(params (string Text, ImageSource Icon)[] items)
+    private static ChatSuggestions BuildSuggestions(
+        params (string Text, ImageSource Icon)[] items)
     {
         return new ChatSuggestions
         {
-            Items = new ObservableCollection<ISuggestion>(items.Select(item => new Suggestion(item.Text, item.Icon)))
+            Items =
+                new ObservableCollection<ISuggestion>(
+                    items.Select(
+                        item =>
+                            new Suggestion(
+                                item.Text,
+                                item.Icon)))
         };
     }
 
     private static bool IsWorkflowActionText(string text)
     {
-        var normalized = NormalizeWorkflowActionText(text);
-        return normalized.Equals(DraftReplySuggestion, StringComparison.OrdinalIgnoreCase)
-            || normalized.Equals(RegenerateSuggestion, StringComparison.OrdinalIgnoreCase)
-            || normalized.Equals(DiscardSuggestion, StringComparison.OrdinalIgnoreCase)
-            || normalized.Equals(RetrySuggestion, StringComparison.OrdinalIgnoreCase);
+        var normalized =
+            NormalizeWorkflowActionText(text);
+
+        return normalized.Equals(
+                   DraftReplySuggestion,
+                   StringComparison.OrdinalIgnoreCase)
+            || normalized.Equals(
+                   RegenerateSuggestion,
+                   StringComparison.OrdinalIgnoreCase)
+            || normalized.Equals(
+                   DiscardSuggestion,
+                   StringComparison.OrdinalIgnoreCase)
+            || normalized.Equals(
+                   RetrySuggestion,
+                   StringComparison.OrdinalIgnoreCase);
     }
 
-    private static string NormalizeWorkflowActionText(string text)
+    private static string NormalizeWorkflowActionText(
+        string text)
     {
         var normalized = text.Trim();
-        if (normalized.StartsWith("✦", StringComparison.Ordinal))
+
+        if (normalized.StartsWith(
+                "✦",
+                StringComparison.Ordinal))
         {
-            normalized = normalized[1..].TrimStart();
+            normalized =
+                normalized[1..].TrimStart();
         }
 
         return normalized;
     }
 
-    private static ImageSource CreateSuggestionImage(string glyph, string color)
+    private static ImageSource CreateSuggestionImage(
+        string glyph,
+        string color)
     {
         return new FontImageSource
         {
@@ -566,9 +835,20 @@ public sealed partial class SupportChatViewModel : ObservableObject
         };
     }
 
-    private static string CreateMessageId(TextMessage message)
+    private static string CreateMessageId(
+        TextMessage message)
     {
-        return $"{message.DateTime:HHmmss}-{message.Author?.Name}-{message.Text}";
+        return
+            $"{message.DateTime:HHmmss}-" +
+            $"{message.Author?.Name}-" +
+            $"{message.Text}";
+    }
+
+    private enum GenerationOperation
+    {
+        Initial,
+        Retry,
+        Regenerate
     }
 
     private enum WorkflowState
@@ -576,6 +856,8 @@ public sealed partial class SupportChatViewModel : ObservableObject
         Initial,
         Selected,
         Drafting,
+        Retrying,
+        Regenerating,
         Generated,
         Error,
         Discarded,
