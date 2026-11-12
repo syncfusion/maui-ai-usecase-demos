@@ -33,10 +33,9 @@ public partial class StorePage : ContentPage
     {
         if (sender is Border card)
         {
-            card.TranslationY = -4;
-            card.StrokeThickness = 1;
-            card.Stroke = Color.FromArgb("#E2E8F0");
-            card.Shadow = new Shadow { Brush = Brush.Black, Opacity = 0.18f, Radius = 12, Offset = new Point(0, 5) };
+            card.TranslationY = -2;
+            card.StrokeThickness = 0;
+            card.Shadow = new Shadow { Brush = Color.FromArgb("#24324A"), Opacity = 0.12f, Radius = 6, Offset = new Point(0, 3) };
             card.ZIndex = 1;
         }
     }
