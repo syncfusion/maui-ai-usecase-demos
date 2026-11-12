@@ -33,8 +33,8 @@ public partial class StorePage : ContentPage
     {
         if (sender is Border card)
         {
-            card.Scale = 1.02;
-            card.Shadow = new Shadow { Brush = Brush.Black, Opacity = 0.16f, Radius = 14, Offset = new Point(0, 5) };
+            card.TranslationY = -2;
+            card.Shadow = new Shadow { Brush = Brush.Black, Opacity = 0.14f, Radius = 8, Offset = new Point(0, 3) };
             card.ZIndex = 1;
         }
     }
@@ -43,7 +43,7 @@ public partial class StorePage : ContentPage
     {
         if (sender is Border card)
         {
-            card.Scale = 1;
+            card.TranslationY = 0;
             card.Shadow = null;
             card.ZIndex = 0;
         }
