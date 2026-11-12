@@ -30,11 +30,11 @@ public sealed record Plan(string Id, string Country, string Region, string Provi
     };
     public string FeatureList => Id switch
     {
-        "jp-5-15" => "ϟ  Instant QR Code delivery via email & app\n◉  Personal Hotspot & Tethering allowed\n▤  Local Japanese IP routing (Low ping)",
+        "jp-5-15" => "⇅  Instant QR Code delivery via email & app\n◉  Personal Hotspot & Tethering allowed\n▤  Local Japanese IP routing (Low ping)",
         "jp-unl-7" => "∞  Uncapped browsing after fair-use\n◉  Direct Docomo Tier-1 backbone\n▦  Instant 1-click activation",
         "us-10-30" => "➤  Dual network auto-switching\n◉  High-speed Hotspot enabled\n▦  Encrypted enterprise APN",
         "eu-20-30" => "⇄  Zero reconnection crossing borders\n◉  EU GDPR Compliant privacy routing\n▤  Full tethering support in all 33 states",
-        "kr-5-10" => "ϟ  Korean 5G Ultra-wideband\n▦  Instant e-delivery in < 30 seconds\n▤  Bilingual live chat setup guidance",
+        "kr-5-10" => "⇅  Korean 5G Ultra-wideband\n▦  Instant e-delivery in < 30 seconds\n▤  Bilingual live chat setup guidance",
         "fr-10-15" => "◉  Unrestricted hotspot for laptops\n◉  Zero ID or passport verification\n☷  Pre-configured APN profile", _ => string.Empty
     };
 }

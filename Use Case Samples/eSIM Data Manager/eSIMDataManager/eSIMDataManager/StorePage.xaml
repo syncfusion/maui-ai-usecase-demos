@@ -70,7 +70,7 @@
                 </Border>
                 <Grid ColumnDefinitions="{OnIdiom Phone='*', Default='2*,*'}" ColumnSpacing="18" RowDefinitions="{OnIdiom Phone='Auto,Auto', Default='Auto'}">
                     <VerticalStackLayout Spacing="12">
-                        <Grid ColumnDefinitions="*,Auto"><Label Text="{Binding FilteredPlans.Count, StringFormat='Available eSIM Plans  ·  {0} Plans'}" FontFamily="OpenSansSemibold" FontSize="16" FontAttributes="Bold" TextColor="#0B1C30"/><Label Grid.Column="1" Text="● Real-time Network Inventory" FontSize="10" TextColor="#006141" VerticalOptions="Center"/></Grid>
+                        <Grid ColumnDefinitions="*,Auto" Margin="16,0"><Label Text="{Binding FilteredPlans.Count, StringFormat='Available eSIM Plans  ·  {0} Plans'}" FontFamily="OpenSansSemibold" FontSize="16" FontAttributes="Bold" TextColor="#0B1C30"/><Label Grid.Column="1" Text="● Real-time Network Inventory" FontSize="12" TextColor="#006141" VerticalOptions="Center"/></Grid>
                         <CollectionView ItemsSource="{Binding FilteredPlans}" SelectionMode="None" ItemSizingStrategy="MeasureAllItems" HorizontalOptions="Fill" VerticalOptions="Start"><CollectionView.ItemsLayout><GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="12" VerticalItemSpacing="12" /></CollectionView.ItemsLayout><CollectionView.ItemTemplate><DataTemplate x:DataType="models:Plan">
                             <Border BackgroundColor="White" Stroke="#E2E8F0" StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="16,17" Margin="6" HorizontalOptions="Fill" VerticalOptions="Start">
                                 <Grid RowDefinitions="Auto,Auto,Auto,*,Auto,Auto" RowSpacing="0">
