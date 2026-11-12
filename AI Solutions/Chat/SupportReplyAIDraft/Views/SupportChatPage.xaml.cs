@@ -7,6 +7,9 @@ namespace SupportReplyAIDraft.Views;
 
 public partial class SupportChatPage : ContentPage
 {
+    private static readonly TimeSpan SuggestionEditorRestoreDelay =
+        TimeSpan.FromMilliseconds(100);
+
     private bool _isUpdatingEditorText;
 
     public SupportChatPage(
@@ -145,19 +148,29 @@ public partial class SupportChatPage : ContentPage
 
         try
         {
-            // Restore the view-model draft immediately so the
-            // Syncfusion suggestion text never remains in the editor.
-            UpdateComposerState();
+            var actionTask =
+                ViewModel.HandleSuggestionActionAsync(
+                    selectedText);
 
-            await ViewModel.HandleSuggestionActionAsync(
-                selectedText);
+            Dispatcher.Dispatch(
+                UpdateComposerState);
 
-            UpdateComposerState();
+            Dispatcher.DispatchDelayed(
+                SuggestionEditorRestoreDelay,
+                UpdateComposerState);
+
+            await actionTask;
         }
         finally
         {
             ViewModel.EndSuggestionAction();
-            UpdateComposerState();
+
+            Dispatcher.Dispatch(
+                UpdateComposerState);
+
+            Dispatcher.DispatchDelayed(
+                SuggestionEditorRestoreDelay,
+                UpdateComposerState);
         }
     }
 

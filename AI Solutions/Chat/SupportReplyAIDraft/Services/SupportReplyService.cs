@@ -109,12 +109,12 @@ public sealed class SupportReplyService : ISupportReplyService
 
             var completion = result.Value;
 
-            #if DEBUG
+#if DEBUG
             Console.Error.WriteLine(
                 $"Azure OpenAI completion received. " +
                 $"FinishReason={completion.FinishReason}, " +
                 $"ContentParts={completion.Content.Count}");
-            #endif
+#endif
 
             var responseText = string.Join(
                     Environment.NewLine,
@@ -125,16 +125,16 @@ public sealed class SupportReplyService : ISupportReplyService
                 .Trim();
 
             var validation =
-                _validator.Validate(responseText);
+                SupportReplyValidator.Validate(responseText);
 
             if (!validation.IsValid)
             {
-                #if DEBUG
+#if DEBUG
                 Console.Error.WriteLine(
                     $"AI response validation failed. " +
                     $"Error={validation.ErrorMessage}, " +
                     $"ResponseLength={responseText.Length}");
-                #endif
+#endif
             }
 
             return validation;
@@ -146,33 +146,33 @@ public sealed class SupportReplyService : ISupportReplyService
         }
         catch (RequestFailedException exception)
         {
-            #if DEBUG
+#if DEBUG
             Console.Error.WriteLine(
                 $"Azure OpenAI request failed. " +
                 $"Status={exception.Status}, " +
                 $"ErrorCode={exception.ErrorCode}, " +
                 $"Message={exception.Message}");
-            #endif
+#endif
 
             return SupportReplyValidationResult.Failure(
                 CreateServiceErrorMessage(exception.Status));
         }
         catch (InvalidOperationException exception)
         {
-            #if DEBUG
+#if DEBUG
             Console.Error.WriteLine(
                 $"Azure OpenAI configuration failed: {exception}");
-            #endif
+#endif
 
             return SupportReplyValidationResult.Failure(
                 exception.Message);
         }
         catch (Exception exception)
         {
-            #if DEBUG
+#if DEBUG
             Console.Error.WriteLine(
                 $"Azure OpenAI generation failed: {exception}");
-            #endif
+#endif
 
             return SupportReplyValidationResult.Failure(
                 "The AI service is currently unavailable.");
