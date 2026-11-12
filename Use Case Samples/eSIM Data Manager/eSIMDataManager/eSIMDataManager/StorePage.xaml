@@ -38,15 +38,15 @@
                         </Border>
                         <FlexLayout Wrap="Wrap" Direction="Row" AlignItems="Center" AlignContent="Start" JustifyContent="Start" HorizontalOptions="Start" VerticalOptions="Start">
                             <Label Text="Trending:" FontSize="14" TextColor="#24334A" VerticalOptions="Center" Margin="0,0,8,6" />
-                            <sfChip:SfChip Text="JP  Japan" ChipType="Choice" Clicked="DestinationClicked" Background="#1046D5" TextColor="White" FontSize="14" Padding="12,8" Margin="0,0,6,6" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="24" />
-                            <sfChip:SfChip Text="US  USA" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="24" />
-                            <sfChip:SfChip Text="FR  France" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="24" />
-                            <sfChip:SfChip Text="KR  Korea" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="24" />
-                            <sfChip:SfChip Text="SG  Singapore" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="24" />
-                            <sfChip:SfChip Text="TH  Thailand" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="24" />
+                            <sfChip:SfChip Text="JP  Japan" ChipType="Choice" Clicked="DestinationClicked" Background="#1046D5" TextColor="White" FontSize="14" Padding="12,8" Margin="0,0,6,6" WidthRequest="118" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="24" />
+                            <sfChip:SfChip Text="US  USA" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" WidthRequest="104" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="24" />
+                            <sfChip:SfChip Text="FR  France" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" WidthRequest="120" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="24" />
+                            <sfChip:SfChip Text="KR  Korea" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" WidthRequest="118" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="24" />
+                            <sfChip:SfChip Text="SG  Singapore" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" WidthRequest="154" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="24" />
+                            <sfChip:SfChip Text="TH  Thailand" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" WidthRequest="134" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="24" />
                             <BoxView WidthRequest="1" HeightRequest="30" Color="#D8E1F2" Margin="3,0,6,6" />
-                            <sfChip:SfChip Text="EU  Europe (33)" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="24" />
-                            <sfChip:SfChip Text="🌐  Asia-Pacific" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="24" />
+                            <sfChip:SfChip Text="EU  Europe (33)" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" WidthRequest="174" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="24" />
+                            <sfChip:SfChip Text="🌐  Asia-Pacific" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" WidthRequest="184" HorizontalOptions="Start" VerticalOptions="Start" CornerRadius="24" />
                         </FlexLayout>
                     </VerticalStackLayout>
                 </Border>
