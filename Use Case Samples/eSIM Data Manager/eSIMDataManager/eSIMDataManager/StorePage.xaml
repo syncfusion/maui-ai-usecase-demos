@@ -20,24 +20,32 @@
                     </Grid>
                     <HorizontalStackLayout Grid.Column="2" Spacing="9" VerticalOptions="Center" IsVisible="{OnIdiom Phone=False, Default=True}"><BoxView WidthRequest="1" HeightRequest="30" Color="#E4EAF5" VerticalOptions="Center"/><Border WidthRequest="36" HeightRequest="36" BackgroundColor="#E9F1FF" StrokeThickness="0" StrokeShape="RoundRectangle 18"><Label Text="&#xE71B;" FontFamily="MaterialAssets" FontSize="20" TextColor="#1E5BFF" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border><VerticalStackLayout Spacing="0" VerticalOptions="Center"><Label Text="Global Traveler" FontSize="12" FontAttributes="Bold" TextColor="#101D35"/><HorizontalStackLayout Spacing="6"><Ellipse WidthRequest="8" HeightRequest="8" Fill="#007A56" VerticalOptions="Center"/><Label Text="Roaming Online" FontSize="11" TextColor="#007A56"/></HorizontalStackLayout></VerticalStackLayout></HorizontalStackLayout>
                 </Grid>
-                <Border BackgroundColor="#EEF3FF" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="{OnIdiom Phone=20, Default=32}">
-                    <VerticalStackLayout Spacing="12">
-                        <Border BackgroundColor="White" StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="10,5" HorizontalOptions="Start"><Label Text="●  190+ Global Destinations Live" FontSize="11" TextColor="#007A50" /></Border>
-                        <Label Text="Explore Travel eSIM Plans" FontSize="{OnIdiom Phone=27, Default=30}" FontAttributes="Bold" TextColor="#07152B" />
-                        <Label Text="Instant connectivity in 190+ countries with zero physical SIM swaps and zero roaming fees." FontSize="14" TextColor="#59677D" />
-                        <Border BackgroundColor="White" Stroke="#E6EBF5" StrokeShape="RoundRectangle 12" Padding="8,0" MaximumWidthRequest="620" HorizontalOptions="Start">
-                            <Grid ColumnDefinitions="Auto,*,Auto"><Label Text="⌕" FontSize="23" TextColor="#102B52" VerticalOptions="Center" Margin="4,0"/><Entry Grid.Column="1" Text="{Binding Search}" Placeholder="Search country, region, or carrier (e.g. Japan, SoftBank, Europe)..." FontSize="13"/><sfButton:SfButton Grid.Column="2" Text="×" Command="{Binding ClearFiltersCommand}" Style="{StaticResource LinkButton}" /></Grid>
+                <Border BackgroundColor="#EDF3FF" Stroke="#E8EFFB" StrokeThickness="1" StrokeShape="RoundRectangle 20" Padding="{OnIdiom Phone=20, Default=32}" MinimumHeightRequest="278">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#F0F4FF" Offset="0" />
+                            <GradientStop Color="#EAF2FF" Offset="0.48" />
+                            <GradientStop Color="#DDF7FF" Offset="0.7" />
+                            <GradientStop Color="#EFF0FF" Offset="1" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <VerticalStackLayout Spacing="11">
+                        <Border BackgroundColor="#FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="11,5" HorizontalOptions="Start"><HorizontalStackLayout Spacing="7"><Ellipse WidthRequest="6" HeightRequest="6" Fill="#008B63" VerticalOptions="Center"/><Label Text="190+ Global Destinations Live" FontSize="10" TextColor="#0752DB" VerticalOptions="Center"/></HorizontalStackLayout></Border>
+                        <Label Text="Explore Travel eSIM Plans" FontSize="{OnIdiom Phone=27, Default=30}" FontAttributes="Bold" TextColor="#07152B" Margin="0,2,0,0" />
+                        <Label Text="Instant connectivity in 190+ countries with zero physical SIM swaps and zero roaming fees." FontSize="13" TextColor="#344054" Margin="0,-5,0,4" />
+                        <Border BackgroundColor="White" Stroke="#E6EBF5" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="9,0" MaximumWidthRequest="620" HorizontalOptions="Start" HeightRequest="42">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8"><Label Text="&#xE721;" FontFamily="MaterialAssets" FontSize="17" TextColor="#26334B" VerticalOptions="Center" Margin="3,0"/><Entry Grid.Column="1" Text="{Binding Search}" Placeholder="Search country, region, or carrier (e.g. Japan, SoftBank, Europe)..." FontSize="11" TextColor="#344054" PlaceholderColor="#667085" ClearButtonVisibility="WhileEditing"/><Border Grid.Column="2" BackgroundColor="#EEF3FF" StrokeThickness="0" StrokeShape="RoundRectangle 6" Padding="7,3" VerticalOptions="Center"><Label Text="⌘ K" FontSize="9" TextColor="#344054"/></Border></Grid>
                         </Border>
-                        <FlexLayout Wrap="Wrap" Direction="Row" AlignItems="Center">
-                            <Label Text="Trending:" FontSize="11" TextColor="#24334A" Margin="0,0,8,5" />
-                            <sfButton:SfButton Text="🇯🇵 Japan" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start" Margin="0,0,5,5" />
-                            <sfButton:SfButton Text="🇺🇸 USA" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start" Margin="0,0,5,5" />
-                            <sfButton:SfButton Text="🇫🇷 France" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start" Margin="0,0,5,5" />
-                            <sfButton:SfButton Text="🇰🇷 Korea" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start" Margin="0,0,5,5" />
-                            <sfButton:SfButton Text="🇸🇬 Singapore" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start" Margin="0,0,5,5" />
-                            <sfButton:SfButton Text="🇹🇭 Thailand" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start" Margin="0,0,5,5" />
-                        </FlexLayout>
-                        <FlexLayout Wrap="Wrap" Direction="Row"><sfButton:SfButton Text="🇪🇺 Europe (33)" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start" Margin="0,0,6,0"/><sfButton:SfButton Text="🌐 Asia-Pacific" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" HorizontalOptions="Start" /></FlexLayout>
+                        <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                            <Label Text="Trending:" FontSize="9" TextColor="#24334A" VerticalOptions="Center" Margin="0,0,1,0" />
+                            <sfButton:SfButton Text="🇯🇵 Japan" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" Background="#1046D5" TextColor="White" FontSize="10" Padding="9,5" HorizontalOptions="Start" />
+                            <sfButton:SfButton Text="🇺🇸 USA" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" FontSize="10" Padding="9,5" HorizontalOptions="Start" />
+                            <sfButton:SfButton Text="🇫🇷 France" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" FontSize="10" Padding="9,5" HorizontalOptions="Start" />
+                            <sfButton:SfButton Text="🇰🇷 Korea" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" FontSize="10" Padding="9,5" HorizontalOptions="Start" />
+                            <sfButton:SfButton Text="🇸🇬 Singapore" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" FontSize="10" Padding="9,5" HorizontalOptions="Start" />
+                            <sfButton:SfButton Text="🇹🇭 Thailand" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" FontSize="10" Padding="9,5" HorizontalOptions="Start" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="6"><sfButton:SfButton Text="🇪🇺  Europe (33)" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" FontSize="10" Padding="9,5" HorizontalOptions="Start"/><sfButton:SfButton Text="🌐  Asia-Pacific" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" FontSize="10" Padding="9,5" HorizontalOptions="Start"/></HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Border>
                 <Border BackgroundColor="White" Stroke="#E8EDF5" StrokeShape="RoundRectangle 12" Padding="8">
