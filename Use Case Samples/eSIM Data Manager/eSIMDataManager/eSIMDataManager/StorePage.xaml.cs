@@ -19,6 +19,11 @@ public partial class StorePage : ContentPage
     private void BuyPlanClicked(object? sender, EventArgs e) => popupActions.BuyPlanClicked(sender, e);
     private void DestinationClicked(object? sender, EventArgs e) => popupActions.DestinationClicked(sender, e);
     private void FilterClicked(object? sender, EventArgs e) => popupActions.FilterClicked(sender, e);
+    private void CoverageSelectionChanged(object? sender, Syncfusion.Maui.Buttons.SelectionChangedEventArgs e)
+    {
+        if (e.NewValue is string coverage && BindingContext is MainViewModel viewModel)
+            viewModel.SelectCoverage(coverage);
+    }
     private void NetworkFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) => popupActions.NetworkFilterSelected(sender, e);
     private void QuotaFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) => popupActions.QuotaFilterSelected(sender, e);
     private void DurationFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) => popupActions.DurationFilterSelected(sender, e);

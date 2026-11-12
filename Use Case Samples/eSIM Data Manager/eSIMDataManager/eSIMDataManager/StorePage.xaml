@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:list="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView" xmlns:sfButton="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons" xmlns:sfInput="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core" xmlns:sfChip="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core" xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs" xmlns:models="clr-namespace:eSIMDataManager.Models" xmlns:vm="clr-namespace:eSIMDataManager.ViewModels" x:Class="eSIMDataManager.StorePage" x:DataType="vm:MainViewModel" BackgroundColor="#F8F9FF">
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:list="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView" xmlns:sfButton="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons" xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons" xmlns:sfInput="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core" xmlns:sfChip="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core" xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs" xmlns:models="clr-namespace:eSIMDataManager.Models" xmlns:vm="clr-namespace:eSIMDataManager.ViewModels" x:Class="eSIMDataManager.StorePage" x:DataType="vm:MainViewModel" BackgroundColor="#F8F9FF">
     <ContentPage.Resources>
         <Style x:Key="StoreFilterButton" TargetType="sfButton:SfButton" BasedOn="{StaticResource SecondaryButton}">
             <Setter Property="FontSize" Value="12" />
@@ -52,14 +52,14 @@
                 </Border>
                 <Border BackgroundColor="White" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="8">
                     <Grid ColumnDefinitions="Auto,2,Auto,Auto,Auto,*,Auto,Auto" ColumnSpacing="8">
-                        <Border Grid.Column="0" BackgroundColor="#EFF4FC" StrokeThickness="0" StrokeShape="RoundRectangle 11" Padding="4">
-                            <HorizontalStackLayout Spacing="2">
-                                <sfButton:SfButton Text="All" Clicked="FilterClicked" Background="{Binding AllCoverageBackground}" TextColor="{Binding AllCoverageTextColor}" FontSize="14" Padding="8,2" MinimumHeightRequest="28" MinimumWidthRequest="44" CornerRadius="7" />
-                                <sfButton:SfButton Text="Local" Clicked="FilterClicked" Background="{Binding LocalCoverageBackground}" TextColor="{Binding LocalCoverageTextColor}" FontSize="14" Padding="8,2" MinimumHeightRequest="28" MinimumWidthRequest="52" CornerRadius="7" />
-                                <sfButton:SfButton Text="Regional" Clicked="FilterClicked" Background="{Binding RegionalCoverageBackground}" TextColor="{Binding RegionalCoverageTextColor}" FontSize="14" Padding="8,2" MinimumHeightRequest="28" MinimumWidthRequest="68" CornerRadius="7" />
-                                <sfButton:SfButton Text="Global" Clicked="FilterClicked" Background="{Binding GlobalCoverageBackground}" TextColor="{Binding GlobalCoverageTextColor}" FontSize="14" Padding="8,2" MinimumHeightRequest="28" MinimumWidthRequest="54" CornerRadius="7" />
-                            </HorizontalStackLayout>
-                        </Border>
+                        <buttons:SfSegmentedControl Grid.Column="0" ItemsSource="{Binding CoverageOptions}" SelectedIndex="{Binding CoverageFilterIndex}" SelectionChanged="CoverageSelectionChanged" SelectionMode="Single" SegmentHeight="32" SegmentCornerRadius="6" Background="#EEF3FF" Stroke="Transparent" StrokeThickness="0" ShowSeparator="False" EnableRippleEffect="False">
+                            <buttons:SfSegmentedControl.SelectionIndicatorSettings>
+                                <buttons:SelectionIndicatorSettings SelectionIndicatorPlacement="Fill" Background="White" Stroke="Transparent" StrokeThickness="0" />
+                            </buttons:SfSegmentedControl.SelectionIndicatorSettings>
+                            <buttons:SfSegmentedControl.TextStyle>
+                                <buttons:SegmentTextStyle TextColor="#24334A" FontSize="12" />
+                            </buttons:SfSegmentedControl.TextStyle>
+                        </buttons:SfSegmentedControl>
                         <BoxView Grid.Column="1" WidthRequest="2" HeightRequest="30" Color="#E2E9F5" VerticalOptions="Center" />
                         <editors:SfComboBox Grid.Column="2" ItemsSource="{Binding NetworkFilterOptions}" SelectedItem="{Binding SelectedNetworkOption, Mode=TwoWay}" SelectionChanged="NetworkFilterSelected" IsEditable="False" IsClearButtonVisible="False" ShowBorder="False" BackgroundColor="#EEF3FF" TextColor="#172842" FontSize="14" HeightRequest="42" WidthRequest="158" DropDownPlacement="Bottom" MaxDropDownHeight="260"/>
                         <editors:SfComboBox Grid.Column="3" ItemsSource="{Binding QuotaFilterOptions}" SelectedItem="{Binding SelectedQuotaOption, Mode=TwoWay}" SelectionChanged="QuotaFilterSelected" IsEditable="False" IsClearButtonVisible="False" ShowBorder="False" BackgroundColor="#EEF3FF" TextColor="#172842" FontSize="14" HeightRequest="42" WidthRequest="178" DropDownPlacement="Bottom" MaxDropDownHeight="260"/>

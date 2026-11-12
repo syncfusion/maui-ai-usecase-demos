@@ -42,6 +42,8 @@ public partial class MainViewModel : ObservableObject
     public double ValidityFraction => Math.Clamp(DaysRemaining / 14d, 0, 1);
     public string ActivationDateText => ActiveProfile?.ActivationDate?.ToString("MMM d, yyyy") ?? "—";
     public double SevenDayTotal => Trend.Sum(point => point.UsedGb);
+    public IReadOnlyList<string> CoverageOptions { get; } = ["All", "Local", "Regional", "Global"];
+    public int CoverageFilterIndex => selectedCoverage switch { CoverageType.Local => 1, CoverageType.Regional => 2, CoverageType.Global => 3, _ => 0 };
     public IReadOnlyList<string> Destinations { get; } = ["Japan", "USA", "France", "Korea", "Singapore", "Thailand"];
     public IReadOnlyList<string> TrendingDestinations { get; } = ["JP  Japan", "US  USA", "FR  France", "KR  Korea", "SG  Singapore", "TH  Thailand", "EU  Europe (33)", "🌐  Asia-Pacific"];
     public IReadOnlyList<string> FilterOptions { get; } = ["Local", "Regional", "Global", "4G", "5G", "Limited", "Unlimited", "7 Days", "15 Days", "30 Days"];
@@ -242,6 +244,7 @@ public partial class MainViewModel : ObservableObject
     {
         selectedCoverage = coverage switch { "Local" => CoverageType.Local, "Regional" => CoverageType.Regional, "Global" => CoverageType.Global, _ => null };
         OnPropertyChanged(nameof(CoverageFilterText));
+        OnPropertyChanged(nameof(CoverageFilterIndex));
         OnPropertyChanged(nameof(IsAllCoverageSelected));
         OnPropertyChanged(nameof(IsLocalCoverageSelected));
         OnPropertyChanged(nameof(IsRegionalCoverageSelected));
