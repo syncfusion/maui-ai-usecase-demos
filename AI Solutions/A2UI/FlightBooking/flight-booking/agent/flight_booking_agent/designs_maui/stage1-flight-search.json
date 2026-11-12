@@ -1,0 +1,451 @@
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "workspace",
+      "catalogId": "syncfusion-maui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "workspace",
+      "components": [
+        {
+          "id": "root",
+          "component": "Column",
+          "padding": 24,
+          "gap": 12,
+          "children": [
+            "title",
+            "subtitle",
+            "formContainer"
+          ]
+        },
+        {
+          "id": "title",
+          "component": "Text",
+          "text": "✈️ Find Your Perfect Flight",
+          "variant": "h3"
+        },
+        {
+          "id": "subtitle",
+          "component": "Text",
+          "variant": "caption",
+          "text": "Search premium routes, configure traveller preferences, and prepare booking details in one streamlined enterprise workflow."
+        },
+        {
+          "id": "formContainer",
+          "component": "Column",
+          "padding": 24,
+          "gap": 20,
+          "children": [
+            "row1",
+            "row2",
+            "row3",
+            "row4",
+            "row5",
+            "searchBtn"
+          ],
+          "backgroundColor": "#F6F1FA",
+          "cornerRadius": 24
+        },
+        {
+          "id": "row1",
+          "component": "Row",
+          "gap": 16,
+          "children": [
+            "tripType",
+            "from",
+            "to"
+          ]
+        },
+        {
+          "id": "tripType",
+          "component": "SyncfusionComboBox",
+          "weight": 1,
+          "label": "Trip Type",
+          "displayMemberPath": "text",
+          "textMemberPath": "text",
+          "selectedValuePath": "text",
+          "options": [
+            {
+              "text": "Round Trip",
+              "value": "Round Trip"
+            },
+            {
+              "text": "One Way",
+              "value": "One Way"
+            },
+            {
+              "text": "Multi City",
+              "value": "Multi City"
+            }
+          ],
+          "value": {
+            "path": "/search/tripType"
+          },
+          "heightRequest": 48,
+          "minimumHeightRequest": 48,
+          "horizontalOptions": "Fill",
+          "verticalOptions": "Start"
+        },
+        {
+          "id": "from",
+          "component": "TextField",
+          "weight": 1,
+          "label": "From",
+          "value": {
+            "path": "/search/from"
+          },
+          "heightRequest": 48,
+          "minimumHeightRequest": 48,
+          "horizontalOptions": "Fill",
+          "verticalOptions": "Start"
+        },
+        {
+          "id": "to",
+          "component": "TextField",
+          "weight": 1,
+          "label": "To",
+          "value": {
+            "path": "/search/to"
+          },
+          "heightRequest": 48,
+          "minimumHeightRequest": 48,
+          "horizontalOptions": "Fill",
+          "verticalOptions": "Start"
+        },
+        {
+          "id": "row2",
+          "component": "Row",
+          "gap": 16,
+          "children": [
+            "departureDate",
+            "returnDate",
+            "cabinClass"
+          ]
+        },
+        {
+          "id": "departureDate",
+          "component": "DateTimeInput",
+          "weight": 1,
+          "label": "Departure Date",
+          "enableDate": true,
+          "enableTime": false,
+          "value": {
+            "path": "/search/departureDate"
+          },
+          "heightRequest": 48,
+          "minimumHeightRequest": 48,
+          "horizontalOptions": "Fill",
+          "verticalOptions": "Start"
+        },
+        {
+          "id": "returnDate",
+          "component": "DateTimeInput",
+          "weight": 1,
+          "label": "Return Date",
+          "enableDate": true,
+          "enableTime": false,
+          "value": {
+            "path": "/search/returnDate"
+          },
+          "heightRequest": 48,
+          "minimumHeightRequest": 48,
+          "horizontalOptions": "Fill",
+          "verticalOptions": "Start"
+        },
+        {
+          "id": "cabinClass",
+          "component": "SyncfusionComboBox",
+          "weight": 1,
+          "label": "Cabin Class",
+          "displayMemberPath": "text",
+          "textMemberPath": "text",
+          "selectedValuePath": "text",
+          "options": [
+            {
+              "text": "Economy",
+              "value": "Economy"
+            },
+            {
+              "text": "Premium Economy",
+              "value": "Premium Economy"
+            },
+            {
+              "text": "Business",
+              "value": "Business"
+            },
+            {
+              "text": "First Class",
+              "value": "First Class"
+            }
+          ],
+          "value": {
+            "path": "/search/cabinClass"
+          },
+          "heightRequest": 48,
+          "minimumHeightRequest": 48,
+          "horizontalOptions": "Fill",
+          "verticalOptions": "Start"
+        },
+        {
+          "id": "row3",
+          "component": "Row",
+          "gap": 16,
+          "children": [
+            "adults",
+            "children"
+          ]
+        },
+        {
+          "id": "adults",
+          "component": "SyncfusionNumericEntry",
+          "weight": 1,
+          "label": "Adults",
+          "minimum": 1,
+          "maximum": 9,
+          "allowNull": false,
+          "showUpDownButton": true,
+          "value": {
+            "path": "/search/passengers/adults"
+          },
+          "heightRequest": 48,
+          "minimumHeightRequest": 48,
+          "horizontalOptions": "Fill",
+          "verticalOptions": "Start",
+          "customFormat": "0"
+        },
+        {
+          "id": "children",
+          "component": "SyncfusionNumericEntry",
+          "weight": 1,
+          "label": "Children",
+          "minimum": 0,
+          "maximum": 8,
+          "allowNull": false,
+          "showUpDownButton": true,
+          "value": {
+            "path": "/search/passengers/children"
+          },
+          "heightRequest": 48,
+          "minimumHeightRequest": 48,
+          "horizontalOptions": "Fill",
+          "verticalOptions": "Start",
+          "customFormat": "0"
+        },
+        {
+          "id": "row4",
+          "component": "Row",
+          "gap": 16,
+          "children": [
+            "firstName",
+            "lastName",
+            "email"
+          ]
+        },
+        {
+          "id": "firstName",
+          "component": "TextField",
+          "weight": 1,
+          "label": "Traveller First Name",
+          "value": {
+            "path": "/passenger/firstName"
+          },
+          "heightRequest": 48,
+          "minimumHeightRequest": 48,
+          "horizontalOptions": "Fill",
+          "verticalOptions": "Start"
+        },
+        {
+          "id": "lastName",
+          "component": "TextField",
+          "weight": 1,
+          "label": "Traveller Last Name",
+          "value": {
+            "path": "/passenger/lastName"
+          },
+          "heightRequest": 48,
+          "minimumHeightRequest": 48,
+          "horizontalOptions": "Fill",
+          "verticalOptions": "Start"
+        },
+        {
+          "id": "email",
+          "component": "TextField",
+          "weight": 1,
+          "label": "Contact Email",
+          "value": {
+            "path": "/passenger/email"
+          },
+          "heightRequest": 48,
+          "minimumHeightRequest": 48,
+          "horizontalOptions": "Fill",
+          "verticalOptions": "Start"
+        },
+        {
+          "id": "row5",
+          "component": "Row",
+          "gap": 16,
+          "children": [
+            "passport",
+            "nationality"
+          ]
+        },
+        {
+          "id": "passport",
+          "component": "SyncfusionMaskedEntry",
+          "weight": 1,
+          "label": "Passport Number",
+          "mask": "AAAAAAAAA",
+          "value": {
+            "path": "/passenger/passportNumber"
+          },
+          "heightRequest": 48,
+          "minimumHeightRequest": 48,
+          "horizontalOptions": "Fill",
+          "verticalOptions": "Start"
+        },
+        {
+          "id": "nationality",
+          "component": "SyncfusionComboBox",
+          "weight": 1,
+          "label": "Nationality",
+          "displayMemberPath": "text",
+          "textMemberPath": "text",
+          "selectedValuePath": "text",
+          "options": [
+            {
+              "text": "United States",
+              "value": "United States"
+            },
+            {
+              "text": "United Kingdom",
+              "value": "United Kingdom"
+            },
+            {
+              "text": "United Arab Emirates",
+              "value": "United Arab Emirates"
+            },
+            {
+              "text": "India",
+              "value": "India"
+            },
+            {
+              "text": "Singapore",
+              "value": "Singapore"
+            }
+          ],
+          "value": {
+            "path": "/passenger/nationality"
+          },
+          "heightRequest": 48,
+          "minimumHeightRequest": 48,
+          "horizontalOptions": "Fill",
+          "verticalOptions": "Start"
+        },
+        {
+          "id": "searchBtn",
+          "component": "SyncfusionButton",
+          "text": "🔎 Search Flights",
+          "heightRequest": 48,
+          "margin": "0,8,0,0",
+          "cornerRadius": 14,
+          "background": "#2563EB",
+          "textColor": "#FFFFFF",
+          "fontAttributes": "Bold",
+          "horizontalOptions": "Fill",
+          "onClick": {
+            "event": {
+              "name": "searchFlights",
+              "sourceComponentId": "searchBtn",
+              "context": {
+                "tripType": {
+                  "path": "/search/tripType"
+                },
+                "from": {
+                  "path": "/search/from"
+                },
+                "to": {
+                  "path": "/search/to"
+                },
+                "departureDate": {
+                  "path": "/search/departureDate"
+                },
+                "returnDate": {
+                  "path": "/search/returnDate"
+                },
+                "cabinClass": {
+                  "path": "/search/cabinClass"
+                },
+                "adults": {
+                  "path": "/search/passengers/adults"
+                },
+                "children": {
+                  "path": "/search/passengers/children"
+                },
+                "firstName": {
+                  "path": "/passenger/firstName"
+                },
+                "lastName": {
+                  "path": "/passenger/lastName"
+                },
+                "email": {
+                  "path": "/passenger/email"
+                },
+                "passportNumber": {
+                  "path": "/passenger/passportNumber"
+                },
+                "nationality": {
+                  "path": "/passenger/nationality"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "workspace",
+      "path": "/",
+      "value": {
+        "search": {
+          "tripType": "roundTrip",
+          "from": "New York (JFK)",
+          "to": "London (LHR)",
+          "departureDate": "2026-09-15",
+          "returnDate": "2026-09-24",
+          "cabinClass": "business",
+          "passengers": {
+            "adults": 2,
+            "children": 1
+          }
+        },
+        "passenger": {
+          "firstName": "Alexandra",
+          "lastName": "Reed",
+          "email": "alexandra.reed@enterpriseair.com",
+          "passportNumber": "XK92PL781",
+          "nationality": "US"
+        }
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "workspace",
+      "path": "/_suggestions",
+      "value": [
+        "🛫 Show flight results next",
+        "💺 Add seat-class upgrades",
+        "📋 Include fare rules",
+        "🌍 Add multi-city mode"
+      ]
+    }
+  }
+]

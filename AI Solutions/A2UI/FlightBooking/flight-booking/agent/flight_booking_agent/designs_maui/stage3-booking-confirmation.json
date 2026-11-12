@@ -1,0 +1,242 @@
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "workspace",
+      "catalogId": "syncfusion-maui"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "workspace",
+      "components": [
+        {
+          "id": "root",
+          "component": "Column",
+          "gap": 12,
+          "padding": 16,
+          "children": [
+            "successRow",
+            "heroCol",
+            "passengerCol"
+          ]
+        },
+        {
+          "id": "successRow",
+          "component": "Row",
+          "gap": 8,
+          "padding": 0,
+          "children": [
+            "successText"
+          ]
+        },
+        {
+          "id": "successText",
+          "component": "Text",
+          "weight": 1,
+          "text": "✓ Booking confirmed successfully! Your e-ticket has been issued and sent to the passenger email.",
+          "textColor": "#15803D"
+        },
+        {
+          "id": "heroCol",
+          "component": "Column",
+          "gap": 6,
+          "padding": 0,
+          "children": [
+            "heroTitle",
+            "heroSub",
+            "flightsRow"
+          ]
+        },
+        {
+          "id": "heroTitle",
+          "component": "Text",
+          "text": "Booking Details",
+          "variant": "h4"
+        },
+        {
+          "id": "heroSub",
+          "component": "Text",
+          "variant": "caption",
+          "text": "Confirmation Code: ST9K4P • Round Trip • New York (JFK) ↔ Los Angeles (LAX) • 2 Adults • Dec 14 – Dec 21, 2026"
+        },
+        {
+          "id": "flightsRow",
+          "component": "Row",
+          "gap": 12,
+          "padding": 0,
+          "children": [
+            "outboundCard",
+            "returnCard"
+          ]
+        },
+        {
+          "id": "outboundCard",
+          "component": "SyncfusionCardView",
+          "content": "outboundCol",
+          "weight": 1,
+          "cornerRadius": 12,
+          "borderWidth": 1,
+          "borderColor": "#E2E8F0",
+          "children": [
+            "outboundCol"
+          ]
+        },
+        {
+          "id": "returnCard",
+          "component": "SyncfusionCardView",
+          "content": "returnCol",
+          "weight": 1,
+          "cornerRadius": 12,
+          "borderWidth": 1,
+          "borderColor": "#E2E8F0",
+          "children": [
+            "returnCol"
+          ]
+        },
+        {
+          "id": "outboundCol",
+          "component": "Column",
+          "gap": 6,
+          "padding": 16,
+          "children": [
+            "outboundTitle",
+            "outboundSub",
+            "outboundText"
+          ]
+        },
+        {
+          "id": "outboundTitle",
+          "component": "Text",
+          "text": "Outbound",
+          "variant": "h4"
+        },
+        {
+          "id": "outboundSub",
+          "component": "Text",
+          "text": "Delta Air Lines • Confirmed • DL 401",
+          "variant": "caption"
+        },
+        {
+          "id": "outboundText",
+          "component": "Text",
+          "text": "6:00 AM JFK → 9:15 AM LAX • Non-Stop • 5h 15m\nSeat 12A/12B • Terminal 4 • Status: Ticketed"
+        },
+        {
+          "id": "returnCol",
+          "component": "Column",
+          "gap": 6,
+          "padding": 16,
+          "children": [
+            "returnTitle",
+            "returnSub",
+            "returnText"
+          ]
+        },
+        {
+          "id": "returnTitle",
+          "component": "Text",
+          "text": "Return",
+          "variant": "h4"
+        },
+        {
+          "id": "returnSub",
+          "component": "Text",
+          "text": "American Airlines • Confirmed • AA 839",
+          "variant": "caption"
+        },
+        {
+          "id": "returnText",
+          "component": "Text",
+          "text": "2:00 PM LAX → 10:30 PM JFK • 1 Stop (ORD) • 8h 30m\nSeat 12A/12B • Terminal 5 • Status: Ticketed"
+        },
+        {
+          "id": "passengerCol",
+          "component": "Column",
+          "gap": 6,
+          "padding": 0,
+          "children": [
+            "passengerTitle",
+            "passengerSub",
+            "passengerGrid"
+          ]
+        },
+        {
+          "id": "passengerTitle",
+          "component": "Text",
+          "text": "Passenger Information",
+          "variant": "h4"
+        },
+        {
+          "id": "passengerSub",
+          "component": "Text",
+          "text": "Issued passengers and travel details",
+          "variant": "caption"
+        },
+        {
+          "id": "passengerGrid",
+          "component": "SyncfusionDataGrid",
+          "dataSource": {
+            "path": "/passengers"
+          },
+          "columns": [
+            {
+              "field": "passenger",
+              "headerText": "Passenger"
+            },
+            {
+              "field": "email",
+              "headerText": "Email"
+            },
+            {
+              "field": "passport",
+              "headerText": "Nationality/Passport"
+            },
+            {
+              "field": "seatMeal",
+              "headerText": "Seat/Meal"
+            }
+          ],
+          "selectionMode": "none"
+        }
+      ]
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "workspace",
+      "path": "/passengers",
+      "value": [
+        {
+          "passenger": "Olivia Bennett",
+          "email": "olivia.bennett@skytravels.com",
+          "phone": "+1 (917) 555-0142",
+          "passport": "USA / XJ482991",
+          "seatMeal": "12A / Vegetarian"
+        },
+        {
+          "passenger": "Ethan Carter",
+          "email": "ethan.carter@skytravels.com",
+          "phone": "+1 (646) 555-0189",
+          "passport": "USA / QP773104",
+          "seatMeal": "12B / Standard"
+        }
+      ]
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "workspace",
+      "path": "/_suggestions",
+      "value": [
+        "🎟️ Add e-ticket download",
+        "🧳 Show baggage allowance",
+        "📍 Add terminal and gate details",
+        "📅 Add return trip to calendar"
+      ]
+    }
+  }
+]
