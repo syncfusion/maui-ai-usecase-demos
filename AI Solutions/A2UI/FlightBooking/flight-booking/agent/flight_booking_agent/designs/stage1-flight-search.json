@@ -1,0 +1,444 @@
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "workspace",
+      "catalogId": "syncfusion-a2ui-catalog"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "workspace",
+      "components": [
+        {
+          "id": "root",
+          "component": "Column",
+          "maxWidth": "1100px",
+          "margin": "0 auto",
+          "children": [
+            "heroCard"
+          ]
+        },
+        {
+          "id": "heroCard",
+          "component": "SyncfusionCard",
+          "title": "✈️ Find Your Perfect Flight",
+          "subtitle": "Search premium routes, configure traveller preferences, and prepare booking details in one streamlined enterprise workflow.",
+          "style": {
+            "padding": "28px",
+            "borderRadius": "28px",
+            "boxShadow": "0 16px 40px rgba(15,23,42,0.18)",
+            "width": "100%",
+            "maxWidth": "1080px",
+            "margin": "0 auto",
+            "backgroundSize": "cover",
+            "backgroundPosition": "center",
+            "minHeight": "auto"
+          },
+          "children": [
+            "formCard"
+          ]
+        },
+        {
+          "id": "formCard",
+          "component": "SyncfusionCard",
+          "style": {
+            "padding": "24px",
+            "borderRadius": "24px",
+            "boxShadow": "0 8px 24px rgba(15,23,42,0.12)",
+            "width": "100%",
+            "maxWidth": "1040px",
+            "margin": "20px auto 0",
+            "background": "rgba(255,255,255,0.92)",
+            "backdropFilter": "blur(12px)"
+          },
+          "children": [
+            "formCol"
+          ]
+        },
+        {
+          "id": "formCol",
+          "component": "Column",
+          "gap": "16px",
+          "children": [
+            "row1",
+            "row2",
+            "row3",
+            "row4",
+            "row5",
+            "searchBtn"
+          ]
+        },
+        {
+          "id": "row1",
+          "component": "Row",
+          "gap": "16px",
+          "children": [
+            "tripType",
+            "from",
+            "to"
+          ]
+        },
+        {
+          "id": "tripType",
+          "component": "SyncfusionDropDownList",
+          "weight": 1,
+          "placeholder": "Trip Type",
+          "floatLabelType": "Auto",
+          "dataSource": [
+            {
+              "text": "Round Trip",
+              "value": "roundTrip"
+            },
+            {
+              "text": "One Way",
+              "value": "oneWay"
+            },
+            {
+              "text": "Multi City",
+              "value": "multiCity"
+            }
+          ],
+          "fields": {
+            "text": "text",
+            "value": "value"
+          },
+          "value": {
+            "path": "/search/tripType"
+          },
+          "cssClass": "e-outline"
+        },
+        {
+          "id": "from",
+          "component": "SyncfusionTextBox",
+          "weight": 1,
+          "placeholder": "From",
+          "floatLabelType": "Auto",
+          "value": {
+            "path": "/search/from"
+          },
+          "cssClass": "e-outline e-corner"
+        },
+        {
+          "id": "to",
+          "component": "SyncfusionTextBox",
+          "weight": 1,
+          "placeholder": "To",
+          "floatLabelType": "Auto",
+          "value": {
+            "path": "/search/to"
+          },
+          "cssClass": "e-outline e-corner"
+        },
+        {
+          "id": "row2",
+          "component": "Row",
+          "gap": "16px",
+          "children": [
+            "departureDate",
+            "returnDate",
+            "cabinClass"
+          ]
+        },
+        {
+          "id": "departureDate",
+          "component": "SyncfusionDatePicker",
+          "weight": 1,
+          "placeholder": "Departure Date",
+          "floatLabelType": "Auto",
+          "format": "dd MMM yyyy",
+          "value": {
+            "path": "/search/departureDate"
+          },
+          "cssClass": "e-outline"
+        },
+        {
+          "id": "returnDate",
+          "component": "SyncfusionDatePicker",
+          "weight": 1,
+          "placeholder": "Return Date",
+          "floatLabelType": "Auto",
+          "format": "dd MMM yyyy",
+          "value": {
+            "path": "/search/returnDate"
+          },
+          "cssClass": "e-outline"
+        },
+        {
+          "id": "cabinClass",
+          "component": "SyncfusionDropDownList",
+          "weight": 1,
+          "placeholder": "Cabin Class",
+          "floatLabelType": "Auto",
+          "dataSource": [
+            {
+              "text": "Economy",
+              "value": "economy"
+            },
+            {
+              "text": "Premium Economy",
+              "value": "premiumEconomy"
+            },
+            {
+              "text": "Business",
+              "value": "business"
+            },
+            {
+              "text": "First Class",
+              "value": "first"
+            }
+          ],
+          "fields": {
+            "text": "text",
+            "value": "value"
+          },
+          "value": {
+            "path": "/search/cabinClass"
+          },
+          "cssClass": "e-outline"
+        },
+        {
+          "id": "row3",
+          "component": "Row",
+          "gap": "16px",
+          "children": [
+            "adults",
+            "children"
+          ]
+        },
+        {
+          "id": "adults",
+          "component": "SyncfusionNumericTextBox",
+          "weight": 1,
+          "placeholder": "Adults",
+          "floatLabelType": "Auto",
+          "min": 1,
+          "max": 9,
+          "step": 1,
+          "value": {
+            "path": "/search/passengers/adults"
+          },
+          "cssClass": "e-outline"
+        },
+        {
+          "id": "children",
+          "component": "SyncfusionNumericTextBox",
+          "weight": 1,
+          "placeholder": "Children",
+          "floatLabelType": "Auto",
+          "min": 0,
+          "max": 8,
+          "step": 1,
+          "value": {
+            "path": "/search/passengers/children"
+          },
+          "cssClass": "e-outline"
+        },
+        {
+          "id": "row4",
+          "component": "Row",
+          "gap": "16px",
+          "children": [
+            "firstName",
+            "lastName",
+            "email"
+          ]
+        },
+        {
+          "id": "firstName",
+          "component": "SyncfusionTextBox",
+          "weight": 1,
+          "placeholder": "Traveller First Name",
+          "floatLabelType": "Auto",
+          "value": {
+            "path": "/passenger/firstName"
+          },
+          "cssClass": "e-outline e-corner"
+        },
+        {
+          "id": "lastName",
+          "component": "SyncfusionTextBox",
+          "weight": 1,
+          "placeholder": "Traveller Last Name",
+          "floatLabelType": "Auto",
+          "value": {
+            "path": "/passenger/lastName"
+          },
+          "cssClass": "e-outline e-corner"
+        },
+        {
+          "id": "email",
+          "component": "SyncfusionTextBox",
+          "weight": 1,
+          "placeholder": "Contact Email",
+          "floatLabelType": "Auto",
+          "value": {
+            "path": "/passenger/email"
+          },
+          "cssClass": "e-outline e-corner"
+        },
+        {
+          "id": "row5",
+          "component": "Row",
+          "gap": "16px",
+          "children": [
+            "passport",
+            "nationality"
+          ]
+        },
+        {
+          "id": "passport",
+          "component": "SyncfusionMaskedTextBox",
+          "weight": 1,
+          "mask": "AAAAAAAAA",
+          "placeholder": "Passport Number",
+          "floatLabelType": "Auto",
+          "value": {
+            "path": "/passenger/passportNumber"
+          },
+          "cssClass": "e-outline"
+        },
+        {
+          "id": "nationality",
+          "component": "SyncfusionDropDownList",
+          "weight": 1,
+          "placeholder": "Nationality",
+          "floatLabelType": "Auto",
+          "dataSource": [
+            {
+              "text": "United States",
+              "value": "US"
+            },
+            {
+              "text": "United Kingdom",
+              "value": "UK"
+            },
+            {
+              "text": "United Arab Emirates",
+              "value": "UAE"
+            },
+            {
+              "text": "India",
+              "value": "IN"
+            },
+            {
+              "text": "Singapore",
+              "value": "SG"
+            }
+          ],
+          "fields": {
+            "text": "text",
+            "value": "value"
+          },
+          "value": {
+            "path": "/passenger/nationality"
+          },
+          "cssClass": "e-outline"
+        },
+        {
+          "id": "searchBtn",
+          "component": "SyncfusionButton",
+          "content": "🔎 Search Flights",
+          "width": "100%",
+          "cssClass": "e-primary e-block",
+          "style": {
+            "height": "48px",
+            "borderRadius": "14px",
+            "background": "linear-gradient(90deg,#0b3b91 0%,#2563eb 100%)",
+            "color": "#ffffff",
+            "fontWeight": "600"
+          },
+          "onClick": {
+            "event": {
+              "name": "searchFlights",
+              "sourceComponentId": "searchBtn",
+              "context": {
+                "tripType": {
+                  "path": "/search/tripType"
+                },
+                "from": {
+                  "path": "/search/from"
+                },
+                "to": {
+                  "path": "/search/to"
+                },
+                "departureDate": {
+                  "path": "/search/departureDate"
+                },
+                "returnDate": {
+                  "path": "/search/returnDate"
+                },
+                "cabinClass": {
+                  "path": "/search/cabinClass"
+                },
+                "adults": {
+                  "path": "/search/passengers/adults"
+                },
+                "children": {
+                  "path": "/search/passengers/children"
+                },
+                "firstName": {
+                  "path": "/passenger/firstName"
+                },
+                "lastName": {
+                  "path": "/passenger/lastName"
+                },
+                "email": {
+                  "path": "/passenger/email"
+                },
+                "passportNumber": {
+                  "path": "/passenger/passportNumber"
+                },
+                "nationality": {
+                  "path": "/passenger/nationality"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "workspace",
+      "path": "/",
+      "value": {
+        "search": {
+          "tripType": "",
+          "from": "",
+          "to": "",
+          "departureDate": "",
+          "returnDate": "",
+          "cabinClass": "",
+          "passengers": {
+            "adults": 0,
+            "children": 0
+          }
+        },
+        "passenger": {
+          "firstName": "",
+          "lastName": "",
+          "email": "",
+          "passportNumber": "",
+          "nationality": ""
+        }
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "workspace",
+      "path": "/_suggestions",
+      "value": [
+        "🛫 Show flight results next",
+        "💺 Add seat-class upgrades",
+        "📋 Include fare rules",
+        "🌍 Add multi-city mode"
+      ]
+    }
+  }
+]

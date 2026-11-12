@@ -1,0 +1,33 @@
+# Auto-normalize line endings for text files on checkout.
+# https://git-scm.com/docs/gitattributes
+
+*               text=auto eol=lf
+
+# Force LF for source and docs (matches the rest of the repo).
+*.py            text eol=lf
+*.ts            text eol=lf
+*.tsx           text eol=lf
+*.js            text eol=lf
+*.css           text eol=lf
+*.json          text eol=lf
+*.md            text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+*.toml          text eol=lf
+*.html          text eol=lf
+*.svg           text eol=lf
+*.env           text eol=lf
+.gitignore      text eol=lf
+.gitattributes  text eol=lf
+.editorconfig   text eol=lf
+
+# Binary — keep as-is.
+*.ico           binary
+*.png           binary
+*.jpg           binary
+*.gif           binary
+*.woff          binary
+*.woff2         binary
+
+# Diffs for generated lockfiles are usually noise; keep them out of PR diffs.
+# (We deliberately do NOT commit package-lock.json / poetry.lock in this repo.)

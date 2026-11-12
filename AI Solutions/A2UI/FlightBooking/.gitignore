@@ -1,0 +1,44 @@
+# Dependencies
+/**/node_modules
+/**/__pycache__
+
+# Build artifacts
+/**/dist
+/**/.wireit
+**/*.tsbuildinfo
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+
+# Allow the client-side .env to be committed (Vite build config; agent URL only).
+# Secrets (API keys, tokens) must NEVER live here — keep them in the agent env.
+!/flight-booking/client/react/.env
+
+# Virtual environments
+/**/.venv
+/**/venv
+
+# IDE & OS
+.DS_Store
+Thumbs.db
+**/.vscode/settings.json
+**/.idea/
+*.swp
+*.swo
+
+# Logs & debug
+*.log
+npm-debug.log*
+yarn-error.log*
+.pytest_cache/
+coverage/
+.nyc_output/
+
+# Package manager cache
+.yarn/cache/
+.pnp
+yarn-offline-mirror
