@@ -387,7 +387,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
         /*
          * OnSelectedMessageChanged normally transitions to Selected.
          * Keep this explicit transition for selection changes that
-         * follow a noninitial workflow state.
+         * follow a non-initial workflow state.
          */
         TransitionTo(WorkflowState.Selected);
     }
