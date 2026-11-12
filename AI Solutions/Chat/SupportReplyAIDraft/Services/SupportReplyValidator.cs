@@ -15,8 +15,12 @@ public sealed class SupportReplyValidator
             "requestedInformation",
             "warnings"
         };
+    private static readonly string[] Warnings =
+    [
+        "The model returned plain text instead of structured JSON."
+    ];
 
-    public SupportReplyValidationResult Validate(string? rawResponse)
+    public static SupportReplyValidationResult Validate(string? rawResponse)
     {
         if (string.IsNullOrWhiteSpace(rawResponse))
         {
@@ -91,19 +95,17 @@ public sealed class SupportReplyValidator
             }
 
             var requiresMoreInformation =
-                TryGetBoolean(root, "requiresMoreInformation", out var requires)
-                    ? requires
-                    : false;
+                TryGetBoolean(root, "requiresMoreInformation", out var requires) && requires;
 
             var requestedInformation =
                 TryGetStringArray(root, "requestedInformation", out var requested)
                     ? requested
-                    : new List<string>();
+                    : [];
 
             var warnings =
                 TryGetStringArray(root, "warnings", out var parsedWarnings)
                     ? parsedWarnings
-                    : new List<string>();
+                    : [];
 
             requestedInformation = NormalizeList(requestedInformation);
             warnings = NormalizeList(warnings);
@@ -117,9 +119,7 @@ public sealed class SupportReplyValidator
 
             if (HasDuplicates(requestedInformation))
             {
-                requestedInformation = requestedInformation
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .ToList();
+                requestedInformation = [.. requestedInformation.Distinct(StringComparer.OrdinalIgnoreCase)];
             }
 
             if (!requiresMoreInformation)
@@ -161,11 +161,8 @@ public sealed class SupportReplyValidator
             new SupportReplyResponse(
                 plainText,
                 false,
-                Array.Empty<string>(),
-                new[]
-                {
-                    "The model returned plain text instead of structured JSON."
-                }));
+                [],
+                Warnings));
     }
 
     private static string? ValidateReplyText(string reply)
@@ -222,11 +219,10 @@ public sealed class SupportReplyValidator
     private static List<string> NormalizeList(
         IEnumerable<string> values)
     {
-        return values
+        return [.. values
             .Where(value => !string.IsNullOrWhiteSpace(value))
             .Select(value => value.Trim())
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
+            .Distinct(StringComparer.OrdinalIgnoreCase)];
     }
 
     private static string? ExtractJson(string rawResponse)
@@ -373,7 +369,7 @@ public sealed class SupportReplyValidator
         string propertyName,
         out List<string> values)
     {
-        values = new List<string>();
+        values = [];
 
         if (!root.TryGetProperty(propertyName, out var element))
         {
