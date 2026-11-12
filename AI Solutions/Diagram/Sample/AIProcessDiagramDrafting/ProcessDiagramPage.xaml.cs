@@ -1,31 +1,51 @@
 using System.ComponentModel;
 using AIProcessDiagramDrafting.Models;
 using AIProcessDiagramDrafting.ViewModels;
+using Microsoft.Maui.Devices;
+using Syncfusion.Maui.Diagram;
 
 namespace AIProcessDiagramDrafting;
 
 public partial class ProcessDiagramPage : ContentPage
 {
     private readonly ProcessDiagramViewModel viewModel;
-    private bool isApplyingDraft;
+    private SfDiagram diagramSurface;
+    private int fitToPageRequestId;
 
     public ProcessDiagramPage(ProcessDiagramViewModel viewModel)
     {
         InitializeComponent();
         this.viewModel = viewModel;
         BindingContext = viewModel;
-        this.viewModel.ConfirmReplaceDraftAsync = ConfirmReplaceDraftAsync;
         this.viewModel.PropertyChanged += OnViewModelPropertyChanged;
+
+        diagramSurface = CreateDiagramSurface();
+        DiagramHost.Children.Add(diagramSurface);
+
+        if (DeviceInfo.Platform == DevicePlatform.Android)
+        {
+            Content = new ScrollView
+            {
+                Orientation = ScrollOrientation.Vertical,
+                Content = RootGrid
+            };
+        }
 
         Loaded += OnLoaded;
         SizeChanged += OnSizeChanged;
+    }
 
-        DiagramSurface.Created += (_, __) => DiagramSurface.FitToPage();
-        DiagramSurface.PositionChanged += (_, __) => OnDiagramEdited();
-        DiagramSurface.TextEdited += (_, __) => OnDiagramEdited();
-        DiagramSurface.ConnectionChanged += (_, __) => OnDiagramEdited();
-
+    private void OnLoaded(object? sender, EventArgs e)
+    {
         ApplyLayout(Width);
+        ApplyCurrentDiagram();
+        ScheduleFitToPage();
+    }
+
+    private void OnSizeChanged(object? sender, EventArgs e)
+    {
+        ApplyLayout(Width);
+        ScheduleFitToPage();
     }
 
     private void OnProcessDescriptionTextChanged(object? sender, TextChangedEventArgs e)
@@ -38,11 +58,13 @@ public partial class ProcessDiagramPage : ContentPage
 
     private async void OnGenerateDraftClicked(object? sender, EventArgs e)
     {
+        SyncProcessDescriptionFromEditor();
         await viewModel.GenerateDraftAsync();
     }
 
     private async void OnRegenerateClicked(object? sender, EventArgs e)
     {
+        SyncProcessDescriptionFromEditor();
         await viewModel.RegenerateAsync();
     }
 
@@ -51,91 +73,92 @@ public partial class ProcessDiagramPage : ContentPage
         viewModel.AcceptDraft();
     }
 
-    private void OnDiscardClicked(object? sender, EventArgs e)
-    {
-        viewModel.DiscardDraft();
-    }
-
-    private void OnLoaded(object? sender, EventArgs e)
-    {
-        ApplyLayout(Width);
-        ApplyCurrentDiagram();
-    }
-
-    private void OnSizeChanged(object? sender, EventArgs e)
-    {
-        ApplyLayout(Width);
-    }
-
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(ProcessDiagramViewModel.CurrentDiagram))
         {
             ApplyCurrentDiagram();
+            ScheduleFitToPage();
         }
     }
 
-    private void OnDiagramEdited()
+    private void SyncProcessDescriptionFromEditor()
     {
-        if (isApplyingDraft)
-        {
-            return;
-        }
-
-        viewModel.MarkDraftDirty();
-    }
-
-    private async Task<bool> ConfirmReplaceDraftAsync(string message)
-    {
-        return await DisplayAlert("Replace current draft?", message, "Replace", "Cancel");
+        viewModel.ProcessDescription = ProcessDescriptionEditor.Text ?? string.Empty;
     }
 
     private void ApplyCurrentDiagram()
     {
-        if (viewModel.CurrentDiagram is not DiagramDraft draft)
+        var draft = viewModel.CurrentDiagram;
+        ResetDiagramSurface();
+
+        if (draft is null)
         {
-            DiagramSurface.Nodes.Clear();
-            DiagramSurface.Connectors.Clear();
+            UpdateAndroidDiagramHeight(null);
             return;
         }
 
-        isApplyingDraft = true;
-        try
+        foreach (var node in draft.Nodes)
         {
-            DiagramSurface.Nodes.Clear();
-            DiagramSurface.Connectors.Clear();
-
-            foreach (var node in draft.Nodes)
-            {
-                DiagramSurface.Nodes.Add(node);
-            }
-
-            foreach (var connector in draft.Connectors)
-            {
-                DiagramSurface.Connectors.Add(connector);
-            }
-        }
-        finally
-        {
-            isApplyingDraft = false;
+            diagramSurface.Nodes.Add(node);
         }
 
-        Dispatcher.Dispatch(() => DiagramSurface.FitToPage());
+        foreach (var connector in draft.Connectors)
+        {
+            diagramSurface.Connectors.Add(connector);
+        }
+
+        UpdateAndroidDiagramHeight(draft);
+    }
+
+    private SfDiagram CreateDiagramSurface()
+    {
+        var surface = new SfDiagram();
+        surface.Created += (_, __) => ScheduleFitToPage();
+        return surface;
+    }
+
+    private void ResetDiagramSurface()
+    {
+        fitToPageRequestId++;
+        DiagramHost.Children.Clear();
+        diagramSurface = CreateDiagramSurface();
+        DiagramHost.Children.Add(diagramSurface);
+    }
+
+    private void ScheduleFitToPage()
+    {
+        if (DeviceInfo.Platform == DevicePlatform.Android || viewModel.CurrentDiagram is null)
+        {
+            return;
+        }
+
+        var requestId = ++fitToPageRequestId;
+        _ = FitToPageAsync(requestId);
+    }
+
+    private async Task FitToPageAsync(int requestId)
+    {
+        await Task.Delay(150);
+        if (requestId != fitToPageRequestId || viewModel.CurrentDiagram is null)
+        {
+            return;
+        }
+
+        diagramSurface.FitToPage();
     }
 
     private void ApplyLayout(double width)
     {
         var compact = width > 0 && width < 900;
-        viewModel.IsCompactLayout = compact;
 
         RootGrid.RowDefinitions.Clear();
         RootGrid.ColumnDefinitions.Clear();
 
-        if (compact)
+        if (DeviceInfo.Platform == DevicePlatform.Android)
         {
             RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
             RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
-            RootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(1, GridUnitType.Star)));
             RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
             RootGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
 
@@ -143,20 +166,35 @@ public partial class ProcessDiagramPage : ContentPage
             Grid.SetColumn(HeaderSection, 0);
             Grid.SetColumnSpan(HeaderSection, 1);
 
-            Grid.SetRow(InputSection, 1);
-            Grid.SetColumn(InputSection, 0);
-            Grid.SetRow(ReviewSection, 3);
-            Grid.SetColumn(ReviewSection, 0);
+            Grid.SetRow(DetailsSection, 1);
+            Grid.SetColumn(DetailsSection, 0);
 
             Grid.SetRow(DiagramSection, 2);
             Grid.SetColumn(DiagramSection, 0);
-            Grid.SetColumnSpan(DiagramSection, 1);
+            DiagramSection.VerticalOptions = LayoutOptions.Start;
+            UpdateAndroidDiagramHeight(viewModel.CurrentDiagram);
+        }
+        else if (compact)
+        {
+            RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+            RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+            RootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(1, GridUnitType.Star)));
+            RootGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+
+            Grid.SetRow(HeaderSection, 0);
+            Grid.SetColumn(HeaderSection, 0);
+            Grid.SetColumnSpan(HeaderSection, 1);
+
+            Grid.SetRow(DetailsSection, 1);
+            Grid.SetColumn(DetailsSection, 0);
+
+            Grid.SetRow(DiagramSection, 2);
+            Grid.SetColumn(DiagramSection, 0);
         }
         else
         {
             RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
             RootGrid.RowDefinitions.Add(new RowDefinition(new GridLength(1, GridUnitType.Star)));
-            RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
             RootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(2, GridUnitType.Star)));
             RootGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(3, GridUnitType.Star)));
 
@@ -164,24 +202,24 @@ public partial class ProcessDiagramPage : ContentPage
             Grid.SetColumn(HeaderSection, 0);
             Grid.SetColumnSpan(HeaderSection, 2);
 
-            Grid.SetRow(InputSection, 1);
-            Grid.SetColumn(InputSection, 0);
-
-            Grid.SetRow(ReviewSection, 2);
-            Grid.SetColumn(ReviewSection, 0);
+            Grid.SetRow(DetailsSection, 1);
+            Grid.SetColumn(DetailsSection, 0);
 
             Grid.SetRow(DiagramSection, 1);
             Grid.SetColumn(DiagramSection, 1);
-            Grid.SetRowSpan(DiagramSection, 2);
+            DiagramSection.ClearValue(HeightRequestProperty);
+            DiagramSection.VerticalOptions = LayoutOptions.FillAndExpand;
         }
     }
 
-    private void OnUndoClicked(object? sender, EventArgs e)
-        => DiagramSurface.Undo();
+    private void UpdateAndroidDiagramHeight(DiagramDraft? draft)
+    {
+        if (DeviceInfo.Platform != DevicePlatform.Android)
+        {
+            return;
+        }
 
-    private void OnRedoClicked(object? sender, EventArgs e)
-        => DiagramSurface.Redo();
-
-    private void OnFitToViewClicked(object? sender, EventArgs e)
-        => DiagramSurface.FitToPage();
+        var nodeCount = draft?.Nodes.Count ?? 0;
+        DiagramSection.HeightRequest = Math.Max(900, 260 + (nodeCount * 180));
+    }
 }
