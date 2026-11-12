@@ -99,4 +99,8 @@ public class DemoPage
     }
     public void DestinationClicked(object? sender, EventArgs e) { var text = sender switch { Syncfusion.Maui.Core.SfChip chip => chip.Text, Syncfusion.Maui.Buttons.SfButton button => button.Text, _ => null }; if (!string.IsNullOrWhiteSpace(text)) { var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries); ViewModel.SelectCountry(words.Length > 1 ? string.Join(' ', words.Skip(1)) : words[0]); } }
     public void FilterClicked(object? sender, EventArgs e) { if (sender is Syncfusion.Maui.Buttons.SfButton button && button.Text is not null) ViewModel.ToggleFilter(button.Text); }
+    public void NetworkFilterSelected(object? sender, EventArgs e) { if (sender is Picker picker && picker.SelectedItem is string value) ViewModel.SetNetworkFilter(value); }
+    public void QuotaFilterSelected(object? sender, EventArgs e) { if (sender is Picker picker && picker.SelectedItem is string value) ViewModel.SetQuotaFilter(value); }
+    public void DurationFilterSelected(object? sender, EventArgs e) { if (sender is Picker picker && picker.SelectedItem is string value) ViewModel.SetDurationFilter(value); }
+    public void SortFilterSelected(object? sender, EventArgs e) { if (sender is Picker picker && picker.SelectedItem is string value) ViewModel.SetSortFilter(value); }
 }

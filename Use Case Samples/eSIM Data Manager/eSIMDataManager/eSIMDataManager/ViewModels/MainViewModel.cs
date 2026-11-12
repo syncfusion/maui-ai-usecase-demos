@@ -14,6 +14,7 @@ public partial class MainViewModel : ObservableObject
     private NetworkType? selectedNetwork;
     private PlanType? selectedType;
     private int? selectedValidity;
+    private string selectedSort = "Recommended";
 
     public ObservableCollection<Plan> FilteredPlans { get; } = [];
     public ObservableCollection<EsimProfile> ActiveProfiles { get; } = [];
@@ -27,6 +28,10 @@ public partial class MainViewModel : ObservableObject
     public IReadOnlyList<string> Destinations { get; } = ["Japan", "USA", "France", "Korea", "Singapore", "Thailand"];
     public IReadOnlyList<string> TrendingDestinations { get; } = ["JP  Japan", "US  USA", "FR  France", "KR  Korea", "SG  Singapore", "TH  Thailand", "EU  Europe (33)", "🌐  Asia-Pacific"];
     public IReadOnlyList<string> FilterOptions { get; } = ["Local", "Regional", "Global", "4G", "5G", "Limited", "Unlimited", "7 Days", "15 Days", "30 Days"];
+    public string NetworkFilterText => selectedNetwork switch { NetworkType.FiveG => "5G Ultra Only", NetworkType.FourG => "4G / LTE", _ => "All Networks" };
+    public string QuotaFilterText => selectedType switch { PlanType.Limited => "Fixed Data (1-20 GB)", PlanType.Unlimited => "Unlimited Data", _ => "All Quotas" };
+    public string DurationFilterText => selectedValidity is int days ? $"{days} Days" : "Any Duration";
+    public string SortFilterText => selectedSort switch { "PriceLow" => "Price: Low to High", "DataHigh" => "Data: High to Low", "Duration" => "Duration: Longest", _ => "Recommended" };
     public IReadOnlyList<TopUpPack> TopUpPacks => EsimStore.TopUpPacks;
     public EsimStore Store => store;
     public EsimProfile? ActiveProfile => store.ActiveProfile;
@@ -126,8 +131,20 @@ public partial class MainViewModel : ObservableObject
 
     private void RefreshPlans()
     {
-        Sync(FilteredPlans, store.SearchPlans(Search, selectedCountry, selectedCoverage, selectedNetwork, selectedType, selectedValidity));
+        var plans = store.SearchPlans(Search, selectedCountry, selectedCoverage, selectedNetwork, selectedType, selectedValidity);
+        plans = selectedSort switch
+        {
+            "PriceLow" => plans.OrderBy(plan => plan.Price),
+            "DataHigh" => plans.OrderByDescending(plan => plan.DataLimitGb),
+            "Duration" => plans.OrderByDescending(plan => plan.ValidityDays),
+            _ => plans
+        };
+        Sync(FilteredPlans, plans);
         OnPropertyChanged(nameof(FilteredPlans));
+        OnPropertyChanged(nameof(NetworkFilterText));
+        OnPropertyChanged(nameof(QuotaFilterText));
+        OnPropertyChanged(nameof(DurationFilterText));
+        OnPropertyChanged(nameof(SortFilterText));
     }
 
     private static void Sync<T>(ObservableCollection<T> destination, IEnumerable<T> source)
@@ -140,6 +157,34 @@ public partial class MainViewModel : ObservableObject
     public void SelectCountry(string country)
     {
         selectedCountry = selectedCountry == country ? null : country;
+        RefreshPlans();
+    }
+
+    public void SetNetworkFilter(string value)
+    {
+        selectedNetwork = value switch { "5G Ultra Only" => NetworkType.FiveG, _ => null };
+        OnPropertyChanged(nameof(NetworkFilterText));
+        RefreshPlans();
+    }
+
+    public void SetQuotaFilter(string value)
+    {
+        selectedType = value switch { "Fixed Data (1-20 GB)" => PlanType.Limited, "Unlimited Data" => PlanType.Unlimited, _ => null };
+        OnPropertyChanged(nameof(QuotaFilterText));
+        RefreshPlans();
+    }
+
+    public void SetDurationFilter(string value)
+    {
+        selectedValidity = value switch { "7 Days" => 7, "15 Days" => 15, "30 Days" => 30, _ => null };
+        OnPropertyChanged(nameof(DurationFilterText));
+        RefreshPlans();
+    }
+
+    public void SetSortFilter(string value)
+    {
+        selectedSort = value switch { "Price: Low to High" => "PriceLow", "Data: High to Low" => "DataHigh", "Duration: Longest" => "Duration", _ => "Recommended" };
+        OnPropertyChanged(nameof(SortFilterText));
         RefreshPlans();
     }
 
