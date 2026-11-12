@@ -257,7 +257,7 @@ Not included:
 
 The project targets .NET 10 for Mac Catalyst, iOS, Android, and Windows.
 
-This pull request includes static validation and a Mac Catalyst build verification. End-to-end runtime workflow validation still needs to be completed on each target platform (including Mac Catalyst, iOS, Android, and Windows) before release.
+Run build and end-to-end workflow validation on each target platform (Mac Catalyst, iOS, Android, and Windows) before release.
 
 ## Safe Usage
 

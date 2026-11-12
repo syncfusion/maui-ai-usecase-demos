@@ -37,18 +37,14 @@ public sealed partial class SupportChatViewModel : ObservableObject
     private const string DiscardSuggestion = "Discard";
     private const string RetrySuggestion = "Retry";
 
-    /*
-     * The installed Syncfusion Suggestion constructor requires an
-     * ImageSource. A transparent one-pixel image keeps the suggestions
-     * visually text-focused without displaying oversized font glyphs.
-     */
-    private static readonly ImageSource EmptySuggestionImage =
-        new FontImageSource
-        {
-            Glyph = " ",
-            Color = Colors.Transparent,
-            Size = 1
-        };
+    private static readonly ImageSource RegenerateSuggestionImage =
+        ImageSource.FromFile("support_reply_regenerate.svg");
+
+    private static readonly ImageSource RetrySuggestionImage =
+        ImageSource.FromFile("support_reply_retry.svg");
+
+    private static readonly ImageSource DiscardSuggestionImage =
+        ImageSource.FromFile("support_reply_discard.svg");
 
     private readonly ConversationService _conversationService;
     private readonly ISupportReplyService _supportReplyService;
@@ -875,8 +871,31 @@ public sealed partial class SupportChatViewModel : ObservableObject
                         item =>
                             new Suggestion(
                                 item,
-                                EmptySuggestionImage)))
+                                GetSuggestionImage(item))))
         };
+    }
+
+    private static ImageSource GetSuggestionImage(
+        string suggestionText)
+    {
+        var normalizedSuggestion =
+            NormalizeWorkflowActionText(suggestionText);
+
+        if (normalizedSuggestion.Equals(
+                DiscardSuggestion,
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return DiscardSuggestionImage;
+        }
+
+        if (normalizedSuggestion.Equals(
+                RetrySuggestion,
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return RetrySuggestionImage;
+        }
+
+        return RegenerateSuggestionImage;
     }
 
     private static bool IsWorkflowActionText(
