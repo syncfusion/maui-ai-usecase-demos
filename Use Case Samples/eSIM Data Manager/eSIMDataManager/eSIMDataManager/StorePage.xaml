@@ -30,7 +30,7 @@
                         </LinearGradientBrush>
                     </Border.Background>
                     <VerticalStackLayout Spacing="11">
-                        <Border BackgroundColor="#ECFDF5" StrokeThickness="0" StrokeShape="RoundRectangle 999" Padding="11,5" HorizontalOptions="Start"><HorizontalStackLayout Spacing="7"><Ellipse WidthRequest="6" HeightRequest="6" Fill="#10B981" VerticalOptions="Center"/><Label Text="190+ Global Destinations Live" FontSize="10" TextColor="#065F46" VerticalOptions="Center"/></HorizontalStackLayout></Border>
+                        <Border BackgroundColor="#FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 999" Padding="11,5" HorizontalOptions="Start"><HorizontalStackLayout Spacing="7"><Ellipse WidthRequest="6" HeightRequest="6" Fill="#10B981" VerticalOptions="Center"/><Label Text="190+ Global Destinations Live" FontSize="10" TextColor="#065F46" VerticalOptions="Center"/></HorizontalStackLayout></Border>
                         <Label Text="Explore Travel eSIM Plans" FontFamily="OpenSansSemibold" FontSize="{OnIdiom Phone=27, Default=30}" FontAttributes="Bold" TextColor="#0B1C30" Margin="0,2,0,0" />
                         <Label Text="Instant connectivity in 190+ countries with zero physical SIM swaps and zero roaming fees." FontSize="13" TextColor="#344054" Margin="0,-5,0,4" />
                         <Border BackgroundColor="White" Stroke="#E6EBF5" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="9,0" MaximumWidthRequest="620" HorizontalOptions="Start" HeightRequest="42">
@@ -108,23 +108,23 @@
                         <Border BackgroundColor="#EEF3FF" StrokeThickness="0" StrokeShape="RoundRectangle 22" Padding="26,24">
                             <VerticalStackLayout Spacing="0">
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" Margin="4,0,0,20">
-                                    <Label Text="&#xE734;" FontFamily="MaterialAssets" FontSize="25" TextColor="#008B63" VerticalOptions="Center"/>
+                                    <Label Text="&#xE725;" FontFamily="UiKitIcons" FontSize="25" TextColor="#008B63" VerticalOptions="Center"/>
                                     <Label Grid.Column="1" Text="Why eSIM Data Manager?" FontSize="23" FontAttributes="Bold" TextColor="#101C2D" VerticalOptions="Center"/>
                                 </Grid>
                                 <Grid ColumnDefinitions="54,*" ColumnSpacing="12" Margin="0,0,0,19">
-                                    <Border WidthRequest="50" HeightRequest="58" BackgroundColor="White" StrokeThickness="0" StrokeShape="RoundRectangle 18"><Label Text="&#xE753;" FontFamily="MaterialAssets" FontSize="24" TextColor="#0752DB" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border>
+                                    <Border WidthRequest="50" HeightRequest="58" BackgroundColor="White" StrokeThickness="0" StrokeShape="RoundRectangle 18"><Label Text="&#xE712;" FontFamily="UiKitIcons" FontSize="24" TextColor="#0752DB" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border>
                                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center"><Label Text="100% Digital Delivery" FontSize="17" FontAttributes="Bold" TextColor="#101C2D"/><Label Text="Install in seconds. No postage, no plastic, no kiosk queue." FontSize="16" TextColor="#344054" LineBreakMode="WordWrap"/></VerticalStackLayout>
                                 </Grid>
                                 <Grid ColumnDefinitions="54,*" ColumnSpacing="12" Margin="0,0,0,19">
-                                    <Border WidthRequest="50" HeightRequest="58" BackgroundColor="White" StrokeThickness="0" StrokeShape="RoundRectangle 18"><Label Text="&#xE8BD;" FontFamily="MaterialAssets" FontSize="24" TextColor="#0752DB" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border>
+                                    <Border WidthRequest="50" HeightRequest="58" BackgroundColor="White" StrokeThickness="0" StrokeShape="RoundRectangle 18"><Label Text="&#xE71B;" FontFamily="UiKitIcons" FontSize="24" TextColor="#0752DB" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border>
                                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center"><Label Text="Keep WhatsApp &amp; SIM" FontSize="17" FontAttributes="Bold" TextColor="#101C2D"/><Label Text="Receive home 2FA bank texts while roaming on local high-speed data." FontSize="16" TextColor="#344054" LineBreakMode="WordWrap"/></VerticalStackLayout>
                                 </Grid>
                                 <Grid ColumnDefinitions="54,*" ColumnSpacing="12" Margin="0,0,0,19">
-                                    <Border WidthRequest="50" HeightRequest="58" BackgroundColor="White" StrokeThickness="0" StrokeShape="RoundRectangle 18"><Label Text="&#xE8C7;" FontFamily="MaterialAssets" FontSize="24" TextColor="#0752DB" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border>
+                                    <Border WidthRequest="50" HeightRequest="58" BackgroundColor="White" StrokeThickness="0" StrokeShape="RoundRectangle 18"><Label Text="&#xE729;" FontFamily="UiKitIcons" FontSize="24" TextColor="#0752DB" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border>
                                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center"><Label Text="Zero Bill Shock" FontSize="17" FontAttributes="Bold" TextColor="#101C2D"/><Label Text="Prepaid transparency. Never return home to an accidental $500 bill." FontSize="16" TextColor="#344054" LineBreakMode="WordWrap"/></VerticalStackLayout>
                                 </Grid>
                                 <Grid ColumnDefinitions="54,*" ColumnSpacing="12">
-                                    <Border WidthRequest="50" HeightRequest="58" BackgroundColor="White" StrokeThickness="0" StrokeShape="RoundRectangle 18"><Label Text="&#xE720;" FontFamily="MaterialAssets" FontSize="24" TextColor="#0752DB" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border>
+                                    <Border WidthRequest="50" HeightRequest="58" BackgroundColor="White" StrokeThickness="0" StrokeShape="RoundRectangle 18"><Label Text="&#xE773;" FontFamily="MaterialAssets" FontSize="24" TextColor="#0752DB" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border>
                                     <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center"><Label Text="24/7 Global SLA Support" FontSize="17" FontAttributes="Bold" TextColor="#101C2D"/><Label Text="Real telecom network engineers ready to help whenever you land." FontSize="16" TextColor="#344054" LineBreakMode="WordWrap"/></VerticalStackLayout>
                                 </Grid>
                             </VerticalStackLayout>
