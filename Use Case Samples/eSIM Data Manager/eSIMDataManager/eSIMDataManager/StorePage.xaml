@@ -52,7 +52,7 @@
                 </Border>
                 <Border BackgroundColor="White" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="8">
                     <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                    <Grid ColumnDefinitions="256,2,158,178,136,*,188" ColumnSpacing="8" WidthRequest="1000" HorizontalOptions="Start">
+                    <Grid ColumnDefinitions="256,2,158,178,136,*,Auto,188" ColumnSpacing="8" WidthRequest="1000" HorizontalOptions="Start">
                         <buttons:SfSegmentedControl Grid.Column="0" WidthRequest="256" ItemsSource="{Binding CoverageOptions}" SelectedIndex="{Binding CoverageFilterIndex}" SelectionChanged="CoverageSelectionChanged" SelectionMode="Single" SegmentHeight="32" SegmentWidth="64" SegmentCornerRadius="6" Background="#EEF3FF" SegmentBackground="#EEF3FF" Stroke="Transparent" StrokeThickness="0" ShowSeparator="False" EnableRippleEffect="False">
                             <buttons:SfSegmentedControl.SelectionIndicatorSettings>
                                 <buttons:SelectionIndicatorSettings SelectionIndicatorPlacement="Fill" Background="White" TextColor="#1E5BFF" Stroke="Transparent" StrokeThickness="0" />
@@ -65,8 +65,8 @@
                         <editors:SfComboBox Grid.Column="2" ItemsSource="{Binding NetworkFilterOptions}" SelectedItem="{Binding SelectedNetworkOption, Mode=TwoWay}" SelectionChanged="NetworkFilterSelected" IsEditable="False" IsClearButtonVisible="False" ShowBorder="False" BackgroundColor="#EEF3FF" TextColor="#172842" FontSize="14" HeightRequest="42" WidthRequest="158" DropDownPlacement="Bottom" MaxDropDownHeight="260"/>
                         <editors:SfComboBox Grid.Column="3" ItemsSource="{Binding QuotaFilterOptions}" SelectedItem="{Binding SelectedQuotaOption, Mode=TwoWay}" SelectionChanged="QuotaFilterSelected" IsEditable="False" IsClearButtonVisible="False" ShowBorder="False" BackgroundColor="#EEF3FF" TextColor="#172842" FontSize="14" HeightRequest="42" WidthRequest="178" DropDownPlacement="Bottom" MaxDropDownHeight="260"/>
                         <editors:SfComboBox Grid.Column="4" ItemsSource="{Binding DurationFilterOptions}" SelectedItem="{Binding SelectedDurationOption, Mode=TwoWay}" SelectionChanged="DurationFilterSelected" IsEditable="False" IsClearButtonVisible="False" ShowBorder="False" BackgroundColor="#EEF3FF" TextColor="#172842" FontSize="14" HeightRequest="42" WidthRequest="136" DropDownPlacement="Bottom" MaxDropDownHeight="260"/>
-                        <Label Grid.Column="5" Text="Sort by:" FontSize="13" FontAttributes="Bold" TextColor="#24334A" VerticalOptions="Center" HorizontalOptions="End" />
-                        <editors:SfComboBox Grid.Column="6" ItemsSource="{Binding SortFilterOptions}" SelectedItem="{Binding SelectedSortOption, Mode=TwoWay}" SelectionChanged="SortFilterSelected" IsEditable="False" IsClearButtonVisible="False" ShowBorder="False" BackgroundColor="#EEF3FF" TextColor="#172842" FontSize="14" HeightRequest="42" WidthRequest="188" DropDownPlacement="Bottom" MaxDropDownHeight="260"/>
+                        <Label Grid.Column="6" Text="Sort by:" FontSize="13" FontAttributes="Bold" TextColor="#24334A" VerticalOptions="Center" HorizontalOptions="End" />
+                        <editors:SfComboBox Grid.Column="7" ItemsSource="{Binding SortFilterOptions}" SelectedItem="{Binding SelectedSortOption, Mode=TwoWay}" SelectionChanged="SortFilterSelected" IsEditable="False" IsClearButtonVisible="False" ShowBorder="False" BackgroundColor="#EEF3FF" TextColor="#172842" FontSize="14" HeightRequest="42" WidthRequest="188" DropDownPlacement="Bottom" MaxDropDownHeight="260"/>
                     </Grid>
                     </ScrollView>
                 </Border>
