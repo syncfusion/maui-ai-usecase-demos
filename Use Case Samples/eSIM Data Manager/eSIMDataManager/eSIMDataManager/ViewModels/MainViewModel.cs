@@ -14,7 +14,7 @@ public partial class MainViewModel : ObservableObject
     private NetworkType? selectedNetwork;
     private PlanType? selectedType;
     private int? selectedValidity;
-    private string selectedSort = "Recommended";
+    private string selectedSort = "Duration";
 
     public ObservableCollection<Plan> FilteredPlans { get; } = [];
     public ObservableCollection<EsimProfile> ActiveProfiles { get; } = [];
@@ -28,9 +28,9 @@ public partial class MainViewModel : ObservableObject
     public IReadOnlyList<string> Destinations { get; } = ["Japan", "USA", "France", "Korea", "Singapore", "Thailand"];
     public IReadOnlyList<string> TrendingDestinations { get; } = ["JP  Japan", "US  USA", "FR  France", "KR  Korea", "SG  Singapore", "TH  Thailand", "EU  Europe (33)", "🌐  Asia-Pacific"];
     public IReadOnlyList<string> FilterOptions { get; } = ["Local", "Regional", "Global", "4G", "5G", "Limited", "Unlimited", "7 Days", "15 Days", "30 Days"];
-    public string NetworkFilterText => selectedNetwork switch { NetworkType.FiveG => "5G Ultra Only", NetworkType.FourG => "4G / LTE", _ => "All Networks" };
+    public string NetworkFilterText => selectedNetwork is null ? "4G / LTE & 5G" : selectedNetwork == NetworkType.FiveG ? "5G Ultra Only" : "4G / LTE";
     public string QuotaFilterText => selectedType switch { PlanType.Limited => "Fixed Data (1-20 GB)", PlanType.Unlimited => "Unlimited Data", _ => "All Quotas" };
-    public string DurationFilterText => selectedValidity is int days ? $"{days} Days" : "Any Duration";
+    public string DurationFilterText => selectedValidity is int days ? $"{days} Days" : "30 Days";
     public string SortFilterText => selectedSort switch { "PriceLow" => "Price: Low to High", "DataHigh" => "Data: High to Low", "Duration" => "Duration: Longest", _ => "Recommended" };
     public IReadOnlyList<TopUpPack> TopUpPacks => EsimStore.TopUpPacks;
     public EsimStore Store => store;
