@@ -11,7 +11,7 @@
             <Label Text="AI-Powered Process Diagram Drafting"
                    FontSize="28"
                    FontAttributes="Bold" />
-            <Label Text="Edit the workflow description and generate an updated diagram with AI."
+            <Label Text="Enter a short process description and generate an editable flowchart draft."
                    FontSize="14" />
         </VerticalStackLayout>
 
