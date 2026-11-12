@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using AIProcessDiagramDrafting.Models;
 using AIProcessDiagramDrafting.ViewModels;
+using Microsoft.Maui.Devices;
 using Syncfusion.Maui.Diagram;
 
 namespace AIProcessDiagramDrafting;
@@ -20,6 +21,15 @@ public partial class ProcessDiagramPage : ContentPage
 
         diagramSurface = CreateDiagramSurface();
         DiagramHost.Children.Add(diagramSurface);
+
+        if (DeviceInfo.Platform == DevicePlatform.Android)
+        {
+            Content = new ScrollView
+            {
+                Orientation = ScrollOrientation.Vertical,
+                Content = RootGrid
+            };
+        }
 
         Loaded += OnLoaded;
         SizeChanged += OnSizeChanged;
@@ -84,6 +94,7 @@ public partial class ProcessDiagramPage : ContentPage
 
         if (draft is null)
         {
+            UpdateAndroidDiagramHeight(null);
             return;
         }
 
@@ -96,6 +107,8 @@ public partial class ProcessDiagramPage : ContentPage
         {
             diagramSurface.Connectors.Add(connector);
         }
+
+        UpdateAndroidDiagramHeight(draft);
     }
 
     private SfDiagram CreateDiagramSurface()
@@ -115,7 +128,7 @@ public partial class ProcessDiagramPage : ContentPage
 
     private void ScheduleFitToPage()
     {
-        if (viewModel.CurrentDiagram is null)
+        if (DeviceInfo.Platform == DevicePlatform.Android || viewModel.CurrentDiagram is null)
         {
             return;
         }
@@ -142,7 +155,26 @@ public partial class ProcessDiagramPage : ContentPage
         RootGrid.RowDefinitions.Clear();
         RootGrid.ColumnDefinitions.Clear();
 
-        if (compact)
+        if (DeviceInfo.Platform == DevicePlatform.Android)
+        {
+            RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+            RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+            RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+            RootGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+
+            Grid.SetRow(HeaderSection, 0);
+            Grid.SetColumn(HeaderSection, 0);
+            Grid.SetColumnSpan(HeaderSection, 1);
+
+            Grid.SetRow(DetailsSection, 1);
+            Grid.SetColumn(DetailsSection, 0);
+
+            Grid.SetRow(DiagramSection, 2);
+            Grid.SetColumn(DiagramSection, 0);
+            DiagramSection.VerticalOptions = LayoutOptions.Start;
+            UpdateAndroidDiagramHeight(viewModel.CurrentDiagram);
+        }
+        else if (compact)
         {
             RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
             RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
@@ -175,6 +207,19 @@ public partial class ProcessDiagramPage : ContentPage
 
             Grid.SetRow(DiagramSection, 1);
             Grid.SetColumn(DiagramSection, 1);
+            DiagramSection.ClearValue(HeightRequestProperty);
+            DiagramSection.VerticalOptions = LayoutOptions.FillAndExpand;
         }
+    }
+
+    private void UpdateAndroidDiagramHeight(DiagramDraft? draft)
+    {
+        if (DeviceInfo.Platform != DevicePlatform.Android)
+        {
+            return;
+        }
+
+        var nodeCount = draft?.Nodes.Count ?? 0;
+        DiagramSection.HeightRequest = Math.Max(900, 260 + (nodeCount * 180));
     }
 }
