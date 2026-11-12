@@ -21,8 +21,8 @@ public partial class StorePage : ContentPage
     private void FilterClicked(object? sender, EventArgs e) => popupActions.FilterClicked(sender, e);
     private void CoverageSelectionChanged(object? sender, Syncfusion.Maui.Buttons.SelectionChangedEventArgs e)
     {
-        if (e.NewValue is string coverage && BindingContext is MainViewModel viewModel)
-            viewModel.SelectCoverage(coverage);
+        if (e.NewValue is Syncfusion.Maui.Buttons.SfSegmentItem segment && BindingContext is MainViewModel viewModel)
+            viewModel.SelectCoverage(segment.Text);
     }
     private void NetworkFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) => popupActions.NetworkFilterSelected(sender, e);
     private void QuotaFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) => popupActions.QuotaFilterSelected(sender, e);
