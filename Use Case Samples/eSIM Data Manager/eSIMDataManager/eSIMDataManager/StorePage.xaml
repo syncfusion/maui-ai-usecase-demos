@@ -52,12 +52,12 @@
                 </Border>
                 <Border BackgroundColor="White" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="8">
                     <Grid ColumnDefinitions="Auto,2,Auto,Auto,Auto,*,Auto,Auto" ColumnSpacing="8">
-                        <buttons:SfSegmentedControl Grid.Column="0" ItemsSource="{Binding CoverageOptions}" SelectedIndex="{Binding CoverageFilterIndex}" SelectionChanged="CoverageSelectionChanged" SelectionMode="Single" SegmentHeight="32" SegmentCornerRadius="6" Background="#EEF3FF" Stroke="Transparent" StrokeThickness="0" ShowSeparator="False" EnableRippleEffect="False">
+                        <buttons:SfSegmentedControl Grid.Column="0" ItemsSource="{Binding CoverageOptions}" SelectedIndex="{Binding CoverageFilterIndex}" SelectionChanged="CoverageSelectionChanged" SelectionMode="Single" VisibleSegmentsCount="4" SegmentHeight="32" SegmentCornerRadius="6" Background="#EEF3FF" SegmentBackground="#EEF3FF" SelectedSegmentBackground="White" SelectedSegmentTextColor="#1E5BFF" Stroke="Transparent" StrokeThickness="0" ShowSeparator="False" EnableRippleEffect="False">
                             <buttons:SfSegmentedControl.SelectionIndicatorSettings>
                                 <buttons:SelectionIndicatorSettings SelectionIndicatorPlacement="Fill" Background="White" Stroke="Transparent" StrokeThickness="0" />
                             </buttons:SfSegmentedControl.SelectionIndicatorSettings>
                             <buttons:SfSegmentedControl.TextStyle>
-                                <buttons:SegmentTextStyle TextColor="#24334A" FontSize="12" />
+                                <buttons:SegmentTextStyle TextColor="#344054" FontSize="12" />
                             </buttons:SfSegmentedControl.TextStyle>
                         </buttons:SfSegmentedControl>
                         <BoxView Grid.Column="1" WidthRequest="2" HeightRequest="30" Color="#E2E9F5" VerticalOptions="Center" />
