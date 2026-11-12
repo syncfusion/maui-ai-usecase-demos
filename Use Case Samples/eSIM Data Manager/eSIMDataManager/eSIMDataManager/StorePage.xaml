@@ -75,7 +75,7 @@
                         <Border BackgroundColor="White" StrokeThickness="0" StrokeShape="RoundRectangle 22" Padding="28,24" MinimumHeightRequest="500">
                             <VerticalStackLayout Spacing="0">
                                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Padding="0,0,0,17">
-                                    <Border WidthRequest="24" HeightRequest="24" Stroke="#0752DB" StrokeThickness="2" StrokeShape="RoundRectangle 12" BackgroundColor="Transparent"><Label Text="✧" FontSize="18" FontAttributes="Bold" TextColor="#0752DB" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border>
+                                    <Border WidthRequest="24" HeightRequest="24" Stroke="#0752DB" StrokeThickness="2" StrokeShape="RoundRectangle 12" BackgroundColor="Transparent"><Label Text="&#xE71E;" FontFamily="UiKitIcons" FontSize="14" TextColor="#0752DB" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border>
                                     <Label Grid.Column="1" Text="Trending Destinations" FontSize="23" FontAttributes="Bold" TextColor="#101C2D" VerticalOptions="Center" LineBreakMode="TailTruncation"/>
                                     <Label Grid.Column="2" Text="Top Picks" FontSize="15" TextColor="#344054" VerticalOptions="Center"/>
                                 </Grid>
