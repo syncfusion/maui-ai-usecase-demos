@@ -107,6 +107,7 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
         }
 
         IsBusy = true;
+        CurrentDiagram = null;
         StatusMessage = "Generating draft...";
 
         try
