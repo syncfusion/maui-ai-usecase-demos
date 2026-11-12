@@ -28,4 +28,24 @@ public partial class StorePage : ContentPage
     private void QuotaFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) => popupActions.QuotaFilterSelected(sender, e);
     private void DurationFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) => popupActions.DurationFilterSelected(sender, e);
     private void SortFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) => popupActions.SortFilterSelected(sender, e);
+
+    private void PlanCardPointerEntered(object? sender, PointerEventArgs e)
+    {
+        if (sender is Border card)
+        {
+            card.Scale = 1.02;
+            card.Shadow = new Shadow { Brush = Brush.Black, Opacity = 0.16f, Radius = 14, Offset = new Point(0, 5) };
+            card.ZIndex = 1;
+        }
+    }
+
+    private void PlanCardPointerExited(object? sender, PointerEventArgs e)
+    {
+        if (sender is Border card)
+        {
+            card.Scale = 1;
+            card.Shadow = null;
+            card.ZIndex = 0;
+        }
+    }
 }
