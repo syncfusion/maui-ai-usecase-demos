@@ -13,8 +13,10 @@ public partial class MainViewModel : ObservableObject
     private CoverageType? selectedCoverage;
     private NetworkType? selectedNetwork;
     private PlanType? selectedType;
-    private int? selectedValidity;
+    private int? selectedValidity = 30;
     private string selectedSort = "Duration";
+    private string coverageFilterText = "All";
+    public string CoverageFilterText { get => coverageFilterText; private set => SetProperty(ref coverageFilterText, value); }
 
     public ObservableCollection<Plan> FilteredPlans { get; } = [];
     public ObservableCollection<EsimProfile> ActiveProfiles { get; } = [];
@@ -29,9 +31,25 @@ public partial class MainViewModel : ObservableObject
     public IReadOnlyList<string> TrendingDestinations { get; } = ["JP  Japan", "US  USA", "FR  France", "KR  Korea", "SG  Singapore", "TH  Thailand", "EU  Europe (33)", "🌐  Asia-Pacific"];
     public IReadOnlyList<string> FilterOptions { get; } = ["Local", "Regional", "Global", "4G", "5G", "Limited", "Unlimited", "7 Days", "15 Days", "30 Days"];
     public string NetworkFilterText => selectedNetwork is null ? "4G / LTE & 5G" : selectedNetwork == NetworkType.FiveG ? "5G Ultra Only" : "4G / LTE";
+    public bool IsAllCoverageSelected => selectedCoverage is null;
+    public bool IsLocalCoverageSelected => selectedCoverage == CoverageType.Local;
+    public bool IsRegionalCoverageSelected => selectedCoverage == CoverageType.Regional;
+    public bool IsGlobalCoverageSelected => selectedCoverage == CoverageType.Global;
+    public string AllCoverageBackground => IsAllCoverageSelected ? "White" : "Transparent";
+    public string LocalCoverageBackground => IsLocalCoverageSelected ? "White" : "Transparent";
+    public string RegionalCoverageBackground => IsRegionalCoverageSelected ? "White" : "Transparent";
+    public string GlobalCoverageBackground => IsGlobalCoverageSelected ? "White" : "Transparent";
+    public string AllCoverageTextColor => IsAllCoverageSelected ? "#0752DB" : "#24334A";
+    public string LocalCoverageTextColor => IsLocalCoverageSelected ? "#0752DB" : "#24334A";
+    public string RegionalCoverageTextColor => IsRegionalCoverageSelected ? "#0752DB" : "#24334A";
+    public string GlobalCoverageTextColor => IsGlobalCoverageSelected ? "#0752DB" : "#24334A";
     public string QuotaFilterText => selectedType switch { PlanType.Limited => "Fixed Data (1-20 GB)", PlanType.Unlimited => "Unlimited Data", _ => "All Quotas" };
     public string DurationFilterText => selectedValidity is int days ? $"{days} Days" : "30 Days";
     public string SortFilterText => selectedSort switch { "PriceLow" => "Price: Low to High", "DataHigh" => "Data: High to Low", "Duration" => "Duration: Longest", _ => "Recommended" };
+    public int NetworkFilterIndex => selectedNetwork switch { NetworkType.FiveG => 1, NetworkType.FourG => 2, _ => 0 };
+    public int QuotaFilterIndex => selectedType switch { PlanType.Limited => 1, PlanType.Unlimited => 2, _ => 0 };
+    public int DurationFilterIndex => selectedValidity switch { 7 => 1, 15 => 2, _ => 3 };
+    public int SortFilterIndex => selectedSort switch { "PriceLow" => 1, "DataHigh" => 2, _ => 3 };
     public IReadOnlyList<TopUpPack> TopUpPacks => EsimStore.TopUpPacks;
     public EsimStore Store => store;
     public EsimProfile? ActiveProfile => store.ActiveProfile;
@@ -145,6 +163,10 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(QuotaFilterText));
         OnPropertyChanged(nameof(DurationFilterText));
         OnPropertyChanged(nameof(SortFilterText));
+        OnPropertyChanged(nameof(NetworkFilterIndex));
+        OnPropertyChanged(nameof(QuotaFilterIndex));
+        OnPropertyChanged(nameof(DurationFilterIndex));
+        OnPropertyChanged(nameof(SortFilterIndex));
     }
 
     private static void Sync<T>(ObservableCollection<T> destination, IEnumerable<T> source)
@@ -176,7 +198,7 @@ public partial class MainViewModel : ObservableObject
 
     public void SetDurationFilter(string value)
     {
-        selectedValidity = value switch { "7 Days" => 7, "15 Days" => 15, "30 Days" => 30, _ => null };
+        selectedValidity = value switch { "7 Days" => 7, "15 Days" => 15, "30 Days" => 30, "Any Duration" => null, _ => 30 };
         OnPropertyChanged(nameof(DurationFilterText));
         RefreshPlans();
     }
@@ -188,10 +210,33 @@ public partial class MainViewModel : ObservableObject
         RefreshPlans();
     }
 
+    public void SelectCoverage(string coverage)
+    {
+        selectedCoverage = coverage switch { "Local" => CoverageType.Local, "Regional" => CoverageType.Regional, "Global" => CoverageType.Global, _ => null };
+        CoverageFilterText = coverage;
+        OnPropertyChanged(nameof(IsAllCoverageSelected));
+        OnPropertyChanged(nameof(IsLocalCoverageSelected));
+        OnPropertyChanged(nameof(IsRegionalCoverageSelected));
+        OnPropertyChanged(nameof(IsGlobalCoverageSelected));
+        OnPropertyChanged(nameof(AllCoverageBackground));
+        OnPropertyChanged(nameof(LocalCoverageBackground));
+        OnPropertyChanged(nameof(RegionalCoverageBackground));
+        OnPropertyChanged(nameof(GlobalCoverageBackground));
+        OnPropertyChanged(nameof(AllCoverageTextColor));
+        OnPropertyChanged(nameof(LocalCoverageTextColor));
+        OnPropertyChanged(nameof(RegionalCoverageTextColor));
+        OnPropertyChanged(nameof(GlobalCoverageTextColor));
+        RefreshPlans();
+    }
+
     public void ToggleFilter(string label)
     {
         SelectedFilterLabel = SelectedFilterLabel == label ? string.Empty : label;
-        selectedCoverage = SelectedFilterLabel switch { "Local" => CoverageType.Local, "Regional" => CoverageType.Regional, "Global" => CoverageType.Global, _ => null };
+        if (label is "All" or "Local" or "Regional" or "Global")
+        {
+            SelectCoverage(label);
+            return;
+        }
         selectedNetwork = SelectedFilterLabel switch { "4G" => NetworkType.FourG, "5G" => NetworkType.FiveG, _ => null };
         selectedType = SelectedFilterLabel switch { "Limited" => PlanType.Limited, "Unlimited" => PlanType.Unlimited, _ => null };
         selectedValidity = SelectedFilterLabel switch { "7 Days" => 7, "15 Days" => 15, "30 Days" => 30, _ => null };
@@ -213,7 +258,8 @@ public partial class MainViewModel : ObservableObject
         selectedCoverage = null;
         selectedNetwork = null;
         selectedType = null;
-        selectedValidity = null;
+        selectedValidity = 30;
+        selectedSort = "Duration";
         Search = string.Empty;
         SelectedFilterLabel = string.Empty;
         RefreshPlans();
