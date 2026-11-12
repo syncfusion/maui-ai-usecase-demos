@@ -19,6 +19,19 @@ public partial class MainViewModel : ObservableObject
     private int selectedQuotaIndex;
     private int selectedDurationIndex = 3;
     private int selectedSortIndex = 3;
+    private string selectedNetworkOption = "4G / LTE & 5G";
+    private string selectedQuotaOption = "All Quotas";
+    private string selectedDurationOption = "30 Days";
+    private string selectedSortOption = "Duration: Longest";
+
+    public IReadOnlyList<string> NetworkFilterOptions { get; } = ["All Networks", "5G Ultra Only", "4G / LTE & 5G"];
+    public IReadOnlyList<string> QuotaFilterOptions { get; } = ["All Quotas", "Fixed Data (1-20 GB)", "Unlimited Data"];
+    public IReadOnlyList<string> DurationFilterOptions { get; } = ["Any Duration", "7 Days", "15 Days", "30 Days"];
+    public IReadOnlyList<string> SortFilterOptions { get; } = ["Recommended", "Price: Low to High", "Data: High to Low", "Duration: Longest"];
+    public string SelectedNetworkOption { get => selectedNetworkOption; set => SetProperty(ref selectedNetworkOption, value); }
+    public string SelectedQuotaOption { get => selectedQuotaOption; set => SetProperty(ref selectedQuotaOption, value); }
+    public string SelectedDurationOption { get => selectedDurationOption; set => SetProperty(ref selectedDurationOption, value); }
+    public string SelectedSortOption { get => selectedSortOption; set => SetProperty(ref selectedSortOption, value); }
 
     public ObservableCollection<Plan> FilteredPlans { get; } = [];
     public ObservableCollection<EsimProfile> ActiveProfiles { get; } = [];
@@ -187,6 +200,7 @@ public partial class MainViewModel : ObservableObject
 
     public void SetNetworkFilter(string value)
     {
+        SelectedNetworkOption = value;
         selectedNetworkIndex = value switch { "5G Ultra Only" => 1, "4G / LTE & 5G" => 2, _ => 0 };
         selectedNetwork = selectedNetworkIndex == 1 ? NetworkType.FiveG : null;
         OnPropertyChanged(nameof(NetworkFilterIndex));
@@ -196,6 +210,7 @@ public partial class MainViewModel : ObservableObject
 
     public void SetQuotaFilter(string value)
     {
+        SelectedQuotaOption = value;
         selectedQuotaIndex = value switch { "Fixed Data (1-20 GB)" => 1, "Unlimited Data" => 2, _ => 0 };
         selectedType = selectedQuotaIndex switch { 1 => PlanType.Limited, 2 => PlanType.Unlimited, _ => null };
         OnPropertyChanged(nameof(QuotaFilterIndex));
@@ -205,6 +220,7 @@ public partial class MainViewModel : ObservableObject
 
     public void SetDurationFilter(string value)
     {
+        SelectedDurationOption = value;
         selectedDurationIndex = value switch { "7 Days" => 1, "15 Days" => 2, "30 Days" => 3, _ => 0 };
         selectedValidity = selectedDurationIndex switch { 1 => 7, 2 => 15, 3 => 30, _ => null };
         OnPropertyChanged(nameof(DurationFilterIndex));
@@ -214,6 +230,7 @@ public partial class MainViewModel : ObservableObject
 
     public void SetSortFilter(string value)
     {
+        SelectedSortOption = value;
         selectedSortIndex = value switch { "Price: Low to High" => 1, "Data: High to Low" => 2, "Duration: Longest" => 3, _ => 0 };
         selectedSort = selectedSortIndex switch { 1 => "PriceLow", 2 => "DataHigh", 3 => "Duration", _ => "Recommended" };
         OnPropertyChanged(nameof(SortFilterIndex));
@@ -274,6 +291,10 @@ public partial class MainViewModel : ObservableObject
         selectedQuotaIndex = 0;
         selectedDurationIndex = 3;
         selectedSortIndex = 3;
+        SelectedNetworkOption = "4G / LTE & 5G";
+        SelectedQuotaOption = "All Quotas";
+        SelectedDurationOption = "30 Days";
+        SelectedSortOption = "Duration: Longest";
         selectedSort = "Duration";
         OnPropertyChanged(nameof(NetworkFilterIndex));
         OnPropertyChanged(nameof(QuotaFilterIndex));

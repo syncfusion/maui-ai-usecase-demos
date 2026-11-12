@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:list="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView" xmlns:sfButton="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons" xmlns:sfInput="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core" xmlns:sfChip="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core" xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs" xmlns:models="clr-namespace:eSIMDataManager.Models" xmlns:vm="clr-namespace:eSIMDataManager.ViewModels" x:Class="eSIMDataManager.StorePage" x:DataType="vm:MainViewModel" BackgroundColor="#F8F9FF">
     <ContentPage.Resources>
-        <x:Array x:Key="NetworkFilterOptions" Type="x:String"><x:String>All Networks</x:String><x:String>5G Ultra Only</x:String><x:String>4G / LTE &amp; 5G</x:String></x:Array>
-        <x:Array x:Key="QuotaFilterOptions" Type="x:String"><x:String>All Quotas</x:String><x:String>Fixed Data (1-20 GB)</x:String><x:String>Unlimited Data</x:String></x:Array>
-        <x:Array x:Key="DurationFilterOptions" Type="x:String"><x:String>Any Duration</x:String><x:String>7 Days</x:String><x:String>15 Days</x:String><x:String>30 Days</x:String></x:Array>
-        <x:Array x:Key="SortFilterOptions" Type="x:String"><x:String>Recommended</x:String><x:String>Price: Low to High</x:String><x:String>Data: High to Low</x:String><x:String>Duration: Longest</x:String></x:Array>
         <Style x:Key="StoreFilterButton" TargetType="sfButton:SfButton" BasedOn="{StaticResource SecondaryButton}">
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Padding" Value="10,5" />
@@ -15,11 +11,6 @@
     <ContentPage.Content>
         <ScrollView>
             <VerticalStackLayout Padding="{OnIdiom Phone=16, Tablet=24, Desktop=26}" Spacing="18">
-                <VerticalStackLayout.Resources>
-                    <Style TargetType="Label">
-                        <Setter Property="FontFamily" Value="Inter" />
-                    </Style>
-                </VerticalStackLayout.Resources>
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="18" VerticalOptions="Center" MinimumHeightRequest="56">
                     <HorizontalStackLayout Spacing="8" VerticalOptions="Center"><Border WidthRequest="34" HeightRequest="34" BackgroundColor="#1E5BFF" StrokeThickness="0" StrokeShape="RoundRectangle 11"><Label Text="e" FontSize="22" FontAttributes="Bold" TextColor="White" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border><Label Text="eSIM Data Manager" FontSize="18" FontAttributes="Bold" TextColor="#101D35" VerticalOptions="Center" /></HorizontalStackLayout>
                     <Grid Grid.Column="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" VerticalOptions="Center">
@@ -39,7 +30,7 @@
                         </LinearGradientBrush>
                     </Border.Background>
                     <VerticalStackLayout Spacing="11">
-                        <Border BackgroundColor="#FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="11,5" HorizontalOptions="Start"><HorizontalStackLayout Spacing="7"><Ellipse WidthRequest="6" HeightRequest="6" Fill="#008B63" VerticalOptions="Center"/><Label Text="190+ Global Destinations Live" FontSize="10" TextColor="#0752DB" VerticalOptions="Center"/></HorizontalStackLayout></Border>
+                        <Border BackgroundColor="#ECFDF5" StrokeThickness="0" StrokeShape="RoundRectangle 999" Padding="11,5" HorizontalOptions="Start"><HorizontalStackLayout Spacing="7"><Ellipse WidthRequest="6" HeightRequest="6" Fill="#10B981" VerticalOptions="Center"/><Label Text="190+ Global Destinations Live" FontSize="10" TextColor="#065F46" VerticalOptions="Center"/></HorizontalStackLayout></Border>
                         <Label Text="Explore Travel eSIM Plans" FontFamily="OpenSansSemibold" FontSize="{OnIdiom Phone=27, Default=30}" FontAttributes="Bold" TextColor="#0B1C30" Margin="0,2,0,0" />
                         <Label Text="Instant connectivity in 190+ countries with zero physical SIM swaps and zero roaming fees." FontSize="13" TextColor="#344054" Margin="0,-5,0,4" />
                         <Border BackgroundColor="White" Stroke="#E6EBF5" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="9,0" MaximumWidthRequest="620" HorizontalOptions="Start" HeightRequest="42">
@@ -59,7 +50,7 @@
                         </FlexLayout>
                     </VerticalStackLayout>
                 </Border>
-                <Border BackgroundColor="White" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="12,10">
+                <Border BackgroundColor="White" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="8">
                     <Grid ColumnDefinitions="Auto,2,Auto,Auto,Auto,*,Auto,Auto" ColumnSpacing="8">
                         <Border Grid.Column="0" BackgroundColor="#EEF3FF" StrokeThickness="0" StrokeShape="RoundRectangle 11" Padding="4">
                             <HorizontalStackLayout Spacing="2">
@@ -70,11 +61,11 @@
                             </HorizontalStackLayout>
                         </Border>
                         <BoxView Grid.Column="1" WidthRequest="2" HeightRequest="30" Color="#E2E9F5" VerticalOptions="Center" />
-                        <editors:SfComboBox Grid.Column="2" ItemsSource="{StaticResource NetworkFilterOptions}" SelectedIndex="{Binding NetworkFilterIndex}" SelectionChanged="NetworkFilterSelected" IsEditable="False" IsClearButtonVisible="False" ShowBorder="False" BackgroundColor="#EEF3FF" TextColor="#172842" FontSize="14" HeightRequest="38" WidthRequest="188" DropDownPlacement="Bottom"/>
-                        <editors:SfComboBox Grid.Column="3" ItemsSource="{StaticResource QuotaFilterOptions}" SelectedIndex="{Binding QuotaFilterIndex}" SelectionChanged="QuotaFilterSelected" IsEditable="False" IsClearButtonVisible="False" ShowBorder="False" BackgroundColor="#EEF3FF" TextColor="#172842" FontSize="14" HeightRequest="38" WidthRequest="178" DropDownPlacement="Bottom"/>
-                        <editors:SfComboBox Grid.Column="4" ItemsSource="{StaticResource DurationFilterOptions}" SelectedIndex="{Binding DurationFilterIndex}" SelectionChanged="DurationFilterSelected" IsEditable="False" IsClearButtonVisible="False" ShowBorder="False" BackgroundColor="#EEF3FF" TextColor="#172842" FontSize="14" HeightRequest="38" WidthRequest="126" DropDownPlacement="Bottom"/>
+                        <editors:SfComboBox Grid.Column="2" ItemsSource="{Binding NetworkFilterOptions}" SelectedItem="{Binding SelectedNetworkOption, Mode=TwoWay}" SelectionChanged="NetworkFilterSelected" IsEditable="False" IsClearButtonVisible="False" ShowBorder="False" BackgroundColor="#EEF3FF" TextColor="#172842" FontSize="14" HeightRequest="42" WidthRequest="188" DropDownPlacement="Bottom" MaxDropDownHeight="260"/>
+                        <editors:SfComboBox Grid.Column="3" ItemsSource="{Binding QuotaFilterOptions}" SelectedItem="{Binding SelectedQuotaOption, Mode=TwoWay}" SelectionChanged="QuotaFilterSelected" IsEditable="False" IsClearButtonVisible="False" ShowBorder="False" BackgroundColor="#EEF3FF" TextColor="#172842" FontSize="14" HeightRequest="42" WidthRequest="178" DropDownPlacement="Bottom" MaxDropDownHeight="260"/>
+                        <editors:SfComboBox Grid.Column="4" ItemsSource="{Binding DurationFilterOptions}" SelectedItem="{Binding SelectedDurationOption, Mode=TwoWay}" SelectionChanged="DurationFilterSelected" IsEditable="False" IsClearButtonVisible="False" ShowBorder="False" BackgroundColor="#EEF3FF" TextColor="#172842" FontSize="14" HeightRequest="42" WidthRequest="126" DropDownPlacement="Bottom" MaxDropDownHeight="260"/>
                         <Label Grid.Column="6" Text="Sort by:" FontSize="13" FontAttributes="Bold" TextColor="#24334A" VerticalOptions="Center" HorizontalOptions="End" />
-                        <editors:SfComboBox Grid.Column="7" ItemsSource="{StaticResource SortFilterOptions}" SelectedIndex="{Binding SortFilterIndex}" SelectionChanged="SortFilterSelected" IsEditable="False" IsClearButtonVisible="False" ShowBorder="False" BackgroundColor="#EEF3FF" TextColor="#172842" FontSize="14" HeightRequest="38" WidthRequest="188" DropDownPlacement="Bottom"/>
+                        <editors:SfComboBox Grid.Column="7" ItemsSource="{Binding SortFilterOptions}" SelectedItem="{Binding SelectedSortOption, Mode=TwoWay}" SelectionChanged="SortFilterSelected" IsEditable="False" IsClearButtonVisible="False" ShowBorder="False" BackgroundColor="#EEF3FF" TextColor="#172842" FontSize="14" HeightRequest="42" WidthRequest="188" DropDownPlacement="Bottom" MaxDropDownHeight="260"/>
                     </Grid>
                 </Border>
                 <Grid ColumnDefinitions="{OnIdiom Phone='*', Default='2*,*'}" ColumnSpacing="18" RowDefinitions="{OnIdiom Phone='Auto,Auto', Default='Auto'}">
