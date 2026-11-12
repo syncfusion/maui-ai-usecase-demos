@@ -49,8 +49,8 @@
                 <Grid ColumnDefinitions="{OnIdiom Phone='*', Default='2*,*'}" ColumnSpacing="18" RowDefinitions="{OnIdiom Phone='Auto,Auto', Default='Auto'}">
                     <VerticalStackLayout Spacing="12">
                         <Grid ColumnDefinitions="*,Auto"><Label Text="{Binding FilteredPlans.Count, StringFormat='Available eSIM Plans  ·  {0} Plans'}" FontSize="16" FontAttributes="Bold" TextColor="#101C2D"/><Label Grid.Column="1" Text="● Real-time Network Inventory" FontSize="10" TextColor="#00845A" VerticalOptions="Center"/></Grid>
-                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding FilteredPlans}" Spacing="12" HorizontalOptions="Fill"><BindableLayout.ItemTemplate><DataTemplate x:DataType="models:Plan">
-                            <Border BackgroundColor="White" Stroke="#E9EDF5" StrokeThickness="1" StrokeShape="RoundRectangle 15" Padding="16" HorizontalOptions="Fill">
+                        <CollectionView ItemsSource="{Binding FilteredPlans}" SelectionMode="None" ItemsLayout="VerticalGrid, 2" ItemSizingStrategy="MeasureAllItems" HorizontalOptions="Fill" VerticalOptions="Start"><CollectionView.ItemTemplate><DataTemplate x:DataType="models:Plan">
+                            <Border BackgroundColor="White" Stroke="#E9EDF5" StrokeThickness="1" StrokeShape="RoundRectangle 15" Padding="12" Margin="5" HorizontalOptions="Fill" VerticalOptions="Start">
                                 <VerticalStackLayout Spacing="7">
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8"><Label Text="{Binding CountryCode}" FontSize="14" TextColor="#24334A" VerticalOptions="Center"/><VerticalStackLayout Grid.Column="1" Spacing="0"><Label Text="{Binding Country}" FontSize="13" FontAttributes="Bold" TextColor="#101C2D"/><Label Text="{Binding Region}" FontSize="9" TextColor="#667085"/></VerticalStackLayout><Border Grid.Column="2" BackgroundColor="#CFF6FF" StrokeThickness="0" StrokeShape="RoundRectangle 5" Padding="6,3"><Label Text="{Binding Badge}" FontSize="8" FontAttributes="Bold" TextColor="#005E78"/></Border></Grid>
                                     <Border BackgroundColor="#F0F5FF" StrokeThickness="0" StrokeShape="RoundRectangle 7" Padding="7,3" HorizontalOptions="Start"><Label Text="{Binding Provider, StringFormat='● Carrier: {0}'}" FontSize="9" TextColor="#20324C"/></Border>
@@ -60,7 +60,7 @@
                                     <Grid ColumnDefinitions="*,Auto"><VerticalStackLayout Spacing="0"><Label Text="Total Price" FontSize="8"/><HorizontalStackLayout Spacing="3" VerticalOptions="End"><Label Text="{Binding Price, StringFormat='${0:0.00}'}" FontSize="19" FontAttributes="Bold" TextColor="#101C2D"/><Label Text="USD" FontSize="7" TextColor="#344054" VerticalOptions="End" Margin="0,0,0,3"/></HorizontalStackLayout></VerticalStackLayout><sfButton:SfButton Grid.Column="1" Text="Buy Plan  ➜" Clicked="BuyPlanClicked" Style="{StaticResource PrimaryButton}" FontSize="11" Padding="12,6" MinimumHeightRequest="32" VerticalOptions="Center"/></Grid>
                                 </VerticalStackLayout>
                             </Border>
-                        </DataTemplate></BindableLayout.ItemTemplate></VerticalStackLayout>
+                        </DataTemplate></CollectionView.ItemTemplate></CollectionView>
                         <Border BackgroundColor="White" Stroke="#E9EDF5" StrokeShape="RoundRectangle 14" Padding="18"><VerticalStackLayout HorizontalOptions="Center"><Label Text="Showing 6 of 148 verified eSIM packages for the selected filters" FontSize="10" TextColor="#667085"/><sfButton:SfButton Text="Load More Destinations" Style="{StaticResource SecondaryButton}" Margin="0,8,0,0"/></VerticalStackLayout></Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="{OnIdiom Phone=0, Default=1}" Grid.Row="{OnIdiom Phone=1, Default=0}" Spacing="12">
