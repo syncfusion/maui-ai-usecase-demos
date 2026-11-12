@@ -19,8 +19,8 @@ public partial class StorePage : ContentPage
     private void BuyPlanClicked(object? sender, EventArgs e) => popupActions.BuyPlanClicked(sender, e);
     private void DestinationClicked(object? sender, EventArgs e) => popupActions.DestinationClicked(sender, e);
     private void FilterClicked(object? sender, EventArgs e) => popupActions.FilterClicked(sender, e);
-    private void NetworkFilterSelected(object? sender, EventArgs e) => popupActions.NetworkFilterSelected(sender, e);
-    private void QuotaFilterSelected(object? sender, EventArgs e) => popupActions.QuotaFilterSelected(sender, e);
-    private void DurationFilterSelected(object? sender, EventArgs e) => popupActions.DurationFilterSelected(sender, e);
-    private void SortFilterSelected(object? sender, EventArgs e) => popupActions.SortFilterSelected(sender, e);
+    private void NetworkFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) => popupActions.NetworkFilterSelected(sender, e);
+    private void QuotaFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) => popupActions.QuotaFilterSelected(sender, e);
+    private void DurationFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) => popupActions.DurationFilterSelected(sender, e);
+    private void SortFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) => popupActions.SortFilterSelected(sender, e);
 }
