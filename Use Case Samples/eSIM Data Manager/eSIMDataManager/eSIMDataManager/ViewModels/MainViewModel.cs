@@ -25,6 +25,7 @@ public partial class MainViewModel : ObservableObject
     public string ActivationDateText => ActiveProfile?.ActivationDate?.ToString("MMM d, yyyy") ?? "—";
     public double SevenDayTotal => Trend.Sum(point => point.UsedGb);
     public IReadOnlyList<string> Destinations { get; } = ["Japan", "USA", "France", "Korea", "Singapore", "Thailand"];
+    public IReadOnlyList<string> TrendingDestinations { get; } = ["JP  Japan", "US  USA", "FR  France", "KR  Korea", "SG  Singapore", "TH  Thailand", "EU  Europe (33)", "🌐  Asia-Pacific"];
     public IReadOnlyList<string> FilterOptions { get; } = ["Local", "Regional", "Global", "4G", "5G", "Limited", "Unlimited", "7 Days", "15 Days", "30 Days"];
     public IReadOnlyList<TopUpPack> TopUpPacks => EsimStore.TopUpPacks;
     public EsimStore Store => store;

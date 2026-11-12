@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:list="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView" xmlns:sfButton="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons" xmlns:sfInput="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core" xmlns:models="clr-namespace:eSIMDataManager.Models" xmlns:vm="clr-namespace:eSIMDataManager.ViewModels" x:Class="eSIMDataManager.StorePage" x:DataType="vm:MainViewModel" BackgroundColor="#F7F9FF">
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:list="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView" xmlns:sfButton="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons" xmlns:sfInput="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core" xmlns:sfChip="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core" xmlns:models="clr-namespace:eSIMDataManager.Models" xmlns:vm="clr-namespace:eSIMDataManager.ViewModels" x:Class="eSIMDataManager.StorePage" x:DataType="vm:MainViewModel" BackgroundColor="#F7F9FF">
     <ContentPage.Resources>
         <Style x:Key="StoreFilterButton" TargetType="sfButton:SfButton" BasedOn="{StaticResource SecondaryButton}">
             <Setter Property="FontSize" Value="12" />
@@ -20,13 +20,13 @@
                     </Grid>
                     <HorizontalStackLayout Grid.Column="2" Spacing="9" VerticalOptions="Center" IsVisible="{OnIdiom Phone=False, Default=True}"><BoxView WidthRequest="1" HeightRequest="30" Color="#E4EAF5" VerticalOptions="Center"/><Border WidthRequest="36" HeightRequest="36" BackgroundColor="#E9F1FF" StrokeThickness="0" StrokeShape="RoundRectangle 18"><Label Text="&#xE71B;" FontFamily="MaterialAssets" FontSize="20" TextColor="#1E5BFF" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border><VerticalStackLayout Spacing="0" VerticalOptions="Center"><Label Text="Global Traveler" FontSize="12" FontAttributes="Bold" TextColor="#101D35"/><HorizontalStackLayout Spacing="6"><Ellipse WidthRequest="8" HeightRequest="8" Fill="#007A56" VerticalOptions="Center"/><Label Text="Roaming Online" FontSize="11" TextColor="#007A56"/></HorizontalStackLayout></VerticalStackLayout></HorizontalStackLayout>
                 </Grid>
-                <Border BackgroundColor="#EDF3FF" Stroke="#E8EFFB" StrokeThickness="1" StrokeShape="RoundRectangle 20" Padding="{OnIdiom Phone=20, Default=32}" MinimumHeightRequest="278">
+                <Border BackgroundColor="#EDF3FF" Stroke="#E8EFFB" StrokeThickness="1" StrokeShape="RoundRectangle 20" Padding="{OnIdiom Phone=24, Default=60}" MinimumHeightRequest="278">
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#F0F4FF" Offset="0" />
-                            <GradientStop Color="#EAF2FF" Offset="0.48" />
-                            <GradientStop Color="#DDF7FF" Offset="0.7" />
-                            <GradientStop Color="#EFF0FF" Offset="1" />
+                            <GradientStop Color="#EFF2FF" Offset="0" />
+                            <GradientStop Color="#EAF0FF" Offset="0.46" />
+                            <GradientStop Color="#D9F5FF" Offset="0.7" />
+                            <GradientStop Color="#EDF0FF" Offset="1" />
                         </LinearGradientBrush>
                     </Border.Background>
                     <VerticalStackLayout Spacing="11">
@@ -36,16 +36,18 @@
                         <Border BackgroundColor="White" Stroke="#E6EBF5" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="9,0" MaximumWidthRequest="620" HorizontalOptions="Start" HeightRequest="42">
                             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8"><Label Text="&#xE721;" FontFamily="MaterialAssets" FontSize="17" TextColor="#26334B" VerticalOptions="Center" Margin="3,0"/><Entry Grid.Column="1" Text="{Binding Search}" Placeholder="Search country, region, or carrier (e.g. Japan, SoftBank, Europe)..." FontSize="11" TextColor="#344054" PlaceholderColor="#667085" ClearButtonVisibility="WhileEditing"/><Border Grid.Column="2" BackgroundColor="#EEF3FF" StrokeThickness="0" StrokeShape="RoundRectangle 6" Padding="7,3" VerticalOptions="Center"><Label Text="⌘ K" FontSize="9" TextColor="#344054"/></Border></Grid>
                         </Border>
-                        <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
-                            <Label Text="Trending:" FontSize="9" TextColor="#24334A" VerticalOptions="Center" Margin="0,0,1,0" />
-                            <sfButton:SfButton Text="🇯🇵 Japan" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" Background="#1046D5" TextColor="White" FontSize="10" Padding="9,5" HorizontalOptions="Start" />
-                            <sfButton:SfButton Text="🇺🇸 USA" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" FontSize="10" Padding="9,5" HorizontalOptions="Start" />
-                            <sfButton:SfButton Text="🇫🇷 France" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" FontSize="10" Padding="9,5" HorizontalOptions="Start" />
-                            <sfButton:SfButton Text="🇰🇷 Korea" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" FontSize="10" Padding="9,5" HorizontalOptions="Start" />
-                            <sfButton:SfButton Text="🇸🇬 Singapore" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" FontSize="10" Padding="9,5" HorizontalOptions="Start" />
-                            <sfButton:SfButton Text="🇹🇭 Thailand" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" FontSize="10" Padding="9,5" HorizontalOptions="Start" />
-                        </HorizontalStackLayout>
-                        <HorizontalStackLayout Spacing="6"><sfButton:SfButton Text="🇪🇺  Europe (33)" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" FontSize="10" Padding="9,5" HorizontalOptions="Start"/><sfButton:SfButton Text="🌐  Asia-Pacific" Clicked="DestinationClicked" Style="{StaticResource StoreFilterButton}" FontSize="10" Padding="9,5" HorizontalOptions="Start"/></HorizontalStackLayout>
+                        <FlexLayout Wrap="Wrap" Direction="Row" AlignItems="Center">
+                            <Label Text="Trending:" FontSize="14" TextColor="#24334A" VerticalOptions="Center" Margin="0,0,8,6" />
+                            <sfChip:SfChip Text="JP  Japan" ChipType="Choice" Clicked="DestinationClicked" Background="#1046D5" TextColor="White" FontSize="14" Padding="12,8" Margin="0,0,6,6" CornerRadius="24" />
+                            <sfChip:SfChip Text="US  USA" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" CornerRadius="24" />
+                            <sfChip:SfChip Text="FR  France" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" CornerRadius="24" />
+                            <sfChip:SfChip Text="KR  Korea" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" CornerRadius="24" />
+                            <sfChip:SfChip Text="SG  Singapore" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" CornerRadius="24" />
+                            <sfChip:SfChip Text="TH  Thailand" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" CornerRadius="24" />
+                            <BoxView WidthRequest="1" HeightRequest="30" Color="#D8E1F2" Margin="3,0,6,6" />
+                            <sfChip:SfChip Text="EU  Europe (33)" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" CornerRadius="24" />
+                            <sfChip:SfChip Text="🌐  Asia-Pacific" Clicked="DestinationClicked" Background="White" TextColor="#101C2D" FontSize="14" Padding="12,8" Margin="0,0,6,6" CornerRadius="24" />
+                        </FlexLayout>
                     </VerticalStackLayout>
                 </Border>
                 <Border BackgroundColor="White" Stroke="#E8EDF5" StrokeShape="RoundRectangle 12" Padding="8">
