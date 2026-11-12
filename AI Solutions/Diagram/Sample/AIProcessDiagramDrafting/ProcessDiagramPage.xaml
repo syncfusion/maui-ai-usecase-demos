@@ -77,7 +77,7 @@
                 BackgroundColor="White"
                 Padding="12"
                 StrokeShape="RoundRectangle 16">
-            <syncfusionDiagram:SfDiagram x:Name="DiagramSurface" />
+            <Grid x:Name="DiagramHost" />
         </Border>
     </Grid>
 </ContentPage>

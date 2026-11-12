@@ -1,12 +1,14 @@
 using System.ComponentModel;
 using AIProcessDiagramDrafting.Models;
 using AIProcessDiagramDrafting.ViewModels;
+using Syncfusion.Maui.Diagram;
 
 namespace AIProcessDiagramDrafting;
 
 public partial class ProcessDiagramPage : ContentPage
 {
     private readonly ProcessDiagramViewModel viewModel;
+    private SfDiagram diagramSurface;
     private int fitToPageRequestId;
 
     public ProcessDiagramPage(ProcessDiagramViewModel viewModel)
@@ -16,9 +18,11 @@ public partial class ProcessDiagramPage : ContentPage
         BindingContext = viewModel;
         this.viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
+        diagramSurface = CreateDiagramSurface();
+        DiagramHost.Children.Add(diagramSurface);
+
         Loaded += OnLoaded;
         SizeChanged += OnSizeChanged;
-        DiagramSurface.Created += (_, __) => ScheduleFitToPage();
     }
 
     private void OnLoaded(object? sender, EventArgs e)
@@ -44,14 +48,12 @@ public partial class ProcessDiagramPage : ContentPage
 
     private async void OnGenerateDraftClicked(object? sender, EventArgs e)
     {
-        ClearDiagramSurface();
         SyncProcessDescriptionFromEditor();
         await viewModel.GenerateDraftAsync();
     }
 
     private async void OnRegenerateClicked(object? sender, EventArgs e)
     {
-        ClearDiagramSurface();
         SyncProcessDescriptionFromEditor();
         await viewModel.RegenerateAsync();
     }
@@ -77,32 +79,38 @@ public partial class ProcessDiagramPage : ContentPage
 
     private void ApplyCurrentDiagram()
     {
-        if (viewModel.CurrentDiagram is not DiagramDraft draft)
+        var draft = viewModel.CurrentDiagram;
+        ResetDiagramSurface();
+
+        if (draft is null)
         {
-            ClearDiagramSurface();
             return;
         }
 
-        ClearDiagramSurface();
-
         foreach (var node in draft.Nodes)
         {
-            DiagramSurface.Nodes.Add(node);
+            diagramSurface.Nodes.Add(node);
         }
 
         foreach (var connector in draft.Connectors)
         {
-            DiagramSurface.Connectors.Add(connector);
+            diagramSurface.Connectors.Add(connector);
         }
-
-        ScheduleFitToPage();
     }
 
-    private void ClearDiagramSurface()
+    private SfDiagram CreateDiagramSurface()
+    {
+        var surface = new SfDiagram();
+        surface.Created += (_, __) => ScheduleFitToPage();
+        return surface;
+    }
+
+    private void ResetDiagramSurface()
     {
         fitToPageRequestId++;
-        DiagramSurface.Nodes.Clear();
-        DiagramSurface.Connectors.Clear();
+        DiagramHost.Children.Clear();
+        diagramSurface = CreateDiagramSurface();
+        DiagramHost.Children.Add(diagramSurface);
     }
 
     private void ScheduleFitToPage()
@@ -124,7 +132,7 @@ public partial class ProcessDiagramPage : ContentPage
             return;
         }
 
-        DiagramSurface.FitToPage();
+        diagramSurface.FitToPage();
     }
 
     private void ApplyLayout(double width)
