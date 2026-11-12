@@ -7,6 +7,7 @@ namespace AIProcessDiagramDrafting;
 public partial class ProcessDiagramPage : ContentPage
 {
     private readonly ProcessDiagramViewModel viewModel;
+    private int fitToPageRequestId;
 
     public ProcessDiagramPage(ProcessDiagramViewModel viewModel)
     {
@@ -43,12 +44,14 @@ public partial class ProcessDiagramPage : ContentPage
 
     private async void OnGenerateDraftClicked(object? sender, EventArgs e)
     {
+        ClearDiagramSurface();
         SyncProcessDescriptionFromEditor();
         await viewModel.GenerateDraftAsync();
     }
 
     private async void OnRegenerateClicked(object? sender, EventArgs e)
     {
+        ClearDiagramSurface();
         SyncProcessDescriptionFromEditor();
         await viewModel.RegenerateAsync();
     }
@@ -76,13 +79,11 @@ public partial class ProcessDiagramPage : ContentPage
     {
         if (viewModel.CurrentDiagram is not DiagramDraft draft)
         {
-            DiagramSurface.Nodes.Clear();
-            DiagramSurface.Connectors.Clear();
+            ClearDiagramSurface();
             return;
         }
 
-        DiagramSurface.Nodes.Clear();
-        DiagramSurface.Connectors.Clear();
+        ClearDiagramSurface();
 
         foreach (var node in draft.Nodes)
         {
@@ -97,6 +98,13 @@ public partial class ProcessDiagramPage : ContentPage
         ScheduleFitToPage();
     }
 
+    private void ClearDiagramSurface()
+    {
+        fitToPageRequestId++;
+        DiagramSurface.Nodes.Clear();
+        DiagramSurface.Connectors.Clear();
+    }
+
     private void ScheduleFitToPage()
     {
         if (viewModel.CurrentDiagram is null)
@@ -104,12 +112,18 @@ public partial class ProcessDiagramPage : ContentPage
             return;
         }
 
-        _ = FitToPageAsync();
+        var requestId = ++fitToPageRequestId;
+        _ = FitToPageAsync(requestId);
     }
 
-    private async Task FitToPageAsync()
+    private async Task FitToPageAsync(int requestId)
     {
-        await Task.Delay(50);
+        await Task.Delay(150);
+        if (requestId != fitToPageRequestId || viewModel.CurrentDiagram is null)
+        {
+            return;
+        }
+
         DiagramSurface.FitToPage();
     }
 
