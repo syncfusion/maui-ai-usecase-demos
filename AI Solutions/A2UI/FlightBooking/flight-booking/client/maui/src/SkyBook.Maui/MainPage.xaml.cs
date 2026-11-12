@@ -618,33 +618,22 @@ public partial class MainPage : ContentPage
       var answer = explanation.Length > 0 ? explanation : reply.AgentText;
       _chat.AddBotMessage(answer.Length > 0 ? answer : "Updated the booking view.");
     }
-    catch (HttpRequestException ex)
-    {
-      System.Diagnostics.Debug.WriteLine($"[A2UI] agent unreachable: {ex}");
-      await ShowBundledStageAsync(text);
-    }
-    catch (TaskCanceledException ex)
-    {
-      System.Diagnostics.Debug.WriteLine($"[A2UI] agent timeout: {ex}");
-      await ShowBundledStageAsync(text);
-    }
     catch (Exception ex)
     {
-      System.Diagnostics.Debug.WriteLine($"[A2UI] fetch error: {ex}");
-
-      // Missing AI configuration -> switch to offline mode
-      if (ex.Message.Contains("API key", StringComparison.OrdinalIgnoreCase) ||
-          ex.Message.Contains("OpenRouter", StringComparison.OrdinalIgnoreCase) ||
-          ex.Message.Contains("Azure OpenAI", StringComparison.OrdinalIgnoreCase))
+      System.Diagnostics.Debug.WriteLine($"[AI] request failed: {ex}");
+      // Fail closed: report the error in chat; never load bundled designs or switch offline.
+      var message = ex switch
       {
-        await ShowBundledStageAsync(text);
-
-        
-        return;
-      }
-
-      _chat.AddBotMessage(
-          "Unable to connect to the AI service. Please try again later.");
+        AiNotConfiguredException => AiNotConfiguredException.DefaultMessage,
+        AiRequestException { IsUnauthorized: true } =>
+            "The AI API key is invalid or unauthorized. Please check your endpoint, API key, and deployment.",
+        AiRequestException { StatusCode: 404 } =>
+            "The AI deployment was not found. Please check the endpoint and deployment name.",
+        AiRequestException r =>
+            $"The AI service returned an error ({r.StatusCode}). Please check your API configuration and try again.",
+        _ => "Unable to connect to the AI service. Please check your internet connection and API configuration, then try again.",
+      };
+      _chat.AddBotMessage(message);
     }
     finally
     {
@@ -654,42 +643,5 @@ public partial class MainPage : ContentPage
     }
   }
 
-  /// <summary>
-  /// Agent unreachable: open the matching stage page from the bundled design (same JSON the agent serves),
-  /// so Search / Results / Confirmation still open. Free-text requests that need the AI get a hint instead.
-  /// </summary>
-  private async Task ShowBundledStageAsync(string text)
-  {
-    var lower = text.ToLowerInvariant();
-    string? file = null; string say = "";
-    if (lower.Contains("selectflightandproceed") || lower.Contains("booking and confirmation") || lower.Contains("confirmation page"))
-    { file = "stage3-booking-confirmation.json"; say = "Here is the booking confirmation page."; }
-    else if (lower.Contains("searchflights") || lower.Contains("flight results"))
-    { file = "stage2-flight-results.json"; say = "Here are the flight results. Tap a flight row, then press Book now."; }
-    else if (lower.Contains("flight search form"))
-    { file = "stage1-flight-search.json"; say = "Here is the flight search form. Fill in your trip and press Search Flights."; }
 
-    if (file is null)
-    {
-      _chat.AddBotMessage(
-    "AI Assistant is currently unavailable. " +
-    "You can continue using the flight booking workflow manually.");
-      return;
-    }
-
-    try
-    {
-      using var stream = await FileSystem.OpenAppPackageFileAsync("designs/" + file);
-      using var reader = new StreamReader(stream);
-      var messages = System.Text.Json.Nodes.JsonNode.Parse(await reader.ReadToEndAsync())!.AsArray();
-      ResetSurfaces();
-      _host.ProcessJson(EnvelopeSanitizer.Sanitize(messages).ToJsonString());
-      _chat.AddBotMessage(say + " (offline preview - start the agent for live AI replies)");
-    }
-    catch (Exception ex)
-    {
-      System.Diagnostics.Debug.WriteLine($"[A2UI] bundled stage failed: {ex}");
-      _chat.AddBotMessage($"I couldn't open that page: {ex.Message}");
-    }
-  }
 }

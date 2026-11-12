@@ -21,7 +21,29 @@ public sealed record AzureOpenAiOptions(string Endpoint, string ApiKey, string D
       ApiVersion == OpenAiCompatible
       || Endpoint.Contains("openrouter.ai", StringComparison.OrdinalIgnoreCase)
       || Endpoint.Contains("api.openai.com", StringComparison.OrdinalIgnoreCase);
+
+  /// <summary>True only when endpoint, API key and deployment are all filled in (and the key is not a placeholder).</summary>
+  public bool IsConfigured =>
+      !string.IsNullOrWhiteSpace(Endpoint) &&
+      !string.IsNullOrWhiteSpace(ApiKey) &&
+      !string.IsNullOrWhiteSpace(Deployment) &&
+      !ApiKey.TrimStart().StartsWith("your-", StringComparison.OrdinalIgnoreCase);
 }
+
+	/// <summary>Thrown when the Azure OpenAI endpoint / API key / deployment are missing or still placeholders.</summary>
+	public sealed class AiNotConfiguredException() : InvalidOperationException(DefaultMessage)
+	{
+	public const string DefaultMessage =
+	  "AI assistant is not available. Please include the Azure OpenAI credentials (endpoint, API key and deployment name).";
+	}
+
+	/// <summary>Thrown when the AI service answered with an error status (e.g. 401 for a wrong key).</summary>
+	public sealed class AiRequestException(int statusCode, string detail)
+	: InvalidOperationException($"AI request failed ({statusCode}): {detail}")
+	{
+	public int StatusCode { get; } = statusCode;
+	public bool IsUnauthorized => StatusCode is 401 or 403;
+	}
 
 /// <summary>Flat trip/traveller inputs (same keys the search form's action context uses).</summary>
 public sealed class Trip
@@ -99,18 +121,28 @@ public sealed class Trip
 /// <summary>
 /// The Python agent re-implemented inside the app, so the sample runs with MAUI + Syncfusion only.
 /// It applies the same stage gate as <c>system_prompt.md</c> (search -> results -> confirmation) and renders the
-/// bundled <c>designs_maui</c> surfaces. Azure OpenAI (optional) is used only to understand free-text requests.
+/// bundled <c>designs_maui</c> surfaces. Azure OpenAI credentials are REQUIRED: without them every request fails
+/// with <see cref="AiNotConfiguredException"/> and nothing is rendered (there is no offline fallback).
 /// </summary>
 public sealed class LocalAgent(Func<string, Task<string>> loadDesign, HttpClient http, AzureOpenAiOptions? ai = null) : IAgentClient
 {
   private const string HistoryMarker = "\n\n## Conversation history";
   private const string ContextMarker = "Context from the user's earlier inputs";
   private readonly Random _rng = new();
+  private readonly SemaphoreSlim _verifyLock = new(1, 1);
+  private bool _credentialsVerified;
+
+  private AzureOpenAiOptions Ai => ai is { IsConfigured: true } ? ai : throw new AiNotConfiguredException();
   /// <summary>Bookings made in this app session (newest last). Shown on the booking page with the sample rows.</summary>
   private readonly List<(Trip Trip, JsonObject Flight)> _bookings = [];
 
   public async Task<AgentReply> SendAsync(string text, string? contextId, CancellationToken ct = default)
   {
+    // Fail closed: missing credentials must never run the local booking flow.
+    _ = Ai;
+    // Wrong credentials are caught here too, but the check runs once (not on every prompt / button click).
+    await EnsureCredentialsAsync(ct);
+
     var ctxId = contextId ?? $"local-{Guid.NewGuid():N}"[..14];
     var h = text.IndexOf(HistoryMarker, StringComparison.Ordinal);
     var request = (h >= 0 ? text[..h] : text).Trim();
@@ -120,6 +152,25 @@ public sealed class LocalAgent(Func<string, Task<string>> loadDesign, HttpClient
         : await HandlePromptAsync(request, text, ct);
 
     return new AgentReply(messages, say, ctxId);
+  }
+
+  private async Task EnsureCredentialsAsync(CancellationToken ct)
+  {
+    if (_credentialsVerified) return;
+    await _verifyLock.WaitAsync(ct);
+    try
+    {
+      if (_credentialsVerified) return;
+      // Any 2xx answer proves the endpoint, key and deployment work; a failure throws and is retried next time.
+      var ping = new JsonObject
+      {
+        ["messages"] = new JsonArray(new JsonObject { ["role"] = "user", ["content"] = "Reply with OK." }),
+        ["temperature"] = 0,
+      };
+      await PostChatAsync(ping, ct);
+      _credentialsVerified = true;
+    }
+    finally { _verifyLock.Release(); }
   }
 
   // ------------------------------------------------------------------ surface actions (button clicks)
@@ -193,17 +244,6 @@ public sealed class LocalAgent(Func<string, Task<string>> loadDesign, HttpClient
           : await ConfirmationAsync(trip.MissingForBooking().Count == 0 ? trip : SampleTrip(withTraveller: true), SampleFlight(),
               "Here is the booking confirmation page.", record: false);
 
-    // Offline: "fill details on your own" prefills the form with a sample trip, like the React demo.
-    if (ai is null && Regex.IsMatch(lower, @"on your own|yourself|any details|sample details|fill (all|the|in)"))
-    {
-      var filled = SampleFill(trip);
-      const string said = "I have prefilled the search form with sample travel details. Review them and press Search Flights.";
-      return (await SearchPageAsync(filled, said), said);
-    }
-
-    if (ai is null)
-      return await HandleOfflineAsync(request, lower, trip);
-
     // Free text: let the model extract (or, when asked, make up) the form values. The stage gate stays in code.
     var parsed = await AskModelAsync(fullText, ct);
     var intent = Trip.S(parsed?["intent"]);
@@ -216,74 +256,6 @@ public sealed class LocalAgent(Func<string, Task<string>> loadDesign, HttpClient
     if (say.Length == 0) say = "I've filled in what I could. Review the form and press Search Flights.";
     return (await SearchPageAsync(trip, say), say);
   }
-
-  /// <summary>
-  /// Understands common requests without Azure OpenAI:
-  ///  "search flight", "find flights from Chennai to Mumbai on 2026-11-20 for 2 adults",
-  ///  "show results", "book", "hi", "help".
-  /// </summary>
-  private async Task<(JsonArray?, string)> HandleOfflineAsync(string request, string lower, Trip trip)
-  {
-    trip.Overlay(ParseFreeText(request));
-
-    // Greetings / help -> plain chat reply, no page change
-    if (Regex.IsMatch(lower, @"^\s*(hi|hello|hey|help|what can you do)\b"))
-      return (null, "Hi! I can help you search, compare and book flights. Try \"Search flights from Chennai to Mumbai on 2026-11-20 for 1 adult\", or just say \"search flight\" to open the form.");
-
-    // Booking request
-    if (Regex.IsMatch(lower, @"\b(book|confirm|reserve)\b"))
-    {
-      if (trip.MissingForSearch().Count > 0)
-      {
-        var say = $"To book, first search for a flight. I still need: {string.Join(", ", trip.MissingForSearch())}.";
-        return (await SearchPageAsync(trip, say), say);
-      }
-      return await ResultsAsync(trip, "Pick the flight you want and press Book now to confirm it.");
-    }
-
-    // Any flight / search / results request
-    if (Regex.IsMatch(lower, @"\b(search|find|flight|flights|fly|trip|result|results|show)\b"))
-    {
-      var missing = trip.MissingForSearch();
-      if (missing.Count == 0)
-        return await ResultsAsync(trip, $"Found flights from {trip.From} to {trip.To} on {trip.DepartureDate}. Tap Book now on the flight you want.");
-
-      var said = trip.From == "" && trip.To == ""
-          ? "Sure! Here is the flight search form. Enter where you're flying from and to, your dates and travellers, then press Search Flights."
-          : $"Got it. I've filled in what you told me. Please add the {string.Join(", ", missing)} and press Search Flights.";
-      return (await SearchPageAsync(trip, said), said);
-    }
-
-    return (null, "I can help with flight search and booking. Say \"search flight\" to open the form, or describe your trip, e.g. \"flights from Chennai to Mumbai on 2026-11-20 for 2 adults\".");
-  }
-
-  /// <summary>Very small rule-based extractor for from / to / date / adults / children / cabin / trip type.</summary>
-  private static Trip ParseFreeText(string text)
-  {
-    var t = new Trip();
-    var m = Regex.Match(text, @"\bfrom\s+(.+?)\s+to\s+(.+?)(?=\s+(?:on|for|in|departing|leaving|returning|with|economy|business|first|premium)\b|[,.]|$)", RegexOptions.IgnoreCase);
-    if (m.Success) { t.From = Title(m.Groups[1].Value); t.To = Title(m.Groups[2].Value); }
-
-    var dates = Regex.Matches(text, @"\b\d{4}-\d{2}-\d{2}\b").Select(x => x.Value).ToList();
-    if (dates.Count > 0) t.DepartureDate = dates[0];
-    if (dates.Count > 1) { t.ReturnDate = dates[1]; t.TripType = "roundTrip"; }
-
-    var a = Regex.Match(text, @"(\d+)\s*adult", RegexOptions.IgnoreCase);
-    if (a.Success) t.Adults = int.Parse(a.Groups[1].Value, CultureInfo.InvariantCulture);
-    var c = Regex.Match(text, @"(\d+)\s*(child|children|kid)", RegexOptions.IgnoreCase);
-    if (c.Success) t.Children = int.Parse(c.Groups[1].Value, CultureInfo.InvariantCulture);
-
-    t.CabinClass = Trip.NormCabin(text);
-    if (Regex.IsMatch(text, @"one[\s-]?way", RegexOptions.IgnoreCase)) t.TripType = "oneWay";
-    else if (Regex.IsMatch(text, @"round[\s-]?trip|return", RegexOptions.IgnoreCase)) t.TripType = "roundTrip";
-    else if (t.From != "" && t.TripType == "") t.TripType = "oneWay";
-    if (t.From != "" && t.Adults == 0) t.Adults = 1;
-    if (t.From != "" && t.CabinClass == "") t.CabinClass = "economy";
-    return t;
-  }
-
-  private static string Title(string s) =>
-      CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s.Trim().ToLowerInvariant());
 
   private static JsonObject? ExtractEarlierInputs(string request)
   {
@@ -316,36 +288,46 @@ public sealed class LocalAgent(Func<string, Task<string>> loadDesign, HttpClient
       ["temperature"] = 0,
       ["response_format"] = new JsonObject { ["type"] = "json_object" },
     };
-    var apiKey = ai!.ApiKey?.Trim() ?? "";
-    if (apiKey.Length == 0 || apiKey.StartsWith("your-", StringComparison.OrdinalIgnoreCase))
-      throw new InvalidOperationException("The AI API key is empty. Put your OpenRouter key (sk-or-...) in AzureOpenAiOptions.OpenRouter(...) / AppConfig.");
+    var content = await PostChatAsync(body, ct);
+    if (content is null) return null;
+    try { return JsonNode.Parse(content) as JsonObject; }
+    catch (System.Text.Json.JsonException) { return null; }   // model answered in plain text: treated as a chat reply
+  }
+
+  /// <summary>Sends one chat-completions request to Azure OpenAI / OpenRouter and returns the message content.</summary>
+  private async Task<string?> PostChatAsync(JsonObject body, CancellationToken ct)
+  {
+    var cfg = Ai;
+    var apiKey = cfg.ApiKey.Trim();
+    var endpoint = cfg.Endpoint.Trim();
+    var deployment = cfg.Deployment.Trim();
 
     string url;
-    if (ai.IsOpenAiCompatible)
+    if (cfg.IsOpenAiCompatible)
     {
-      body["model"] = ai.Deployment;                      // OpenRouter / OpenAI: model goes in the body
-      var baseUrl = ai.Endpoint.TrimEnd('/');
+      body["model"] = deployment;                           // OpenRouter / OpenAI: model goes in the body
+      var baseUrl = endpoint.TrimEnd('/');
       if (baseUrl.Contains("openrouter.ai", StringComparison.OrdinalIgnoreCase) && !baseUrl.EndsWith("/api/v1", StringComparison.OrdinalIgnoreCase))
         baseUrl = "https://openrouter.ai/api/v1";
       url = $"{baseUrl}/chat/completions";
     }
     else
-      url = $"{ai.Endpoint.TrimEnd('/')}/openai/deployments/{Uri.EscapeDataString(ai.Deployment)}/chat/completions?api-version={ai.ApiVersion}";
+      url = $"{endpoint.TrimEnd('/')}/openai/deployments/{Uri.EscapeDataString(deployment)}/chat/completions?api-version={cfg.ApiVersion}";
 
     using var req = new HttpRequestMessage(HttpMethod.Post, url) { Content = new StringContent(body.ToJsonString(), Encoding.UTF8, "application/json") };
-    if (ai.IsOpenAiCompatible)
+    if (cfg.IsOpenAiCompatible)
     {
       req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
-      req.Headers.Add("X-Title", "SkyBook MAUI");         // optional, shows the app name on OpenRouter
+      req.Headers.Add("X-Title", "SkyBook MAUI");           // optional, shows the app name on OpenRouter
     }
     else
       req.Headers.Add("api-key", apiKey);
+
     using var res = await http.SendAsync(req, ct);
     var payload = await res.Content.ReadAsStringAsync(ct);
     if (!res.IsSuccessStatusCode)
-      throw new InvalidOperationException($"AI request failed ({(int)res.StatusCode}): {Truncate(payload, 200)}");
-    var content = JsonNode.Parse(payload)?["choices"]?[0]?["message"]?["content"]?.GetValue<string>();
-    return content is null ? null : JsonNode.Parse(content) as JsonObject;
+      throw new AiRequestException((int)res.StatusCode, Truncate(payload, 200));
+    return JsonNode.Parse(payload)?["choices"]?[0]?["message"]?["content"]?.GetValue<string>();
   }
 
   private static string Truncate(string s, int n) => s.Length <= n ? s : s[..n] + "…";
@@ -564,26 +546,13 @@ public sealed class LocalAgent(Func<string, Task<string>> loadDesign, HttpClient
     return letters.Length >= 3 ? letters[..3].ToUpperInvariant() : "---";
   }
 
-  /// <summary>Keeps whatever the user already entered and fills every missing field with a plausible sample.</summary>
-  private static Trip SampleFill(Trip t)
-  {
-    var s = SampleTrip(withTraveller: true);
-    s.From = "San Francisco (SFO)"; s.To = "Tokyo (HND)";
-    s.DepartureDate = DateTime.Today.AddDays(30).ToString("yyyy-MM-dd");
-    s.ReturnDate = DateTime.Today.AddDays(40).ToString("yyyy-MM-dd");
-    s.Adults = 1; s.Children = 0; s.CabinClass = "business";
-    s.FirstName = "Hiroshi"; s.LastName = "Tanaka"; s.Email = "h.tanaka@example.jp"; s.PassportNumber = "TK9988776"; s.Nationality = "IN";
-    s.Overlay(t);
-    return s;
-  }
-
   private static Trip SampleTrip(bool withTraveller = false) => new()
   {
     TripType = "roundTrip",
     From = "New York (JFK)",
     To = "London (LHR)",
-    DepartureDate = "2026-09-14",
-    ReturnDate = "2026-09-23",
+    DepartureDate = DateTime.Today.AddDays(30).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+    ReturnDate = DateTime.Today.AddDays(39).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
     CabinClass = "business",
     Adults = 2,
     Children = 1,
