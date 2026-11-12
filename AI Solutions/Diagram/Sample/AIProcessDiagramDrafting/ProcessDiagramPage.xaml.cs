@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using AIProcessDiagramDrafting.Models;
 using AIProcessDiagramDrafting.ViewModels;
+using Microsoft.Maui.Devices;
 using Syncfusion.Maui.Diagram;
 
 namespace AIProcessDiagramDrafting;
@@ -20,6 +21,15 @@ public partial class ProcessDiagramPage : ContentPage
 
         diagramSurface = CreateDiagramSurface();
         DiagramHost.Children.Add(diagramSurface);
+
+        if (DeviceInfo.Platform == DevicePlatform.Android)
+        {
+            Content = new ScrollView
+            {
+                Orientation = ScrollOrientation.Vertical,
+                Content = RootGrid
+            };
+        }
 
         Loaded += OnLoaded;
         SizeChanged += OnSizeChanged;
@@ -137,12 +147,30 @@ public partial class ProcessDiagramPage : ContentPage
 
     private void ApplyLayout(double width)
     {
+        var isAndroid = DeviceInfo.Platform == DevicePlatform.Android;
         var compact = width > 0 && width < 900;
 
         RootGrid.RowDefinitions.Clear();
         RootGrid.ColumnDefinitions.Clear();
 
-        if (compact)
+        if (isAndroid)
+        {
+            RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+            RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+            RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+            RootGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+
+            Grid.SetRow(HeaderSection, 0);
+            Grid.SetColumn(HeaderSection, 0);
+            Grid.SetColumnSpan(HeaderSection, 1);
+
+            Grid.SetRow(DetailsSection, 1);
+            Grid.SetColumn(DetailsSection, 0);
+
+            Grid.SetRow(DiagramSection, 2);
+            Grid.SetColumn(DiagramSection, 0);
+        }
+        else if (compact)
         {
             RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
             RootGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
