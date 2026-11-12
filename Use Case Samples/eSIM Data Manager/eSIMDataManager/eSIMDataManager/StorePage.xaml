@@ -52,7 +52,7 @@
                 </Border>
                 <Border BackgroundColor="White" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="8">
                     <Grid ColumnDefinitions="Auto,2,Auto,Auto,Auto,*,Auto,Auto" ColumnSpacing="8">
-                        <Border Grid.Column="0" BackgroundColor="#EEF3FF" StrokeThickness="0" StrokeShape="RoundRectangle 11" Padding="4">
+                        <Border Grid.Column="0" BackgroundColor="#EFF4FC" StrokeThickness="0" StrokeShape="RoundRectangle 11" Padding="4">
                             <HorizontalStackLayout Spacing="2">
                                 <sfButton:SfButton Text="All" Clicked="FilterClicked" Background="{Binding AllCoverageBackground}" TextColor="{Binding AllCoverageTextColor}" FontSize="14" Padding="8,2" MinimumHeightRequest="28" MinimumWidthRequest="44" CornerRadius="7" />
                                 <sfButton:SfButton Text="Local" Clicked="FilterClicked" Background="{Binding LocalCoverageBackground}" TextColor="{Binding LocalCoverageTextColor}" FontSize="14" Padding="8,2" MinimumHeightRequest="28" MinimumWidthRequest="52" CornerRadius="7" />
