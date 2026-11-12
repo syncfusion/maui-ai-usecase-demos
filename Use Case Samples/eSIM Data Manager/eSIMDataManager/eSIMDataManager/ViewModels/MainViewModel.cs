@@ -149,7 +149,7 @@ public partial class MainViewModel : ObservableObject
 
     private void RefreshPlans()
     {
-        var plans = store.SearchPlans(Search, selectedCountry, selectedCoverage, selectedNetwork, selectedType, selectedValidity);
+        IEnumerable<Plan> plans = store.SearchPlans(Search, selectedCountry, selectedCoverage, selectedNetwork, selectedType, selectedValidity);
         plans = selectedSort switch
         {
             "PriceLow" => plans.OrderBy(plan => plan.Price),
