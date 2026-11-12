@@ -16,6 +16,10 @@ public sealed record Plan(string Id, string Country, string Region, string Provi
     {
         "jp-5-15" => "★ Best Value", "jp-unl-7" => "◉ 5G Fast", "us-10-30" => "◈ 5G Ultra", "eu-20-30" => "♧ 33 Countries", "kr-5-10" => "♆ Ultra Latency", "fr-10-15" => "▥ 5G Ready", _ => "5G Fast"
     };
+    public string NetworkLabel => Id switch
+    {
+        "jp-5-15" => "◢ 5G mmWave", "jp-unl-7" => "5G Fast", "us-10-30" => "5G Ultra", "eu-20-30" => "33 Countries", "kr-5-10" => "Ultra Latency", "fr-10-15" => "5G Ready", _ => "5G"
+    };
     public string AllocationNote => Id switch
     {
         "jp-unl-7" => "3GB/day full-speed", "us-10-30" => "Nationwide 5G", "eu-20-30" => "Regional Data", _ => "High-Speed 5G"
