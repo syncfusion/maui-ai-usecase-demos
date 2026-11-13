@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -37,17 +36,9 @@ public sealed partial class SupportChatViewModel : ObservableObject
     private const string DiscardSuggestion = "Discard";
     private const string RetrySuggestion = "Retry";
 
-    private static readonly ImageSource RegenerateSuggestionImage =
-        ImageSource.FromFile("support_reply_regenerate.svg");
-
-    private static readonly ImageSource RetrySuggestionImage =
-        ImageSource.FromFile("support_reply_retry.svg");
-
-    private static readonly ImageSource DiscardSuggestionImage =
-        ImageSource.FromFile("support_reply_discard.svg");
-
     private readonly ConversationService _conversationService;
     private readonly ISupportReplyService _supportReplyService;
+    private readonly IChatSuggestionService _chatSuggestionService;
     private readonly AsyncRelayCommand<TextMessage?> _selectMessageCommand;
     private readonly AsyncRelayCommand<TextMessage?> _draftReplyCommand;
     private readonly Command<object?> _nativeSendCommand;
@@ -61,10 +52,12 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
     public SupportChatViewModel(
         ConversationService conversationService,
-        ISupportReplyService supportReplyService)
+        ISupportReplyService supportReplyService,
+        IChatSuggestionService chatSuggestionService)
     {
         _conversationService = conversationService;
         _supportReplyService = supportReplyService;
+        _chatSuggestionService = chatSuggestionService;
 
         CurrentUser = _conversationService.SupportAuthor;
         Messages = _conversationService.CreateConversation();
@@ -267,7 +260,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
                     DiscardSuggestion,
                     StringComparison.OrdinalIgnoreCase))
             {
-                _generationCancellationTokenSource?.Cancel();
+                CancelAndDisposeGenerationToken();
 
                 _lastGeneratedDraft = string.Empty;
                 _lastStableDraftText = string.Empty;
@@ -351,7 +344,7 @@ public sealed partial class SupportChatViewModel : ObservableObject
                 SelectedMessage,
                 message))
         {
-            _generationCancellationTokenSource?.Cancel();
+            CancelAndDisposeGenerationToken();
 
             _lastGeneratedDraft = string.Empty;
             _lastStableDraftText = string.Empty;
@@ -430,13 +423,16 @@ public sealed partial class SupportChatViewModel : ObservableObject
                 ? GetDraftPreservationSnapshot()
                 : string.Empty;
 
-        _generationCancellationTokenSource?.Cancel();
+        CancelAndDisposeGenerationToken();
 
         _generationCancellationTokenSource =
             new CancellationTokenSource();
 
+        var activeGenerationTokenSource =
+            _generationCancellationTokenSource;
+
         var cancellationToken =
-            _generationCancellationTokenSource.Token;
+            activeGenerationTokenSource.Token;
 
         var generationVersion =
             ++_generationVersion;
@@ -520,6 +516,16 @@ public sealed partial class SupportChatViewModel : ObservableObject
                     preservedDraft,
                 errorMessage:
                     InvalidAiResponseMessage);
+        }
+        finally
+        {
+            if (ReferenceEquals(
+                    _generationCancellationTokenSource,
+                    activeGenerationTokenSource))
+            {
+                activeGenerationTokenSource.Dispose();
+                _generationCancellationTokenSource = null;
+            }
         }
     }
 
@@ -779,6 +785,14 @@ public sealed partial class SupportChatViewModel : ObservableObject
         ProgressMessage = string.Empty;
     }
 
+    private void CancelAndDisposeGenerationToken()
+    {
+        // Always dispose old tokens before starting a new generation request.
+        _generationCancellationTokenSource?.Cancel();
+        _generationCancellationTokenSource?.Dispose();
+        _generationCancellationTokenSource = null;
+    }
+
     private string CreateUserFacingError(
         string? errorMessage,
         bool preservedDraft)
@@ -791,9 +805,6 @@ public sealed partial class SupportChatViewModel : ObservableObject
         if (string.IsNullOrWhiteSpace(errorMessage)
             || errorMessage.Equals(
                 "The AI service is currently unavailable.",
-                StringComparison.OrdinalIgnoreCase)
-            || errorMessage.Contains(
-                "valid JSON",
                 StringComparison.OrdinalIgnoreCase)
             || errorMessage.Contains(
                 "process the generated reply",
@@ -860,42 +871,10 @@ public sealed partial class SupportChatViewModel : ObservableObject
         return EditorText;
     }
 
-    private static ChatSuggestions BuildSuggestions(
+    private ChatSuggestions BuildSuggestions(
         params string[] items)
     {
-        return new ChatSuggestions
-        {
-            Items =
-                new ObservableCollection<ISuggestion>(
-                    items.Select(
-                        item =>
-                            new Suggestion(
-                                item,
-                                GetSuggestionImage(item))))
-        };
-    }
-
-    private static ImageSource GetSuggestionImage(
-        string suggestionText)
-    {
-        var normalizedSuggestion =
-            NormalizeWorkflowActionText(suggestionText);
-
-        if (normalizedSuggestion.Equals(
-                DiscardSuggestion,
-                StringComparison.OrdinalIgnoreCase))
-        {
-            return DiscardSuggestionImage;
-        }
-
-        if (normalizedSuggestion.Equals(
-                RetrySuggestion,
-                StringComparison.OrdinalIgnoreCase))
-        {
-            return RetrySuggestionImage;
-        }
-
-        return RegenerateSuggestionImage;
+        return _chatSuggestionService.Create(items);
     }
 
     private static bool IsWorkflowActionText(
