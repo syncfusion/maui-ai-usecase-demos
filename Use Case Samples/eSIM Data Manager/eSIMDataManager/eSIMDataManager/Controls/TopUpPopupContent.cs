@@ -463,9 +463,9 @@ public sealed class TopUpPopupContent : IDisposable
                 }
             };
 
-            var stack = new Grid();
-            stack.Add(badge);
+            var stack = new Grid { Padding = new Thickness(0, 10, 0, 0) };
             stack.Add(card);
+            stack.Add(badge);
             return stack;
         }
 
@@ -592,9 +592,9 @@ public sealed class TopUpPopupContent : IDisposable
             }
         };
 
-        var stack = new Grid();
-        stack.Add(badge);
+        var stack = new Grid { Padding = new Thickness(0, 10, 0, 0) };
         stack.Add(card);
+        stack.Add(badge);
         return stack;
     }
 
