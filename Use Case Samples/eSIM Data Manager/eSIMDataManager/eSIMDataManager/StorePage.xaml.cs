@@ -29,15 +29,15 @@ public partial class StorePage : ContentPage
     private void DurationFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) => popupActions.DurationFilterSelected(sender, e);
     private void SortFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) => popupActions.SortFilterSelected(sender, e);
 
+    private static readonly Shadow HoveredShadow = new Shadow { Brush = Color.FromArgb("#24324A"), Opacity = 0.16f, Radius = 14, Offset = new Point(0, 6) };
+    private static readonly Shadow RestingShadow = new Shadow { Brush = Color.FromArgb("#24324A"), Opacity = 0.06f, Radius = 6, Offset = new Point(0, 2) };
+
     private void PlanCardPointerEntered(object? sender, PointerEventArgs e)
     {
         if (sender is Border card)
         {
             card.TranslationY = -2;
-            card.StrokeThickness = 1;
-            card.Stroke = Color.FromArgb("#E2E8F0");
-            card.Shadow = new Shadow { Brush = Color.FromArgb("#24324A"), Opacity = 0.12f, Radius = 8, Offset = new Point(0, 3) };
-            card.ZIndex = 1;
+            card.Shadow = HoveredShadow;
         }
     }
 
@@ -46,10 +46,7 @@ public partial class StorePage : ContentPage
         if (sender is Border card)
         {
             card.TranslationY = 0;
-            card.StrokeThickness = 1;
-            card.Stroke = Color.FromArgb("#E2E8F0");
-            card.Shadow = null;
-            card.ZIndex = 0;
+            card.Shadow = RestingShadow;
         }
     }
 }
