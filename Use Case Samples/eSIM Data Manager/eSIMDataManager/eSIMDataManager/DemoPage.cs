@@ -1,6 +1,7 @@
 using eSIMDataManager.Controls;
 using eSIMDataManager.Models;
 using eSIMDataManager.ViewModels;
+using Microsoft.Maui.Controls.Shapes;
 using Syncfusion.Maui.Barcode;
 using Syncfusion.Maui.Buttons;
 using Syncfusion.Maui.Popup;
@@ -202,7 +203,7 @@ public class DemoPage
         var country = profile?.Country ?? "Japan";
         var carrier = profile?.Carrier ?? "Demo Carrier";
         var profileDetails = new VerticalStackLayout { Spacing = 8 };
-        var profileLine = new FlexLayout { Wrap = FlexWrap.Wrap, AlignItems = FlexAlignItems.Center, ColumnGap = 8, RowGap = 4 };
+        var profileLine = new HorizontalStackLayout { Spacing = 8, VerticalOptions = LayoutOptions.Center };
         profileLine.Children.Add(new Label
         {
             Text = country.Equals("Japan", StringComparison.OrdinalIgnoreCase) ? "🇯🇵" : "◉",
@@ -225,15 +226,14 @@ public class DemoPage
             TextColor = outline,
             VerticalOptions = LayoutOptions.Center
         });
-        profileLine.Children.Add(new Label
+        profileDetails.Children.Add(profileLine);
+        profileDetails.Children.Add(new Label
         {
             Text = $"{carrier} · ({(profile?.Network == NetworkType.FiveG ? "5G" : "4G / LTE")} Multi-IMSI)",
-            FontFamily = "OpenSansRegular",
+            FontFamily = "Inter",
             FontSize = 13,
-            TextColor = ink,
-            VerticalOptions = LayoutOptions.Center
+            TextColor = ink
         });
-        profileDetails.Children.Add(profileLine);
 
         var tier = new Border
         {
