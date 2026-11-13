@@ -21,7 +21,7 @@ public partial class MainViewModel : ObservableObject
     private int selectedSortIndex = 3;
     private string selectedNetworkOption = "4G / LTE & 5G";
     private string selectedQuotaOption = "All Quotas";
-    private string selectedDurationOption = "30 Days";
+    private string selectedDurationOption = "Any Duration";
     private string selectedSortOption = "Duration: Longest";
 
     public IReadOnlyList<string> NetworkFilterOptions { get; } = ["All Networks", "5G Ultra Only", "4G / LTE & 5G"];
