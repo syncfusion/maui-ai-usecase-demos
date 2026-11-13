@@ -18,6 +18,7 @@ public sealed class TopUpPopupContent : IDisposable
     private const string SurfaceLow = "#EFF4FF";
     private const string SurfaceHighest = "#D3E4FE";
     private const string MonoFont = "OpenSansRegular";
+    private static readonly Style PopupLabelStyle = new(typeof(Label));
 
     private readonly MainViewModel viewModel;
     private readonly VerticalStackLayout root;
@@ -33,6 +34,7 @@ public sealed class TopUpPopupContent : IDisposable
     {
         this.viewModel = viewModel;
         root = new VerticalStackLayout { Spacing = 0 };
+        root.Resources.Add(typeof(Label), PopupLabelStyle);
         tierContainer = new Grid();
         allowanceLabel = BuildAllowanceLabel();
         purchaseLabel = BuildPurchaseLabel();
