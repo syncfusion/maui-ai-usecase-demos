@@ -14,6 +14,24 @@ public partial class MainViewModel : ObservableObject
     private NetworkType? selectedNetwork;
     private PlanType? selectedType;
     private int? selectedValidity;
+    private string selectedSort = "Duration";
+    private int selectedNetworkIndex = 2;
+    private int selectedQuotaIndex;
+    private int selectedDurationIndex = 3;
+    private int selectedSortIndex = 3;
+    private string selectedNetworkOption = "4G / LTE & 5G";
+    private string selectedQuotaOption = "All Quotas";
+    private string selectedDurationOption = "Any Duration";
+    private string selectedSortOption = "Duration: Longest";
+
+    public IReadOnlyList<string> NetworkFilterOptions { get; } = ["All Networks", "5G Ultra Only", "4G / LTE & 5G"];
+    public IReadOnlyList<string> QuotaFilterOptions { get; } = ["All Quotas", "Fixed Data (1-20 GB)", "Unlimited Data"];
+    public IReadOnlyList<string> DurationFilterOptions { get; } = ["Any Duration", "7 Days", "15 Days", "30 Days"];
+    public IReadOnlyList<string> SortFilterOptions { get; } = ["Recommended", "Price: Low to High", "Data: High to Low", "Duration: Longest"];
+    public string SelectedNetworkOption { get => selectedNetworkOption; set => SetProperty(ref selectedNetworkOption, value); }
+    public string SelectedQuotaOption { get => selectedQuotaOption; set => SetProperty(ref selectedQuotaOption, value); }
+    public string SelectedDurationOption { get => selectedDurationOption; set => SetProperty(ref selectedDurationOption, value); }
+    public string SelectedSortOption { get => selectedSortOption; set => SetProperty(ref selectedSortOption, value); }
 
     public ObservableCollection<Plan> FilteredPlans { get; } = [];
     public ObservableCollection<EsimProfile> ActiveProfiles { get; } = [];
@@ -24,8 +42,32 @@ public partial class MainViewModel : ObservableObject
     public double ValidityFraction => Math.Clamp(DaysRemaining / 14d, 0, 1);
     public string ActivationDateText => ActiveProfile?.ActivationDate?.ToString("MMM d, yyyy") ?? "—";
     public double SevenDayTotal => Trend.Sum(point => point.UsedGb);
+    public IReadOnlyList<string> CoverageOptions { get; } = ["All", "Local", "Regional", "Global"];
+    public int CoverageFilterIndex => selectedCoverage switch { CoverageType.Local => 1, CoverageType.Regional => 2, CoverageType.Global => 3, _ => 0 };
     public IReadOnlyList<string> Destinations { get; } = ["Japan", "USA", "France", "Korea", "Singapore", "Thailand"];
+    public IReadOnlyList<string> TrendingDestinations { get; } = ["JP  Japan", "US  USA", "FR  France", "KR  Korea", "SG  Singapore", "TH  Thailand", "EU  Europe (33)", "🌐  Asia-Pacific"];
     public IReadOnlyList<string> FilterOptions { get; } = ["Local", "Regional", "Global", "4G", "5G", "Limited", "Unlimited", "7 Days", "15 Days", "30 Days"];
+    public string NetworkFilterText => selectedNetwork is null ? "4G / LTE & 5G" : selectedNetwork == NetworkType.FiveG ? "5G Ultra Only" : "4G / LTE";
+    public bool IsAllCoverageSelected => selectedCoverage is null;
+    public bool IsLocalCoverageSelected => selectedCoverage == CoverageType.Local;
+    public bool IsRegionalCoverageSelected => selectedCoverage == CoverageType.Regional;
+    public bool IsGlobalCoverageSelected => selectedCoverage == CoverageType.Global;
+    public string AllCoverageBackground => IsAllCoverageSelected ? "White" : "Transparent";
+    public string LocalCoverageBackground => IsLocalCoverageSelected ? "White" : "Transparent";
+    public string RegionalCoverageBackground => IsRegionalCoverageSelected ? "White" : "Transparent";
+    public string GlobalCoverageBackground => IsGlobalCoverageSelected ? "White" : "Transparent";
+    public string AllCoverageTextColor => IsAllCoverageSelected ? "#0752DB" : "#24334A";
+    public string LocalCoverageTextColor => IsLocalCoverageSelected ? "#0752DB" : "#24334A";
+    public string RegionalCoverageTextColor => IsRegionalCoverageSelected ? "#0752DB" : "#24334A";
+    public string GlobalCoverageTextColor => IsGlobalCoverageSelected ? "#0752DB" : "#24334A";
+    public string QuotaFilterText => selectedType switch { PlanType.Limited => "Fixed Data (1-20 GB)", PlanType.Unlimited => "Unlimited Data", _ => "All Quotas" };
+    public string DurationFilterText => selectedValidity is int days ? $"{days} Days" : "30 Days";
+    public string CoverageFilterText => selectedCoverage switch { CoverageType.Local => "Local", CoverageType.Regional => "Regional", CoverageType.Global => "Global", _ => "All" };
+    public string SortFilterText => selectedSort switch { "PriceLow" => "Price: Low to High", "DataHigh" => "Data: High to Low", "Duration" => "Duration: Longest", _ => "Recommended" };
+    public int NetworkFilterIndex => selectedNetworkIndex;
+    public int QuotaFilterIndex => selectedQuotaIndex;
+    public int DurationFilterIndex => selectedDurationIndex;
+    public int SortFilterIndex => selectedSortIndex;
     public IReadOnlyList<TopUpPack> TopUpPacks => EsimStore.TopUpPacks;
     public EsimStore Store => store;
     public EsimProfile? ActiveProfile => store.ActiveProfile;
@@ -125,8 +167,24 @@ public partial class MainViewModel : ObservableObject
 
     private void RefreshPlans()
     {
-        Sync(FilteredPlans, store.SearchPlans(Search, selectedCountry, selectedCoverage, selectedNetwork, selectedType, selectedValidity));
+        IEnumerable<Plan> plans = store.SearchPlans(Search, selectedCountry, selectedCoverage, selectedNetwork, selectedType, selectedValidity);
+        plans = selectedSort switch
+        {
+            "PriceLow" => plans.OrderBy(plan => plan.Price),
+            "DataHigh" => plans.OrderByDescending(plan => plan.DataLimitGb),
+            "Duration" => plans.OrderByDescending(plan => plan.ValidityDays),
+            _ => plans
+        };
+        Sync(FilteredPlans, plans);
         OnPropertyChanged(nameof(FilteredPlans));
+        OnPropertyChanged(nameof(NetworkFilterText));
+        OnPropertyChanged(nameof(QuotaFilterText));
+        OnPropertyChanged(nameof(DurationFilterText));
+        OnPropertyChanged(nameof(SortFilterText));
+        OnPropertyChanged(nameof(NetworkFilterIndex));
+        OnPropertyChanged(nameof(QuotaFilterIndex));
+        OnPropertyChanged(nameof(DurationFilterIndex));
+        OnPropertyChanged(nameof(SortFilterIndex));
     }
 
     private static void Sync<T>(ObservableCollection<T> destination, IEnumerable<T> source)
@@ -142,10 +200,74 @@ public partial class MainViewModel : ObservableObject
         RefreshPlans();
     }
 
+    public void SetNetworkFilter(string value)
+    {
+        SelectedNetworkOption = value;
+        selectedNetworkIndex = value switch { "5G Ultra Only" => 1, "4G / LTE & 5G" => 2, _ => 0 };
+        selectedNetwork = selectedNetworkIndex == 1 ? NetworkType.FiveG : null;
+        OnPropertyChanged(nameof(NetworkFilterIndex));
+        OnPropertyChanged(nameof(NetworkFilterText));
+        RefreshPlans();
+    }
+
+    public void SetQuotaFilter(string value)
+    {
+        SelectedQuotaOption = value;
+        selectedQuotaIndex = value switch { "Fixed Data (1-20 GB)" => 1, "Unlimited Data" => 2, _ => 0 };
+        selectedType = selectedQuotaIndex switch { 1 => PlanType.Limited, 2 => PlanType.Unlimited, _ => null };
+        OnPropertyChanged(nameof(QuotaFilterIndex));
+        OnPropertyChanged(nameof(QuotaFilterText));
+        RefreshPlans();
+    }
+
+    public void SetDurationFilter(string value)
+    {
+        SelectedDurationOption = value;
+        selectedDurationIndex = value switch { "7 Days" => 1, "15 Days" => 2, "30 Days" => 3, _ => 0 };
+        selectedValidity = selectedDurationIndex switch { 1 => 7, 2 => 15, 3 => 30, _ => null };
+        OnPropertyChanged(nameof(DurationFilterIndex));
+        OnPropertyChanged(nameof(DurationFilterText));
+        RefreshPlans();
+    }
+
+    public void SetSortFilter(string value)
+    {
+        SelectedSortOption = value;
+        selectedSortIndex = value switch { "Price: Low to High" => 1, "Data: High to Low" => 2, "Duration: Longest" => 3, _ => 0 };
+        selectedSort = selectedSortIndex switch { 1 => "PriceLow", 2 => "DataHigh", 3 => "Duration", _ => "Recommended" };
+        OnPropertyChanged(nameof(SortFilterIndex));
+        OnPropertyChanged(nameof(SortFilterText));
+        RefreshPlans();
+    }
+
+    public void SelectCoverage(string coverage)
+    {
+        selectedCoverage = coverage switch { "Local" => CoverageType.Local, "Regional" => CoverageType.Regional, "Global" => CoverageType.Global, _ => null };
+        OnPropertyChanged(nameof(CoverageFilterText));
+        OnPropertyChanged(nameof(CoverageFilterIndex));
+        OnPropertyChanged(nameof(IsAllCoverageSelected));
+        OnPropertyChanged(nameof(IsLocalCoverageSelected));
+        OnPropertyChanged(nameof(IsRegionalCoverageSelected));
+        OnPropertyChanged(nameof(IsGlobalCoverageSelected));
+        OnPropertyChanged(nameof(AllCoverageBackground));
+        OnPropertyChanged(nameof(LocalCoverageBackground));
+        OnPropertyChanged(nameof(RegionalCoverageBackground));
+        OnPropertyChanged(nameof(GlobalCoverageBackground));
+        OnPropertyChanged(nameof(AllCoverageTextColor));
+        OnPropertyChanged(nameof(LocalCoverageTextColor));
+        OnPropertyChanged(nameof(RegionalCoverageTextColor));
+        OnPropertyChanged(nameof(GlobalCoverageTextColor));
+        RefreshPlans();
+    }
+
     public void ToggleFilter(string label)
     {
         SelectedFilterLabel = SelectedFilterLabel == label ? string.Empty : label;
-        selectedCoverage = SelectedFilterLabel switch { "Local" => CoverageType.Local, "Regional" => CoverageType.Regional, "Global" => CoverageType.Global, _ => null };
+        if (label is "All" or "Local" or "Regional" or "Global")
+        {
+            SelectCoverage(label);
+            return;
+        }
         selectedNetwork = SelectedFilterLabel switch { "4G" => NetworkType.FourG, "5G" => NetworkType.FiveG, _ => null };
         selectedType = SelectedFilterLabel switch { "Limited" => PlanType.Limited, "Unlimited" => PlanType.Unlimited, _ => null };
         selectedValidity = SelectedFilterLabel switch { "7 Days" => 7, "15 Days" => 15, "30 Days" => 30, _ => null };
@@ -168,6 +290,19 @@ public partial class MainViewModel : ObservableObject
         selectedNetwork = null;
         selectedType = null;
         selectedValidity = null;
+        selectedNetworkIndex = 2;
+        selectedQuotaIndex = 0;
+        selectedDurationIndex = 3;
+        selectedSortIndex = 3;
+        SelectedNetworkOption = "4G / LTE & 5G";
+        SelectedQuotaOption = "All Quotas";
+        SelectedDurationOption = "30 Days";
+        SelectedSortOption = "Duration: Longest";
+        selectedSort = "Duration";
+        OnPropertyChanged(nameof(NetworkFilterIndex));
+        OnPropertyChanged(nameof(QuotaFilterIndex));
+        OnPropertyChanged(nameof(DurationFilterIndex));
+        OnPropertyChanged(nameof(SortFilterIndex));
         Search = string.Empty;
         SelectedFilterLabel = string.Empty;
         RefreshPlans();
