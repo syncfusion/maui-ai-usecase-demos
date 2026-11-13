@@ -22,7 +22,7 @@ public sealed class QrPopupContent
     private const string MonoFont = "monospace";
 
     // Material icon codepoints available in the bundled MauiMaterialAssets font.
-    private const string IconTable = "\uE7AF";
+    private const string IconTable = "\uE712";
     private const string IconClose = "\uE70B";
     private const string IconDot = "\uE73F";
     private const string IconCheckTick = "\uE70C";
@@ -93,7 +93,7 @@ public sealed class QrPopupContent
             Content = bodyGrid
         };
 
-        root.Add(bodyScroll);
+        root.Add(bodyGrid);
         root.Add(BuildFooter(profile, activationCode));
     }
 
@@ -169,14 +169,16 @@ public sealed class QrPopupContent
     }
 
     /// <summary>Material icon label (must use MaterialAssets font).</summary>
-    private static Label Icon(string glyph, double size, Color color)
+    private static Label Icon(string glyph, double size, Color color, string fontFamily)
     {
         var label = new Label
         {
             Text = glyph,
-            FontFamily = "MaterialAssets",
+            FontFamily = fontFamily,
             FontSize = size,
-            TextColor = color
+            TextColor = color,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center
         };
         label.SetAppThemeColor(Label.TextColorProperty, color, color);
         return label;
@@ -205,7 +207,7 @@ public sealed class QrPopupContent
             {
                 Children =
                 {
-                    Icon(IconTable, 22, Color.FromArgb(PrimaryColor))
+                    Icon(IconTable, 22, Color.FromArgb(PrimaryColor), "UiKitIcons")
                 }
             }
         };
@@ -233,7 +235,7 @@ public sealed class QrPopupContent
                 }
             }
         };
-        var readyIcon = Icon(IconCheckTick, 10, Color.FromArgb("#065F46"));
+        var readyIcon = Icon(IconCheckTick, 10, Color.FromArgb("#065F46"), "MaterialAssets");
         var readyText = Text("Ready to Install", 10, Color.FromArgb("#065F46"), FontAttributes.Bold);
         ((Grid)readyPill.Content).Add(readyIcon, 0, 0);
         ((Grid)readyPill.Content).Add(readyText, 1, 0);
@@ -298,13 +300,13 @@ public sealed class QrPopupContent
         };
         titleRow.Add(Text(countryCode, 14, Color.FromArgb(InkColor), FontAttributes.Bold), 0, 0);
         titleRow.Add(Text(profile?.ProfileName ?? "Japan 5G Explorer", 14, Color.FromArgb(InkColor), FontAttributes.Bold), 1, 0);
-        titleRow.Add(Icon(IconDot, 6, Color.FromArgb(OutlineVariant)), 2, 0);
+        titleRow.Add(Icon(IconDot, 6, Color.FromArgb(OutlineVariant), "MaterialAssets"), 2, 0);
         titleRow.Add(Text($"{profile?.Carrier ?? "SoftBank Corp."}", 11, Color.FromArgb(MutedColor)), 3, 0);
         titleRow.Add(Text($"({network} Multi-IMSI)", 11, Color.FromArgb(MutedColor)), 4, 0);
         titleRow.Add(new Label(), 5, 0);
 
         // Row 2: 10 GB · 30 Days Global Tier pill (white, outlined, on light-blue background)
-        var tierDot = Icon(IconCheckTick, 11, Color.FromArgb("#006172"));
+        var tierDot = Icon(IconCheckTick, 11, Color.FromArgb("#006172"), "MaterialAssets");
         var tierText = Text($"{profile?.AllocatedGb ?? 10:0.#} GB  ·  {Math.Max(1, profile?.DaysRemaining ?? 30)} Days Global Tier",
             11, Color.FromArgb("#006172"), FontAttributes.Bold);
         var tierRow = new Grid
@@ -369,7 +371,7 @@ public sealed class QrPopupContent
             ColumnSpacing = 6,
             VerticalOptions = LayoutOptions.Center
         };
-        instantRow.Add(Icon(IconSearch, 12, Color.FromArgb(PrimaryColor)), 0, 0);
+        instantRow.Add(Icon(IconSearch, 12, Color.FromArgb(PrimaryColor), "MaterialAssets"), 0, 0);
         instantRow.Add(Text("Instant Scan", 13, Color.FromArgb(InkColor), FontAttributes.Bold), 1, 0);
         heading.Add(instantRow, 0, 0);
         heading.Add(MonoText($"EID: {TruncateEid(profile?.Iccid)}", 10, Color.FromArgb(MutedColor)), 1, 0);
@@ -381,7 +383,7 @@ public sealed class QrPopupContent
             HeightRequest = 220,
             WidthRequest = 220,
             BackgroundColor = Colors.White,
-            ForegroundColor = Color.FromArgb(PrimaryColor),
+            ForegroundColor = Colors.Black,
             HorizontalOptions = LayoutOptions.Center,
             VerticalOptions = LayoutOptions.Center,
             Symbology = new QRCode(),
@@ -397,7 +399,7 @@ public sealed class QrPopupContent
             Stroke = Colors.White,
             StrokeThickness = 2,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(15) },
-            Content = Icon(IconCheckTick, 13, Colors.White)
+            Content = Icon(IconCheckTick, 13, Colors.White, "MaterialAssets")
         };
 
         var qrStack = new Grid
@@ -635,7 +637,7 @@ public sealed class QrPopupContent
         var titleStack = new VerticalStackLayout { Spacing = 1, VerticalOptions = LayoutOptions.Center };
         titleStack.Add(Text("Manual Activation", 13, Color.FromArgb(InkColor), FontAttributes.Bold));
         titleStack.Add(Text("Parameters", 13, Color.FromArgb(InkColor), FontAttributes.Bold));
-        headerGrid.Add(Icon(IconTable, 16, Color.FromArgb(InkColor)), 0, 0);
+        headerGrid.Add(Icon(IconTable, 16, Color.FromArgb(InkColor), "MaterialAssets"), 0, 0);
         headerGrid.Add(titleStack, 1, 0);
 
         var rspPill = new Border
@@ -672,7 +674,7 @@ public sealed class QrPopupContent
         {
             BackgroundColor = Colors.White,
             Stroke = Color.FromArgb(OutlineVariant),
-            StrokeThickness = 1,
+            StrokeThickness = 0.1,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
             Padding = new Thickness(14, 12),
             Content = stack
@@ -728,7 +730,7 @@ public sealed class QrPopupContent
 
     private static View CopyButton()
     {
-        var copyIcon = Icon(IconCopy, 12, Color.FromArgb(PrimaryColor));
+        var copyIcon = Icon(IconCopy, 12, Color.FromArgb(PrimaryColor), "MaterialAssets");
         var copyText = Text("Copy Full Activation String", 11, Color.FromArgb(PrimaryColor), FontAttributes.Bold);
 
         var row = new Grid
@@ -773,7 +775,7 @@ public sealed class QrPopupContent
             ColumnSpacing = 10,
             VerticalOptions = LayoutOptions.Center
         };
-        row.Add(Icon(IconPhone, 14, Color.FromArgb(MutedColor)), 0, 0);
+        row.Add(Icon(IconPhone, 14, Color.FromArgb(MutedColor), "MaterialAssets"), 0, 0);
 
         var text = new Label
         {
@@ -787,9 +789,9 @@ public sealed class QrPopupContent
 
         return new Border
         {
-            BackgroundColor = Colors.White,
+            BackgroundColor = Color.FromArgb(SurfaceLow),
             Stroke = Color.FromArgb(OutlineVariant),
-            StrokeThickness = 1,
+            StrokeThickness = 0.1,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
             Padding = new Thickness(12),
             Content = row
@@ -803,7 +805,7 @@ public sealed class QrPopupContent
         iccidText.HorizontalOptions = LayoutOptions.Start;
         iccidText.VerticalOptions = LayoutOptions.Center;
 
-        var iccidIcon = Icon(IconCircleCheck, 14, Color.FromArgb("#007A56"));
+        var iccidIcon = Icon(IconCircleCheck, 14, Color.FromArgb("#007A56"), "MaterialAssets");
         iccidIcon.VerticalOptions = LayoutOptions.Center;
 
         var iccidLabel = Text("ICCID:", 10.5, Color.FromArgb(MutedColor), FontAttributes.Bold);
@@ -836,7 +838,7 @@ public sealed class QrPopupContent
             HorizontalOptions = LayoutOptions.Center,
             VerticalOptions = LayoutOptions.Center
         };
-        emailRow.Add(Icon(IconEmail, 13, Color.FromArgb(InkColor)), 0, 0);
+        emailRow.Add(Icon(IconEmail, 13, Color.FromArgb(InkColor), "MaterialAssets"), 0, 0);
         emailRow.Add(Text("Send QR to Email", 12, Color.FromArgb(InkColor)), 1, 0);
 
         var sendEmail = new SfButton
@@ -861,7 +863,7 @@ public sealed class QrPopupContent
             HorizontalOptions = LayoutOptions.Center,
             VerticalOptions = LayoutOptions.Center
         };
-        scannedRow.Add(Icon(IconCircleCheck, 13, Colors.White), 0, 0);
+        scannedRow.Add(Icon(IconCircleCheck, 13, Colors.White, "MaterialAssets"), 0, 0);
         scannedRow.Add(Text("I've Scanned the QR Code", 12, Colors.White, FontAttributes.Bold), 1, 0);
 
         var scanned = new SfButton
