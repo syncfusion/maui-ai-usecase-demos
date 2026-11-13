@@ -14,6 +14,7 @@ public partial class DashboardPage : ContentPage
         Content = new Grid { Children = { Content, popupActions.PopupView, popupActions.TopUpPopupView } };
         SizeChanged += (_, _) =>
         {
+            popupActions.PopupView.WidthRequest = Math.Min(580, Width - 32);
             popupActions.UpdateTopUpPopupWidth(Width);
         };
     }
