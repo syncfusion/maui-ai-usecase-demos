@@ -14,10 +14,14 @@ public sealed class TopUpPopupContent : IDisposable
 {
     private const string InkColor = "#0B1C30";
     private const string MutedColor = "#434656";
-    private const string PrimaryColor = "#1E5BFF";
+    private const string PrimaryColor = "#0046CC";
+    private const string PrimaryActionColor = "#0D5CFF";
     private const string SurfaceLow = "#EFF4FF";
+    private const string SurfaceContainer = "#E5EEFF";
     private const string SurfaceHighest = "#D3E4FE";
-    private const string MonoFont = "OpenSansRegular";
+    private const string OutlineVariant = "#C3C5D9";
+    private const string UiFont = "Inter";
+    private const string MonoFont = "monospace";
     private static readonly Style PopupLabelStyle = new(typeof(Label));
 
     private readonly MainViewModel viewModel;
@@ -131,7 +135,7 @@ public sealed class TopUpPopupContent : IDisposable
             radio.Content = new Label
             {
                 Text = selected ? "\u2713" : string.Empty,
-                FontFamily = "OpenSansRegular",
+                FontFamily = UiFont,
                 FontSize = 12,
                 FontAttributes = FontAttributes.Bold,
                 TextColor = Colors.White,
@@ -155,8 +159,8 @@ public sealed class TopUpPopupContent : IDisposable
             EndPoint = new Point(1, 0),
             GradientStops =
             {
-                new GradientStop(Color.FromArgb("#0046CC"), 0f),
-                new GradientStop(Color.FromArgb("#0D5CFF"), 0.55f),
+                new GradientStop(Color.FromArgb(PrimaryColor), 0f),
+                new GradientStop(Color.FromArgb(PrimaryActionColor), 0.55f),
                 new GradientStop(Color.FromArgb("#00687A"), 1f)
             }
         }
@@ -187,8 +191,8 @@ public sealed class TopUpPopupContent : IDisposable
         var title = new Label
         {
             Text = "Top-Up Data",
-            FontFamily = "OpenSansRegular",
-            FontSize = 30,
+            FontFamily = UiFont,
+            FontSize = 32,
             FontAttributes = FontAttributes.Bold,
             TextColor = Color.FromArgb(InkColor),
             VerticalOptions = LayoutOptions.Center
@@ -201,7 +205,7 @@ public sealed class TopUpPopupContent : IDisposable
         var subtitle = new Label
         {
             Text = "Add extra high-speed data to your active Japan 5G Explorer profile.",
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 14,
             TextColor = Color.FromArgb(MutedColor)
         };
@@ -241,7 +245,7 @@ public sealed class TopUpPopupContent : IDisposable
         var caption = new Label
         {
             Text = "Current Profile:",
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 13,
             FontAttributes = FontAttributes.Bold,
             TextColor = Color.FromArgb(InkColor),
@@ -251,7 +255,7 @@ public sealed class TopUpPopupContent : IDisposable
         var name = new Label
         {
             Text = $"{viewModel.TopUpProfileName} ({viewModel.TopUpCarrierName})",
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 13,
             TextColor = Color.FromArgb(MutedColor),
             VerticalOptions = LayoutOptions.Center
@@ -275,9 +279,9 @@ public sealed class TopUpPopupContent : IDisposable
         var separator = new Label
         {
             Text = "•",
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 13,
-            TextColor = Color.FromArgb("#C3C5D9"),
+            TextColor = Color.FromArgb(OutlineVariant),
             VerticalOptions = LayoutOptions.Center
         };
 
@@ -318,7 +322,7 @@ public sealed class TopUpPopupContent : IDisposable
         var label = new Label
         {
             Text = "SELECT DATA EXTENSION TIER",
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 11,
             FontAttributes = FontAttributes.Bold,
             TextColor = Color.FromArgb(MutedColor)
@@ -340,7 +344,7 @@ public sealed class TopUpPopupContent : IDisposable
         var size = new Label
         {
             Text = pack.DataLabel,
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 19,
             FontAttributes = FontAttributes.Bold,
             TextColor = Color.FromArgb(selected ? PrimaryColor : InkColor),
@@ -361,7 +365,7 @@ public sealed class TopUpPopupContent : IDisposable
             Content = new Label
             {
                 Text = selected ? "\u2713" : string.Empty,
-                FontFamily = "OpenSansRegular",
+                FontFamily = UiFont,
                 FontSize = 12,
                 FontAttributes = FontAttributes.Bold,
                 TextColor = Colors.White,
@@ -380,14 +384,14 @@ public sealed class TopUpPopupContent : IDisposable
             FontFamily = MonoFont,
             FontSize = 13,
             FontAttributes = FontAttributes.Bold,
-            TextColor = Color.FromArgb("#006B4F"),
+            TextColor = Color.FromArgb("#006141"),
             Margin = new Thickness(0, 8, 0, 0)
         };
 
         var description = new Label
         {
             Text = pack.Description,
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 12,
             TextColor = Color.FromArgb(MutedColor),
             LineBreakMode = LineBreakMode.WordWrap
@@ -396,7 +400,7 @@ public sealed class TopUpPopupContent : IDisposable
         var price = new Label
         {
             Text = pack.PriceText,
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 26,
             FontAttributes = FontAttributes.Bold,
             TextColor = Color.FromArgb(InkColor)
@@ -430,8 +434,8 @@ public sealed class TopUpPopupContent : IDisposable
             BackgroundColor = Color.FromArgb(selected ? "#FFFFFF" : SurfaceLow),
             Stroke = Color.FromArgb(selected ? PrimaryColor : SurfaceLow),
             StrokeThickness = selected ? 2 : 1,
-            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(14) },
-            Padding = new Thickness(14, 16),
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(16) },
+            Padding = new Thickness(16),
             Content = body
         };
 
@@ -449,7 +453,7 @@ public sealed class TopUpPopupContent : IDisposable
             {
                 BackgroundColor = Color.FromArgb(pack.IsPopular ? PrimaryColor : SurfaceHighest),
                 StrokeThickness = 0,
-                StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(10) },
+                StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(999) },
                 Padding = new Thickness(10, 3),
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Start,
@@ -457,7 +461,7 @@ public sealed class TopUpPopupContent : IDisposable
                 Content = new Label
                 {
                     Text = tag.ToUpperInvariant(),
-                    FontFamily = "OpenSansRegular",
+                    FontFamily = UiFont,
                     FontSize = 10,
                     FontAttributes = FontAttributes.Bold,
                     TextColor = Color.FromArgb(pack.IsPopular ? "#FFFFFF" : PrimaryColor)
@@ -489,7 +493,7 @@ public sealed class TopUpPopupContent : IDisposable
             Content = new Label
             {
                 Text = selected ? "\u2713" : string.Empty,
-                FontFamily = "OpenSansRegular",
+                FontFamily = UiFont,
                 FontSize = 12,
                 FontAttributes = FontAttributes.Bold,
                 TextColor = Colors.White,
@@ -504,14 +508,14 @@ public sealed class TopUpPopupContent : IDisposable
             FontFamily = MonoFont,
             FontSize = 12,
             FontAttributes = FontAttributes.Bold,
-            TextColor = Color.FromArgb("#006B4F"),
+            TextColor = Color.FromArgb("#006141"),
             VerticalOptions = LayoutOptions.Center
         };
 
         var description = new Label
         {
             Text = pack.Description,
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 12,
             TextColor = Color.FromArgb(MutedColor),
             LineBreakMode = LineBreakMode.WordWrap
@@ -532,7 +536,7 @@ public sealed class TopUpPopupContent : IDisposable
         var price = new Label
         {
             Text = pack.PriceText,
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 18,
             FontAttributes = FontAttributes.Bold,
             TextColor = Color.FromArgb(selected ? PrimaryColor : InkColor),
@@ -559,11 +563,11 @@ public sealed class TopUpPopupContent : IDisposable
 
         var card = new Border
         {
-            BackgroundColor = Color.FromArgb(selected ? "#E8EFFF" : SurfaceLow),
+            BackgroundColor = Color.FromArgb(selected ? SurfaceContainer : SurfaceLow),
             Stroke = Color.FromArgb(selected ? PrimaryColor : SurfaceLow),
             StrokeThickness = selected ? 2 : 1,
-            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(14) },
-            Padding = new Thickness(14, 12),
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(16) },
+            Padding = new Thickness(16, 14),
             Content = row
         };
 
@@ -581,7 +585,7 @@ public sealed class TopUpPopupContent : IDisposable
         {
             BackgroundColor = Color.FromArgb(pack.IsPopular ? PrimaryColor : SurfaceHighest),
             StrokeThickness = 0,
-            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(10) },
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(999) },
             Padding = new Thickness(10, 3),
             HorizontalOptions = LayoutOptions.Center,
             VerticalOptions = LayoutOptions.Start,
@@ -589,7 +593,7 @@ public sealed class TopUpPopupContent : IDisposable
             Content = new Label
             {
                 Text = tag.ToUpperInvariant(),
-                FontFamily = "OpenSansRegular",
+                FontFamily = UiFont,
                 FontSize = 10,
                 FontAttributes = FontAttributes.Bold,
                 TextColor = Color.FromArgb(pack.IsPopular ? "#FFFFFF" : PrimaryColor)
@@ -617,15 +621,15 @@ public sealed class TopUpPopupContent : IDisposable
         var speedIcon = new Label
         {
             Text = "\u21E7",
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 15,
-            TextColor = Color.FromArgb("#006B4F"),
+            TextColor = Color.FromArgb("#006141"),
             VerticalOptions = LayoutOptions.Center
         };
         var speedLabel = new Label
         {
             Text = "Provisioning Speed",
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 13,
             TextColor = Color.FromArgb(MutedColor),
             VerticalOptions = LayoutOptions.Center
@@ -636,7 +640,7 @@ public sealed class TopUpPopupContent : IDisposable
         var speedRight = new Label
         {
             Text = "Instant Activation Upon Payment",
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 13,
             FontAttributes = FontAttributes.Bold,
             TextColor = Color.FromArgb(InkColor),
@@ -649,7 +653,7 @@ public sealed class TopUpPopupContent : IDisposable
         var allowanceLeft = new Label
         {
             Text = "Selected Top-Up Allowance",
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 13,
             TextColor = Color.FromArgb(MutedColor),
             VerticalOptions = LayoutOptions.Center
@@ -668,7 +672,7 @@ public sealed class TopUpPopupContent : IDisposable
             Content = new Label
             {
                 Text = "VISA",
-                FontFamily = "OpenSansRegular",
+                FontFamily = UiFont,
                 FontSize = 10,
                 FontAttributes = FontAttributes.Bold,
                 TextColor = Color.FromArgb(PrimaryColor)
@@ -678,7 +682,7 @@ public sealed class TopUpPopupContent : IDisposable
         var cardLabel = new Label
         {
             Text = "Auto-applied card ending in 4242",
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 13,
             TextColor = Color.FromArgb(InkColor),
             VerticalOptions = LayoutOptions.Center
@@ -690,7 +694,7 @@ public sealed class TopUpPopupContent : IDisposable
         var change = new SfButton
         {
             Text = "Change",
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 13,
             FontAttributes = FontAttributes.Bold,
             Background = Colors.Transparent,
@@ -726,7 +730,7 @@ public sealed class TopUpPopupContent : IDisposable
     private Label BuildPurchaseLabel() => new Label
     {
         Text = viewModel.TopUpSubmitLabel,
-        FontFamily = "OpenSansRegular",
+        FontFamily = UiFont,
         FontSize = 15,
         FontAttributes = FontAttributes.Bold,
         TextColor = Colors.White,
@@ -737,10 +741,10 @@ public sealed class TopUpPopupContent : IDisposable
     {
         var purchase = new SfButton
         {
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 15,
             FontAttributes = FontAttributes.Bold,
-            Background = Color.FromArgb(PrimaryColor),
+            Background = Color.FromArgb(PrimaryActionColor),
             TextColor = Colors.White,
             CornerRadius = 10,
             Padding = new Thickness(16, 6),
@@ -766,7 +770,7 @@ public sealed class TopUpPopupContent : IDisposable
         var cancel = new SfButton
         {
             Text = "Cancel",
-            FontFamily = "OpenSansRegular",
+            FontFamily = UiFont,
             FontSize = 15,
             Background = Color.FromArgb(SurfaceLow),
             TextColor = Color.FromArgb(InkColor),
