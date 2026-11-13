@@ -19,18 +19,19 @@
     </ContentPage.Resources>
     <ContentPage.Content>
         <Grid RowDefinitions="Auto,*" BackgroundColor="#F5F7FB">
-            <Border Grid.Row="0" BackgroundColor="#F5F7FB" StrokeThickness="0" Padding="{OnIdiom Phone=18, Tablet=24, Desktop=36,0}">
-            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="18" VerticalOptions="Center" MinimumHeightRequest="56">
+            <Border Grid.Row="0" BackgroundColor="#80FFFFFF" StrokeThickness="0" Padding="{OnIdiom Phone=18, Tablet=24, Desktop=36,0}">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="18" VerticalOptions="Center" MinimumHeightRequest="48">
                     <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
                         <Border WidthRequest="34" HeightRequest="34" BackgroundColor="#1E5BFF" StrokeThickness="0" StrokeShape="RoundRectangle 11"><Label Text="e" FontFamily="Inter" FontSize="22" FontAttributes="Bold" TextColor="White" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border>
                         <Label Text="eSIM Data Manager" FontSize="18" FontAttributes="Bold" FontFamily="Inter" TextColor="#101D35" VerticalOptions="Center" />
                     </HorizontalStackLayout>
                     <Grid Grid.Column="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" VerticalOptions="Center">
-                        <Border BackgroundColor="#EEF3FF" StrokeThickness="0" StrokeShape="RoundRectangle 14" Padding="5" VerticalOptions="Center">
+                        <Border BackgroundColor="#EEF3FF" StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="4" HeightRequest="42" VerticalOptions="Center">
                             <HorizontalStackLayout Spacing="2">
                                 <sfButton:SfButton Text="Dashboard" Style="{StaticResource NavigationActiveButton}" />
                                 <sfButton:SfButton Text="My eSIMs" Clicked="ProfilesClicked" Style="{StaticResource NavigationInactiveButton}" />
                                 <sfButton:SfButton Text="Store" Clicked="StoreClicked" Style="{StaticResource NavigationInactiveButton}" />
+                                <sfButton:SfButton Text="Orders" Style="{StaticResource NavigationInactiveButton}" />
                             </HorizontalStackLayout>
                         </Border>
                         <Border Grid.Column="1" BackgroundColor="#F0F4FF" StrokeThickness="0" StrokeShape="RoundRectangle 12" HeightRequest="42" VerticalOptions="Center">
