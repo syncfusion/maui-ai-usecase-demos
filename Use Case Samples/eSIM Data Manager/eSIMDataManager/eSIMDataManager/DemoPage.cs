@@ -12,7 +12,15 @@ public class DemoPage
 
     private readonly SfPopup popup = new() { ShowHeader = false, ShowFooter = false, WidthRequest = 580, HeightRequest = 650, StaysOpen = true };
     private readonly VerticalStackLayout popupContent = new() { Spacing = 14, Padding = 22 };
-    private readonly SfPopup topUpPopup = new() { ShowHeader = false, ShowFooter = false, WidthRequest = 720, StaysOpen = true, AutoSizeMode = PopupAutoSizeMode.Height };
+    private readonly SfPopup topUpPopup = new()
+    {
+        ShowHeader = false,
+        ShowFooter = false,
+        WidthRequest = 720,
+        StaysOpen = true,
+        AutoSizeMode = PopupAutoSizeMode.Height,
+        PopupStyle = new PopupStyle { PopupBackground = Colors.White, MessageBackground = Colors.White }
+    };
     private TopUpPopupContent? topUpContent;
     private double availableTopUpWidth = 720;
     private EsimProfile? popupProfile;

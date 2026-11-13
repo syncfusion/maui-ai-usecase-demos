@@ -33,7 +33,7 @@ public sealed class TopUpPopupContent : IDisposable
     public TopUpPopupContent(MainViewModel viewModel)
     {
         this.viewModel = viewModel;
-        root = new VerticalStackLayout { Spacing = 0 };
+        root = new VerticalStackLayout { Spacing = 0, BackgroundColor = Colors.White };
         root.Resources.Add(PopupLabelStyle);
         tierContainer = new Grid();
         allowanceLabel = BuildAllowanceLabel();
@@ -89,6 +89,7 @@ public sealed class TopUpPopupContent : IDisposable
         var grid = new Grid
         {
             ColumnSpacing = 12,
+            Padding = new Thickness(3),
             ColumnDefinitions =
             {
                 new ColumnDefinition(GridLength.Star),
@@ -122,8 +123,8 @@ public sealed class TopUpPopupContent : IDisposable
             var size = tierSizes[index];
 
             card.BackgroundColor = Color.FromArgb(selected ? "#FFFFFF" : SurfaceLow);
-            card.Stroke = Color.FromArgb(selected ? PrimaryColor : "#00000000");
-            card.StrokeThickness = selected ? 2 : 0;
+            card.Stroke = Color.FromArgb(selected ? PrimaryColor : SurfaceLow);
+            card.StrokeThickness = selected ? 2 : 1;
             size.TextColor = Color.FromArgb(selected ? PrimaryColor : InkColor);
 
             radio.BackgroundColor = Color.FromArgb(selected ? PrimaryColor : SurfaceHighest);
@@ -416,8 +417,8 @@ public sealed class TopUpPopupContent : IDisposable
         var card = new Border
         {
             BackgroundColor = Color.FromArgb(selected ? "#FFFFFF" : SurfaceLow),
-            Stroke = Color.FromArgb(selected ? PrimaryColor : "#00000000"),
-            StrokeThickness = selected ? 2 : 0,
+            Stroke = Color.FromArgb(selected ? PrimaryColor : SurfaceLow),
+            StrokeThickness = selected ? 2 : 1,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(14) },
             Padding = new Thickness(14, 16),
             Content = body
@@ -545,8 +546,8 @@ public sealed class TopUpPopupContent : IDisposable
         var card = new Border
         {
             BackgroundColor = Color.FromArgb(selected ? "#E8EFFF" : SurfaceLow),
-            Stroke = Color.FromArgb(selected ? PrimaryColor : "#00000000"),
-            StrokeThickness = selected ? 2 : 0,
+            Stroke = Color.FromArgb(selected ? PrimaryColor : SurfaceLow),
+            StrokeThickness = selected ? 2 : 1,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(14) },
             Padding = new Thickness(14, 12),
             Content = row
@@ -727,11 +728,12 @@ public sealed class TopUpPopupContent : IDisposable
             Background = Color.FromArgb(PrimaryColor),
             TextColor = Colors.White,
             CornerRadius = 10,
-            Padding = new Thickness(24, 11),
-            MinimumHeightRequest = 46,
+            Padding = new Thickness(16, 6),
+            HeightRequest = 44,
+            MinimumHeightRequest = 44,
             Content = new DataTemplate(() =>
             {
-                var row = new HorizontalStackLayout { Spacing = 8, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center };
+                var row = new HorizontalStackLayout { Spacing = 8, Margin = new Thickness(8, 0), HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center };
                 row.Add(new Label
                 {
                     Text = "\uE761",
@@ -754,8 +756,9 @@ public sealed class TopUpPopupContent : IDisposable
             Background = Color.FromArgb(SurfaceLow),
             TextColor = Color.FromArgb(InkColor),
             CornerRadius = 10,
-            Padding = new Thickness(24, 11),
-            MinimumHeightRequest = 46
+            Padding = new Thickness(20, 6),
+            HeightRequest = 44,
+            MinimumHeightRequest = 44
         };
         cancel.Clicked += (_, _) => CancelRequested?.Invoke(this, EventArgs.Empty);
 
