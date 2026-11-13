@@ -168,12 +168,12 @@ public sealed class TopUpPopupContent : IDisposable
 
     private View BuildHeader()
     {
-        var plusIcon = new Grid { WidthRequest = 30, HeightRequest = 30, VerticalOptions = LayoutOptions.Center };
+        var plusIcon = new Grid { WidthRequest = 30, HeightRequest = 40, VerticalOptions = LayoutOptions.Center };
         plusIcon.Add(new Label
         {
             Text = "\uE73F",
             FontFamily = "MaterialAssets",
-            FontSize = 30,
+            FontSize = 25,
             TextColor = Color.FromArgb(PrimaryColor),
             HorizontalTextAlignment = TextAlignment.Center,
             VerticalTextAlignment = TextAlignment.Center
@@ -182,7 +182,8 @@ public sealed class TopUpPopupContent : IDisposable
         {
             Text = "\uE70D",
             FontFamily = "MaterialAssets",
-            FontSize = 13,
+            FontSize = 15,
+            FontAttributes = FontAttributes.Bold,
             TextColor = Color.FromArgb(PrimaryColor),
             HorizontalTextAlignment = TextAlignment.Center,
             VerticalTextAlignment = TextAlignment.Center
@@ -216,7 +217,7 @@ public sealed class TopUpPopupContent : IDisposable
 
         var close = new SfButton
         {
-            Text = "\uE712",
+            Text = "\uE70B",
             FontFamily = "MaterialAssets",
             FontSize = 16,
             Background = Colors.Transparent,
@@ -620,8 +621,7 @@ public sealed class TopUpPopupContent : IDisposable
     {
         var speedIcon = new Label
         {
-            Text = "\u21E7",
-            FontFamily = UiFont,
+            Text = "⚡️",
             FontSize = 15,
             TextColor = Color.FromArgb("#006141"),
             VerticalOptions = LayoutOptions.Center
@@ -755,7 +755,7 @@ public sealed class TopUpPopupContent : IDisposable
                 var row = new HorizontalStackLayout { Spacing = 8, Margin = new Thickness(8, 0), HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center };
                 row.Add(new Label
                 {
-                    Text = "\uE761",
+                    Text = "\uE77B",
                     FontFamily = "MaterialAssets",
                     FontSize = 15,
                     TextColor = Colors.White,
