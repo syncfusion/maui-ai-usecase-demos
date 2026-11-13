@@ -470,7 +470,9 @@ public sealed class TopUpPopupContent : IDisposable
             return stack;
         }
 
-        return card;
+        var unbadgedStack = new Grid { Padding = new Thickness(0, 10, 0, 0) };
+        unbadgedStack.Add(card);
+        return unbadgedStack;
     }
 
     private View BuildCompactTierCard(TopUpPack pack, bool selected, Label size)
