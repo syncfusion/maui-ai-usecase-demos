@@ -31,7 +31,6 @@
                                 <sfButton:SfButton Text="Dashboard" Style="{StaticResource NavigationActiveButton}" />
                                 <sfButton:SfButton Text="My eSIMs" Clicked="ProfilesClicked" Style="{StaticResource NavigationInactiveButton}" />
                                 <sfButton:SfButton Text="Store" Clicked="StoreClicked" Style="{StaticResource NavigationInactiveButton}" />
-                                <sfButton:SfButton Text="Orders" Style="{StaticResource NavigationInactiveButton}" />
                             </HorizontalStackLayout>
                         </Border>
                         <Border Grid.Column="1" BackgroundColor="#F0F4FF" StrokeThickness="0" StrokeShape="RoundRectangle 12" HeightRequest="42" VerticalOptions="Center">
