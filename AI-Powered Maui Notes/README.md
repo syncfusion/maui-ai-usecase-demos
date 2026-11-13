@@ -1,91 +1,152 @@
-# AI-Powered Maui Notes with .NET MAUI RichTextEditor and Azure OpenAI
+# AI-Powered Maui Notes
 
-A cross-platform .NET MAUI notes application built around the **Syncfusion RichTextEditor**. Notes are organized in a tree of folders and notes, edited in a full rich text editor (formatting toolbar, text/highlight palettes, tables, links, images), and enhanced with an **AI writing assistant** powered by **Azure OpenAI** that edits the selected text (or the whole note) in place — with Revert, Retry, Undo, Redo, and Done controls.
+A cross-platform .NET MAUI notes app that uses Azure OpenAI to edit and improve note content directly in a rich text editor.
 
-The sample is fully self-contained: notes are persisted to a local JSON file (loaded on startup), and the first run seeds realistic sample content (Work / Personal / Ideas folders) so the AI features can be tried immediately.
+## Overview
 
-## Highlights
+The sample demonstrates how to add AI-assisted writing tools to a personal notes app while keeping the user in control of edits. Users can organize notes and folders, select text (or work on an entire note), request an AI transformation, and review or undo the result.
 
-- **Syncfusion RichTextEditor** as the central control: rich formatting, palette-based text color and highlight, tables, links, images, and native HTML access
-- **AI writing actions** on the selected text or the whole note: Grammar Check, Proofread, Rewrite, Summarize, Key Points, Convert to List, Convert to Table, Friendly Tone, Professional Tone, Concise, and a free-form Custom instruction
-- **Safe in-place AI edits**: the AI result is applied through the editor's selection model with an undo receipt, so Revert, Retry, Undo, and Redo always work; stale selections (content changed while the request was in flight) are detected and the result is not applied
-- **Robust AI client**: environment-variable configuration, HTTPS-only endpoint validation, input size limits, status-code-specific error messages, cancellation, and prompt-injection-hardened system prompt
-- Notes organization with **Syncfusion TreeView**: folders, create/rename/duplicate/move/delete, note locking, Today/Yesterday/week groupings
-- **MVVM architecture** with the built-in MAUI dependency injection — no external DI framework
-- Works across **Android, iOS, macOS, and Windows** (Android uses a dedicated single-page mobile layout; the other platforms use the two-column desktop layout)
+- **What the sample does:** Organizes and edits locally persisted notes, with AI writing actions available from the editor.
+- **Who it is for:** Developers exploring AI integration, rich text editing, and note organization in .NET MAUI.
+- **AI capability:** Azure OpenAI chat completions for grammar checking, proofreading, rewriting, summarizing, tone changes, and content restructuring.
+- **Outcome:** Users get a proposed edit applied in place with review, revert, retry, undo, and redo options.
+
+## Key Features
+
+- Organize folders and notes, including creating, renaming, duplicating, moving, deleting, and locking notes.
+- Edit notes with rich text formatting, text and highlight colors, tables, links, and images.
+- Apply built-in AI actions or a custom instruction to selected text or the entire note.
+- Review AI changes safely with selection checks, cancellation, revert, retry, undo, and redo.
+- Persist notes locally as JSON and seed sample notes on first launch.
+
+## AI Flow
+
+1. The user selects text in a note or starts an AI action without a selection to target the whole note.
+2. The app captures the editor selection or document, along with its HTML and plain-text context.
+3. The AI service sends the requested edit and note content to the configured Azure OpenAI deployment over HTTPS.
+4. The app validates and normalizes the response, then checks that the source note and selection have not changed.
+5. The editor applies the returned HTML to the selected range or whole note; the user can review and manage the change.
+6. If configuration or a request fails, the app displays an error and provides retry where appropriate; the user can cancel a pending request or revert an applied edit.
+
+## Controls Used
+
+- **Syncfusion .NET MAUI RichTextEditor** — edits formatted note content and provides selection, HTML, and editing history support.
+- **Syncfusion .NET MAUI TreeView** — displays the nested folder and note organization.
+- **Syncfusion .NET MAUI ListView** — presents note and folder collections in the app UI.
+- **Syncfusion .NET MAUI Popup** — hosts AI writing tools, formatting palettes, and review actions.
+- **Syncfusion .NET MAUI Toolbar and Buttons** — provide editor and note actions.
+
+## Architecture
+
+The app uses MAUI dependency injection and an MVVM design. The page and control layer binds to `NotesViewModel`, which coordinates note organization, editor state, and AI actions. `IAiEditingService` abstracts AI generation; `AzureOpenAiEditingService` constructs and sends requests to Azure OpenAI. `AzureOpenAiOptions` reads the AI configuration from environment variables. `JsonNotePersistenceService` stores and loads the note tree in the app's local data directory. The `CustomRichTextEditor` project wraps the Syncfusion editor to capture selections and apply or restore HTML replacements.
+
+Data flows from the editor to the view model and AI service, then back through a guarded editor replacement; note changes are autosaved through the persistence service.
 
 ## Prerequisites
 
-- .NET 10.0 SDK
-- Visual Studio 2022 (17.12+) or VS Code with the .NET MAUI workload
-- A Syncfusion .NET MAUI Community or Commercial license key
-- An active **Azure OpenAI** resource with a deployed chat model (e.g., `gpt-4.1`)
+- .NET 10 SDK.
+- .NET MAUI workload for the target platform(s).
+- Visual Studio 2022 (17.12 or later) with the .NET MAUI workload, or VS Code with the corresponding .NET MAUI tooling.
+- Syncfusion .NET MAUI packages (version 35.1.37 in this sample) and a valid Syncfusion Community or Commercial license key.
+- An Azure OpenAI resource with a deployed chat model that supports the Azure OpenAI v1 chat completions API.
 
-## Setup
+## AI Configuration
 
-The sample reads all credentials from **environment variables** (no values are hardcoded):
+The sample uses a real Azure OpenAI service; it does not include mock AI or offline AI behavior. Set the following environment variables before launching the app. A Syncfusion license key is also read from the environment at startup.
 
-| Variable | Description |
-|---|---|
-| `SYNCFUSION_LICENSE_KEY` | Your Syncfusion license key (required at startup) |
-| `MAUINOTES_AZURE_OPENAI_ENDPOINT` | Absolute HTTPS endpoint of your Azure OpenAI resource, e.g. `https://<resource>.openai.azure.com` |
-| `MAUINOTES_AZURE_OPENAI_DEPLOYMENT` | The name of the deployed model, e.g. `gpt-4.1` |
-| `MAUINOTES_AZURE_OPENAI_API_KEY` | The API key for the resource |
+| Variable | Required | Description |
+|---|---|---|
+| `MAUINOTES_AZURE_OPENAI_ENDPOINT` | yes | Absolute HTTPS endpoint of the Azure OpenAI resource. |
+| `MAUINOTES_AZURE_OPENAI_API_KEY` | yes | Azure OpenAI resource API key. |
+| `MAUINOTES_AZURE_OPENAI_DEPLOYMENT` | yes | Name of the deployed chat model. |
+| `SYNCFUSION_LICENSE_KEY` | yes | Syncfusion license key required to register the Syncfusion controls. |
 
-Example (PowerShell, per development session):
+The app's `HttpClient` timeout is set to 60 seconds in code; there is no environment variable for configuring it. If the Azure OpenAI settings are missing, notes and local editing remain available, but AI actions show a configuration message. The AI endpoint must use HTTPS. Do not commit keys to source control; use environment variables, user secrets, or another secure secret store.
 
-```powershell
-$env:SYNCFUSION_LICENSE_KEY   = "YOUR_SYCFUSION_LICENSE_KEY"
-$env:MAUINOTES_AZURE_OPENAI_ENDPOINT = "https://YOUR_RESOURCE.openai.azure.com"
-$env:MAUINOTES_AZURE_OPENAI_DEPLOYMENT = "gpt-4.1"
-$env:MAUINOTES_AZURE_OPENAI_API_KEY = "YOUR_AZURE_OPENAI_API_KEY"
+## Default Behavior
+
+- **AI:** Real Azure OpenAI chat completions; no mock or local/offline fallback is included.
+- **Notes:** Stored locally in the app data directory as JSON. First launch seeds sample folders and notes.
+- **Missing AI configuration:** The notes app remains usable, and AI actions display an explanatory configuration error.
+
+## Run
+
+Build and run from the sample directory with the target platform framework. For example:
+
+```sh
+dotnet build MauiNotes.slnx -t:Run -f net10.0-android
 ```
 
-If the AI variables are not set, the notes app still works — tapping an AI action shows the message:
-*“AI editing is not configured. Set MAUINOTES_AZURE_OPENAI_API_KEY for local development.”*
+For other supported targets, use the corresponding framework:
 
-**Run:** open `MauiNotes.slnx` and start the `MauiNotes` project with your chosen platform target (Android, iOS, macOS, or Windows).
+```sh
+dotnet build MauiNotes.slnx -t:Run -f net10.0-ios
+dotnet build MauiNotes.slnx -t:Run -f net10.0-maccatalyst
+dotnet build MauiNotes.slnx -t:Run -f net10.0-windows10.0.19041.0
+```
 
-## How to Use the AI Assistant
+Set the required environment variables in the app's launch environment before running if you want to use AI features.
 
-1. Open a note and (optionally) select a range of text in the editor.
-2. Tap the **AI** button in the editor toolbar to open the writing-tools popup.
-3. Choose a built-in action or type a custom instruction and send it.
-4. A review popup appears while the request is in flight (spinner), then shows the result with **Revert / Retry / Undo / Redo / Done / Cancel**.
-5. If something goes wrong (bad credentials, quota exceeded, content changed mid-flight), the error message is shown in the popup and Retry becomes available.
+## Output
 
-If no text is selected, the AI action applies to the entire note.
+The app provides platform-specific layouts: a single-page mobile experience on Android and a two-column layout on iOS, macOS, and Windows.
+
+**Windows**
+
+![AI-Powered Maui Notes running on Windows](https://github.com/user-attachments/assets/bd6ea986-40ec-4d5a-8960-636e5d06de67)
+
+**Android**
+
+![AI-Powered Maui Notes running on Android](https://github.com/user-attachments/assets/9b819485-1007-4046-90ce-0a8666eb7a2c)
 
 ## Project Structure
 
-```
-MauiNotes/
-├── CustomRichTextEditor/           # Reusable RichTextEditor wrapper (selection capture, in-place replace, undo receipts)
-└── MauiNotes/
-    ├── Models/                     # Note, tree nodes, AI request/action models
-    ├── Services/
-    │   ├── AI/                     # IAiEditingService + Azure OpenAI implementation
-    │   └── Persistence/            # Local JSON note store
-    ├── ViewModels/                 # NotesViewModel (partial classes by concern: AI, NoteTree, NoteContent, Editor, Persistence)
-    ├── Views/                      # Mobile / desktop page shells
-    └── Controls/                   # Editor host, toolbar, popups (AI, format, palettes, node actions)
-```
+- `MauiNotes/MauiNotes/Views/` — mobile and desktop pages and layouts.
+- `MauiNotes/MauiNotes/ViewModels/` — presentation logic for notes, editor state, and AI workflows.
+- `MauiNotes/MauiNotes/Models/` — note, folder, and AI request/action data structures.
+- `MauiNotes/MauiNotes/Services/AI/` — AI service abstraction, Azure OpenAI implementation, and configuration.
+- `MauiNotes/MauiNotes/Services/Persistence/` — local JSON note persistence.
+- `MauiNotes/MauiNotes/Controls/` — editor host, toolbars, and AI/formatting popups.
+- `MauiNotes/CustomRichTextEditor/` — rich text editor wrapper, selection handling, and HTML adapter.
+- `MauiNotes/MauiNotes/Resources/` — styles, images, fonts, and other assets.
 
-## Key Components (API)
+## Troubleshooting
 
-| Member | Description |
-|---|---|
-| `NotesViewModel.BeginAiAssistantAsync(editor)` | Captures the editor selection (or the whole document) and opens the writing-tools popup |
-| `NotesViewModel.ProcessAiAsync(...)` | Runs the AI request, validates the response, applies the in-place replacement, and exposes the undo receipt |
-| `AzureOpenAiEditingService.GenerateAsync(request, ct)` | Sends the chat-completions request to Azure OpenAI with input limits, error mapping, and cancellation |
-| `AzureOpenAiOptions` | Resolves endpoint/deployment/key from environment variables; enforces HTTPS and builds the `openai/v1/chat/completions` URI |
-| `CustomRichTextEditor.ReplaceSelectionAsync(snapshot, html, type)` | Applies AI HTML to the captured selection range and returns an undo receipt |
-| `CustomRichTextEditor.RestoreReplacementAsync(receipt)` | Restores the pre-AI content (used by Revert and Retry) |
-| `JsonNotePersistenceService` | Saves/loads the whole note tree to a local JSON file (autosaved after edits) |
+**Issue: Missing AI configuration**
 
-## Why Use This
+Cause: One or more Azure OpenAI environment variables are unset, or the endpoint is not an absolute HTTPS URL.
 
-- **Productivity:** Edit, rewrite, summarize, and restructure note content with one tap, without leaving the editor
-- **Safety:** AI results are applied through an undoable editor operation — nothing is ever applied silently or lost
-- **Clean Architecture:** Full MVVM with DI makes every layer (AI service, persistence, view model) independently testable
-- **Rich UI:** Native rich text editing with Syncfusion controls on all platforms, no WebView dependency in the app pages
+Fix: Set the endpoint, API key, and deployment name in the app's environment, then restart it.
+
+**Issue: Build or workload errors**
+
+Cause: The required .NET SDK or platform MAUI workload is missing or incompatible.
+
+Fix: Verify the .NET 10 SDK and install the MAUI workload for the target platform. Confirm that the installed Syncfusion package versions are compatible.
+
+**Issue: AI response is unexpected or the request fails**
+
+Cause: The prompt, selected input, endpoint, deployment, credentials, or service availability may be incorrect.
+
+Fix: Check the content and action sent to AI, verify the endpoint/deployment/key, and review the displayed service error. Retry when the service is available.
+
+**Issue: An AI result is not applied**
+
+Cause: The note, lock state, or editor selection changed while the AI request was in progress.
+
+Fix: No stale result is applied; reopen the AI tools, select the intended content again, and retry.
+
+## Security and Privacy Notes
+
+- Do not hard-code or commit Azure OpenAI or Syncfusion license keys.
+- Use environment variables, user secrets, or secure storage for credentials.
+- Send only the note content needed for the requested edit; selected content or the full note is sent to Azure OpenAI depending on the user's selection.
+- Review your Azure OpenAI data handling and privacy requirements before sending sensitive note content.
+- The AI endpoint is validated as HTTPS, and the service limits request size; avoid including unnecessary sensitive information in notes submitted for AI processing.
+
+## Supported Platforms
+
+- Android
+- iOS
+- Windows
+- macOS (Mac Catalyst)
