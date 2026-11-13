@@ -35,8 +35,8 @@ public partial class StorePage : ContentPage
         {
             card.TranslationY = -2;
             card.StrokeThickness = 1;
-            card.Stroke = Color.FromArgb("#E2E8F0");
-            card.Shadow = new Shadow { Brush = Color.FromArgb("#24324A"), Opacity = 0.12f, Radius = 8, Offset = new Point(0, 3) };
+            card.Stroke = Color.FromArgb("#D5DEEC");
+            card.Shadow = new Shadow { Brush = Color.FromArgb("#24324A"), Opacity = 0.18f, Radius = 14, Offset = new Point(0, 6) };
             card.ZIndex = 1;
         }
     }
