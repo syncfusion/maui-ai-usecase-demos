@@ -13,7 +13,7 @@ public partial class ProfilesPage : ContentPage
         popupActions = new DemoPage(viewModel);
         BindingContext = viewModel;
         Content = new Grid { Children = { Content, popupActions.PopupView, popupActions.TopUpPopupView } };
-        SizeChanged += (_, _) => popupActions.UpdateTopUpPopupWidth(Width);
+        SizeChanged += (_, _) => popupActions.UpdateTopUpPopupWidth(Width, Height);
     }
 
     private void DashboardClicked(object? sender, EventArgs e) => Shell.Current.GoToAsync("//dashboard");
