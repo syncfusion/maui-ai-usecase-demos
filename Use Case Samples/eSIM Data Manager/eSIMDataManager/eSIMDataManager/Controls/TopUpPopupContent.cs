@@ -453,6 +453,7 @@ public sealed class TopUpPopupContent : IDisposable
                 Padding = new Thickness(10, 3),
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Start,
+                TranslationY = -10,
                 Content = new Label
                 {
                     Text = tag.ToUpperInvariant(),
@@ -580,8 +581,9 @@ public sealed class TopUpPopupContent : IDisposable
             StrokeThickness = 0,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(10) },
             Padding = new Thickness(10, 3),
-            HorizontalOptions = LayoutOptions.End,
+            HorizontalOptions = LayoutOptions.Center,
             VerticalOptions = LayoutOptions.Start,
+            TranslationY = -10,
             Content = new Label
             {
                 Text = tag.ToUpperInvariant(),

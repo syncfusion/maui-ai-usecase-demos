@@ -98,6 +98,7 @@ public class DemoPage
         if (profile is null || profile.Status != ProfileStatus.Active) { await ViewModel.TopUpCommand.ExecuteAsync(profile); return; }
         popupProfile = profile;
         ViewModel.TopUpProfile = profile;
+        ViewModel.SelectedTopUpGb = 3;
 
         topUpContent?.Dispose();
         topUpContent = new TopUpPopupContent(ViewModel);

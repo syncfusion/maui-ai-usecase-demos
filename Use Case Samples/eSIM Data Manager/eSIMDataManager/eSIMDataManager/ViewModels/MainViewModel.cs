@@ -75,7 +75,7 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private EsimProfile? selectedProfile;
     [ObservableProperty] private Plan? selectedPlan;
     [ObservableProperty] private string selectedFilterLabel = string.Empty;
-    [ObservableProperty] private double selectedTopUpGb = 1;
+    [ObservableProperty] private double selectedTopUpGb = 3;
     [ObservableProperty] private string search = string.Empty;
     [ObservableProperty] private bool isPurchaseInProgress;
     [ObservableProperty] private EsimProfile? topUpProfile;
