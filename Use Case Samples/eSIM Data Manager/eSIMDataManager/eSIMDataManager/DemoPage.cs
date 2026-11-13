@@ -1,3 +1,4 @@
+using eSIMDataManager.Controls;
 using eSIMDataManager.Models;
 using eSIMDataManager.ViewModels;
 using Syncfusion.Maui.Barcode;
@@ -11,6 +12,9 @@ public class DemoPage
 
     private readonly SfPopup popup = new() { ShowHeader = false, ShowFooter = false, WidthRequest = 580, HeightRequest = 650, StaysOpen = true };
     private readonly VerticalStackLayout popupContent = new() { Spacing = 14, Padding = 22 };
+    private readonly SfPopup topUpPopup = new() { ShowHeader = false, ShowFooter = false, WidthRequest = 720, StaysOpen = true, AutoSizeMode = PopupAutoSizeMode.Height };
+    private TopUpPopupContent? topUpContent;
+    private double availableTopUpWidth = 720;
     private EsimProfile? popupProfile;
 
     public DemoPage(MainViewModel viewModel)
@@ -21,6 +25,18 @@ public class DemoPage
     }
 
     public SfPopup PopupView => popup;
+
+    public SfPopup TopUpPopupView => topUpPopup;
+
+    public void UpdateTopUpPopupWidth(double availableWidth)
+    {
+        var compact = availableWidth < 620;
+        var width = compact ? Math.Max(320, availableWidth - 24) : Math.Clamp(availableWidth - 32, 480, 720);
+        topUpPopup.WidthRequest = width;
+        topUpPopup.AutoSizeMode = PopupAutoSizeMode.Height;
+        topUpContent?.SetCompact(compact);
+        availableTopUpWidth = availableWidth;
+    }
 
     protected void ShowDemoPopup(string title, EsimProfile? profile = null)
     {
@@ -73,21 +89,45 @@ public class DemoPage
     {
         if (profile is null || profile.Status != ProfileStatus.Active) { await ViewModel.TopUpCommand.ExecuteAsync(profile); return; }
         popupProfile = profile;
-        popupContent.Children.Clear();
-        popupContent.Children.Add(new Label { Text = "SIMULATED · No payment or carrier provisioning", FontSize = 12, TextColor = Color.FromArgb("#8B5B00") });
-        popupContent.Children.Add(new Label { Text = "Top-Up Data · Simulated", FontSize = 22, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#102B52") });
-        popupContent.Children.Add(new Label { Text = $"{profile.ProfileName} · {profile.RemainingGb:0.#} GB remaining · demo", TextColor = Color.FromArgb("#63748B") });
-        popupContent.Children.Add(new Label { Text = "Choose a fictional data extension", TextColor = Color.FromArgb("#63748B") });
-        foreach (var pack in ViewModel.TopUpPacks)
-        {
-            var option = new Syncfusion.Maui.Buttons.SfButton { Text = $"{pack.DataGb} GB · ${pack.Price:0.00} · simulated" };
-            option.Clicked += (_, _) => { ViewModel.Store.TopUp(profile, pack); popup.Dismiss(); };
-            popupContent.Children.Add(option);
-        }
-        var close = new Syncfusion.Maui.Buttons.SfButton { Text = "Cancel" };
-        close.Clicked += (_, _) => popup.Dismiss();
-        popupContent.Children.Add(close);
-        popup.Show();
+        ViewModel.TopUpProfile = profile;
+
+        topUpContent?.Dispose();
+        topUpContent = new TopUpPopupContent(ViewModel);
+        topUpContent.CloseRequested += (_, _) => CloseTopUp();
+        topUpContent.CancelRequested += (_, _) => CloseTopUp();
+        topUpContent.ChangePaymentRequested += (_, _) => ChangePaymentRequested();
+        topUpContent.PurchaseRequested += (_, _) => ConfirmTopUp(profile);
+
+        topUpPopup.ContentTemplate = new DataTemplate(() => topUpContent!.Content);
+        UpdateTopUpPopupWidth(availableTopUpWidth);
+        topUpPopup.Show();
+    }
+
+    private void CloseTopUp()
+    {
+        topUpPopup.Dismiss();
+        topUpContent?.Dispose();
+        topUpContent = null;
+    }
+
+    private async void ConfirmTopUp(EsimProfile profile)
+    {
+        var pack = ViewModel.SelectedTopUpPack;
+        var before = profile.RemainingGb;
+        if (!ViewModel.ApplyTopUp()) return;
+        CloseTopUp();
+        await Application.Current!.Windows[0].Page!.DisplayAlert(
+            "Top-up added",
+            $"{pack.DataLabel} was added to {profile.ProfileName}. Remaining data is now {profile.RemainingGb:0.#} GB (was {before:0.#} GB).\n\nDemo only — no payment was taken and no carrier was contacted.",
+            "OK");
+    }
+
+    private async void ChangePaymentRequested()
+    {
+        await Application.Current!.Windows[0].Page!.DisplayAlert(
+            "Demo payment method",
+            "The sample top-up always uses the demo card ending in 4242. No real payment details are collected and no card is charged.",
+            "OK");
     }
     public void ActivateItemClicked(object? sender, EventArgs e) => ShowDemoPopup("Activate Profile · Demo", (sender as Element)?.BindingContext as EsimProfile);
     public async void RenewItemClicked(object? sender, EventArgs e) => await ViewModel.RenewCommand.ExecuteAsync((sender as Element)?.BindingContext as EsimProfile);

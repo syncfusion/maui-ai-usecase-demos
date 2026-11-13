@@ -78,6 +78,7 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private double selectedTopUpGb = 1;
     [ObservableProperty] private string search = string.Empty;
     [ObservableProperty] private bool isPurchaseInProgress;
+    [ObservableProperty] private EsimProfile? topUpProfile;
 
     public double Remaining => ActiveProfile?.RemainingGb ?? 0;
     public double Consumed => ActiveProfile?.ConsumedGb ?? 0;
@@ -105,6 +106,14 @@ public partial class MainViewModel : ObservableObject
     public decimal SelectedPlanTotal => (SelectedPlan?.Price ?? 0) + SelectedPlanTax;
     public TopUpPack SelectedTopUpPack => TopUpPacks.First(p => p.DataGb == SelectedTopUpGb);
 
+    public string TopUpProfileName => TopUpProfile?.ProfileName ?? "No active profile";
+    public string TopUpCarrierName => TopUpProfile?.Carrier ?? "—";
+    public string TopUpRemainingText => $"{TopUpProfile?.RemainingGb ?? 0:0.#} GB left";
+    public string TopUpDaysLeftText => $"{TopUpProfile?.DaysRemaining ?? 0} Days Left";
+    public string TopUpAllowanceSummary => $"{SelectedTopUpPack.DataLabel} Data Pool ({SelectedTopUpPack.PriceText})";
+    public string TopUpSubmitLabel => $"Purchase Top-Up • {SelectedTopUpPack.PriceText}";
+    public bool IsTopUpSelected(TopUpPack pack) => pack.DataGb == SelectedTopUpGb;
+
     public MainViewModel(EsimStore store)
     {
         this.store = store;
@@ -120,7 +129,12 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(SelectedPlanTax));
         OnPropertyChanged(nameof(SelectedPlanTotal));
     }
-    partial void OnSelectedTopUpGbChanged(double value) => OnPropertyChanged(nameof(SelectedTopUpPack));
+    partial void OnSelectedTopUpGbChanged(double value)
+    {
+        OnPropertyChanged(nameof(SelectedTopUpPack));
+        OnPropertyChanged(nameof(TopUpAllowanceSummary));
+        OnPropertyChanged(nameof(TopUpSubmitLabel));
+    }
     partial void OnSelectedProfileChanged(EsimProfile? value)
     {
         store.SelectedProfile = value;
@@ -162,6 +176,10 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(ValidityFraction));
         OnPropertyChanged(nameof(ActivationDateText));
         OnPropertyChanged(nameof(SevenDayTotal));
+        OnPropertyChanged(nameof(TopUpProfileName));
+        OnPropertyChanged(nameof(TopUpCarrierName));
+        OnPropertyChanged(nameof(TopUpRemainingText));
+        OnPropertyChanged(nameof(TopUpDaysLeftText));
         RefreshPlans();
     }
 
@@ -367,5 +385,19 @@ public partial class MainViewModel : ObservableObject
     {
         if (profile is null) return;
         await Application.Current!.Windows[0].Page!.DisplayAlert("Renewal demo", "Renewal is a display-only sample action and does not change or purchase a plan.", "Close");
+    }
+
+    [RelayCommand]
+    private void SelectTopUpPack(TopUpPack? pack)
+    {
+        if (pack is null) return;
+        SelectedTopUpGb = pack.DataGb;
+    }
+
+    public bool ApplyTopUp()
+    {
+        var profile = TopUpProfile;
+        if (profile is null || profile.Status != ProfileStatus.Active) return false;
+        return store.TopUp(profile, SelectedTopUpPack);
     }
 }

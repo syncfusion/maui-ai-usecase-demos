@@ -11,8 +11,12 @@ public partial class DashboardPage : ContentPage
         InitializeComponent();
         popupActions = new DemoPage(viewModel);
         BindingContext = viewModel;
-        Content = new Grid { Children = { Content, popupActions.PopupView } };
-        SizeChanged += (_, _) => popupActions.PopupView.WidthRequest = Math.Min(580, Width - 32);
+        Content = new Grid { Children = { Content, popupActions.PopupView, popupActions.TopUpPopupView } };
+        SizeChanged += (_, _) =>
+        {
+            popupActions.PopupView.WidthRequest = Math.Min(580, Width - 32);
+            popupActions.UpdateTopUpPopupWidth(Width);
+        };
     }
 
     private void StoreClicked(object? sender, EventArgs e) => Shell.Current.GoToAsync("//store");
