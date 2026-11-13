@@ -164,14 +164,25 @@ public sealed class TopUpPopupContent : IDisposable
 
     private View BuildHeader()
     {
-        var plusIcon = new Label
+        var plusIcon = new Grid { WidthRequest = 30, HeightRequest = 30, VerticalOptions = LayoutOptions.Center };
+        plusIcon.Add(new Label
         {
-            Text = "\u2295",
-            FontFamily = "OpenSansRegular",
-            FontSize = 24,
+            Text = "\uE73F",
+            FontFamily = "MaterialAssets",
+            FontSize = 30,
             TextColor = Color.FromArgb(PrimaryColor),
-            VerticalOptions = LayoutOptions.Center
-        };
+            HorizontalTextAlignment = TextAlignment.Center,
+            VerticalTextAlignment = TextAlignment.Center
+        });
+        plusIcon.Add(new Label
+        {
+            Text = "\uE70D",
+            FontFamily = "MaterialAssets",
+            FontSize = 13,
+            TextColor = Color.FromArgb(PrimaryColor),
+            HorizontalTextAlignment = TextAlignment.Center,
+            VerticalTextAlignment = TextAlignment.Center
+        });
 
         var title = new Label
         {
