@@ -9,8 +9,8 @@
         </Style>
     </ContentPage.Resources>
     <ContentPage.Content>
-        <ScrollView>
-            <VerticalStackLayout Padding="{OnIdiom Phone=16, Tablet=24, Desktop=26}" Spacing="18">
+        <Grid RowDefinitions="Auto,*" BackgroundColor="#F8F9FF">
+            <Border Grid.Row="0" BackgroundColor="#F8F9FF" StrokeThickness="0" Padding="{OnIdiom Phone=16, Tablet=24, Desktop=26,0}">
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="18" VerticalOptions="Center" MinimumHeightRequest="56">
                     <HorizontalStackLayout Spacing="8" VerticalOptions="Center"><Border WidthRequest="34" HeightRequest="34" BackgroundColor="#1E5BFF" StrokeThickness="0" StrokeShape="RoundRectangle 11"><Label Text="e" FontSize="22" FontAttributes="Bold" TextColor="White" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border><Label Text="eSIM Data Manager" FontSize="18" FontAttributes="Bold" TextColor="#101D35" VerticalOptions="Center" /></HorizontalStackLayout>
                     <Grid Grid.Column="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" VerticalOptions="Center">
@@ -20,6 +20,9 @@
                     </Grid>
                     <HorizontalStackLayout Grid.Column="2" Spacing="9" VerticalOptions="Center" IsVisible="{OnIdiom Phone=False, Default=True}"><BoxView WidthRequest="1" HeightRequest="30" Color="#E4EAF5" VerticalOptions="Center"/><Border WidthRequest="36" HeightRequest="36" BackgroundColor="#E9F1FF" StrokeThickness="0" StrokeShape="RoundRectangle 18"><Label Text="&#xE71B;" FontFamily="MaterialAssets" FontSize="20" TextColor="#1E5BFF" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/></Border><VerticalStackLayout Spacing="0" VerticalOptions="Center"><Label Text="Global Traveler" FontSize="12" FontAttributes="Bold" TextColor="#101D35"/><HorizontalStackLayout Spacing="6"><Ellipse WidthRequest="8" HeightRequest="8" Fill="#007A56" VerticalOptions="Center"/><Label Text="Roaming Online" FontSize="11" TextColor="#007A56"/></HorizontalStackLayout></VerticalStackLayout></HorizontalStackLayout>
                 </Grid>
+            </Border>
+            <ScrollView Grid.Row="1">
+              <VerticalStackLayout Padding="{OnIdiom Phone=16, Tablet=24, Desktop=26}" Spacing="18">
                 <Border BackgroundColor="#EFF4FF" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="{OnIdiom Phone=24, Default=60}" MinimumHeightRequest="278">
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -158,6 +161,7 @@
                 <Grid ColumnDefinitions="*,Auto" Padding="0,8"><Label Text="●  Core Signal: 5G Ultra-Low Latency Mesh" FontSize="10" TextColor="#344054"/><Label Grid.Column="1" Text="© 2024 eSIM Data Manager. Precision Connectivity Platform." FontSize="10" TextColor="#667085"/></Grid>
                 <Label Text="DEMO ONLY · All plans, costs, activation codes, QR details and usage figures are fictional. No payment, carrier connection, provisioning, or persistent storage is used." FontSize="10" TextColor="#667085" HorizontalTextAlignment="Center" />
             </VerticalStackLayout>
-        </ScrollView>
+            </ScrollView>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>
