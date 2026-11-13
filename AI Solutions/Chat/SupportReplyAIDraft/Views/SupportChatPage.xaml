@@ -11,7 +11,7 @@
     x:DataType="viewModels:SupportChatViewModel"
     Title="Support Reply AI Draft"
     Padding="0"
-    ios:Page.UseSafeArea="False"
+    ios:Page.UseSafeArea="True"
     BackgroundColor="{StaticResource SurfaceColor}">
 
     <Grid

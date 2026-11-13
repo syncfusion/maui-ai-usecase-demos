@@ -2,6 +2,8 @@
 
 The Support Reply AI Draft sample demonstrates an AI-assisted customer-support workflow using .NET MAUI, Syncfusion .NET MAUI Chat (`SfChat`), MVVM, and Azure OpenAI.
 
+The sample conversation is fictional and preloaded with four predefined messages (three customer messages and one support-agent message).
+
 A support agent can select a customer message, generate a context-aware reply, review and edit the draft, regenerate or discard it, and send the approved response through the native `SfChat` composer.
 
 The AI never sends a reply automatically. Every generated response must be reviewed before sending.
@@ -255,7 +257,7 @@ Not included:
 
 The project targets .NET 10 for Mac Catalyst, iOS, Android, and Windows.
 
-The complete workflow described in this README has been validated on Mac Catalyst. Validate the workflow separately on iOS, Android, and Windows before release.
+Run build and end-to-end workflow validation on each target platform (Mac Catalyst, iOS, Android, and Windows) before release.
 
 ## Safe Usage
 

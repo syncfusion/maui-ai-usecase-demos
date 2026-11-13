@@ -11,6 +11,7 @@ public partial class SupportChatPage : ContentPage
         TimeSpan.FromMilliseconds(100);
 
     private bool _isUpdatingEditorText;
+    private bool _isViewModelEventsAttached;
 
     public SupportChatPage(
         SupportChatViewModel viewModel)
@@ -32,13 +33,10 @@ public partial class SupportChatPage : ContentPage
         ViewModel.ConfirmSelectionChangeAsync =
             ConfirmSelectionChangeAsync;
 
-        ViewModel.PropertyChanged +=
-            OnViewModelPropertyChanged;
-
-        ViewModel.OutgoingMessageSent +=
-            OnOutgoingMessageSent;
+        AttachViewModelEvents();
 
         Loaded += OnLoaded;
+        Unloaded += OnUnloaded;
     }
 
     public SupportChatViewModel ViewModel { get; }
@@ -53,8 +51,55 @@ public partial class SupportChatPage : ContentPage
         object? sender,
         EventArgs e)
     {
+        AttachViewModelEvents();
         AttachEditorHandlers();
         UpdateComposerState();
+    }
+
+    private void OnUnloaded(
+        object? sender,
+        EventArgs e)
+    {
+        if (ConversationChat.Editor is not null)
+        {
+            ConversationChat.Editor.TextChanged -=
+                OnEditorTextChanged;
+        }
+
+        DetachViewModelEvents();
+    }
+
+    private void AttachViewModelEvents()
+    {
+        // Keep event wiring idempotent across page load/unload cycles.
+        if (_isViewModelEventsAttached)
+        {
+            return;
+        }
+
+        ViewModel.PropertyChanged +=
+            OnViewModelPropertyChanged;
+
+        ViewModel.OutgoingMessageSent +=
+            OnOutgoingMessageSent;
+
+        _isViewModelEventsAttached = true;
+    }
+
+    private void DetachViewModelEvents()
+    {
+        if (!_isViewModelEventsAttached)
+        {
+            return;
+        }
+
+        ViewModel.PropertyChanged -=
+            OnViewModelPropertyChanged;
+
+        ViewModel.OutgoingMessageSent -=
+            OnOutgoingMessageSent;
+
+        _isViewModelEventsAttached = false;
     }
 
     private void OnViewModelPropertyChanged(
