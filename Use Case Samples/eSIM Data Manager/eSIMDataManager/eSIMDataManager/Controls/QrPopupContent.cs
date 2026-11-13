@@ -8,8 +8,7 @@ namespace eSIMDataManager.Controls;
 /// <summary>
 /// Builds the Install &amp; Activate eSIM dialog content that mirrors the reference design:
 /// a scan panel on the left, activation steps and manual parameters on the right, and a footer bar.
-/// The root is a grid with fixed chrome rows around a star body row, so the footer always stays
-/// on screen and the body scrolls instead of overflowing.
+/// The body scrolls so long content is never clipped on small screens.
 /// </summary>
 public sealed class QrPopupContent
 {
@@ -18,10 +17,20 @@ public sealed class QrPopupContent
     private const string PrimaryColor = "#0046CC";
     private const string PrimaryActionColor = "#0D5CFF";
     private const string SurfaceLow = "#EFF4FF";
-    private const string SurfaceCanvas = "#F8F9FF";
     private const string OutlineVariant = "#C3C5D9";
     private const string UiFont = "Inter";
     private const string MonoFont = "monospace";
+
+    // Material icon codepoints available in the bundled MauiMaterialAssets font.
+    private const string IconTable = "\uE7AF";      // table
+    private const string IconClose = "\uE70B";      // close
+    private const string IconDot = "\uE73F";       // circle
+    private const string IconCheckTick = "\uE70C"; // check-tick
+    private const string IconSearch = "\uE715";     // search
+    private const string IconCopy = "\uE7A0";       // copy
+    private const string IconEmail = "\uE717";      // email
+    private const string IconCircleCheck = "\uE78C";// circle-check
+    private const string IconUser = "\uE71B";       // user
 
     /// <summary>
     /// Shadows the app-level Label style. The app style sets TextColor through an AppThemeBinding,
@@ -46,19 +55,16 @@ public sealed class QrPopupContent
     private readonly View scanCardHost;
     private readonly View stepsHost;
     private bool isCompact;
-    private double availableHeight;
-    private double chromeHeight;
 
     public QrPopupContent(EsimProfile? profile)
     {
         var activationCode = profile?.ActivationCode ?? "LPA:1$demo.carrier.example$SAMPLE";
 
-        // A plain stack keeps every section at its natural height: the dialog then hugs its
-        // content instead of stretching to the screen, so no empty space appears under the
-        // footer. The scrolling body is capped separately so long content never overflows.
+        // A plain stack keeps every section at its natural height: the dialog hugs its content
+        // instead of stretching, so no empty space appears under the footer. The scrolling body
+        // is capped separately so long content never overflows.
         root = new VerticalStackLayout { Spacing = 0, BackgroundColor = Colors.White };
         root.Resources.Add(PopupLabelStyle);
-        root.SizeChanged += RootOnSizeChanged;
 
         root.Add(BuildAccentBar());
         root.Add(BuildHeader(profile));
@@ -107,7 +113,7 @@ public sealed class QrPopupContent
         bodyGrid.Children.Clear();
         if (compact)
         {
-            bodyGrid.Children.Add(compactStack);
+            bodyGrid.Add(compactStack, 0, 0);
         }
         else
         {
@@ -120,24 +126,7 @@ public sealed class QrPopupContent
     public void SetViewport(double availableHeight)
     {
         if (availableHeight <= 0) return;
-        this.availableHeight = availableHeight;
-        ApplyScrollLimit();
-    }
-
-    private void RootOnSizeChanged(object? sender, EventArgs e)
-    {
-        // The chrome (accent, header, banner, footer) sits outside the scrolling body, so the
-        // space left for the body is the screen height minus that chrome.
-        var chrome = root.Height - bodyScroll.Height;
-        if (chrome <= 0) return;
-        chromeHeight = chrome;
-        ApplyScrollLimit();
-    }
-
-    private void ApplyScrollLimit()
-    {
-        if (availableHeight <= 0 || chromeHeight <= 0) return;
-        var limit = Math.Max(200, availableHeight - 24 - chromeHeight);
+        var limit = Math.Max(200, availableHeight - 24);
         if (Math.Abs(bodyScroll.MaximumHeightRequest - limit) > 0.5)
             bodyScroll.MaximumHeightRequest = limit;
     }
@@ -174,6 +163,24 @@ public sealed class QrPopupContent
         return label;
     }
 
+    /// <summary>
+    /// Creates an icon glyph. The icon font is applied to the glyph alone; mixing a Material
+    /// codepoint into a text run renders a fallback bar instead of the icon.
+    /// </summary>
+    private static Label Icon(string glyph, double size, Color color)
+    {
+        var label = new Label
+        {
+            Text = glyph,
+            FontFamily = "MaterialAssets",
+            FontSize = size,
+            HorizontalTextAlignment = TextAlignment.Center,
+            VerticalTextAlignment = TextAlignment.Center
+        };
+        label.SetAppThemeColor(Label.TextColorProperty, color, color);
+        return label;
+    }
+
     private static View BuildAccentBar() => new BoxView
     {
         HeightRequest = 4,
@@ -183,27 +190,19 @@ public sealed class QrPopupContent
 
     private View BuildHeader(EsimProfile? profile)
     {
-        var icon = new Border
+        var iconTile = new Border
         {
             WidthRequest = 34,
             HeightRequest = 34,
             BackgroundColor = Color.FromArgb(SurfaceLow),
             StrokeThickness = 0,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(9) },
-            Content = new Label
-            {
-                Text = "\uE7AF",
-                FontFamily = "MaterialAssets",
-                FontSize = 17,
-                TextColor = Color.FromArgb(PrimaryColor),
-                HorizontalTextAlignment = TextAlignment.Center,
-                VerticalTextAlignment = TextAlignment.Center
-            }
+            Content = Icon(IconTable, 17, Color.FromArgb(PrimaryColor))
         };
 
-        var titles = new VerticalStackLayout { Spacing = 0, VerticalOptions = LayoutOptions.Center };
-        titles.Add(Text("Install & Activate eSIM", 17, Color.FromArgb(InkColor), FontAttributes.Bold));
-        titles.Add(Text("Quick setup configuration for instant cross-border high-speed routing", 10, Color.FromArgb(MutedColor)));
+        // The badge sits on the same line as the title, matching the reference header.
+        var titleRow = new HorizontalStackLayout { Spacing = 7, VerticalOptions = LayoutOptions.Center };
+        titleRow.Add(Text("Install & Activate eSIM", 17, Color.FromArgb(InkColor), FontAttributes.Bold));
 
         var badge = new Border
         {
@@ -212,12 +211,17 @@ public sealed class QrPopupContent
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(999) },
             Padding = new Thickness(8, 3),
             VerticalOptions = LayoutOptions.Center,
-            Content = Text("\uE70C  Ready to Install", 9, Color.FromArgb("#065F46"), FontAttributes.Bold)
+            Content = Text("●  Ready to Install", 9, Color.FromArgb("#065F46"), FontAttributes.Bold)
         };
+        titleRow.Add(badge);
+
+        var titles = new VerticalStackLayout { Spacing = 1 };
+        titles.Add(titleRow);
+        titles.Add(Text("Quick setup configuration for instant cross-border high-speed routing", 10, Color.FromArgb(MutedColor)));
 
         var close = new SfButton
         {
-            Text = "\uE70B",
+            Text = IconClose,
             FontFamily = "MaterialAssets",
             FontSize = 15,
             Background = Colors.Transparent,
@@ -230,24 +234,20 @@ public sealed class QrPopupContent
         };
         close.Clicked += (_, _) => CloseRequested?.Invoke(this, EventArgs.Empty);
 
-        // The badge sits next to the title and the close button stays pinned to the far right.
         var header = new Grid
         {
             ColumnDefinitions =
             {
                 new ColumnDefinition(GridLength.Auto),
-                new ColumnDefinition(GridLength.Auto),
-                new ColumnDefinition(GridLength.Auto),
                 new ColumnDefinition(GridLength.Star),
                 new ColumnDefinition(GridLength.Auto)
             },
-            ColumnSpacing = 8,
+            ColumnSpacing = 9,
             Padding = new Thickness(14, 10, 12, 8)
         };
-        header.Add(icon, 0, 0);
+        header.Add(iconTile, 0, 0);
         header.Add(titles, 1, 0);
-        header.Add(badge, 2, 0);
-        header.Add(close, 4, 0);
+        header.Add(close, 2, 0);
         return header;
     }
 
@@ -260,14 +260,7 @@ public sealed class QrPopupContent
         var titleRow = new HorizontalStackLayout { Spacing = 6, VerticalOptions = LayoutOptions.Center };
         titleRow.Add(Text(countryCode, 13.5, Color.FromArgb(InkColor), FontAttributes.Bold));
         titleRow.Add(Text(profile?.ProfileName ?? "Japan 5G Explorer", 13.5, Color.FromArgb(InkColor), FontAttributes.Bold));
-        titleRow.Add(new Label
-        {
-            Text = "\uE73F",
-            FontFamily = "MaterialAssets",
-            FontSize = 6,
-            TextColor = Color.FromArgb(OutlineVariant),
-            VerticalOptions = LayoutOptions.Center
-        });
+        titleRow.Add(Icon(IconDot, 6, Color.FromArgb(OutlineVariant)));
         titleRow.Add(Text($"{profile?.Carrier ?? "SoftBank Corp."}  ({network} Multi-IMSI)", 11, Color.FromArgb(MutedColor)));
 
         var tier = new Border
@@ -278,7 +271,7 @@ public sealed class QrPopupContent
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(999) },
             Padding = new Thickness(8, 3),
             HorizontalOptions = LayoutOptions.Start,
-            Content = MonoText($"\uE70C  {profile?.AllocatedGb ?? 10:0.#} GB  ·  {Math.Max(1, profile?.DaysRemaining ?? 30)} Days Global Tier", 10, Color.FromArgb("#006172"))
+            Content = Text($"◉  {profile?.AllocatedGb ?? 10:0.#} GB  ·  {Math.Max(1, profile?.DaysRemaining ?? 30)} Days Global Tier", 10.5, Color.FromArgb("#006172"))
         };
 
         var stack = new VerticalStackLayout { Spacing = 6 };
@@ -290,8 +283,8 @@ public sealed class QrPopupContent
             BackgroundColor = Color.FromArgb(SurfaceLow),
             StrokeThickness = 0,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
-            Padding = new Thickness(12, 9),
-            Margin = new Thickness(14, 0, 14, 10),
+            Padding = new Thickness(13, 10),
+            Margin = new Thickness(14, 0, 14, 12),
             Content = stack
         };
     }
@@ -300,23 +293,24 @@ public sealed class QrPopupContent
     {
         var heading = new Grid
         {
-            ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
-            ColumnSpacing = 6
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+            ColumnSpacing = 7
         };
-        heading.Add(Text("\uE715  Instant Scan", 11.5, Color.FromArgb(InkColor), FontAttributes.Bold), 0, 0);
-        heading.Add(MonoText($"EID: {profile?.Iccid ?? "890490832..."}", 9, Color.FromArgb(MutedColor)), 1, 0);
+        heading.Add(Icon(IconSearch, 12, Color.FromArgb(PrimaryColor)), 0, 0);
+        heading.Add(Text("Instant Scan", 12, Color.FromArgb(InkColor), FontAttributes.Bold), 1, 0);
+        heading.Add(MonoText($"EID: {Truncate(profile?.Iccid ?? "8904908320000000000", 12)}", 9.5, Color.FromArgb(MutedColor)), 2, 0);
 
         var barcode = new SfBarcodeGenerator
         {
             ShowText = false,
-            HeightRequest = 168,
-            WidthRequest = 168,
+            HeightRequest = 196,
+            WidthRequest = 196,
             HorizontalOptions = LayoutOptions.Center,
             Symbology = new QRCode(),
             Value = activationCode
         };
 
-        var stack = new VerticalStackLayout { Spacing = 8 };
+        var stack = new VerticalStackLayout { Spacing = 10 };
         stack.Add(heading);
         stack.Add(new Border
         {
@@ -328,29 +322,24 @@ public sealed class QrPopupContent
             HorizontalOptions = LayoutOptions.Center,
             Content = barcode
         });
-
-        var hint = Text("Scan this QR code with your device camera or\nin Settings > Cellular > Add eSIM.", 10, Color.FromArgb(InkColor));
-        hint.HorizontalTextAlignment = TextAlignment.Center;
-        stack.Add(hint);
-
-        var token = Text("\uE70C  Single-use cryptographic profile token", 9, Color.FromArgb(MutedColor));
-        token.HorizontalTextAlignment = TextAlignment.Center;
-        stack.Add(token);
+        stack.Add(Text("Scan this QR code with your device camera or", 10, Color.FromArgb(InkColor)));
+        stack.Add(Text("in Settings > Cellular > Add eSIM.", 10, Color.FromArgb(PrimaryColor), FontAttributes.Bold));
+        stack.Add(Text("●  Single-use cryptographic profile token", 9.5, Color.FromArgb(MutedColor)));
 
         return new Border
         {
             BackgroundColor = Color.FromArgb(SurfaceLow),
             StrokeThickness = 0,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
-            Padding = new Thickness(12),
+            Padding = new Thickness(13),
             Content = stack
         };
     }
 
     private static View BuildSteps(EsimProfile? profile, string activationCode)
     {
-        var stack = new VerticalStackLayout { Spacing = 7 };
-        stack.Add(Text("ACTIVATION STEPS", 11, Color.FromArgb(InkColor), FontAttributes.Bold));
+        var stack = new VerticalStackLayout { Spacing = 8 };
+        stack.Add(Text("ACTIVATION STEPS", 11.5, Color.FromArgb(InkColor), FontAttributes.Bold));
         stack.Add(ActivationStep("1", "Scan QR Code in Device Settings", "Navigate to Settings > Cellular (iOS) or SIM Manager (Android) and add plan."));
         stack.Add(ActivationStep("2", "Enable 'Data Roaming' upon Landing", "Turn on roaming toggles specifically for this profile once in Japan."));
         stack.Add(ActivationStep("3", "Set Profile as Cellular Data Carrier", "Keep your primary home SIM for SMS 2FA while using this eSIM for all data."));
@@ -363,16 +352,22 @@ public sealed class QrPopupContent
     {
         var header = new Grid
         {
-            ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star) },
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
             ColumnSpacing = 8
         };
-        header.Add(Text("Manual Activation\nParameters", 11, Color.FromArgb(InkColor), FontAttributes.Bold), 0, 0);
+        header.Add(Icon(IconTable, 13, Color.FromArgb(PrimaryColor)), 0, 0);
+        header.Add(Text("Manual Activation\nParameters", 11.5, Color.FromArgb(InkColor), FontAttributes.Bold), 1, 0);
+        header.Add(new Border
+        {
+            BackgroundColor = Color.FromArgb(SurfaceLow),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(6) },
+            Padding = new Thickness(7, 3),
+            VerticalOptions = LayoutOptions.Center,
+            Content = MonoText("RSP Protocol\nv2.2", 9, Color.FromArgb("#006141"))
+        }, 2, 0);
 
-        var protocol = MonoText("RSP Protocol\nv2.2", 9, Color.FromArgb("#006141"));
-        protocol.HorizontalTextAlignment = TextAlignment.End;
-        header.Add(protocol, 1, 0);
-
-        var stack = new VerticalStackLayout { Spacing = 6 };
+        var stack = new VerticalStackLayout { Spacing = 7 };
         stack.Add(header);
         stack.Add(ActivationParameter("SM-DP+ Address", "rsp.global-esim.net", Color.FromArgb(InkColor)));
         stack.Add(ActivationParameter("Activation Code (LPA String)", activationCode, Color.FromArgb(PrimaryColor)));
@@ -384,7 +379,7 @@ public sealed class QrPopupContent
             Stroke = Color.FromArgb(OutlineVariant),
             StrokeThickness = 1,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(10) },
-            Padding = new Thickness(10),
+            Padding = new Thickness(11),
             Content = stack
         };
     }
@@ -396,14 +391,7 @@ public sealed class QrPopupContent
             ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star) },
             ColumnSpacing = 8
         };
-        grid.Add(new Label
-        {
-            Text = "\uE71B",
-            FontFamily = "MaterialAssets",
-            FontSize = 12,
-            TextColor = Color.FromArgb(MutedColor),
-            VerticalOptions = LayoutOptions.Start
-        }, 0, 0);
+        grid.Add(Icon(IconUser, 13, Color.FromArgb(MutedColor)), 0, 0);
         grid.Add(Text("Compatibility: Unlocked iPhone XS or newer, Pixel 3 or later, Galaxy S20+ and compatible dual-SIM devices.", 10, Color.FromArgb(MutedColor)), 1, 0);
 
         return new Border
@@ -411,7 +399,7 @@ public sealed class QrPopupContent
             BackgroundColor = Color.FromArgb(SurfaceLow),
             StrokeThickness = 0,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(10) },
-            Padding = new Thickness(10),
+            Padding = new Thickness(11),
             Content = grid
         };
     }
@@ -420,26 +408,27 @@ public sealed class QrPopupContent
     {
         var badge = new Border
         {
-            WidthRequest = 20,
-            HeightRequest = 20,
+            WidthRequest = 22,
+            HeightRequest = 22,
             BackgroundColor = Color.FromArgb(PrimaryColor),
             StrokeThickness = 0,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(999) },
-            Content = new Label
-            {
-                Text = number,
-                FontFamily = UiFont,
-                FontSize = 10,
-                FontAttributes = FontAttributes.Bold,
-                TextColor = Colors.White,
-                HorizontalTextAlignment = TextAlignment.Center,
-                VerticalTextAlignment = TextAlignment.Center
-            }
+            Content = Text(number, 10, Colors.White, FontAttributes.Bold)
         };
 
-        var text = new VerticalStackLayout { Spacing = 0, VerticalOptions = LayoutOptions.Center };
+        var text = new VerticalStackLayout { Spacing = 1, VerticalOptions = LayoutOptions.Center };
         text.Add(Text(title, 11, Color.FromArgb(InkColor), FontAttributes.Bold));
         text.Add(Text(description, 9.5, Color.FromArgb(MutedColor)));
+
+        // The badge and the text must sit in separate columns; a Grid children initializer would
+        // place both in column 0 and the badge would overlap the text.
+        var row = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star) },
+            ColumnSpacing = 8
+        };
+        row.Add(badge, 0, 0);
+        row.Add(text, 1, 0);
 
         return new Border
         {
@@ -447,16 +436,7 @@ public sealed class QrPopupContent
             StrokeThickness = 0,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(10) },
             Padding = new Thickness(9),
-            Content = new Grid
-            {
-                ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star) },
-                ColumnSpacing = 8,
-                Children =
-                {
-                    badge,
-                    text
-                }
-            }
+            Content = row
         };
     }
 
@@ -487,7 +467,7 @@ public sealed class QrPopupContent
     {
         var copy = new SfButton
         {
-            Text = "\uE7A0",
+            Text = IconCopy,
             FontFamily = "MaterialAssets",
             FontSize = 11,
             Background = Colors.Transparent,
@@ -503,17 +483,18 @@ public sealed class QrPopupContent
 
     private static View CopyButton(string text, string value)
     {
+        var row = new HorizontalStackLayout { Spacing = 6, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center };
+        row.Add(Icon(IconCopy, 11, Color.FromArgb(PrimaryColor)));
+        row.Add(Text(text, 10.5, Color.FromArgb(PrimaryColor)));
+
         var copy = new SfButton
         {
-            Text = $"\uE7A0  {text}",
-            FontFamily = UiFont,
-            FontSize = 10,
-            TextColor = Color.FromArgb(PrimaryColor),
             Background = Color.FromArgb(SurfaceLow),
             StrokeThickness = 0,
             CornerRadius = 8,
-            Padding = new Thickness(9, 6),
-            HorizontalOptions = LayoutOptions.Fill
+            Padding = new Thickness(10, 6),
+            HorizontalOptions = LayoutOptions.Fill,
+            Content = new DataTemplate(() => row)
         };
         copy.Clicked += async (_, _) => await Clipboard.Default.SetTextAsync(value);
         return copy;
@@ -521,20 +502,22 @@ public sealed class QrPopupContent
 
     private View BuildFooter(EsimProfile? profile, string activationCode)
     {
-        var iccid = MonoText($"ICCID: {FormatIccid(profile?.Iccid ?? "DEMO-8931-0248")}", 9, Color.FromArgb(MutedColor));
-        iccid.LineBreakMode = LineBreakMode.WordWrap;
+        var iccid = new HorizontalStackLayout { Spacing = 5, VerticalOptions = LayoutOptions.Center };
+        iccid.Add(Icon(IconCircleCheck, 11, Color.FromArgb("#065F46")));
+        iccid.Add(MonoText($"ICCID: {FormatIccid(profile?.Iccid ?? "DEMO-8931-0248")}", 9.5, Color.FromArgb(MutedColor)));
+
+        var emailRow = new HorizontalStackLayout { Spacing = 6, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center };
+        emailRow.Add(Icon(IconEmail, 11, Color.FromArgb(InkColor)));
+        emailRow.Add(Text("Send QR to Email", 10.5, Color.FromArgb(InkColor)));
 
         var sendEmail = new SfButton
         {
-            Text = $"\uE717  Send QR to Email",
-            FontFamily = UiFont,
-            FontSize = 10,
-            TextColor = Color.FromArgb(InkColor),
             Background = Colors.White,
             Stroke = Color.FromArgb(OutlineVariant),
             StrokeThickness = 1,
             CornerRadius = 8,
-            Padding = new Thickness(10, 6)
+            Padding = new Thickness(12, 7),
+            Content = new DataTemplate(() => emailRow)
         };
         sendEmail.Clicked += async (_, _) =>
         {
@@ -551,17 +534,17 @@ public sealed class QrPopupContent
             }
         };
 
+        var scannedRow = new HorizontalStackLayout { Spacing = 6, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center };
+        scannedRow.Add(Icon(IconCircleCheck, 11, Colors.White));
+        scannedRow.Add(Text("I've Scanned the QR Code", 10.5, Colors.White, FontAttributes.Bold));
+
         var scanned = new SfButton
         {
-            Text = $"\uE78C  I've Scanned the QR Code",
-            FontFamily = UiFont,
-            FontSize = 10,
-            FontAttributes = FontAttributes.Bold,
-            TextColor = Colors.White,
-            Background = Color.FromArgb(PrimaryActionColor),
+            Background = Color.FromArgb(PrimaryColor),
             StrokeThickness = 0,
             CornerRadius = 8,
-            Padding = new Thickness(12, 6)
+            Padding = new Thickness(14, 7),
+            Content = new DataTemplate(() => scannedRow)
         };
         scanned.Clicked += async (_, _) =>
         {
@@ -579,7 +562,7 @@ public sealed class QrPopupContent
                 new ColumnDefinition(GridLength.Auto)
             },
             ColumnSpacing = 8,
-            Padding = new Thickness(14, 9, 14, 10)
+            Padding = new Thickness(14, 9, 14, 11)
         };
         footer.Add(iccid, 0, 0);
         footer.Add(sendEmail, 1, 0);
@@ -587,11 +570,14 @@ public sealed class QrPopupContent
 
         return new Border
         {
-            BackgroundColor = Color.FromArgb(SurfaceCanvas),
+            BackgroundColor = Color.FromArgb(SurfaceLow),
             StrokeThickness = 0,
             Content = footer
         };
     }
+
+    private static string Truncate(string value, int length) =>
+        value.Length <= length ? value : value[..length] + "…";
 
     private static string FormatIccid(string iccid)
     {
