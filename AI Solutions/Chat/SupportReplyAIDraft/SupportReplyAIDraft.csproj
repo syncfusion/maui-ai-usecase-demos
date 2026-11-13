@@ -22,8 +22,14 @@
 
   <ItemGroup>
     <MauiImage Include="Resources\Images\*.png" />
+    <MauiImage Include="Resources\Images\*.svg" />
     <MauiFont Include="Resources\Fonts\*" />
     <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('azure-openai.local.json')">
+    <MauiAsset Include="azure-openai.local.json"
+               LogicalName="azure-openai.local.json" />
   </ItemGroup>
 
   <ItemGroup>
