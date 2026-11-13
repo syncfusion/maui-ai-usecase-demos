@@ -34,7 +34,7 @@ public sealed class TopUpPopupContent : IDisposable
     {
         this.viewModel = viewModel;
         root = new VerticalStackLayout { Spacing = 0 };
-        root.Resources.Add(typeof(Label), PopupLabelStyle);
+        root.Resources.Add(PopupLabelStyle);
         tierContainer = new Grid();
         allowanceLabel = BuildAllowanceLabel();
         purchaseLabel = BuildPurchaseLabel();
