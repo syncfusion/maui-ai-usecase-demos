@@ -202,8 +202,8 @@ public class DemoPage
         var profileName = profile?.ProfileName ?? "Japan 5G Explorer";
         var country = profile?.Country ?? "Japan";
         var carrier = profile?.Carrier ?? "Demo Carrier";
-        var profileDetails = new VerticalStackLayout { Spacing = 8 };
-        var profileLine = new HorizontalStackLayout { Spacing = 8, VerticalOptions = LayoutOptions.Center };
+        var profileDetails = new VerticalStackLayout { Spacing = 6 };
+        var profileLine = new HorizontalStackLayout { Spacing = 7, VerticalOptions = LayoutOptions.Center };
         profileLine.Children.Add(new Label
         {
             Text = country.Equals("Japan", StringComparison.OrdinalIgnoreCase) ? "🇯🇵" : "◉",
@@ -245,7 +245,7 @@ public class DemoPage
             HorizontalOptions = LayoutOptions.Start,
             Content = new Label
             {
-                Text = $"◇  {profile?.AllocatedGb ?? 10:0.#} GB  ·  {Math.Max(1, profile?.DaysRemaining ?? 30)} Days Global Tier",
+                Text = $"◉  {profile?.AllocatedGb ?? 10:0.#} GB  ·  {(readyToInstall ? Math.Max(1, profile?.DaysRemaining ?? 30) : 30)} Days Global Tier",
                 FontFamily = "OpenSansRegular",
                 FontSize = 12,
                 TextColor = Color.FromArgb("#006172")
@@ -308,9 +308,17 @@ public class DemoPage
         });
         scanPanel.Children.Add(new Label
         {
-            Text = "Demo QR only — this sample cannot provision an eSIM.",
+            Text = "Scan this QR code with your device camera or in Settings > Cellular > Add eSIM.",
             FontFamily = "Inter",
             FontSize = 11,
+            TextColor = ink,
+            HorizontalTextAlignment = TextAlignment.Center
+        });
+        scanPanel.Children.Add(new Label
+        {
+            Text = "●  Single-use cryptographic profile token · Demo only, cannot provision an eSIM.",
+            FontFamily = "OpenSansRegular",
+            FontSize = 10,
             TextColor = muted,
             HorizontalTextAlignment = TextAlignment.Center
         });
@@ -333,36 +341,56 @@ public class DemoPage
             TextColor = ink
         });
         steps.Children.Add(ActivationStep("1", "Scan QR Code in Device Settings", "Navigate to Settings > Cellular (iOS) or SIM Manager (Android) and add plan."));
-        steps.Children.Add(ActivationStep("2", "Enable Your eSIM", "Turn on the new eSIM line and allow data roaming for the travel profile."));
-        steps.Children.Add(ActivationStep("3", "Connect to the Network", "Your profile connects automatically when you arrive at your destination."));
+        steps.Children.Add(ActivationStep("2", "Enable 'Data Roaming' upon Landing", "Turn on roaming toggles specifically for this profile once in Japan."));
+        steps.Children.Add(ActivationStep("3", "Set Profile as Cellular Data Carrier", "Keep your primary home SIM for SMS 2FA while using this eSIM for all data."));
 
-        var codeCard = new Border
+        var manualActivation = new VerticalStackLayout { Spacing = 8 };
+        var manualHeader = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+            ColumnSpacing = 8
+        };
+        manualHeader.Add(new Label
+        {
+            Text = "Manual Activation Parameters",
+            FontFamily = "Inter",
+            FontSize = 13,
+            FontAttributes = FontAttributes.Bold,
+            TextColor = ink,
+            VerticalOptions = LayoutOptions.Center
+        }, 0, 0);
+        manualHeader.Add(new Border
+        {
+            BackgroundColor = surfaceLow,
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(6) },
+            Padding = new Thickness(8, 4),
+            Content = new Label { Text = "RSP Protocol v2.2", FontFamily = "OpenSansRegular", FontSize = 10, TextColor = Color.FromArgb("#006141") }
+        }, 1, 0);
+        manualActivation.Children.Add(manualHeader);
+        manualActivation.Children.Add(ActivationParameter("SM-DP+ Address", "rsp.global-esim.net", ink));
+        manualActivation.Children.Add(ActivationParameter("Activation Code (LPA String)", activationCode, primary));
+        var copyFullCode = new SfButton
+        {
+            Text = "▣  Copy Full Activation String",
+            FontFamily = "Inter",
+            FontSize = 12,
+            TextColor = primary,
+            Background = surfaceLow,
+            CornerRadius = 8,
+            Padding = new Thickness(12, 8)
+        };
+        copyFullCode.Clicked += async (_, _) => await Clipboard.Default.SetTextAsync(activationCode);
+        manualActivation.Children.Add(copyFullCode);
+        steps.Children.Add(new Border
         {
             BackgroundColor = Colors.White,
             Stroke = outline,
             StrokeThickness = 1,
-            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(10) },
-            Padding = new Thickness(10),
-            Content = new Label
-            {
-                Text = activationCode,
-                FontFamily = "OpenSansRegular",
-                FontSize = 11,
-                TextColor = primary,
-                LineBreakMode = LineBreakMode.WordWrap
-            }
-        };
-        var codeSection = new VerticalStackLayout { Spacing = 5 };
-        codeSection.Children.Add(new Label
-        {
-            Text = "ACTIVATION CODE · FICTIONAL SAMPLE",
-            FontFamily = "Inter",
-            FontSize = 10,
-            FontAttributes = FontAttributes.Bold,
-            TextColor = muted
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
+            Padding = new Thickness(12),
+            Content = manualActivation
         });
-        codeSection.Children.Add(codeCard);
-        steps.Children.Add(codeSection);
 
         if (popup.WidthRequest < 620)
         {
@@ -381,34 +409,135 @@ public class DemoPage
             popupContent.Children.Add(body);
         }
 
-        var footer = new HorizontalStackLayout { Spacing = 10, HorizontalOptions = LayoutOptions.End };
-        var copy = new SfButton
+        var compatibility = new Border
         {
-            Text = "Copy Activation Code",
+            BackgroundColor = surfaceLow,
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(9) },
+            Padding = new Thickness(10, 8),
+            Content = new Label
+            {
+                Text = "▯  Compatibility: Unlocked iPhone XS or newer, Pixel 3 or later, Galaxy S20+ and compatible dual-SIM devices.",
+                FontFamily = "Inter",
+                FontSize = 11,
+                TextColor = muted
+            }
+        };
+        steps.Children.Add(compatibility);
+
+        var footer = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) },
+            ColumnSpacing = 8,
+            Padding = new Thickness(0, 8, 0, 0)
+        };
+        var iccid = new Label
+        {
+            Text = $"◉  ICCID: {FormatIccid(profile?.Iccid ?? "DEMO-0000")}",
+            FontFamily = "OpenSansRegular",
+            FontSize = 10,
+            TextColor = muted,
+            VerticalOptions = LayoutOptions.Center
+        };
+        var sendEmail = new SfButton
+        {
+            Text = "✉  Send QR to Email",
             FontFamily = "Inter",
-            FontSize = 13,
-            TextColor = primary,
+            FontSize = 12,
+            TextColor = ink,
             Background = Colors.White,
             Stroke = outline,
             StrokeThickness = 1,
-            CornerRadius = 10,
-            Padding = new Thickness(16, 8)
+            CornerRadius = 9,
+            Padding = new Thickness(12, 8)
         };
-        copy.Clicked += async (_, _) => await Clipboard.Default.SetTextAsync(activationCode);
-        var done = new SfButton
+        sendEmail.Clicked += async (_, _) =>
         {
-            Text = "Done",
-            FontFamily = "Inter",
-            FontSize = 13,
-            TextColor = Colors.White,
-            Background = Color.FromArgb("#0D5CFF"),
-            CornerRadius = 10,
-            Padding = new Thickness(22, 8)
+            try
+            {
+                await Email.Default.ComposeAsync(new EmailMessage("Your eSIM activation details", $"Demo QR only — this sample cannot provision an eSIM.\n\nActivation string: {activationCode}"));
+            }
+            catch (FeatureNotSupportedException)
+            {
+                await Application.Current!.Windows[0].Page!.DisplayAlert("Email unavailable", "Email composition is not available on this device.", "OK");
+            }
         };
-        done.Clicked += (_, _) => popup.Dismiss();
-        footer.Children.Add(copy);
-        footer.Children.Add(done);
-        popupContent.Children.Add(footer);
+        var scanned = new SfButton
+        {
+            Text = "◉  I've Scanned the QR Code",
+            FontFamily = "Inter",
+            FontSize = 12,
+            FontAttributes = FontAttributes.Bold,
+            TextColor = Colors.White,
+            Background = primary,
+            CornerRadius = 9,
+            Padding = new Thickness(14, 8)
+        };
+        scanned.Clicked += async (_, _) =>
+        {
+            await Application.Current!.Windows[0].Page!.DisplayAlert("Demo only", "This sample does not install or activate an eSIM on your device.", "OK");
+            popup.Dismiss();
+        };
+        footer.Add(iccid, 0, 0);
+        footer.Add(sendEmail, 1, 0);
+        footer.Add(scanned, 2, 0);
+        popupContent.Children.Add(new Border
+        {
+            BackgroundColor = Color.FromArgb("#F8F9FF"),
+            StrokeThickness = 0,
+            Padding = new Thickness(12, 8),
+            Content = footer
+        });
+    }
+
+    private static View ActivationParameter(string label, string value, Color valueColor)
+    {
+        var valueRow = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+            ColumnSpacing = 8
+        };
+        valueRow.Add(new Label
+        {
+            Text = value,
+            FontFamily = "OpenSansRegular",
+            FontSize = 11,
+            TextColor = valueColor,
+            LineBreakMode = LineBreakMode.TailTruncation,
+            VerticalOptions = LayoutOptions.Center
+        }, 0, 0);
+        var copy = new SfButton
+        {
+            Text = "▢",
+            FontFamily = "Inter",
+            FontSize = 12,
+            TextColor = Color.FromArgb("#434656"),
+            Background = Colors.Transparent,
+            WidthRequest = 28,
+            HeightRequest = 28,
+            Padding = new Thickness(0),
+            CornerRadius = 6
+        };
+        copy.Clicked += async (_, _) => await Clipboard.Default.SetTextAsync(value);
+        valueRow.Add(copy, 1, 0);
+
+        var stack = new VerticalStackLayout { Spacing = 3 };
+        stack.Children.Add(new Label { Text = label, FontFamily = "Inter", FontSize = 10, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#434656") });
+        stack.Children.Add(new Border
+        {
+            BackgroundColor = Color.FromArgb("#EFF4FF"),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(7) },
+            Padding = new Thickness(8, 3),
+            Content = valueRow
+        });
+        return stack;
+    }
+
+    private static string FormatIccid(string iccid)
+    {
+        var digits = new string(iccid.Where(char.IsDigit).ToArray());
+        return string.Join(' ', Enumerable.Range(0, (digits.Length + 3) / 4).Select(i => digits.Substring(i * 4, Math.Min(4, digits.Length - i * 4))));
     }
 
     private static Border ActivationStep(string number, string title, string description)
