@@ -1,20 +1,35 @@
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using AIProcessDiagramDrafting.Models;
 using AIProcessDiagramDrafting.Services;
+using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui.Graphics;
 
 namespace AIProcessDiagramDrafting.ViewModels;
 
 public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
 {
+    private static readonly Color InfoColor = Color.FromArgb("#4F46E5");
+    private static readonly Color SuccessColor = Color.FromArgb("#166534");
+    private static readonly Color WarningColor = Color.FromArgb("#B45309");
+    private static readonly Color ErrorColor = Color.FromArgb("#B91C1C");
+
     private readonly IWorkflowExtractionService workflowExtractionService;
     private readonly WorkflowResponseValidator validator;
     private readonly DiagramDraftBuilder draftBuilder;
+    private readonly ObservableCollection<WorkflowWarning> warnings = new();
+
+    private CancellationTokenSource? generationCts;
+    private int generationVersion;
 
     private string processDescription = "An employee submits a purchase request. The manager reviews it. If the amount is below ₹50,000, the manager approves it. Otherwise, Finance reviews it. Approved requests create a purchase order. Rejected requests notify the employee.";
     private DiagramDraft? currentDiagram;
+    private string draftTitle = string.Empty;
     private string statusMessage = string.Empty;
+    private Color statusMessageColor = Colors.Transparent;
     private bool isBusy;
+    private bool discardRequested;
 
     public ProcessDiagramViewModel(
         IWorkflowExtractionService workflowExtractionService,
@@ -24,9 +39,28 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
         this.workflowExtractionService = workflowExtractionService;
         this.validator = validator;
         this.draftBuilder = draftBuilder;
+
+        warnings.CollectionChanged += (_, __) =>
+        {
+            OnPropertyChanged(nameof(HasWarnings));
+            OnPropertyChanged(nameof(HasDraftSummary));
+        };
+
+        GenerateDraftCommand = new AsyncRelayCommand(GenerateDraftAsync, () => !IsBusy);
+        RegenerateCommand = new AsyncRelayCommand(RegenerateAsync, () => !IsBusy);
+        AcceptDraftCommand = new RelayCommand(AcceptDraft, () => CurrentDiagram is not null && !IsBusy);
+        DiscardDraftCommand = new RelayCommand(DiscardDraft, () => CurrentDiagram is not null || IsBusy);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
+
+    public IAsyncRelayCommand GenerateDraftCommand { get; }
+
+    public IAsyncRelayCommand RegenerateCommand { get; }
+
+    public IRelayCommand AcceptDraftCommand { get; }
+
+    public IRelayCommand DiscardDraftCommand { get; }
 
     public string ProcessDescription
     {
@@ -55,8 +89,28 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
 
             currentDiagram = value;
             OnPropertyChanged();
+            NotifyCommandStates();
         }
     }
+
+    public string DraftTitle
+    {
+        get => draftTitle;
+        private set
+        {
+            if (draftTitle == value)
+            {
+                return;
+            }
+
+            draftTitle = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(HasDraftTitle));
+            OnPropertyChanged(nameof(HasDraftSummary));
+        }
+    }
+
+    public ObservableCollection<WorkflowWarning> Warnings => warnings;
 
     public string StatusMessage
     {
@@ -74,7 +128,28 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
         }
     }
 
+    public Color StatusMessageColor
+    {
+        get => statusMessageColor;
+        private set
+        {
+            if (statusMessageColor == value)
+            {
+                return;
+            }
+
+            statusMessageColor = value;
+            OnPropertyChanged();
+        }
+    }
+
     public bool HasStatusMessage => !string.IsNullOrWhiteSpace(StatusMessage);
+
+    public bool HasDraftTitle => !string.IsNullOrWhiteSpace(DraftTitle);
+
+    public bool HasWarnings => warnings.Count > 0;
+
+    public bool HasDraftSummary => HasDraftTitle || HasWarnings;
 
     public bool IsBusy
     {
@@ -88,6 +163,7 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
 
             isBusy = value;
             OnPropertyChanged();
+            NotifyCommandStates();
         }
     }
 
@@ -96,39 +172,63 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
         var description = ProcessDescription.Trim();
         if (string.IsNullOrWhiteSpace(description))
         {
-            StatusMessage = "Enter a process description before generating a draft.";
+            SetStatusMessage("Enter a process description before generating a draft.", ErrorColor);
             return;
         }
 
         if (description.Length > WorkflowLimits.ProcessDescription)
         {
-            StatusMessage = $"The process description must be {WorkflowLimits.ProcessDescription} characters or fewer.";
+            SetStatusMessage($"The process description must be {WorkflowLimits.ProcessDescription} characters or fewer.", ErrorColor);
             return;
         }
 
-        IsBusy = true;
-        CurrentDiagram = null;
-        StatusMessage = "Generating draft...";
+        var requestVersion = Interlocked.Increment(ref generationVersion);
+        StartGeneration();
 
         try
         {
-            var workflow = await workflowExtractionService.ExtractAsync(description);
+            var cts = CreateGenerationTokenSource();
+            var workflow = await workflowExtractionService.ExtractAsync(description, cts.Token);
+            cts.Token.ThrowIfCancellationRequested();
+
             if (!validator.Validate(workflow, out var errorMessage))
             {
-                StatusMessage = errorMessage;
+                SetStatusMessage(errorMessage, ErrorColor);
                 return;
             }
 
+            DraftTitle = workflow.Title.Trim();
+            Warnings.Clear();
+            foreach (var warning in workflow.Warnings.Where(warning => !string.IsNullOrWhiteSpace(warning.Message)))
+            {
+                Warnings.Add(warning);
+            }
+
             CurrentDiagram = draftBuilder.Build(workflow);
-            StatusMessage = "Draft generated.";
+            SetStatusMessage(Warnings.Count == 0 ? "Draft generated." : "Draft generated with warnings.", Warnings.Count == 0 ? SuccessColor : WarningColor);
+        }
+        catch (OperationCanceledException)
+        {
+            if (requestVersion == generationVersion && !discardRequested)
+            {
+                SetStatusMessage("Generation canceled.", WarningColor);
+            }
         }
         catch
         {
-            StatusMessage = "Unable to generate the draft right now. Please try again.";
+            if (requestVersion == generationVersion)
+            {
+                SetStatusMessage("Unable to generate the draft right now. Please try again.", ErrorColor);
+            }
         }
         finally
         {
-            IsBusy = false;
+            if (requestVersion == generationVersion)
+            {
+                IsBusy = false;
+                DisposeGenerationTokenSource();
+                discardRequested = false;
+            }
         }
     }
 
@@ -137,7 +237,81 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
 
     public void AcceptDraft()
     {
-        StatusMessage = "Draft accepted.";
+        if (CurrentDiagram is null)
+        {
+            return;
+        }
+
+        SetStatusMessage("Draft accepted.", SuccessColor);
+    }
+
+    public void DiscardDraft()
+    {
+        if (CurrentDiagram is null && !IsBusy)
+        {
+            return;
+        }
+
+        var wasBusy = IsBusy;
+        discardRequested = true;
+        CancelGeneration();
+        ClearDraftResult();
+        SetStatusMessage(wasBusy ? "Generation canceled." : "Draft discarded.", WarningColor);
+    }
+
+    private void StartGeneration()
+    {
+        CancelGeneration();
+        discardRequested = false;
+        IsBusy = true;
+        ClearDraftResult();
+        SetStatusMessage("Generating draft...", InfoColor);
+    }
+
+    private void ClearDraftResult()
+    {
+        DraftTitle = string.Empty;
+        Warnings.Clear();
+        CurrentDiagram = null;
+    }
+
+    private CancellationTokenSource CreateGenerationTokenSource()
+    {
+        var cts = new CancellationTokenSource();
+        generationCts = cts;
+        return cts;
+    }
+
+    private void CancelGeneration()
+    {
+        if (generationCts is null)
+        {
+            return;
+        }
+
+        generationCts.Cancel();
+        generationCts.Dispose();
+        generationCts = null;
+    }
+
+    private void DisposeGenerationTokenSource()
+    {
+        generationCts?.Dispose();
+        generationCts = null;
+    }
+
+    private void SetStatusMessage(string message, Color color)
+    {
+        StatusMessageColor = color;
+        StatusMessage = message;
+    }
+
+    private void NotifyCommandStates()
+    {
+        GenerateDraftCommand.NotifyCanExecuteChanged();
+        RegenerateCommand.NotifyCanExecuteChanged();
+        AcceptDraftCommand.NotifyCanExecuteChanged();
+        DiscardDraftCommand.NotifyCanExecuteChanged();
     }
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

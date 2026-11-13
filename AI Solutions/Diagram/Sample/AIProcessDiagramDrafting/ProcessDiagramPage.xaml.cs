@@ -9,14 +9,14 @@ namespace AIProcessDiagramDrafting;
 public partial class ProcessDiagramPage : ContentPage
 {
     private readonly ProcessDiagramViewModel viewModel;
-    private SfDiagram diagramSurface;
+    private readonly SfDiagram diagramSurface;
     private int fitToPageRequestId;
 
     public ProcessDiagramPage(ProcessDiagramViewModel viewModel)
     {
         InitializeComponent();
         this.viewModel = viewModel;
-        BindingContext = viewModel;
+        BindingContext = this.viewModel;
         this.viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
         diagramSurface = CreateDiagramSurface();
@@ -33,11 +33,13 @@ public partial class ProcessDiagramPage : ContentPage
 
         Loaded += OnLoaded;
         SizeChanged += OnSizeChanged;
+        Unloaded += OnUnloaded;
     }
 
     private void OnLoaded(object? sender, EventArgs e)
     {
         ApplyLayout(Width);
+        UpdateAndroidDiagramHeight(viewModel.CurrentDiagram);
         ApplyCurrentDiagram();
         ScheduleFitToPage();
     }
@@ -45,32 +47,13 @@ public partial class ProcessDiagramPage : ContentPage
     private void OnSizeChanged(object? sender, EventArgs e)
     {
         ApplyLayout(Width);
+        UpdateAndroidDiagramHeight(viewModel.CurrentDiagram);
         ScheduleFitToPage();
     }
 
-    private void OnProcessDescriptionTextChanged(object? sender, TextChangedEventArgs e)
+    private void OnUnloaded(object? sender, EventArgs e)
     {
-        if (viewModel.ProcessDescription != e.NewTextValue)
-        {
-            viewModel.ProcessDescription = e.NewTextValue ?? string.Empty;
-        }
-    }
-
-    private async void OnGenerateDraftClicked(object? sender, EventArgs e)
-    {
-        SyncProcessDescriptionFromEditor();
-        await viewModel.GenerateDraftAsync();
-    }
-
-    private async void OnRegenerateClicked(object? sender, EventArgs e)
-    {
-        SyncProcessDescriptionFromEditor();
-        await viewModel.RegenerateAsync();
-    }
-
-    private void OnAcceptDraftClicked(object? sender, EventArgs e)
-    {
-        viewModel.AcceptDraft();
+        viewModel.PropertyChanged -= OnViewModelPropertyChanged;
     }
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -82,16 +65,13 @@ public partial class ProcessDiagramPage : ContentPage
         }
     }
 
-    private void SyncProcessDescriptionFromEditor()
-    {
-        viewModel.ProcessDescription = ProcessDescriptionEditor.Text ?? string.Empty;
-    }
-
     private void ApplyCurrentDiagram()
     {
-        var draft = viewModel.CurrentDiagram;
-        ResetDiagramSurface();
+        fitToPageRequestId++;
+        diagramSurface.Nodes.Clear();
+        diagramSurface.Connectors.Clear();
 
+        var draft = viewModel.CurrentDiagram;
         if (draft is null)
         {
             UpdateAndroidDiagramHeight(null);
@@ -113,17 +93,7 @@ public partial class ProcessDiagramPage : ContentPage
 
     private SfDiagram CreateDiagramSurface()
     {
-        var surface = new SfDiagram();
-        surface.Created += (_, __) => ScheduleFitToPage();
-        return surface;
-    }
-
-    private void ResetDiagramSurface()
-    {
-        fitToPageRequestId++;
-        DiagramHost.Children.Clear();
-        diagramSurface = CreateDiagramSurface();
-        DiagramHost.Children.Add(diagramSurface);
+        return new SfDiagram();
     }
 
     private void ScheduleFitToPage()
@@ -172,7 +142,6 @@ public partial class ProcessDiagramPage : ContentPage
             Grid.SetRow(DiagramSection, 2);
             Grid.SetColumn(DiagramSection, 0);
             DiagramSection.VerticalOptions = LayoutOptions.Start;
-            UpdateAndroidDiagramHeight(viewModel.CurrentDiagram);
         }
         else if (compact)
         {
@@ -190,6 +159,9 @@ public partial class ProcessDiagramPage : ContentPage
 
             Grid.SetRow(DiagramSection, 2);
             Grid.SetColumn(DiagramSection, 0);
+            DiagramSection.ClearValue(HeightRequestProperty);
+            DiagramSection.ClearValue(MinimumHeightRequestProperty);
+            DiagramSection.VerticalOptions = LayoutOptions.FillAndExpand;
         }
         else
         {
@@ -208,6 +180,7 @@ public partial class ProcessDiagramPage : ContentPage
             Grid.SetRow(DiagramSection, 1);
             Grid.SetColumn(DiagramSection, 1);
             DiagramSection.ClearValue(HeightRequestProperty);
+            DiagramSection.ClearValue(MinimumHeightRequestProperty);
             DiagramSection.VerticalOptions = LayoutOptions.FillAndExpand;
         }
     }
@@ -219,7 +192,12 @@ public partial class ProcessDiagramPage : ContentPage
             return;
         }
 
-        var nodeCount = draft?.Nodes.Count ?? 0;
-        DiagramSection.HeightRequest = Math.Max(900, 260 + (nodeCount * 180));
+        var contentHeight = draft is null ? 420 : 300 + (draft.Nodes.Count * 120);
+        var availableHeight = Height > 0
+            ? Math.Max(0, Height - HeaderSection.Height - DetailsSection.Height - (RootGrid.RowSpacing * 2))
+            : 0;
+
+        DiagramSection.ClearValue(HeightRequestProperty);
+        DiagramSection.MinimumHeightRequest = Math.Max(contentHeight, availableHeight);
     }
 }
