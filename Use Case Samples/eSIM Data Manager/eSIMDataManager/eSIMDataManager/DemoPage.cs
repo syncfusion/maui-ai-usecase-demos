@@ -14,7 +14,7 @@ public class DemoPage
     {
         ShowHeader = false,
         ShowFooter = false,
-        WidthRequest = 760,
+        WidthRequest = 700,
         StaysOpen = true,
         AutoSizeMode = PopupAutoSizeMode.Height,
         PopupStyle = new PopupStyle
@@ -25,6 +25,20 @@ public class DemoPage
         }
     };
     private readonly VerticalStackLayout popupContent = new() { Spacing = 14, Padding = 22 };
+    private readonly SfPopup qrPopup = new()
+    {
+        ShowHeader = false,
+        ShowFooter = false,
+        WidthRequest = 700,
+        StaysOpen = true,
+        AutoSizeMode = PopupAutoSizeMode.Height,
+        PopupStyle = new PopupStyle
+        {
+            PopupBackground = Colors.White,
+            MessageBackground = Colors.White,
+            CornerRadius = 10
+        }
+    };
     private readonly SfPopup topUpPopup = new()
     {
         ShowHeader = false,
@@ -51,6 +65,8 @@ public class DemoPage
 
     public SfPopup TopUpPopupView => topUpPopup;
 
+    public SfPopup QrPopupView => qrPopup;
+
     public void UpdateTopUpPopupWidth(double availableWidth, double availableHeight = 0)
     {
         var compact = availableWidth < 620;
@@ -59,11 +75,25 @@ public class DemoPage
         topUpPopup.AutoSizeMode = PopupAutoSizeMode.Height;
         topUpContent?.SetCompact(compact);
         availableTopUpWidth = availableWidth;
+
         if (availableHeight > 0) this.availableHeight = availableHeight;
-        popup.WidthRequest = Math.Clamp(availableWidth - 32, 320, 960);
+        popup.WidthRequest = Math.Clamp(availableWidth - 32, 320, 700);
         if (this.availableHeight > 0)
-            popup.MaximumHeightRequest = Math.Max(360, this.availableHeight - 32);
-        qrContent?.SetCompact(popup.WidthRequest < 620);
+        {
+            // Size to content but never taller than the screen, so the footer stays visible
+            // and the body scrolls instead of overflowing.
+            popup.AutoSizeMode = PopupAutoSizeMode.Height;
+            popup.MaximumHeightRequest = Math.Max(360, this.availableHeight - 24);
+        }
+        qrPopup.WidthRequest = popup.WidthRequest;
+        if (this.availableHeight > 0)
+        {
+            // Let the dialog hug its content but never grow past the screen; the scrolling
+            // body inside absorbs the difference, so the footer is always visible.
+            qrPopup.AutoSizeMode = PopupAutoSizeMode.Height;
+            qrPopup.MaximumHeightRequest = Math.Max(360, this.availableHeight - 24);
+        }
+        qrContent?.SetCompact(qrPopup.WidthRequest < 620);
         if (this.availableHeight > 0)
             qrContent?.SetViewport(this.availableHeight);
     }
@@ -102,12 +132,12 @@ public class DemoPage
         }
         popupProfile = profile ?? ViewModel.SelectedProfile;
         qrContent = new QrPopupContent(popupProfile);
-        qrContent.ScannedRequested += (_, _) => popup.Dismiss();
-        qrContent.CloseRequested += (_, _) => popup.Dismiss();
-        popup.ContentTemplate = new DataTemplate(() => qrContent!.Content);
-        qrContent.SetCompact(popup.WidthRequest < 620);
+        qrContent.ScannedRequested += (_, _) => qrPopup.Dismiss();
+        qrContent.CloseRequested += (_, _) => qrPopup.Dismiss();
+        qrPopup.ContentTemplate = new DataTemplate(() => qrContent!.Content);
+        qrContent.SetCompact(qrPopup.WidthRequest < 620);
         qrContent.SetViewport(availableHeight);
-        popup.Show();
+        qrPopup.Show();
     }
 
     public void QrActiveClicked(object? sender, EventArgs e) => ShowDemoPopup("Install & Activate eSIM", ViewModel.ActiveProfile);

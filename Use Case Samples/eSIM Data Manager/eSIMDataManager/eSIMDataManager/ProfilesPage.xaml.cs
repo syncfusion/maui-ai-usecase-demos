@@ -12,7 +12,7 @@ public partial class ProfilesPage : ContentPage
         InitializeComponent();
         popupActions = new DemoPage(viewModel);
         BindingContext = viewModel;
-        Content = new Grid { Children = { Content, popupActions.PopupView, popupActions.TopUpPopupView } };
+        Content = new Grid { Children = { Content, popupActions.PopupView, popupActions.QrPopupView, popupActions.TopUpPopupView } };
         SizeChanged += (_, _) => popupActions.UpdateTopUpPopupWidth(Width, Height);
     }
 
