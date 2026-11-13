@@ -374,31 +374,73 @@ public sealed class QrPopupContent
         heading.Add(instantRow, 0, 0);
         heading.Add(MonoText($"EID: {TruncateEid(profile?.Iccid)}", 10, Color.FromArgb(MutedColor)), 1, 0);
 
-        // QR code in a white rounded panel
+        // QR code rendered in primary blue on a white quiet zone
         var barcode = new SfBarcodeGenerator
         {
             ShowText = false,
             HeightRequest = 220,
             WidthRequest = 220,
+            BackgroundColor = Colors.White,
+            ForegroundColor = Color.FromArgb(PrimaryColor),
             HorizontalOptions = LayoutOptions.Center,
             VerticalOptions = LayoutOptions.Center,
             Symbology = new QRCode(),
             Value = activationCode
         };
 
-        var qrPanel = new Border
+        // Small white circle with primary-blue check-tick glyph, centered on the QR
+        var checkBadge = new Border
         {
-            BackgroundColor = Colors.White,
-            Stroke = Color.FromArgb(OutlineVariant),
-            StrokeThickness = 1,
-            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
-            Padding = new Thickness(20),
-            Content = barcode
+            WidthRequest = 30,
+            HeightRequest = 30,
+            BackgroundColor = Color.FromArgb(PrimaryColor),
+            Stroke = Colors.White,
+            StrokeThickness = 2,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(15) },
+            Content = Icon(IconCheckTick, 13, Colors.White)
         };
 
-        var stack = new VerticalStackLayout { Spacing = 12 };
+        var qrStack = new Grid
+        {
+            WidthRequest = 220,
+            HeightRequest = 220,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center
+        };
+        qrStack.Add(barcode, 0, 0);
+        qrStack.Add(checkBadge, 0, 0);
+        qrStack.HorizontalOptions = LayoutOptions.Center;
+        qrStack.VerticalOptions = LayoutOptions.Center;
+
+        // Four L-shaped corner brackets framing the QR code in primary blue.
+        // A 3x3 grid places each bracket in its own corner cell so the positions are deterministic.
+        var qrFrame = new Grid
+        {
+            WidthRequest = 260,
+            HeightRequest = 260,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            RowDefinitions =
+            {
+                new RowDefinition(GridLength.Auto),
+                new RowDefinition(GridLength.Star),
+                new RowDefinition(GridLength.Auto)
+            },
+            ColumnDefinitions =
+            {
+                new ColumnDefinition(GridLength.Auto),
+                new ColumnDefinition(GridLength.Star),
+                new ColumnDefinition(GridLength.Auto)
+            }
+        };
+        qrFrame.Add(qrStack, 1, 1);
+        qrFrame.Add(BuildCornerBracket(Corner.TopLeft), 0, 0);
+        qrFrame.Add(BuildCornerBracket(Corner.TopRight), 2, 0);
+        qrFrame.Add(BuildCornerBracket(Corner.BottomLeft), 0, 2);
+        qrFrame.Add(BuildCornerBracket(Corner.BottomRight), 2, 2);
+        var stack = new VerticalStackLayout { Spacing = 14 };
         stack.Add(heading);
-        stack.Add(qrPanel);
+        stack.Add(qrFrame);
 
         // Caption block: "Scan this QR code with your device camera or" (muted)
         //                "in Settings > Cellular > Add eSIM." (primary, bold)
@@ -417,8 +459,17 @@ public sealed class QrPopupContent
             ColumnSpacing = 6,
             HorizontalOptions = LayoutOptions.Center
         };
-        caption3Stack.Add(Icon(IconDot, 7, Color.FromArgb(MutedColor)), 0, 0);
-        caption3Stack.Add(Text("Single-use cryptographic profile token", 10, Color.FromArgb(MutedColor)), 1, 0);
+        var dot = new Ellipse
+        {
+            WidthRequest = 7,
+            HeightRequest = 7,
+            Fill = Color.FromArgb("#006141"),
+            VerticalOptions = LayoutOptions.Center
+        };
+        caption3Stack.Add(dot, 0, 0);
+        var caption3 = Text("Single-use cryptographic profile token", 10, Color.FromArgb(MutedColor));
+        caption3.HorizontalOptions = LayoutOptions.Start;
+        caption3Stack.Add(caption3, 1, 0);
         stack.Add(caption1);
         stack.Add(caption2);
         stack.Add(caption3Stack);
@@ -431,6 +482,75 @@ public sealed class QrPopupContent
             Padding = new Thickness(14, 14),
             Content = stack
         };
+    }
+
+    private enum Corner { TopLeft, TopRight, BottomLeft, BottomRight }
+
+    /// <summary>L-shaped bracket composed of two short blue rectangles framing one corner.</summary>
+    private static View BuildCornerBracket(Corner corner)
+    {
+        const double arm = 18;   // length of each leg
+        const double thick = 3;  // stroke thickness of the leg
+
+        var horizontal = new BoxView
+        {
+            HeightRequest = thick,
+            WidthRequest = arm,
+            BackgroundColor = Color.FromArgb(PrimaryColor)
+        };
+        var vertical = new BoxView
+        {
+            WidthRequest = thick,
+            HeightRequest = arm,
+            BackgroundColor = Color.FromArgb(PrimaryColor)
+        };
+
+        // The two legs share one cell; alignment decides which corner of the cell they hug.
+        var grid = new Grid
+        {
+            WidthRequest = arm,
+            HeightRequest = arm
+        };
+
+        switch (corner)
+        {
+            case Corner.TopLeft:
+                grid.HorizontalOptions = LayoutOptions.Start;
+                grid.VerticalOptions = LayoutOptions.Start;
+                horizontal.HorizontalOptions = LayoutOptions.Start;
+                horizontal.VerticalOptions = LayoutOptions.Start;
+                vertical.HorizontalOptions = LayoutOptions.Start;
+                vertical.VerticalOptions = LayoutOptions.Start;
+                break;
+            case Corner.TopRight:
+                grid.HorizontalOptions = LayoutOptions.End;
+                grid.VerticalOptions = LayoutOptions.Start;
+                horizontal.HorizontalOptions = LayoutOptions.End;
+                horizontal.VerticalOptions = LayoutOptions.Start;
+                vertical.HorizontalOptions = LayoutOptions.End;
+                vertical.VerticalOptions = LayoutOptions.Start;
+                break;
+            case Corner.BottomLeft:
+                grid.HorizontalOptions = LayoutOptions.Start;
+                grid.VerticalOptions = LayoutOptions.End;
+                horizontal.HorizontalOptions = LayoutOptions.Start;
+                horizontal.VerticalOptions = LayoutOptions.End;
+                vertical.HorizontalOptions = LayoutOptions.Start;
+                vertical.VerticalOptions = LayoutOptions.End;
+                break;
+            case Corner.BottomRight:
+                grid.HorizontalOptions = LayoutOptions.End;
+                grid.VerticalOptions = LayoutOptions.End;
+                horizontal.HorizontalOptions = LayoutOptions.End;
+                horizontal.VerticalOptions = LayoutOptions.End;
+                vertical.HorizontalOptions = LayoutOptions.End;
+                vertical.VerticalOptions = LayoutOptions.End;
+                break;
+        }
+
+        grid.Add(horizontal, 0, 0);
+        grid.Add(vertical, 0, 0);
+        return grid;
     }
 
     private static View BuildSteps(EsimProfile? profile, string activationCode)
