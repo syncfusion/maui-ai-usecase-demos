@@ -1,6 +1,7 @@
+using eSIMDataManager.Controls;
 using eSIMDataManager.Models;
 using eSIMDataManager.ViewModels;
-using Syncfusion.Maui.Barcode;
+using Syncfusion.Maui.Buttons;
 using Syncfusion.Maui.Popup;
 
 namespace eSIMDataManager;
@@ -9,8 +10,63 @@ public class DemoPage
 {
     private MainViewModel ViewModel { get; }
 
-    private readonly SfPopup popup = new() { ShowHeader = false, ShowFooter = false, WidthRequest = 580, HeightRequest = 650, StaysOpen = true };
+    private readonly SfPopup popup = new()
+    {
+        ShowHeader = false,
+        ShowFooter = false,
+        WidthRequest = 700,
+        StaysOpen = true,
+        AutoSizeMode = PopupAutoSizeMode.Height,
+        PopupStyle = new PopupStyle
+        {
+            PopupBackground = Colors.White,
+            MessageBackground = Colors.White,
+            CornerRadius = 10
+        }
+    };
     private readonly VerticalStackLayout popupContent = new() { Spacing = 14, Padding = 22 };
+    private readonly SfPopup qrPopup = new()
+    {
+        ShowHeader = false,
+        ShowFooter = false,
+        WidthRequest = 700,
+        StaysOpen = true,
+        AutoSizeMode = PopupAutoSizeMode.Height,
+        PopupStyle = new PopupStyle
+        {
+            PopupBackground = Colors.White,
+            MessageBackground = Colors.White,
+            CornerRadius = 10
+        }
+    };
+    private readonly SfPopup topUpPopup = new()
+    {
+        ShowHeader = false,
+        ShowFooter = false,
+        WidthRequest = 720,
+        StaysOpen = true,
+        AutoSizeMode = PopupAutoSizeMode.Height,
+        PopupStyle = new PopupStyle { PopupBackground = Colors.White, MessageBackground = Colors.White }
+    };
+    private readonly SfPopup purchasePopup = new()
+    {
+        ShowHeader = false,
+        ShowFooter = false,
+        WidthRequest = 520,
+        StaysOpen = true,
+        AutoSizeMode = PopupAutoSizeMode.Height,
+        PopupStyle = new PopupStyle
+        {
+            PopupBackground = Colors.White,
+            MessageBackground = Colors.White,
+            CornerRadius = 16
+        }
+    };
+    private TopUpPopupContent? topUpContent;
+    private QrPopupContent? qrContent;
+    private PurchasePopupContent? purchaseContent;
+    private double availableTopUpWidth = 720;
+    private double availableHeight;
     private EsimProfile? popupProfile;
 
     public DemoPage(MainViewModel viewModel)
@@ -22,9 +78,55 @@ public class DemoPage
 
     public SfPopup PopupView => popup;
 
+    public SfPopup TopUpPopupView => topUpPopup;
+
+    public SfPopup QrPopupView => qrPopup;
+
+    public SfPopup PurchasePopupView => purchasePopup;
+
+    public void UpdateTopUpPopupWidth(double availableWidth, double availableHeight = 0)
+    {
+        var compact = availableWidth < 620;
+        var width = compact ? Math.Max(320, availableWidth - 24) : Math.Clamp(availableWidth - 32, 480, 720);
+        topUpPopup.WidthRequest = width;
+        topUpPopup.AutoSizeMode = PopupAutoSizeMode.Height;
+        topUpContent?.SetCompact(compact);
+        availableTopUpWidth = availableWidth;
+
+        if (availableHeight > 0) this.availableHeight = availableHeight;
+        popup.WidthRequest = Math.Clamp(availableWidth - 32, 320, 700);
+        if (this.availableHeight > 0)
+        {
+            // Size to content but never taller than the screen, so the footer stays visible
+            // and the body scrolls instead of overflowing.
+            popup.AutoSizeMode = PopupAutoSizeMode.Height;
+            popup.MaximumHeightRequest = Math.Max(360, this.availableHeight - 24);
+        }
+        qrPopup.WidthRequest = popup.WidthRequest;
+        if (this.availableHeight > 0)
+        {
+            // Let the dialog hug its content but never grow past the screen; the scrolling
+            // body inside absorbs the difference, so the footer is always visible.
+            qrPopup.AutoSizeMode = PopupAutoSizeMode.Height;
+            qrPopup.MaximumHeightRequest = Math.Max(360, this.availableHeight - 24);
+        }
+        qrContent?.SetCompact(qrPopup.WidthRequest < 620);
+        if (this.availableHeight > 0)
+            qrContent?.SetViewport(this.availableHeight);
+
+        purchasePopup.WidthRequest = Math.Clamp(availableWidth - 32, 320, 520);
+        if (this.availableHeight > 0)
+        {
+            purchasePopup.AutoSizeMode = PopupAutoSizeMode.Height;
+            purchasePopup.MaximumHeightRequest = Math.Max(360, this.availableHeight - 24);
+        }
+        purchaseContent?.SetCompact(purchasePopup.WidthRequest < 420);
+    }
+
     protected void ShowDemoPopup(string title, EsimProfile? profile = null)
     {
         popupContent.Children.Clear();
+        popup.ContentTemplate = new DataTemplate(() => popupContent);
         popupContent.Children.Add(new Label { Text = "SIMULATED · No payment or eSIM provisioning", FontSize = 12, TextColor = Color.FromArgb("#8B5B00") });
         popupContent.Children.Add(new Label { Text = title, FontSize = 22, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#102B52") });
         if (title.StartsWith("Activate", StringComparison.Ordinal) && profile is { Status: ProfileStatus.ReadyToInstall } readyProfile)
@@ -54,14 +156,13 @@ public class DemoPage
             return;
         }
         popupProfile = profile ?? ViewModel.SelectedProfile;
-        popupContent.Children.Add(new Label { Text = popupProfile?.ActivationCode ?? "Fictional activation details", FontSize = 12, TextColor = Color.FromArgb("#63748B"), LineBreakMode = LineBreakMode.WordWrap });
-        popupContent.Children.Add(new SfBarcodeGenerator { ShowText = false, HeightRequest = 220, WidthRequest = 220, HorizontalOptions = LayoutOptions.Center, Symbology = new QRCode() });
-        popupContent.Children.Add(new Label { Text = "This QR is a fictional visual sample and cannot activate or provision an eSIM.", FontSize = 12, TextColor = Color.FromArgb("#63748B"), HorizontalTextAlignment = TextAlignment.Center });
-        var close = new Syncfusion.Maui.Buttons.SfButton { Text = "Close" };
-        close.Clicked += (_, _) => popup.Dismiss();
-        popupContent.Children.Add(close);
-        ((SfBarcodeGenerator)popupContent.Children[3]).Value = popupProfile?.ActivationCode ?? "LPA:1$demo.carrier.example$SAMPLE";
-        popup.Show();
+        qrContent = new QrPopupContent(popupProfile);
+        qrContent.ScannedRequested += (_, _) => qrPopup.Dismiss();
+        qrContent.CloseRequested += (_, _) => qrPopup.Dismiss();
+        qrPopup.ContentTemplate = new DataTemplate(() => qrContent!.Content);
+        qrContent.SetCompact(qrPopup.WidthRequest < 620);
+        qrContent.SetViewport(availableHeight);
+        qrPopup.Show();
     }
 
     public void QrActiveClicked(object? sender, EventArgs e) => ShowDemoPopup("Install & Activate eSIM", ViewModel.ActiveProfile);
@@ -73,29 +174,86 @@ public class DemoPage
     {
         if (profile is null || profile.Status != ProfileStatus.Active) { await ViewModel.TopUpCommand.ExecuteAsync(profile); return; }
         popupProfile = profile;
-        popupContent.Children.Clear();
-        popupContent.Children.Add(new Label { Text = "SIMULATED · No payment or carrier provisioning", FontSize = 12, TextColor = Color.FromArgb("#8B5B00") });
-        popupContent.Children.Add(new Label { Text = "Top-Up Data · Simulated", FontSize = 22, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#102B52") });
-        popupContent.Children.Add(new Label { Text = $"{profile.ProfileName} · {profile.RemainingGb:0.#} GB remaining · demo", TextColor = Color.FromArgb("#63748B") });
-        popupContent.Children.Add(new Label { Text = "Choose a fictional data extension", TextColor = Color.FromArgb("#63748B") });
-        foreach (var pack in ViewModel.TopUpPacks)
-        {
-            var option = new Syncfusion.Maui.Buttons.SfButton { Text = $"{pack.DataGb} GB · ${pack.Price:0.00} · simulated" };
-            option.Clicked += (_, _) => { ViewModel.Store.TopUp(profile, pack); popup.Dismiss(); };
-            popupContent.Children.Add(option);
-        }
-        var close = new Syncfusion.Maui.Buttons.SfButton { Text = "Cancel" };
-        close.Clicked += (_, _) => popup.Dismiss();
-        popupContent.Children.Add(close);
-        popup.Show();
+        ViewModel.TopUpProfile = profile;
+        ViewModel.SelectedTopUpGb = 3;
+
+        topUpContent?.Dispose();
+        topUpContent = new TopUpPopupContent(ViewModel);
+        topUpContent.CloseRequested += (_, _) => CloseTopUp();
+        topUpContent.CancelRequested += (_, _) => CloseTopUp();
+        topUpContent.ChangePaymentRequested += (_, _) => ChangePaymentRequested();
+        topUpContent.PurchaseRequested += (_, _) => ConfirmTopUp(profile);
+
+        topUpPopup.ContentTemplate = new DataTemplate(() => topUpContent!.Content);
+        UpdateTopUpPopupWidth(availableTopUpWidth);
+        topUpPopup.Show();
+    }
+
+    private void CloseTopUp()
+    {
+        topUpPopup.Dismiss();
+        topUpContent?.Dispose();
+        topUpContent = null;
+    }
+
+    private async void ConfirmTopUp(EsimProfile profile)
+    {
+        var pack = ViewModel.SelectedTopUpPack;
+        var before = profile.RemainingGb;
+        if (!ViewModel.ApplyTopUp()) return;
+        CloseTopUp();
+        await Application.Current!.Windows[0].Page!.DisplayAlert(
+            "Top-up added",
+            $"{pack.DataLabel} was added to {profile.ProfileName}. Remaining data is now {profile.RemainingGb:0.#} GB (was {before:0.#} GB).\n\nDemo only — no payment was taken and no carrier was contacted.",
+            "OK");
+    }
+
+    private async void ChangePaymentRequested()
+    {
+        await Application.Current!.Windows[0].Page!.DisplayAlert(
+            "Demo payment method",
+            "The sample top-up always uses the demo card ending in 4242. No real payment details are collected and no card is charged.",
+            "OK");
     }
     public void ActivateItemClicked(object? sender, EventArgs e) => ShowDemoPopup("Activate Profile · Demo", (sender as Element)?.BindingContext as EsimProfile);
     public async void RenewItemClicked(object? sender, EventArgs e) => await ViewModel.RenewCommand.ExecuteAsync((sender as Element)?.BindingContext as EsimProfile);
     public void QrSelectedClicked(object? sender, EventArgs e) => ShowDemoPopup("Install & Activate eSIM", ViewModel.SelectedProfile);
     public void BuyPlanClicked(object? sender, EventArgs e)
     {
-        ViewModel.SelectedPlan = (sender as Element)?.BindingContext as Plan;
-        ShowDemoPopup("Purchase Plan · Demo checkout");
+        var plan = (sender as Element)?.BindingContext as Plan ?? ViewModel.SelectedPlan;
+        if (plan is null) return;
+        ViewModel.SelectedPlan = plan;
+        OpenPurchase(plan);
+    }
+
+    /// <summary>Opens the Purchase Plan checkout dialog for the given plan.</summary>
+    private void OpenPurchase(Plan plan)
+    {
+        purchaseContent = new PurchasePopupContent(plan);
+        purchaseContent.CloseRequested += (_, _) => purchasePopup.Dismiss();
+        purchaseContent.CancelRequested += (_, _) => purchasePopup.Dismiss();
+        purchaseContent.ChangePaymentRequested += (_, _) => ChangePaymentRequested();
+        purchaseContent.PurchaseRequested += (_, _) => ConfirmPurchase(plan);
+
+        purchasePopup.ContentTemplate = new DataTemplate(() => purchaseContent!.Content);
+        UpdateTopUpPopupWidth(availableTopUpWidth);
+        purchasePopup.Show();
+    }
+
+    /// <summary>Completes the simulated purchase. No payment is taken and no eSIM is provisioned.</summary>
+    private async void ConfirmPurchase(Plan plan)
+    {
+        purchasePopup.Dismiss();
+        var before = ViewModel.ProfilesCount;
+        ViewModel.SelectedPlan = plan;
+        var purchased = ViewModel.Store.Purchase(plan);
+        ViewModel.SelectedProfile = purchased;
+        await Application.Current!.Windows[0].Page!.DisplayAlert(
+            "Plan added",
+            $"{plan.Country} · {plan.DataLabel} was added to your dashboard.\n\nDemo only — no payment was taken and no eSIM was provisioned.",
+            "View profiles");
+        if (ViewModel.ProfilesCount != before)
+            await Shell.Current.GoToAsync("//profiles");
     }
     public void DestinationClicked(object? sender, EventArgs e) { var text = sender switch { Syncfusion.Maui.Core.SfChip chip => chip.Text, Syncfusion.Maui.Buttons.SfButton button => button.Text, _ => null }; if (!string.IsNullOrWhiteSpace(text)) { var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries); ViewModel.SelectCountry(words.Length > 1 ? string.Join(' ', words.Skip(1)) : words[0]); } }
     public void FilterClicked(object? sender, EventArgs e) { if (sender is Syncfusion.Maui.Buttons.SfButton button && button.Text is not null) ViewModel.SelectCoverage(button.Text); }

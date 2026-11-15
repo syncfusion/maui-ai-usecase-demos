@@ -96,5 +96,10 @@ public sealed class EsimStore
         return true;
     }
 
-    public static IReadOnlyList<TopUpPack> TopUpPacks { get; } = [new(1, 3), new(3, 7), new(5, 10)];
+    public static IReadOnlyList<TopUpPack> TopUpPacks { get; } =
+    [
+        new(1, 3, 7, "Quick boost for messaging & maps"),
+        new(3, 7, 15, "Ideal for social media & navigation", "Most Popular", true),
+        new(5, 10, 30, "Generous allowance for streaming & work", "Best Value ($2/GB)")
+    ];
 }

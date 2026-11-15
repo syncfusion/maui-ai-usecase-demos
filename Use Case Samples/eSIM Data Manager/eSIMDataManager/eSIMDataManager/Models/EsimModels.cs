@@ -61,4 +61,11 @@ public sealed class EsimProfile
 }
 
 public sealed record DailyUsage(string Day, double UsedGb);
-public sealed record TopUpPack(double DataGb, decimal Price);
+
+public sealed record TopUpPack(double DataGb, decimal Price, int ExtensionDays, string Description, string? Tag = null, bool IsPopular = false)
+{
+    public string DataLabel => $"{DataGb:0} GB";
+    public string ExtensionLabel => $"+{ExtensionDays} Days extension";
+    public string PriceText => $"${Price:0.00}";
+    public string PricePerGbText => $"${(decimal)Price / (decimal)DataGb:0.00}/GB";
+}
