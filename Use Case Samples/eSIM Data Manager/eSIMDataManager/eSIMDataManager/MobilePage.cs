@@ -108,7 +108,7 @@ public sealed class MobilePage : ContentPage
                     Card(new VerticalStackLayout { Spacing = 6, Children = { new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) }, Children = { Text($"Country & Network\n{profile.Country}  ·  5G", 11, "#46516A"), Text("Connected\n(Roaming ON)", 11, "#006141", true).SetColumn(1) } }, Text($"ICCID Number   {profile.Iccid}  ▢", 10, "#46516A") } }, "#EEF3FF"),
                     Card(new VerticalStackLayout { Spacing = 5, Children = { new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, Children = { Text("Remaining Balance", 11, "#46516A"), Text($"{profile.UsagePercent:0}% Consumed", 10, "#0649D5", true).SetColumn(1) } }, new HorizontalStackLayout { Spacing = 6, Children = { Text($"{profile.RemainingGb:0.#} GB", 19, "#101D35", true), Text($"of {profile.AllocatedGb:0.#} GB Total", 10, "#46516A") } }, progress, Text("◉  128 kbps unlimited reserve active", 10, "#006141") } }, "#EEF3FF"),
                     Card(new VerticalStackLayout { Spacing = 5, Children = { Text($"Activated: {profile.ActivationDate:MMM d, yyyy}      Expires: {profile.ExpiryDate:MMM d, yyyy}", 10, "#46516A"), new ProgressBar { Progress = 1 - profile.DaysRemaining / 14d, ProgressColor = Color.FromArgb("#0752DB"), BackgroundColor = Color.FromArgb("#DBE6FA"), HeightRequest = 5 }, Text($"Validity Period                                  {profile.DaysRemaining} Days Remaining", 10, "#0649D5", true) } }, "#EEF3FF"),
-                    Card(new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8, Children = { Text("▦", 25, "#101D35", true), new VerticalStackLayout { Grid.Column = 1, Children = { Text("LPA Activation String", 10, "#46516A"), Text(profile.ActivationCode, 9, "#101D35"), Text("Ready for re-installation if needed", 9, "#0649D5") } }, Text("▢", 17, "#0649D5", true).SetColumn(2) } }, "#EEF3FF"),
+                    Card(ActivationCodeRow(profile), "#EEF3FF"),
                     actionsRow, secondary
                 } });
                 stack.Add(item);
@@ -117,12 +117,43 @@ public sealed class MobilePage : ContentPage
             {
                 var isReady = profile.Status == ProfileStatus.ReadyToInstall;
                 Action openAction = isReady ? () => actions.ActivateItemClicked(context, EventArgs.Empty) : () => actions.QrItemClicked(context, EventArgs.Empty);
-                var compact = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8, Children = { Text(profile.Country == "France" ? "EU" : "TH", 14, "#101D35", true), new VerticalStackLayout { Grid.Column = 1, Children = { Text(profile.ProfileName, 14, "#101D35", true), Text($"{profile.Carrier} • {profile.AllocatedGb:0.#} GB", 10, "#46516A") } }, Pill(isReady ? "Ready to Install" : "Expired").SetColumn(2), Text("⌄", 16, "#46516A").SetColumn(3) } };
+                var compact = CompactProfileRow(profile, isReady);
                 var card = Card(compact); var tap = new TapGestureRecognizer(); tap.Tapped += (_, _) => openAction(); card.GestureRecognizers.Add(tap); stack.Add(card);
             }
         }
-        stack.Add(Card(new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8, Children = { Text("◉", 20, "#FFFFFF", true), new VerticalStackLayout { Grid.Column = 1, Children = { Text("Need a new plan?", 12, "#FFFFFF", true), Text("Browse destinations in 190+ countries", 10, "#FFFFFF") } }, Button("Go to Store", () => Shell.Current.GoToAsync("//store")).SetColumn(2) } }, "#0649D5"));
+        stack.Add(Card(StoreCallout(), "#0649D5"));
         return stack;
+    }
+
+    private static Grid ActivationCodeRow(EsimProfile profile)
+    {
+        var row = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8 };
+        row.Add(Text("▦", 25, "#101D35", true));
+        var details = new VerticalStackLayout { Children = { Text("LPA Activation String", 10, "#46516A"), Text(profile.ActivationCode, 9, "#101D35"), Text("Ready for re-installation if needed", 9, "#0649D5") } };
+        row.Add(details, 1, 0);
+        row.Add(Text("▢", 17, "#0649D5", true), 2, 0);
+        return row;
+    }
+
+    private static Grid CompactProfileRow(EsimProfile profile, bool isReady)
+    {
+        var row = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8 };
+        row.Add(Text(profile.Country == "France" ? "EU" : "TH", 14, "#101D35", true));
+        var details = new VerticalStackLayout { Children = { Text(profile.ProfileName, 14, "#101D35", true), Text($"{profile.Carrier} • {profile.AllocatedGb:0.#} GB", 10, "#46516A") } };
+        row.Add(details, 1, 0);
+        row.Add(Pill(isReady ? "Ready to Install" : "Expired"), 2, 0);
+        row.Add(Text("⌄", 16, "#46516A"), 3, 0);
+        return row;
+    }
+
+    private static Grid StoreCallout()
+    {
+        var row = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8 };
+        row.Add(Text("◉", 20, "#FFFFFF", true));
+        var details = new VerticalStackLayout { Children = { Text("Need a new plan?", 12, "#FFFFFF", true), Text("Browse destinations in 190+ countries", 10, "#FFFFFF") } };
+        row.Add(details, 1, 0);
+        row.Add(Button("Go to Store", () => Shell.Current.GoToAsync("//store")), 2, 0);
+        return row;
     }
 
     private static View FilterLabel(string text) => new Border { Content = Text(text, 10, "#0649D5", true), Padding = new Thickness(4, 7), BackgroundColor = Colors.White, StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 10 } };
@@ -140,7 +171,7 @@ public sealed class MobilePage : ContentPage
         {
             var p=plan;
             var planContext = new Border { BindingContext = p };
-            stack.Add(Card(new VerticalStackLayout { Spacing=8, Children={new Grid { ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Auto)}, Children={Text($"{p.CountryCode}  {p.Region}",17,"#101D35",true),Pill(p.Badge)} },Text($"{p.Provider} • {p.NetworkLabel}",12,"#46516A"), new Grid { ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star)}, Children={Metric("Data Size",p.DataLabel),Metric("Validity",$"{p.ValidityDays} Days",1),Metric("Network",p.NetworkLabel,2)} }, Text(p.FeatureList,11,"#26334B"),new Grid { ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Auto)}, Children={Text($"${p.Price:0.00} USD",21,"#101D35",true), Button("Buy Plan  →",()=>actions.BuyPlanClicked(planContext))} }} }));
+            stack.Add(Card(new VerticalStackLayout { Spacing=8, Children={new Grid { ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Auto)}, Children={Text($"{p.CountryCode}  {p.Region}",17,"#101D35",true),Pill(p.Badge)} },Text($"{p.Provider} • {p.NetworkLabel}",12,"#46516A"), new Grid { ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star)}, Children={Metric("Data Size",p.DataLabel),Metric("Validity",$"{p.ValidityDays} Days",1),Metric("Network",p.NetworkLabel,2)} }, Text(p.FeatureList,11,"#26334B"),new Grid { ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Auto)}, Children={Text($"${p.Price:0.00} USD",21,"#101D35",true), Button("Buy Plan  →",()=>actions.BuyPlanClicked(planContext, EventArgs.Empty))} }} }));
         }
         stack.Add(Card(new HorizontalStackLayout { Spacing=8, Children={Text("◉",20,"#0649D5"),Text("Need help choosing a plan?   Chat with Roaming Advisor • 24/7",13,"#101D35")} },"#EEF3FF"));
         return stack;
