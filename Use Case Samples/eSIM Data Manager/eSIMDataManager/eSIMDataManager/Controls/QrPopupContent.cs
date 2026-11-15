@@ -376,7 +376,8 @@ public sealed class QrPopupContent
         heading.Add(instantRow, 0, 0);
         heading.Add(MonoText($"EID: {TruncateEid(profile?.Iccid)}", 10, Color.FromArgb(MutedColor)), 1, 0);
 
-        // QR code rendered in primary blue on a white quiet zone
+        // QR code rendered with dark ink modules on a white quiet zone.
+        // ForegroundColor drives the module fill used by QRCode.DrawBarcode.
         var barcode = new SfBarcodeGenerator
         {
             ShowText = false,
@@ -440,9 +441,6 @@ public sealed class QrPopupContent
         qrFrame.Add(BuildCornerBracket(Corner.TopRight), 2, 0);
         qrFrame.Add(BuildCornerBracket(Corner.BottomLeft), 0, 2);
         qrFrame.Add(BuildCornerBracket(Corner.BottomRight), 2, 2);
-        var stack = new VerticalStackLayout { Spacing = 14 };
-        stack.Add(heading);
-        stack.Add(qrFrame);
 
         // Caption block: "Scan this QR code with your device camera or" (muted)
         //                "in Settings > Cellular > Add eSIM." (primary, bold)
@@ -472,9 +470,27 @@ public sealed class QrPopupContent
         var caption3 = Text("Single-use cryptographic profile token", 10, Color.FromArgb(MutedColor));
         caption3.HorizontalOptions = LayoutOptions.Start;
         caption3Stack.Add(caption3, 1, 0);
-        stack.Add(caption1);
-        stack.Add(caption2);
-        stack.Add(caption3Stack);
+
+        var captionStack = new VerticalStackLayout { Spacing = 14 };
+        captionStack.Add(caption1);
+        captionStack.Add(caption2);
+        captionStack.Add(caption3Stack);
+
+        // Heading on top, QR centered in the flexible middle row, caption pinned to the bottom.
+        // The Star row absorbs the leftover height so the QR stays optically centered in the card.
+        var cardGrid = new Grid
+        {
+            RowSpacing = 14,
+            RowDefinitions =
+            {
+                new RowDefinition(GridLength.Auto),
+                new RowDefinition(GridLength.Star),
+                new RowDefinition(GridLength.Auto)
+            }
+        };
+        cardGrid.Add(heading, 0, 0);
+        cardGrid.Add(qrFrame, 0, 1);
+        cardGrid.Add(captionStack, 0, 2);
 
         return new Border
         {
@@ -482,7 +498,7 @@ public sealed class QrPopupContent
             StrokeThickness = 0,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
             Padding = new Thickness(14, 14),
-            Content = stack
+            Content = cardGrid
         };
     }
 
