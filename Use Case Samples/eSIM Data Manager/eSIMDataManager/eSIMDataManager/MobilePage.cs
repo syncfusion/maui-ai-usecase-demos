@@ -72,19 +72,61 @@ public sealed class MobilePage : ContentPage
 
     private View ProfilesContent()
     {
-        var stack=PageStack(); stack.Add(Header("My eSIMs"));
-        stack.Add(new HorizontalStackLayout { Spacing=8, Children={ Pill($"Active  {vm.ActiveProfiles.Count}"), Pill($"Ready  {vm.ReadyProfiles.Count}"), Pill($"Expired  {vm.ExpiredProfiles.Count}") } });
-        foreach(var profile in vm.ActiveProfiles.Concat(vm.ReadyProfiles).Concat(vm.ExpiredProfiles))
+        var stack = PageStack();
+        var appHeader = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 12 };
+        var dashboardButton = new Button { Text = "◉   Dashboard", FontSize = 15, FontAttributes = FontAttributes.Bold, Padding = 0, HorizontalOptions = LayoutOptions.Start, BackgroundColor = Colors.Transparent, TextColor = Color.FromArgb("#26334B") };
+        dashboardButton.Clicked += async (_, _) => await Shell.Current.GoToAsync("//dashboard");
+        appHeader.Add(dashboardButton);
+        appHeader.Add(Text("▮", 17, "#46516A").SetColumn(1));
+        appHeader.Add(Text("●", 21, "#0649D5").SetColumn(2));
+        stack.Add(appHeader);
+        stack.Add(new VerticalStackLayout { Spacing = 1, Children = { Text("My eSIMs", 26, "#101D35", true), Text("Manage profiles & data roaming", 12, "#46516A") } });
+        var toolbar = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8 };
+        var search = new Entry { Placeholder = "⌕", WidthRequest = 42, HeightRequest = 40, BackgroundColor = Colors.White, TextColor = Color.FromArgb("#101D35"), HorizontalTextAlignment = TextAlignment.Center };
+        var add = Button("+", () => Shell.Current.GoToAsync("//store")); add.WidthRequest = 42; add.HeightRequest = 40;
+        toolbar.Add(new BoxView { Color = Colors.Transparent }); toolbar.Add(search, 1, 0); toolbar.Add(add, 2, 0); stack.Add(toolbar);
+        var filters = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) }, ColumnSpacing = 4, BackgroundColor = Color.FromArgb("#E7EEFF"), Padding = 4 };
+        filters.Add(FilterLabel($"Active  {vm.ActiveProfiles.Count}"), 0, 0);
+        filters.Add(FilterLabel($"Ready  {vm.ReadyProfiles.Count}"), 1, 0);
+        filters.Add(FilterLabel($"Expired  {vm.ExpiredProfiles.Count}"), 2, 0);
+        stack.Add(filters);
+        foreach (var profile in vm.ActiveProfiles.Concat(vm.ReadyProfiles).Concat(vm.ExpiredProfiles))
         {
-            var buttons=new HorizontalStackLayout { Spacing=8 };
-            var profileContext = new Border { BindingContext = profile };
-            if(profile.Status==ProfileStatus.Active){ buttons.Add(Button("Top Up",()=>actions.TopUpItemClicked(profileContext,EventArgs.Empty))); buttons.Add(Button("Show QR",()=>actions.QrItemClicked(profileContext,EventArgs.Empty))); }
-            else if(profile.Status==ProfileStatus.ReadyToInstall) buttons.Add(Button("Activate / Show QR",()=>actions.ActivateItemClicked(profileContext,EventArgs.Empty)));
-            var item=Card(new VerticalStackLayout { Spacing=9, Children={new Grid { ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Auto)}, Children={Text($"🇯🇵  {profile.ProfileName}",18,"#101D35",true),Pill(profile.Status.ToString())} }, Text($"{profile.Carrier}  •  {profile.Country}",13,"#46516A"), Text($"{profile.RemainingGb:0.#} GB remaining     {profile.DaysRemaining} days left",14,"#0649D5",true), new ProgressBar { Progress=profile.UsageFraction, ProgressColor=Color.FromArgb("#0752DB"), BackgroundColor=Color.FromArgb("#DBE6FA"), HeightRequest=8 }, buttons} }); stack.Add(item);
+            var context = new Border { BindingContext = profile };
+            if (profile.Status == ProfileStatus.Active)
+            {
+                var actionsRow = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) }, ColumnSpacing = 8 };
+                actionsRow.Add(Button("♜  Top Up Data", () => actions.TopUpItemClicked(context, EventArgs.Empty)), 0, 0);
+                actionsRow.Add(Button("▦  Show QR Code", () => actions.QrItemClicked(context, EventArgs.Empty)), 1, 0);
+                var secondary = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) }, ColumnSpacing = 8 };
+                secondary.Add(SecondaryButton("⟳  Renew Plan", () => actions.RenewItemClicked(context, EventArgs.Empty)), 0, 0);
+                secondary.Add(SecondaryButton("▣  Install Guide", () => actions.QrItemClicked(context, EventArgs.Empty)), 1, 0);
+                var progress = new ProgressBar { Progress = profile.UsageFraction, ProgressColor = Color.FromArgb("#0752DB"), BackgroundColor = Color.FromArgb("#DBE6FA"), HeightRequest = 6 };
+                var item = Card(new VerticalStackLayout { Spacing = 10, Children = {
+                    new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, Children = { new VerticalStackLayout { Children = { Text($"🇯🇵  {profile.ProfileName}", 17, "#101D35", true), Text($"      {profile.Carrier}", 10, "#46516A") } }, Text("● Active   ⌃", 11, "#006141", true).SetColumn(1) } },
+                    new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, Children = { Text($"◉  {profile.RemainingGb:0.#} GB Remaining", 12, "#0649D5", true), Text($"◷  {profile.DaysRemaining} Days Left", 12, "#101D35", true).SetColumn(1) } },
+                    Card(new VerticalStackLayout { Spacing = 6, Children = { new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) }, Children = { Text($"Country & Network\n{profile.Country}  ·  5G", 11, "#46516A"), Text("Connected\n(Roaming ON)", 11, "#006141", true).SetColumn(1) } }, Text($"ICCID Number   {profile.Iccid}  ▢", 10, "#46516A") } }, "#EEF3FF"),
+                    Card(new VerticalStackLayout { Spacing = 5, Children = { new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, Children = { Text("Remaining Balance", 11, "#46516A"), Text($"{profile.UsagePercent:0}% Consumed", 10, "#0649D5", true).SetColumn(1) } }, new HorizontalStackLayout { Spacing = 6, Children = { Text($"{profile.RemainingGb:0.#} GB", 19, "#101D35", true), Text($"of {profile.AllocatedGb:0.#} GB Total", 10, "#46516A") } }, progress, Text("◉  128 kbps unlimited reserve active", 10, "#006141") } }, "#EEF3FF"),
+                    Card(new VerticalStackLayout { Spacing = 5, Children = { Text($"Activated: {profile.ActivationDate:MMM d, yyyy}      Expires: {profile.ExpiryDate:MMM d, yyyy}", 10, "#46516A"), new ProgressBar { Progress = 1 - profile.DaysRemaining / 14d, ProgressColor = Color.FromArgb("#0752DB"), BackgroundColor = Color.FromArgb("#DBE6FA"), HeightRequest = 5 }, Text($"Validity Period                                  {profile.DaysRemaining} Days Remaining", 10, "#0649D5", true) } }, "#EEF3FF"),
+                    Card(new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8, Children = { Text("▦", 25, "#101D35", true), new VerticalStackLayout { Grid.Column = 1, Children = { Text("LPA Activation String", 10, "#46516A"), Text(profile.ActivationCode, 9, "#101D35"), Text("Ready for re-installation if needed", 9, "#0649D5") } }, Text("▢", 17, "#0649D5", true).SetColumn(2) } }, "#EEF3FF"),
+                    actionsRow, secondary
+                } });
+                stack.Add(item);
+            }
+            else
+            {
+                var isReady = profile.Status == ProfileStatus.ReadyToInstall;
+                Action openAction = isReady ? () => actions.ActivateItemClicked(context, EventArgs.Empty) : () => actions.QrItemClicked(context, EventArgs.Empty);
+                var compact = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8, Children = { Text(profile.Country == "France" ? "EU" : "TH", 14, "#101D35", true), new VerticalStackLayout { Grid.Column = 1, Children = { Text(profile.ProfileName, 14, "#101D35", true), Text($"{profile.Carrier} • {profile.AllocatedGb:0.#} GB", 10, "#46516A") } }, Pill(isReady ? "Ready to Install" : "Expired").SetColumn(2), Text("⌄", 16, "#46516A").SetColumn(3) } };
+                var card = Card(compact); var tap = new TapGestureRecognizer(); tap.Tapped += (_, _) => openAction(); card.GestureRecognizers.Add(tap); stack.Add(card);
+            }
         }
-        stack.Add(Button("Add New eSIM",()=>Shell.Current.GoToAsync("//store")));
+        stack.Add(Card(new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8, Children = { Text("◉", 20, "#FFFFFF", true), new VerticalStackLayout { Grid.Column = 1, Children = { Text("Need a new plan?", 12, "#FFFFFF", true), Text("Browse destinations in 190+ countries", 10, "#FFFFFF") } }, Button("Go to Store", () => Shell.Current.GoToAsync("//store")).SetColumn(2) } }, "#0649D5"));
         return stack;
     }
+
+    private static View FilterLabel(string text) => new Border { Content = Text(text, 10, "#0649D5", true), Padding = new Thickness(4, 7), BackgroundColor = Colors.White, StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 10 } };
+    private static Button SecondaryButton(string text, Action action) { var button = Button(text, action); button.BackgroundColor = Color.FromArgb("#EEF3FF"); button.TextColor = Color.FromArgb("#101D35"); return button; }
 
     private View StoreContent()
     {
