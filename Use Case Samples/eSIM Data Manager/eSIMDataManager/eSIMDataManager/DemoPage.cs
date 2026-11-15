@@ -48,8 +48,23 @@ public class DemoPage
         AutoSizeMode = PopupAutoSizeMode.Height,
         PopupStyle = new PopupStyle { PopupBackground = Colors.White, MessageBackground = Colors.White }
     };
+    private readonly SfPopup purchasePopup = new()
+    {
+        ShowHeader = false,
+        ShowFooter = false,
+        WidthRequest = 520,
+        StaysOpen = true,
+        AutoSizeMode = PopupAutoSizeMode.Height,
+        PopupStyle = new PopupStyle
+        {
+            PopupBackground = Colors.White,
+            MessageBackground = Colors.White,
+            CornerRadius = 16
+        }
+    };
     private TopUpPopupContent? topUpContent;
     private QrPopupContent? qrContent;
+    private PurchasePopupContent? purchaseContent;
     private double availableTopUpWidth = 720;
     private double availableHeight;
     private EsimProfile? popupProfile;
@@ -66,6 +81,8 @@ public class DemoPage
     public SfPopup TopUpPopupView => topUpPopup;
 
     public SfPopup QrPopupView => qrPopup;
+
+    public SfPopup PurchasePopupView => purchasePopup;
 
     public void UpdateTopUpPopupWidth(double availableWidth, double availableHeight = 0)
     {
@@ -96,6 +113,14 @@ public class DemoPage
         qrContent?.SetCompact(qrPopup.WidthRequest < 620);
         if (this.availableHeight > 0)
             qrContent?.SetViewport(this.availableHeight);
+
+        purchasePopup.WidthRequest = Math.Clamp(availableWidth - 32, 320, 520);
+        if (this.availableHeight > 0)
+        {
+            purchasePopup.AutoSizeMode = PopupAutoSizeMode.Height;
+            purchasePopup.MaximumHeightRequest = Math.Max(360, this.availableHeight - 24);
+        }
+        purchaseContent?.SetCompact(purchasePopup.WidthRequest < 420);
     }
 
     protected void ShowDemoPopup(string title, EsimProfile? profile = null)
@@ -195,8 +220,40 @@ public class DemoPage
     public void QrSelectedClicked(object? sender, EventArgs e) => ShowDemoPopup("Install & Activate eSIM", ViewModel.SelectedProfile);
     public void BuyPlanClicked(object? sender, EventArgs e)
     {
-        ViewModel.SelectedPlan = (sender as Element)?.BindingContext as Plan;
-        ShowDemoPopup("Purchase Plan · Demo checkout");
+        var plan = (sender as Element)?.BindingContext as Plan ?? ViewModel.SelectedPlan;
+        if (plan is null) return;
+        ViewModel.SelectedPlan = plan;
+        OpenPurchase(plan);
+    }
+
+    /// <summary>Opens the Purchase Plan checkout dialog for the given plan.</summary>
+    private void OpenPurchase(Plan plan)
+    {
+        purchaseContent = new PurchasePopupContent(plan);
+        purchaseContent.CloseRequested += (_, _) => purchasePopup.Dismiss();
+        purchaseContent.CancelRequested += (_, _) => purchasePopup.Dismiss();
+        purchaseContent.ChangePaymentRequested += (_, _) => ChangePaymentRequested();
+        purchaseContent.PurchaseRequested += (_, _) => ConfirmPurchase(plan);
+
+        purchasePopup.ContentTemplate = new DataTemplate(() => purchaseContent!.Content);
+        UpdateTopUpPopupWidth(availableTopUpWidth);
+        purchasePopup.Show();
+    }
+
+    /// <summary>Completes the simulated purchase. No payment is taken and no eSIM is provisioned.</summary>
+    private async void ConfirmPurchase(Plan plan)
+    {
+        purchasePopup.Dismiss();
+        var before = ViewModel.ProfilesCount;
+        ViewModel.SelectedPlan = plan;
+        var purchased = ViewModel.Store.Purchase(plan);
+        ViewModel.SelectedProfile = purchased;
+        await Application.Current!.Windows[0].Page!.DisplayAlert(
+            "Plan added",
+            $"{plan.Country} · {plan.DataLabel} was added to your dashboard.\n\nDemo only — no payment was taken and no eSIM was provisioned.",
+            "View profiles");
+        if (ViewModel.ProfilesCount != before)
+            await Shell.Current.GoToAsync("//profiles");
     }
     public void DestinationClicked(object? sender, EventArgs e) { var text = sender switch { Syncfusion.Maui.Core.SfChip chip => chip.Text, Syncfusion.Maui.Buttons.SfButton button => button.Text, _ => null }; if (!string.IsNullOrWhiteSpace(text)) { var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries); ViewModel.SelectCountry(words.Length > 1 ? string.Join(' ', words.Skip(1)) : words[0]); } }
     public void FilterClicked(object? sender, EventArgs e) { if (sender is Syncfusion.Maui.Buttons.SfButton button && button.Text is not null) ViewModel.SelectCoverage(button.Text); }
