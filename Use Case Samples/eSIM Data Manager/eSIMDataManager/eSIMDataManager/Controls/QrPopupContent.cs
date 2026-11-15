@@ -842,7 +842,7 @@ public sealed class QrPopupContent
         iccidRow.Add(iccidLabel, 1, 0);
         iccidRow.Add(iccidText, 2, 0);
 
-        // Send QR to Email — ghost button (white, outlined)
+        // Footer actions — fill equal-width columns and match the desktop reference.
         var emailRow = new Grid
         {
             ColumnDefinitions =
@@ -854,16 +854,19 @@ public sealed class QrPopupContent
             HorizontalOptions = LayoutOptions.Center,
             VerticalOptions = LayoutOptions.Center
         };
-        emailRow.Add(Icon(IconEmail, 13, Color.FromArgb(InkColor), "MaterialAssets"), 0, 0);
+        emailRow.Add(Icon(IconEmail, 16, Color.FromArgb("#006172"), "MaterialAssets"), 0, 0);
         emailRow.Add(Text("Send QR to Email", 12, Color.FromArgb(InkColor)), 1, 0);
 
         var sendEmail = new SfButton
         {
             Background = Colors.White,
             Stroke = Color.FromArgb(OutlineVariant),
-            StrokeThickness = 1,
+            StrokeThickness = 0,
             CornerRadius = 8,
-            Padding = new Thickness(14, 8),
+            Padding = new Thickness(16, 8),
+            HorizontalOptions = LayoutOptions.Fill,
+            HeightRequest = 40,
+            Shadow = new Shadow { Brush = Color.FromArgb("#24324A"), Opacity = 0.06f, Radius = 6, Offset = new Point(0, 2) },
             Content = new DataTemplate(() => emailRow)
         };
 
@@ -879,16 +882,19 @@ public sealed class QrPopupContent
             HorizontalOptions = LayoutOptions.Center,
             VerticalOptions = LayoutOptions.Center
         };
-        scannedRow.Add(Icon(IconCircleCheck, 13, Colors.White, "MaterialAssets"), 0, 0);
+        scannedRow.Add(Icon(IconCircleCheck, 16, Colors.White, "MaterialAssets"), 0, 0);
         scannedRow.Add(Text("I've Scanned the QR Code", 12, Colors.White, FontAttributes.Bold), 1, 0);
 
         var scanned = new SfButton
         {
             Background = Color.FromArgb(PrimaryColor),
-            Stroke = Color.FromArgb("#007A56"),
-            StrokeThickness = 1,
+            Stroke = Colors.Transparent,
+            StrokeThickness = 0,
             CornerRadius = 8,
-            Padding = new Thickness(16, 8),
+            Padding = new Thickness(20, 8),
+            HorizontalOptions = LayoutOptions.Fill,
+            HeightRequest = 40,
+            Shadow = new Shadow { Brush = Color.FromArgb("#24324A"), Opacity = 0.16f, Radius = 14, Offset = new Point(0, 6) },
             Content = new DataTemplate(() => scannedRow)
         };
 
@@ -897,11 +903,11 @@ public sealed class QrPopupContent
         {
             ColumnDefinitions =
             {
-                new ColumnDefinition(GridLength.Star),
                 new ColumnDefinition(GridLength.Auto),
-                new ColumnDefinition(GridLength.Auto)
+                new ColumnDefinition(new GridLength(3, GridUnitType.Star)),
+                new ColumnDefinition(new GridLength(5, GridUnitType.Star))
             },
-            ColumnSpacing = 12,
+            ColumnSpacing = 8,
             Padding = new Thickness(16, 14, 16, 16)
         };
         footer.Add(iccidRow, 0, 0);
