@@ -66,7 +66,7 @@ public sealed class MobilePage : ContentPage
         actionsGrid.Add(ActionButton("▦", "Show QR", "#FFFFFF", Color.FromArgb("#101D35"), () => actions.QrActiveClicked(this, EventArgs.Empty)),2,0);
         stack.Add(actionsGrid);
         stack.Add(Card(new VerticalStackLayout { Spacing=12, Children={new Grid { ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Auto)}, Children={Text("Last 7 Days Usage",20,"#101D35",true),Pill($"{vm.SevenDayTotal:0.00} GB Total")} }, UsageBars()} }));
-        stack.Add(Card(new VerticalStackLayout { Spacing=9, Children={ Text("Recent Activity",20,"#101D35",true), Activity("Top-Up Purchased", "Nov 21, 14:15 JST", "+3.0 GB"), Activity("High-Speed Roaming", "Yesterday in Shinjuku", "1.2 GB"), Activity("Profile Activated", "Nov 14, 08:31 JST", "Haneda (HND)") } }));
+        stack.Add(RecentActivityCard());
         return stack;
     }
 
@@ -191,7 +191,41 @@ public sealed class MobilePage : ContentPage
     private static Button Button(string text,Action action){var b=new Button{Text=text,BackgroundColor=Color.FromArgb("#0649D5"),TextColor=Colors.White,CornerRadius=10,FontSize=13,Padding=new Thickness(12,7)};b.Clicked+=(_,_)=>action();return b;}
     private static View ActionButton(string icon,string label,string bg,Color fg,Action action){var b=new Button{Text=$"{icon}\n{label}",BackgroundColor=Color.FromArgb(bg),TextColor=fg,CornerRadius=15,HeightRequest=84,FontSize=15,FontAttributes=FontAttributes.Bold};b.Clicked+=(_,_)=>action();return b;}
     private static View Metric(string label,string value,int col=0)=>new VerticalStackLayout{Spacing=3,Children={Text(label,10,"#46516A"),Text(value,13,"#101D35",true)}}.SetColumn(col);
-    private static View Activity(string title,string detail,string value)=>new Border{Content=new Grid{ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Auto)},Children={new VerticalStackLayout{Children={Text(title,16,"#101D35",true),Text(detail,12,"#46516A")}},Text(value,13,"#006141",true).SetColumn(1)}},Padding=10,BackgroundColor=Color.FromArgb("#EEF3FF"),StrokeThickness=0,StrokeShape=new Microsoft.Maui.Controls.Shapes.RoundRectangle{CornerRadius=12}};
+    private static View RecentActivityCard()
+    {
+        var header = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) } };
+        header.Add(Text("Recent Activity", 20, "#101D35", true));
+        var viewAll = new Button { Text = "View All  ›", FontSize = 14, Padding = 0, BackgroundColor = Colors.Transparent, TextColor = Color.FromArgb("#0649D5") };
+        viewAll.Clicked += async (_, _) => await Shell.Current.GoToAsync("//profiles");
+        header.Add(viewAll, 1, 0);
+
+        var content = new VerticalStackLayout { Spacing = 9 };
+        content.Add(header);
+        content.Add(Activity("⊕", "#DCE8FF", "#0649D5", "Top-Up Purchased", "Nov 21, 14:15 JST", "+3.0 GB", "$6.50 USD", "#006141"));
+        content.Add(Activity("◩", "#D8EAF0", "#007C8A", "High-Speed Roaming", "Yesterday in Shinjuku", "1.2 GB", "5G Sub-6", "#00687A"));
+        content.Add(Activity("⌁", "#D9EFE8", "#00856A", "Profile Activated", "Nov 14, 08:31 JST", "Haneda (HND)", null, "#006141"));
+        return Card(content);
+    }
+
+    private static View Activity(string icon, string iconBackground, string iconColor, string title, string detail, string value, string? secondaryValue, string valueColor)
+    {
+        var row = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 12 };
+        var iconTile = new Border { WidthRequest = 42, HeightRequest = 42, Content = Text(icon, 21, iconColor, true), BackgroundColor = Color.FromArgb(iconBackground), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 13 }, VerticalOptions = LayoutOptions.Center };
+        row.Add(iconTile, 0, 0);
+        row.Add(new VerticalStackLayout { Spacing = 1, VerticalOptions = LayoutOptions.Center, Children = { Text(title, 16, "#101D35", true), Text(detail, 12, "#26334B") } }, 1, 0);
+
+        View trailing;
+        if (secondaryValue is null)
+        {
+            trailing = new Border { Content = Text(value, 11, "#007C64", true), Padding = new Thickness(9, 4), BackgroundColor = Color.FromArgb("#C6F3E9"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 10 }, VerticalOptions = LayoutOptions.Center };
+        }
+        else
+        {
+            trailing = new VerticalStackLayout { Spacing = 0, VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.End, Children = { Text(value, 13, valueColor, true), Text(secondaryValue, 11, valueColor, true) } };
+        }
+        row.Add(trailing, 2, 0);
+        return new Border { Content = row, Padding = new Thickness(12, 10), BackgroundColor = Color.FromArgb("#EEF3FF"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 16 } };
+    }
     private static View UsageBars(){var row=new Grid{ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star)},ColumnSpacing=5,HeightRequest=96};var values=new[]{.7,.9,1.1,.8,.9,1.0,1.4};for(int i=0;i<7;i++){var col=new VerticalStackLayout{VerticalOptions=LayoutOptions.End,Spacing=2,Children={Text(values[i].ToString("0.0"),10,i==6?"#0649D5":"#26334B"),new BoxView{HeightRequest=values[i]*38,Color=Color.FromArgb(i==6?"#0649D5":"#DCE8FF"),VerticalOptions=LayoutOptions.End},Text(new[]{"F","S","S","M","T","W","T"}[i],10,"#101D35")}};row.Add(col,i,0);}return row;}
 }
 
