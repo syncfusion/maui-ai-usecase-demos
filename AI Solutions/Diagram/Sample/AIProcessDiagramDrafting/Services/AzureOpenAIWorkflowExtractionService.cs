@@ -3,6 +3,7 @@ using System.Text.Json;
 using Azure;
 using Azure.AI.OpenAI;
 using AIProcessDiagramDrafting.Models;
+using OpenAI.Chat;
 
 namespace AIProcessDiagramDrafting.Services;
 
@@ -35,22 +36,23 @@ public sealed class AzureOpenAIWorkflowExtractionService : AzureBaseService, IWo
         var client = CreateClient();
         var chatClient = client.GetChatClient(DeploymentName);
 
-        var messages = new List<OpenAI.Chat.ChatMessage>
+        var messages = new List<ChatMessage>
         {
-            new OpenAI.Chat.SystemChatMessage(SystemPrompt),
-            new OpenAI.Chat.UserChatMessage(processDescription)
+            new SystemChatMessage(SystemPrompt),
+            new UserChatMessage(processDescription)
         };
 
-        var options = new OpenAI.Chat.ChatCompletionOptions
+        var options = new ChatCompletionOptions
         {
             Temperature = 0f,
+            ResponseFormat = ChatResponseFormat.CreateJsonObjectFormat(),
             MaxOutputTokenCount = 2048
         };
 
-        OpenAI.Chat.ChatCompletion completion;
+        ClientResult<ChatCompletion> result;
         try
         {
-            completion = await chatClient.CompleteChatAsync(messages, options, cancellationToken);
+            result = await chatClient.CompleteChatAsync(messages, options, cancellationToken);
         }
         catch (RequestFailedException ex)
         {
@@ -61,6 +63,7 @@ public sealed class AzureOpenAIWorkflowExtractionService : AzureBaseService, IWo
             throw new InvalidOperationException($"Azure OpenAI request failed: {ex.Message}", ex);
         }
 
+        var completion = result.Value;
         var content = string.Concat(completion.Content.Select(content => content.Text ?? string.Empty));
         var json = ExtractJsonPayload(content);
 
@@ -77,15 +80,37 @@ public sealed class AzureOpenAIWorkflowExtractionService : AzureBaseService, IWo
 
     private static string ExtractJsonPayload(string content)
     {
-        var trimmed = content.Trim();
-        var startIndex = trimmed.IndexOf('{');
-        var endIndex = trimmed.LastIndexOf('}');
+        var cleaned = CleanJson(content);
+        var startIndex = cleaned.IndexOf('{');
+        var endIndex = cleaned.LastIndexOf('}');
 
         if (startIndex >= 0 && endIndex > startIndex)
         {
-            return trimmed[startIndex..(endIndex + 1)];
+            return cleaned[startIndex..(endIndex + 1)];
         }
 
-        return trimmed;
+        return cleaned;
+    }
+
+    private static string CleanJson(string content)
+    {
+        content = content.Trim();
+
+        if (content.StartsWith("```json", StringComparison.OrdinalIgnoreCase))
+        {
+            content = content[7..];
+        }
+
+        if (content.StartsWith("```", StringComparison.Ordinal))
+        {
+            content = content[3..];
+        }
+
+        if (content.EndsWith("```", StringComparison.Ordinal))
+        {
+            content = content[..^3];
+        }
+
+        return content.Trim();
     }
 }
