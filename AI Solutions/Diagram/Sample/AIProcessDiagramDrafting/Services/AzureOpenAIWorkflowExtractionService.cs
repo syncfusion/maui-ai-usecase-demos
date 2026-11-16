@@ -1,6 +1,4 @@
-using System.ClientModel;
 using System.Text.Json;
-using Azure;
 using Azure.AI.OpenAI;
 using AIProcessDiagramDrafting.Models;
 
@@ -44,48 +42,14 @@ public sealed class AzureOpenAIWorkflowExtractionService : AzureBaseService, IWo
         var options = new OpenAI.Chat.ChatCompletionOptions
         {
             Temperature = 0f,
+            ResponseFormat = OpenAI.Chat.ChatResponseFormat.CreateJsonObjectFormat(),
             MaxOutputTokenCount = 2048
         };
 
-        OpenAI.Chat.ChatCompletion completion;
-        try
-        {
-            completion = await chatClient.CompleteChatAsync(messages, options, cancellationToken);
-        }
-        catch (RequestFailedException ex)
-        {
-            throw new InvalidOperationException($"Azure OpenAI request failed: {ex.Message}", ex);
-        }
-        catch (ClientResultException ex)
-        {
-            throw new InvalidOperationException($"Azure OpenAI request failed: {ex.Message}", ex);
-        }
+        var completion = await chatClient.CompleteChatAsync(messages, options, cancellationToken);
+        var json = string.Concat(completion.Value.Content.Select(content => content.Text ?? string.Empty));
 
-        var content = string.Concat(completion.Content.Select(content => content.Text ?? string.Empty));
-        var json = ExtractJsonPayload(content);
-
-        try
-        {
-            return JsonSerializer.Deserialize<WorkflowResponse>(json, JsonOptions)
-                ?? throw new InvalidOperationException("Azure OpenAI returned an empty workflow response.");
-        }
-        catch (JsonException ex)
-        {
-            throw new InvalidOperationException("Azure OpenAI returned an invalid workflow response.", ex);
-        }
-    }
-
-    private static string ExtractJsonPayload(string content)
-    {
-        var trimmed = content.Trim();
-        var startIndex = trimmed.IndexOf('{');
-        var endIndex = trimmed.LastIndexOf('}');
-
-        if (startIndex >= 0 && endIndex > startIndex)
-        {
-            return trimmed[startIndex..(endIndex + 1)];
-        }
-
-        return trimmed;
+        return JsonSerializer.Deserialize<WorkflowResponse>(json, JsonOptions)
+            ?? throw new InvalidOperationException("Azure OpenAI returned an empty workflow response.");
     }
 }
