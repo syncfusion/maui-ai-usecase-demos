@@ -78,9 +78,10 @@ public sealed class QrPopupContent
         scanCardHost = BuildScanCard(profile, activationCode);
         stepsHost = BuildSteps(profile, activationCode);
 
+        // The two hosts are built once and then moved between the stacked and the
+        // side-by-side arrangement. A view can only have one parent, so the host that
+        // is not in use is detached before the other one is filled.
         compactStack = new VerticalStackLayout { Spacing = 12 };
-        compactStack.Add(scanCardHost);
-        compactStack.Add(stepsHost);
 
         bodyGrid = new Grid
         {
@@ -88,8 +89,6 @@ public sealed class QrPopupContent
             ColumnSpacing = 12,
             Padding = new Thickness(14, 0, 14, 12)
         };
-        bodyGrid.Add(scanCardHost, 0, 0);
-        bodyGrid.Add(stepsHost, 1, 0);
 
         bodyScroll = new ScrollView
         {
@@ -97,8 +96,10 @@ public sealed class QrPopupContent
             Content = bodyGrid
         };
 
-        root.Add(bodyGrid);
+        root.Add(bodyScroll);
         root.Add(BuildFooter(profile, activationCode));
+
+        ApplyLayout(isCompact);
     }
 
     public View Content => root;
@@ -114,15 +115,29 @@ public sealed class QrPopupContent
     {
         if (isCompact == compact) return;
         isCompact = compact;
+        ApplyLayout(compact);
+    }
 
+    /// <summary>
+    /// Moves the scan card and the steps into the requested arrangement. Each view is
+    /// detached from its current parent before it is added to the new one, because a
+    /// native view cannot have two parents.
+    /// </summary>
+    private void ApplyLayout(bool compact)
+    {
         bodyGrid.Children.Clear();
+        compactStack.Children.Clear();
+
         if (compact)
-            bodyGrid.Children.Add(compactStack);
-        else
         {
-            bodyGrid.Add(scanCardHost, 0, 0);
-            bodyGrid.Add(stepsHost, 1, 0);
+            compactStack.Add(scanCardHost);
+            compactStack.Add(stepsHost);
+            bodyGrid.Children.Add(compactStack);
+            return;
         }
+
+        bodyGrid.Add(scanCardHost, 0, 0);
+        bodyGrid.Add(stepsHost, 1, 0);
     }
 
     /// <summary>Switches the dialog into the mobile bottom-sheet presentation.</summary>

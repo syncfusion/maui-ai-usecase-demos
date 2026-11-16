@@ -207,7 +207,9 @@ public class DemoPage
         qrContent.ScannedRequested += (_, _) => qrPopup.Dismiss();
         qrContent.CloseRequested += (_, _) => qrPopup.Dismiss();
         qrPopup.ContentTemplate = new DataTemplate(() => qrContent!.Content);
-        qrContent.SetCompact(qrPopup.WidthRequest < 620);
+        // On mobile the sheet always uses the stacked arrangement; the wide layout is
+        // reserved for the desktop dialog.
+        qrContent.SetCompact(IsBottomSheetHost || qrPopup.WidthRequest < 620);
         qrContent.SetViewport(availableHeight);
         qrPopup.Show();
     }
