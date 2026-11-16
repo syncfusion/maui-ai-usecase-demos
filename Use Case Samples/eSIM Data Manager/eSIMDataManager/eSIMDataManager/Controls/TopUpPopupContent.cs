@@ -32,7 +32,11 @@ public sealed class TopUpPopupContent : IDisposable
     private readonly List<Label> tierSizes = [];
     private readonly Label allowanceLabel;
     private readonly Label purchaseLabel;
+    private readonly View accentBar;
+    private readonly VerticalStackLayout sheetBody;
+    private readonly ScrollView bodyScroll;
     private bool isCompact;
+    private bool isSheet;
 
     public TopUpPopupContent(MainViewModel viewModel)
     {
@@ -43,11 +47,23 @@ public sealed class TopUpPopupContent : IDisposable
         allowanceLabel = BuildAllowanceLabel();
         purchaseLabel = BuildPurchaseLabel();
 
-        root.Add(BuildAccentBar());
+        accentBar = BuildAccentBar();
+        root.Add(accentBar);
+        root.Add(BottomSheetChrome.BuildHandle());
         root.Add(BuildHeader());
-        root.Add(BuildProfileBanner());
-        root.Add(BuildTierSection());
-        root.Add(BuildSummarySection());
+
+        // On the phone the sheet can be taller than the screen, so the body scrolls
+        // while the header and the purchase button stay pinned.
+        sheetBody = new VerticalStackLayout { Spacing = 14 };
+        sheetBody.Add(BuildProfileBanner());
+        sheetBody.Add(BuildTierSection());
+        sheetBody.Add(BuildSummarySection());
+        bodyScroll = new ScrollView
+        {
+            VerticalScrollBarVisibility = ScrollBarVisibility.Never,
+            Content = sheetBody
+        };
+        root.Add(bodyScroll);
         root.Add(BuildFooter());
 
         BuildTiers();
@@ -69,6 +85,16 @@ public sealed class TopUpPopupContent : IDisposable
     {
         if (isCompact == compact) return;
         isCompact = compact;
+        BuildTiers();
+    }
+
+    /// <summary>Switches the dialog into the mobile bottom-sheet presentation.</summary>
+    public void SetSheet(bool sheet)
+    {
+        if (isSheet == sheet) return;
+        isSheet = sheet;
+        accentBar.IsVisible = !sheet;
+        isCompact = sheet || isCompact;
         BuildTiers();
     }
 

@@ -56,7 +56,9 @@ public sealed class QrPopupContent
     private readonly ScrollView bodyScroll;
     private readonly View scanCardHost;
     private readonly View stepsHost;
+    private readonly View accentBar;
     private bool isCompact;
+    private bool isSheet;
     private double availableHeight;
 
     public QrPopupContent(EsimProfile? profile)
@@ -67,7 +69,9 @@ public sealed class QrPopupContent
         root.Resources.Add(PopupLabelStyle);
         root.SizeChanged += RootOnSizeChanged;
 
-        root.Add(BuildAccentBar());
+        accentBar = BuildAccentBar();
+        root.Add(accentBar);
+        root.Add(BottomSheetChrome.BuildHandle());
         root.Add(BuildHeader(profile));
         root.Add(BuildProfileBanner(profile));
 
@@ -119,6 +123,15 @@ public sealed class QrPopupContent
             bodyGrid.Add(scanCardHost, 0, 0);
             bodyGrid.Add(stepsHost, 1, 0);
         }
+    }
+
+    /// <summary>Switches the dialog into the mobile bottom-sheet presentation.</summary>
+    public void SetSheet(bool sheet)
+    {
+        if (isSheet == sheet) return;
+        isSheet = sheet;
+        accentBar.IsVisible = !sheet;
+        if (sheet) SetCompact(true);
     }
 
     /// <summary>Caps the scrollable body so the footer stays on screen.</summary>

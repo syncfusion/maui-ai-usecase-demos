@@ -63,14 +63,18 @@ public sealed class PurchasePopupContent
 
     private readonly VerticalStackLayout root;
     private readonly ScrollView bodyScroll;
+    private readonly View accentBar;
     private bool isCompact;
+    private bool isSheet;
 
     public PurchasePopupContent(Plan? plan)
     {
         root = new VerticalStackLayout { Spacing = 0, BackgroundColor = Colors.White };
         root.Resources.Add(PopupLabelStyle);
 
-        root.Add(BuildAccentBar());
+        accentBar = BuildAccentBar();
+        root.Add(accentBar);
+        root.Add(BottomSheetChrome.BuildHandle());
         root.Add(BuildHeader());
 
         var body = new VerticalStackLayout { Spacing = 18 };
@@ -108,6 +112,15 @@ public sealed class PurchasePopupContent
     {
         if (isCompact == compact) return;
         isCompact = compact;
+    }
+
+    /// <summary>Switches the dialog into the mobile bottom-sheet presentation.</summary>
+    public void SetSheet(bool sheet)
+    {
+        if (isSheet == sheet) return;
+        isSheet = sheet;
+        accentBar.IsVisible = !sheet;
+        isCompact = sheet || isCompact;
     }
 
     // -- helpers ----------------------------------------------------------

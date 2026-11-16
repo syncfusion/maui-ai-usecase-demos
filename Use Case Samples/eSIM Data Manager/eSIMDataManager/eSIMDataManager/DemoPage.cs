@@ -10,6 +10,14 @@ public class DemoPage
 {
     private MainViewModel ViewModel { get; }
 
+    /// <summary>True on the phone targets, where every dialog is presented as a bottom sheet.</summary>
+    private static bool IsBottomSheetHost =>
+#if ANDROID || IOS
+        true;
+#else
+        false;
+#endif
+
     private readonly SfPopup popup = new()
     {
         ShowHeader = false,
@@ -86,6 +94,22 @@ public class DemoPage
 
     public void UpdateTopUpPopupWidth(double availableWidth, double availableHeight = 0)
     {
+        if (availableHeight > 0) this.availableHeight = availableHeight;
+
+        if (IsBottomSheetHost)
+        {
+            ApplyBottomSheet(popup, availableWidth);
+            ApplyBottomSheet(qrPopup, availableWidth);
+            ApplyBottomSheet(topUpPopup, availableWidth);
+            ApplyBottomSheet(purchasePopup, availableWidth);
+            topUpContent?.SetCompact(true);
+            qrContent?.SetCompact(true);
+            purchaseContent?.SetCompact(true);
+            if (this.availableHeight > 0)
+                qrContent?.SetViewport(this.availableHeight);
+            return;
+        }
+
         var compact = availableWidth < 620;
         var width = compact ? Math.Max(320, availableWidth - 24) : Math.Clamp(availableWidth - 32, 480, 720);
         topUpPopup.WidthRequest = width;
@@ -93,7 +117,6 @@ public class DemoPage
         topUpContent?.SetCompact(compact);
         availableTopUpWidth = availableWidth;
 
-        if (availableHeight > 0) this.availableHeight = availableHeight;
         popup.WidthRequest = Math.Clamp(availableWidth - 32, 320, 700);
         if (this.availableHeight > 0)
         {
@@ -121,6 +144,30 @@ public class DemoPage
             purchasePopup.MaximumHeightRequest = Math.Max(360, this.availableHeight - 24);
         }
         purchaseContent?.SetCompact(purchasePopup.WidthRequest < 420);
+    }
+
+    /// <summary>
+    /// Turns the popup into a full-width bottom sheet: anchored to the bottom edge, taller
+    /// than the desktop dialog, with the slide-up animation used by mobile sheets.
+    /// </summary>
+    private void ApplyBottomSheet(SfPopup target, double availableWidth)
+    {
+        target.WidthRequest = Math.Max(320, availableWidth - 16);
+        target.AutoSizeMode = PopupAutoSizeMode.Height;
+        target.AnimationMode = PopupAnimationMode.SlideOnBottom;
+        target.PopupStyle.CornerRadius = 24;
+
+        if (availableHeight > 0)
+        {
+            target.MaximumHeightRequest = Math.Max(360, availableHeight - 24);
+            target.StartY = availableHeight - target.MaximumHeightRequest;
+        }
+        else
+        {
+            target.StartY = 0;
+        }
+
+        target.StartX = 8;
     }
 
     protected void ShowDemoPopup(string title, EsimProfile? profile = null)
@@ -157,6 +204,7 @@ public class DemoPage
         }
         popupProfile = profile ?? ViewModel.SelectedProfile;
         qrContent = new QrPopupContent(popupProfile);
+        qrContent.SetSheet(IsBottomSheetHost);
         qrContent.ScannedRequested += (_, _) => qrPopup.Dismiss();
         qrContent.CloseRequested += (_, _) => qrPopup.Dismiss();
         qrPopup.ContentTemplate = new DataTemplate(() => qrContent!.Content);
@@ -179,6 +227,7 @@ public class DemoPage
 
         topUpContent?.Dispose();
         topUpContent = new TopUpPopupContent(ViewModel);
+        topUpContent.SetSheet(IsBottomSheetHost);
         topUpContent.CloseRequested += (_, _) => CloseTopUp();
         topUpContent.CancelRequested += (_, _) => CloseTopUp();
         topUpContent.ChangePaymentRequested += (_, _) => ChangePaymentRequested();
@@ -230,6 +279,7 @@ public class DemoPage
     private void OpenPurchase(Plan plan)
     {
         purchaseContent = new PurchasePopupContent(plan);
+        purchaseContent.SetSheet(IsBottomSheetHost);
         purchaseContent.CloseRequested += (_, _) => purchasePopup.Dismiss();
         purchaseContent.CancelRequested += (_, _) => purchasePopup.Dismiss();
         purchaseContent.ChangePaymentRequested += (_, _) => ChangePaymentRequested();
