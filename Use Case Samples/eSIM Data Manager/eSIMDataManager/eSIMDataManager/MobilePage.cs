@@ -4,14 +4,15 @@ using Syncfusion.Maui.Gauges;
 
 namespace eSIMDataManager;
 
-public sealed class MobilePage : ContentPage
+public sealed class MobilePage : ContentView
 {
     public enum MobileTab { Dashboard, Profiles, Store }
     private readonly MainViewModel vm;
-    private readonly MobileTab tab;
+    private MobileTab tab;
     private readonly DemoPage actions;
     private readonly Grid root = new() { RowDefinitions = { new RowDefinition(GridLength.Star), new RowDefinition(GridLength.Auto) } };
     private readonly ScrollView scroll = new() { VerticalScrollBarVisibility = ScrollBarVisibility.Never };
+    private View bottomNavigation = new Grid();
 
     private readonly Action<MobileTab> navigate;
 
@@ -32,12 +33,12 @@ public sealed class MobilePage : ContentPage
             });
         });
         actions = new DemoPage(vm);
-        Title = string.Empty;
         BackgroundColor = Color.FromArgb("#F6F8FF");
         scroll.Content = PageContent();
         vm.Store.Changed += (_, _) => MainThread.BeginInvokeOnMainThread(() => scroll.Content = PageContent());
         root.Add(scroll, 0, 0);
-        root.Add(BottomNavigation(), 0, 1);
+        bottomNavigation = BottomNavigation();
+        root.Add(bottomNavigation, 0, 1);
         Grid.SetRowSpan(actions.PopupView, 2);
         Grid.SetRowSpan(actions.QrPopupView, 2);
         Grid.SetRowSpan(actions.TopUpPopupView, 2);
@@ -56,6 +57,19 @@ public sealed class MobilePage : ContentPage
         MobileTab.Profiles => ProfilesContent(),
         _ => StoreContent()
     };
+
+    /// <summary>Switches the visible tab without recreating the page.</summary>
+    public void ShowTab(MobileTab target)
+    {
+        if (tab == target)
+            return;
+
+        tab = target;
+        scroll.Content = PageContent();
+        root.Remove(bottomNavigation);
+        bottomNavigation = BottomNavigation();
+        root.Add(bottomNavigation, 0, 1);
+    }
 
     private View DashboardContent()
     {
@@ -332,7 +346,7 @@ public sealed class MobilePage : ContentPage
         return row;
     }
 
-    private static View StoreCallout()
+    private View StoreCallout()
     {
         var row = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 10 };
         row.Add(new Border { WidthRequest = 44, HeightRequest = 44, Content = new Label { Text = "\uE77F", FontFamily = "MaterialAssets", FontSize = 24, TextColor = Colors.White, HorizontalTextAlignment = TextAlignment.Center, VerticalTextAlignment = TextAlignment.Center }, BackgroundColor = Color.FromArgb("#0649D5"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 14 } });
@@ -620,7 +634,7 @@ public sealed class MobilePage : ContentPage
             }
         };
     }
-    private static View RecentActivityCard()
+    private View RecentActivityCard()
     {
         var header = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) } };
         header.Add(Text("Recent Activity", 20, "#101D35", true));
