@@ -123,7 +123,7 @@ Generated replies are checked for:
 
 ## Configuration
 
-The sample supports Azure OpenAI configuration through environment variables or a local configuration file.
+The sample supports Azure OpenAI configuration through environment variables.
 
 ### Environment variables
 
@@ -136,41 +136,6 @@ export AZURE_OPENAI_DEPLOYMENT_NAME="YOUR-DEPLOYMENT-NAME"
 ```
 
 The deployment name must exactly match the deployment configured in Azure OpenAI. The deployment name may differ from the underlying model name.
-
-When all three variables are available, they take precedence over the local configuration file.
-
-### Local configuration
-
-If one or more Azure OpenAI environment variables are missing, the sample loads the complete configuration from:
-
-```text
-AI Solutions/Chat/SupportReplyAIDraft/azure-openai.local.json
-```
-
-Use the following format:
-
-```json
-{
-  "Endpoint": "https://YOUR-RESOURCE.openai.azure.com/",
-  "ApiKey": "YOUR-AZURE-OPENAI-API-KEY",
-  "DeploymentName": "YOUR-DEPLOYMENT-NAME"
-}
-```
-
-The endpoint must be a plain HTTPS Azure OpenAI URL without HTML formatting.
-
-Keep this file local and never commit it. To exclude it locally:
-
-```bash
-cd ~/Desktop/maui-ai-usecase-demos
-
-grep -qxF \
-"AI Solutions/Chat/SupportReplyAIDraft/azure-openai.local.json" \
-.git/info/exclude || \
-echo \
-"AI Solutions/Chat/SupportReplyAIDraft/azure-openai.local.json" \
->> .git/info/exclude
-```
 
 If valid Azure OpenAI settings are unavailable, the sample displays a controlled configuration message and does not send a reply.
 
@@ -223,7 +188,6 @@ SupportReplyAIDraft/
 │   ├── MessageTemplates/
 │   ├── SupportChatPage.xaml
 │   └── SupportChatPage.xaml.cs
-├── azure-openai.local.json        # Local only; never commit
 ├── README.md
 └── SupportReplyAIDraft.csproj
 ```

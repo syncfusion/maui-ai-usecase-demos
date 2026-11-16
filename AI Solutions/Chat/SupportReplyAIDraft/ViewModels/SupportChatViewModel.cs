@@ -453,7 +453,6 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
         var request =
             new SupportReplyRequest(
-                CreateMessageId(SelectedMessage),
                 SelectedMessage.Text ?? string.Empty,
                 _conversationService.BuildRecentContext(
                     Messages,
@@ -616,35 +615,9 @@ public sealed partial class SupportChatViewModel : ObservableObject
         {
             case WorkflowState.Initial:
             case WorkflowState.Sent:
-                ResetGenerationState();
-
-                HasDraft = false;
-                ShowReviewHint = false;
-                ShowErrorMessage = false;
-                InlineMessage = string.Empty;
-                ChatSuggestions = null;
-                IsComposerEnabled = false;
-                IsComposerReadOnly = true;
-                ComposerPlaceholder = InitialPlaceholder;
-                EditorText = string.Empty;
-                _lastStableDraftText = string.Empty;
-
-                break;
-
             case WorkflowState.Selected:
             case WorkflowState.Discarded:
-                ResetGenerationState();
-
-                HasDraft = false;
-                ShowReviewHint = false;
-                ShowErrorMessage = false;
-                InlineMessage = string.Empty;
-                ChatSuggestions = null;
-                IsComposerEnabled = false;
-                IsComposerReadOnly = true;
-                ComposerPlaceholder = InitialPlaceholder;
-                EditorText = string.Empty;
-                _lastStableDraftText = string.Empty;
+                ResetIdleComposerState();
 
                 break;
 
@@ -785,6 +758,22 @@ public sealed partial class SupportChatViewModel : ObservableObject
         ProgressMessage = string.Empty;
     }
 
+    private void ResetIdleComposerState()
+    {
+        ResetGenerationState();
+
+        HasDraft = false;
+        ShowReviewHint = false;
+        ShowErrorMessage = false;
+        InlineMessage = string.Empty;
+        ChatSuggestions = null;
+        IsComposerEnabled = false;
+        IsComposerReadOnly = true;
+        ComposerPlaceholder = InitialPlaceholder;
+        EditorText = string.Empty;
+        _lastStableDraftText = string.Empty;
+    }
+
     private void CancelAndDisposeGenerationToken()
     {
         // Always dispose old tokens before starting a new generation request.
@@ -912,15 +901,6 @@ public sealed partial class SupportChatViewModel : ObservableObject
         }
 
         return normalized;
-    }
-
-    private static string CreateMessageId(
-        TextMessage message)
-    {
-        return
-            $"{message.DateTime:HHmmss}-" +
-            $"{message.Author?.Name}-" +
-            $"{message.Text}";
     }
 
     private enum GenerationOperation

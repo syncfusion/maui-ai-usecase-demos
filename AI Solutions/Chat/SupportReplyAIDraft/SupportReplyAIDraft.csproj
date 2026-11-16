@@ -27,10 +27,6 @@
     <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 
-  <ItemGroup Condition="Exists('azure-openai.local.json')">
-    <MauiAsset Include="azure-openai.local.json"
-               LogicalName="azure-openai.local.json" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
@@ -49,10 +45,10 @@
     <MauiXaml Update="App.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
-    <MauiXaml Update="Styles\Colors.xaml">
+    <MauiXaml Update="Resources\Styles\Colors.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
-    <MauiXaml Update="Styles\Styles.xaml">
+    <MauiXaml Update="Resources\Styles\Styles.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Views\SupportChatPage.xaml">
