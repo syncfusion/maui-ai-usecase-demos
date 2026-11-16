@@ -48,7 +48,6 @@ public sealed class MobilePage : ContentPage
     private View DashboardContent()
     {
         var stack = PageStack();
-        stack.Add(MobileAppHeader("Dashboard"));
         stack.Add(new VerticalStackLayout { Spacing = 3, Children = { new Label { Text = "◆  ROAMING IN TOKYO, JAPAN", FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#00687A") }, new Label { Text = "Good morning, Alex", FontFamily = "Inter", FontSize = 28, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35") } } });
         var plan = new Border
         {
@@ -135,7 +134,6 @@ public sealed class MobilePage : ContentPage
     private View ProfilesContent()
     {
         var stack = PageStack();
-        stack.Add(MobileAppHeader("Dashboard"));
         var titleRow = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 12 };
         titleRow.Add(new VerticalStackLayout { Spacing = 2, VerticalOptions = LayoutOptions.Center, Children = { Text("My eSIMs", 28, "#101D35", true), Text("Manage profiles & data roaming", 13, "#46516A") } });
         titleRow.Add(RoundIconButton("\uE715", "MaterialAssets", "#0649D5", () => { }), 1, 0);
@@ -302,16 +300,6 @@ public sealed class MobilePage : ContentPage
         return button;
     }
 
-    private static View MobileAppHeader(string title)
-    {
-        var header = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 10 };
-        header.Add(new Border { WidthRequest = 38, HeightRequest = 38, Content = new Label { Text = "\uE700", FontFamily = "UiKitIcons", FontSize = 20, TextColor = Color.FromArgb("#0649D5"), HorizontalTextAlignment = TextAlignment.Center, VerticalTextAlignment = TextAlignment.Center }, BackgroundColor = Color.FromArgb("#EEF3FF"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 } });
-        header.Add(new Label { Text = title, FontFamily = "Inter", FontSize = 19, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35"), VerticalOptions = LayoutOptions.Center }, 1, 0);
-        header.Add(new Label { Text = "\uE72C", FontFamily = "MaterialAssets", FontSize = 18, TextColor = Color.FromArgb("#26334B"), VerticalOptions = LayoutOptions.Center }, 2, 0);
-        header.Add(new Border { WidthRequest = 38, HeightRequest = 38, Content = new Label { Text = "\uE71B", FontFamily = "MaterialAssets", FontSize = 19, TextColor = Colors.White, HorizontalTextAlignment = TextAlignment.Center, VerticalTextAlignment = TextAlignment.Center }, BackgroundColor = Color.FromArgb("#0649D5"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 19 } }, 3, 0);
-        return header;
-    }
-
     private static Grid CompactProfileRow(EsimProfile profile, bool isReady)
     {
         var flag = profile.Country switch
@@ -349,13 +337,6 @@ public sealed class MobilePage : ContentPage
     private View StoreContent()
     {
         var stack = PageStack();
-        var storeHeader = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 10 };
-        storeHeader.Add(new VerticalStackLayout { Spacing = 1, VerticalOptions = LayoutOptions.Center, Children = { new Label { Text = "● GLOBAL ROAMING READY", FontFamily = "Inter", FontSize = 10, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#00805A") }, new Label { Text = "Store", FontFamily = "Inter", FontSize = 22, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35") } } });
-        storeHeader.Add(RoundIconButton("\uE715", "MaterialAssets", "#26334B", () => { }), 1, 0);
-        storeHeader.Add(RoundIconButton("\uE721", "MaterialAssets", "#26334B", () => { }), 2, 0);
-        storeHeader.Add(new Border { WidthRequest = 38, HeightRequest = 38, Content = new Label { Text = "\uE71B", FontFamily = "MaterialAssets", FontSize = 19, TextColor = Colors.White, HorizontalTextAlignment = TextAlignment.Center, VerticalTextAlignment = TextAlignment.Center }, BackgroundColor = Color.FromArgb("#0649D5"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 19 } }, 3, 0);
-        stack.Add(storeHeader);
-
         stack.Add(new VerticalStackLayout { Spacing = 3, Children = { Text("●  ZERO ROAMING FEES", 12, "#0752DB", true), Text("Instant high-speed travel data in 190+ countries", 13, "#46516A") } });
 
         var search = new Entry { Placeholder = "Search country or region (e.g. Japan, France)", BackgroundColor = Colors.White, TextColor = Color.FromArgb("#101D35"), PlaceholderColor = Color.FromArgb("#6C7890"), FontSize = 14 };

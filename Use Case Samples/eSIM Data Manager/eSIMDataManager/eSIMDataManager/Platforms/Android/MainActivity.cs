@@ -11,15 +11,24 @@ namespace eSIMDataManager
         protected override void OnCreate(Bundle? savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            HideSystemBars();
+        }
 
-            // Keep the system bars on the app background so no black bar shows above the page.
+        public override void OnWindowFocusChanged(bool hasFocus)
+        {
+            base.OnWindowFocusChanged(hasFocus);
+            if (hasFocus)
+                HideSystemBars();
+        }
+
+        // Removes the top status bar and the bottom navigation bar so the app fills the screen.
+        private void HideSystemBars()
+        {
             var window = Window;
             if (window is null)
                 return;
 
-            window.SetStatusBarColor(Android.Graphics.Color.ParseColor("#F6F8FF"));
-            window.SetNavigationBarColor(Android.Graphics.Color.ParseColor("#F6F8FF"));
-            window.DecorView.SystemUiVisibility = (StatusBarVisibility)(SystemUiFlags.LightStatusBar | SystemUiFlags.LightNavigationBar);
+            window.DecorView.SystemUiVisibility = StatusBarVisibility.Fullscreen | StatusBarVisibility.HideNavigation;
         }
     }
 }

@@ -10,10 +10,8 @@ namespace eSIMDataManager
 
         public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
         {
-            // Draw the content behind the status bar so no black bar shows above the page.
-            application.Windows[0].RootViewController?.View?.Frame = UIScreen.MainScreen.Bounds;
-            application.StatusBarStyle = UIStatusBarStyle.Default;
-            application.StatusBarHidden = false;
+            // Remove the top navigation bar so the app content starts at the very top.
+            application.StatusBarHidden = true;
             return base.FinishedLaunching(application, launchOptions);
         }
     }
