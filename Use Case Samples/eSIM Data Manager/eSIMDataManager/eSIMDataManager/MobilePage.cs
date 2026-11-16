@@ -229,7 +229,7 @@ public sealed class MobilePage : ContentPage
     private View UsageCard()
     {
         var header = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8 };
-        header.Add(new HorizontalStackLayout { Spacing = 10, Children = { Text("▥", 24, "#006F82", true), Text("Last 7 Days Usage", 23, "#101D35", true) } });
+        header.Add(new HorizontalStackLayout { Spacing = 10, Children = { new Label { Text = "\uE71F", FontFamily = "UiKitIcons", FontSize = 24, TextColor = Color.FromArgb("#006F82"), VerticalOptions = LayoutOptions.Center }, Text("Last 7 Days Usage", 23, "#101D35", true) } });
         header.Add(Pill($"{vm.SevenDayTotal:0.00} GB Total"), 1, 0);
 
         var points = new[]
