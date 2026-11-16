@@ -105,8 +105,10 @@ public class DemoPage
             topUpContent?.SetCompact(true);
             qrContent?.SetCompact(true);
             purchaseContent?.SetCompact(true);
-            if (this.availableHeight > 0)
-                qrContent?.SetViewport(this.availableHeight);
+            var viewport = this.availableHeight > 0 ? this.availableHeight : 640;
+            topUpContent?.SetViewport(viewport);
+            qrContent?.SetViewport(viewport);
+            purchaseContent?.SetViewport(viewport);
             return;
         }
 
@@ -123,7 +125,7 @@ public class DemoPage
             // Size to content but never taller than the screen, so the footer stays visible
             // and the body scrolls instead of overflowing.
             popup.AutoSizeMode = PopupAutoSizeMode.Height;
-            popup.MaximumHeightRequest = Math.Max(360, this.availableHeight - 24);
+            popup.MaximumHeightRequest = (int)Math.Max(360, this.availableHeight - 24);
         }
         qrPopup.WidthRequest = popup.WidthRequest;
         if (this.availableHeight > 0)
@@ -131,7 +133,7 @@ public class DemoPage
             // Let the dialog hug its content but never grow past the screen; the scrolling
             // body inside absorbs the difference, so the footer is always visible.
             qrPopup.AutoSizeMode = PopupAutoSizeMode.Height;
-            qrPopup.MaximumHeightRequest = Math.Max(360, this.availableHeight - 24);
+            qrPopup.MaximumHeightRequest = (int)Math.Max(360, this.availableHeight - 24);
         }
         qrContent?.SetCompact(qrPopup.WidthRequest < 620);
         if (this.availableHeight > 0)
@@ -141,7 +143,7 @@ public class DemoPage
         if (this.availableHeight > 0)
         {
             purchasePopup.AutoSizeMode = PopupAutoSizeMode.Height;
-            purchasePopup.MaximumHeightRequest = Math.Max(360, this.availableHeight - 24);
+            purchasePopup.MaximumHeightRequest = (int)Math.Max(360, this.availableHeight - 24);
         }
         purchaseContent?.SetCompact(purchasePopup.WidthRequest < 420);
     }
@@ -153,20 +155,17 @@ public class DemoPage
     private void ApplyBottomSheet(SfPopup target, double availableWidth)
     {
         target.WidthRequest = Math.Max(320, availableWidth - 16);
-        target.AutoSizeMode = PopupAutoSizeMode.Height;
+        target.AutoSizeMode = PopupAutoSizeMode.None;
         target.AnimationMode = PopupAnimationMode.SlideOnBottom;
         target.PopupStyle.CornerRadius = 24;
 
-        if (availableHeight > 0)
-        {
-            target.MaximumHeightRequest = Math.Max(360, availableHeight - 24);
-            target.StartY = availableHeight - target.MaximumHeightRequest;
-        }
-        else
-        {
-            target.StartY = 0;
-        }
-
+        // The sheet is anchored by its top edge, so the height has to be known up front.
+        // The sheet fills most of the viewport and its body scrolls instead of growing.
+        var viewport = (int)Math.Max(360, availableHeight > 0 ? availableHeight : 640);
+        var sheetHeight = (int)Math.Max(360, Math.Min(viewport - 24, viewport * 0.88));
+        target.HeightRequest = sheetHeight;
+        target.MaximumHeightRequest = sheetHeight;
+        target.StartY = viewport - sheetHeight;
         target.StartX = 8;
     }
 

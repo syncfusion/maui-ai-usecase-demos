@@ -35,6 +35,7 @@ public sealed class TopUpPopupContent : IDisposable
     private readonly View accentBar;
     private readonly VerticalStackLayout sheetBody;
     private readonly ScrollView bodyScroll;
+    private double viewportHeight;
     private bool isCompact;
     private bool isSheet;
 
@@ -65,6 +66,7 @@ public sealed class TopUpPopupContent : IDisposable
         };
         root.Add(bodyScroll);
         root.Add(BuildFooter());
+        root.SizeChanged += (_, _) => ApplyViewport();
 
         BuildTiers();
 
@@ -96,6 +98,23 @@ public sealed class TopUpPopupContent : IDisposable
         accentBar.IsVisible = !sheet;
         isCompact = sheet || isCompact;
         BuildTiers();
+    }
+
+    /// <summary>Caps the scrollable body so the purchase button stays pinned inside the sheet.</summary>
+    public void SetViewport(double viewportHeight)
+    {
+        this.viewportHeight = viewportHeight;
+        ApplyViewport();
+    }
+
+    private void ApplyViewport()
+    {
+        if (viewportHeight <= 0) return;
+        var chrome = root.Height - bodyScroll.Height;
+        if (chrome <= 0) return;
+        var limit = Math.Max(200, viewportHeight - chrome);
+        if (Math.Abs(bodyScroll.MaximumHeightRequest - limit) > 0.5)
+            bodyScroll.MaximumHeightRequest = limit;
     }
 
     private void BuildTiers()

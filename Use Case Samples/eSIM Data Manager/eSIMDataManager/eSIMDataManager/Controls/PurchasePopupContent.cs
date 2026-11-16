@@ -66,6 +66,7 @@ public sealed class PurchasePopupContent
     private readonly View accentBar;
     private bool isCompact;
     private bool isSheet;
+    private double viewportHeight;
 
     public PurchasePopupContent(Plan? plan)
     {
@@ -91,6 +92,7 @@ public sealed class PurchasePopupContent
 
         root.Add(bodyScroll);
         root.Add(BuildFooter(plan));
+        root.SizeChanged += (_, _) => ApplyViewport();
     }
 
     public View Content => root;
@@ -121,6 +123,23 @@ public sealed class PurchasePopupContent
         isSheet = sheet;
         accentBar.IsVisible = !sheet;
         isCompact = sheet || isCompact;
+    }
+
+    /// <summary>Caps the scrollable body so the footer stays pinned inside the sheet.</summary>
+    public void SetViewport(double viewportHeight)
+    {
+        this.viewportHeight = viewportHeight;
+        ApplyViewport();
+    }
+
+    private void ApplyViewport()
+    {
+        if (viewportHeight <= 0) return;
+        var chrome = root.Height - bodyScroll.Height;
+        if (chrome <= 0) return;
+        var limit = Math.Max(200, viewportHeight - chrome);
+        if (Math.Abs(bodyScroll.MaximumHeightRequest - limit) > 0.5)
+            bodyScroll.MaximumHeightRequest = limit;
     }
 
     // -- helpers ----------------------------------------------------------
