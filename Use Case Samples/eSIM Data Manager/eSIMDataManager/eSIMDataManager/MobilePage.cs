@@ -47,18 +47,77 @@ public sealed class MobilePage : ContentPage
         var stack = PageStack();
         stack.Add(Header("Dashboard"));
         stack.Add(new VerticalStackLayout { Spacing = 3, Children = { Text("⌖  ROAMING IN TOKYO, JAPAN", 12, "#00687A"), Text("Good morning, Alex", 28, "#101D35") } });
-        var plan = Card(new VerticalStackLayout { Spacing = 12, Children = {
-            new HorizontalStackLayout { Spacing = 8, Children = { Text("🇯🇵",22,"#101D35"), new VerticalStackLayout { Children = { Text("Japan Unlimited   5G+",20,"#101D35",true), Text("SoftBank Corp. • 18ms ping",13,"#00687A") } }, Text("● Connected",12,"#006141") } },
-            new Grid { HeightRequest=228, WidthRequest=228, HorizontalOptions=LayoutOptions.Center, Children = {
-                new GraphicsView { HeightRequest=220, WidthRequest=220, Drawable=new UsageRingDrawable(vm.AvailablePercent) },
-                new VerticalStackLayout { HorizontalOptions=LayoutOptions.Center, VerticalOptions=LayoutOptions.Center, Spacing=2, Children={ Text("HIGH SPEED",12,"#46516A"), Text(vm.RemainingText,36,"#101D35",true), Text($"Remaining of {vm.Allocation:0.#} GB",13,"#00687A"), Text("⚡ ~0.8 GB/day pace",12,"#101D35") } }
-            }},
-            new Grid { ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star)}, ColumnSpacing=8, Children={
-                Card(new VerticalStackLayout { Children={Text("Quota Status",12,"#26334B"),Text("68% Available",16,"#101D35",true)} },"#EEF3FF"),
-                Card(new VerticalStackLayout { Children={Text("Backup Reserve",12,"#26334B"),Text("Unlimited 256kbps",16,"#101D35",true)} },"#EEF3FF")
-            }},
-            new VerticalStackLayout { Spacing=5, Children={ new Grid { ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Auto)}, Children={Text($"▢  {vm.DaysRemaining} Days Left",21,"#101D35",true), Pill("Auto-renew ON")} }, new ProgressBar { Progress=.68, ProgressColor=Color.FromArgb("#0649D5"), BackgroundColor=Color.FromArgb("#DBE6FA"), HeightRequest=7 }, Text($"Started {vm.ActivationDateText}            Expires {vm.ExpiryText}",12,"#46516A") } }
-        }}, "#FFFFFF");
+        var plan = new Border
+        {
+            Padding = new Thickness(18, 20),
+            Background = new LinearGradientBrush(new GradientStopCollection { new GradientStop(Color.FromArgb("#FFFFFF"), 0), new GradientStop(Color.FromArgb("#F0FBFF"), 1) }, new Point(0, 0), new Point(1, 1)),
+            Stroke = Color.FromArgb("#E8EDF7"),
+            StrokeThickness = 1,
+            StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 24 },
+            Content = new VerticalStackLayout
+            {
+                Spacing = 20,
+                Children =
+                {
+                    new Grid
+                    {
+                        ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) },
+                        ColumnSpacing = 8,
+                        Children =
+                        {
+                            new Border { WidthRequest = 54, HeightRequest = 54, Content = Text("JP", 23, "#101D35"), BackgroundColor = Color.FromArgb("#E5EEFF"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 18 } },
+                            new VerticalStackLayout { Spacing = 1, VerticalOptions = LayoutOptions.Center, Children = { Text("Japan Unlimited", 19, "#101D35", true), new HorizontalStackLayout { Spacing = 4, Children = { Text("SoftBank Corp.", 13, "#26334B"), Text("•", 12, "#AAB6CB"), new Label { Text = "18ms ping", FontFamily = "monospace", FontSize = 12, TextColor = Color.FromArgb("#007C91"), VerticalOptions = LayoutOptions.Center } } } } }.SetColumn(1),
+                            new Border { Content = Text("5G+", 13, "#0752DB", true), Padding = new Thickness(10, 5), BackgroundColor = Color.FromArgb("#E1EBFF"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 18 } }.SetColumn(2),
+                            new Border { Content = new HorizontalStackLayout { Spacing = 6, Children = { new BoxView { WidthRequest = 9, HeightRequest = 9, CornerRadius = 5, Color = Color.FromArgb("#007A56"), VerticalOptions = LayoutOptions.Center }, Text("Connected", 13, "#006141", true) } }, Padding = new Thickness(10, 5), BackgroundColor = Color.FromArgb("#D6F2ED"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 20 } }.SetColumn(3)
+                        }
+                    },
+                    new Grid
+                    {
+                        HeightRequest = 260,
+                        MinimumHeightRequest = 260,
+                        WidthRequest = 260,
+                        HorizontalOptions = LayoutOptions.Center,
+                        Children =
+                        {
+                            new GraphicsView { HeightRequest = 260, WidthRequest = 260, Drawable = new UsageRingDrawable(vm.UsedPercent) },
+                            new VerticalStackLayout
+                            {
+                                HorizontalOptions = LayoutOptions.Center,
+                                VerticalOptions = LayoutOptions.Center,
+                                Spacing = 2,
+                                Children =
+                                {
+                                    Text("HIGH SPEED", 14, "#46516A"),
+                                    new HorizontalStackLayout { Spacing = 3, HorizontalOptions = LayoutOptions.Center, Children = { Text(vm.Remaining.ToString("0.#"), 40, "#101D35", true), Text("GB", 21, "#0752DB", true) } },
+                                    Text($"Remaining of {vm.Allocation:0.#} GB", 14, "#007C91", true),
+                                    new Border { Content = new HorizontalStackLayout { Spacing = 6, Children = { Text("ϟ", 17, "#008B78", true), Text("~0.8 GB/day pace", 14, "#26334B") } }, Padding = new Thickness(10, 4), BackgroundColor = Color.FromArgb("#EEF3FF"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 18 }, Margin = new Thickness(0, 7, 0, 0) }
+                                }
+                            }
+                        }
+                    },
+                    new Grid
+                    {
+                        ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) },
+                        ColumnSpacing = 8,
+                        Children =
+                        {
+                            DashboardMetric("\uE73A", "#E0E9FF", "#0752DB", "Quota Status", $"{vm.AvailablePercent:0}% Available"),
+                            DashboardMetric("\uE723", "#D9ECF4", "#007C91", "Backup Reserve", "Unlimited\n256kbps").SetColumn(1)
+                        }
+                    },
+                    new VerticalStackLayout
+                    {
+                        Spacing = 8,
+                        Children =
+                        {
+                            new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, Children = { new HorizontalStackLayout { Spacing = 8, Children = { new Label { Text = "\uE70F", FontFamily = "UiKitIcons", FontSize = 21, TextColor = Color.FromArgb("#0752DB"), VerticalOptions = LayoutOptions.Center }, Text($"{vm.DaysRemaining} Days Left", 25, "#101D35", true) } }, Pill("Auto-renew ON").SetColumn(1) } },
+                            new ProgressBar { Progress = vm.ValidityFraction, ProgressColor = Color.FromArgb("#0649D5"), BackgroundColor = Color.FromArgb("#DFE9FC"), HeightRequest = 7 },
+                            new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, Children = { Text($"Started {vm.ActiveProfile?.ActivationDate?.ToString("MMM d") ?? "—"}", 14, "#46516A", false).SetColumn(0), Text($"Expires {vm.ActiveProfile?.ExpiryDate.ToString("MMM d") ?? "—"}, 23:59 JST", 14, "#46516A", false).SetColumn(1) } }
+                        }
+                    }
+                }
+            }
+        };
         stack.Add(plan);
         var actionsGrid = new Grid { ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star)}, ColumnSpacing=14 };
         actionsGrid.Add(DashboardActionButton("\uE721", "Buy Plan", true, () => Shell.Current.GoToAsync("//store")), 0, 0);
@@ -227,6 +286,25 @@ public sealed class MobilePage : ContentPage
         tap.Tapped += (_, _) => action();
         button.GestureRecognizers.Add(tap);
         return button;
+    }
+    private static View DashboardMetric(string icon, string background, string color, string label, string value)
+    {
+        return new Border
+        {
+            Padding = new Thickness(12, 10),
+            BackgroundColor = Color.FromArgb("#EEF3FF"),
+            StrokeThickness = 0,
+            StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 20 },
+            Content = new HorizontalStackLayout
+            {
+                Spacing = 10,
+                Children =
+                {
+                    new Border { WidthRequest = 44, HeightRequest = 44, Content = new Label { Text = icon, FontFamily = "UiKitIcons", FontSize = 23, TextColor = Color.FromArgb(color), HorizontalTextAlignment = TextAlignment.Center, VerticalTextAlignment = TextAlignment.Center }, BackgroundColor = Color.FromArgb(background), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 14 }, VerticalOptions = LayoutOptions.Center },
+                    new VerticalStackLayout { Spacing = 1, VerticalOptions = LayoutOptions.Center, Children = { new Label { Text = label, FontFamily = "Inter", FontSize = 13, TextColor = Color.FromArgb("#26334B"), HorizontalOptions = LayoutOptions.Fill, VerticalTextAlignment = TextAlignment.Center }, new Label { Text = value, FontFamily = "Inter", FontSize = 16, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35"), HorizontalOptions = LayoutOptions.Fill, VerticalTextAlignment = TextAlignment.Center } } }
+                }
+            }
+        };
     }
     private static View Metric(string label,string value,int col=0)=>new VerticalStackLayout{Spacing=3,Children={Text(label,10,"#46516A"),Text(value,13,"#101D35",true)}}.SetColumn(col);
     private static View RecentActivityCard()
