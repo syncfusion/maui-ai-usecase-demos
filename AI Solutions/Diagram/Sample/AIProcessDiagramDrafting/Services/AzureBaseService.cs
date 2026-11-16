@@ -18,7 +18,7 @@ public abstract class AzureBaseService
     {
         if (!IsConfigured)
         {
-            throw new InvalidOperationException("Azure OpenAI credentials are not configured.");
+            throw new InvalidOperationException("Azure OpenAI credentials are not configured. Set AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_DEPLOYMENT, and AZURE_OPENAI_API_KEY.");
         }
 
         return new AzureOpenAIClient(new Uri(Endpoint), new AzureKeyCredential(ApiKey));

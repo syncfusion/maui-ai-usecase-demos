@@ -208,11 +208,25 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
                 SetStatusMessage("Generation canceled.", WarningColor);
             }
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("Azure OpenAI credentials are not configured.", StringComparison.OrdinalIgnoreCase))
+        catch (InvalidOperationException ex) when (ex.Message.Contains("Azure OpenAI credentials are not configured", StringComparison.OrdinalIgnoreCase))
         {
             if (requestVersion == generationVersion)
             {
-                SetStatusMessage("Azure OpenAI credentials are required to generate a draft.", ErrorColor);
+                SetStatusMessage(ex.Message, ErrorColor);
+            }
+        }
+        catch (InvalidOperationException ex) when (ex.Message.StartsWith("Azure OpenAI request failed:", StringComparison.OrdinalIgnoreCase))
+        {
+            if (requestVersion == generationVersion)
+            {
+                SetStatusMessage(ex.Message, ErrorColor);
+            }
+        }
+        catch (InvalidOperationException ex) when (ex.Message == "Azure OpenAI returned an invalid workflow response.")
+        {
+            if (requestVersion == generationVersion)
+            {
+                SetStatusMessage("Azure OpenAI returned a response that the app could not parse.", ErrorColor);
             }
         }
         catch
@@ -252,7 +266,6 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
         CancelGeneration();
         discardRequested = false;
         IsBusy = true;
-        ClearDraftResult();
         SetStatusMessage("Generating draft...", InfoColor);
     }
 
