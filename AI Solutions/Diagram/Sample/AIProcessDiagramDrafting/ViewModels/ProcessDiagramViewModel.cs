@@ -47,18 +47,12 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
         };
 
         GenerateDraftCommand = new AsyncRelayCommand(GenerateDraftAsync, () => !IsBusy);
-        RegenerateCommand = new AsyncRelayCommand(RegenerateAsync, () => !IsBusy);
-        AcceptDraftCommand = new RelayCommand(AcceptDraft, () => CurrentDiagram is not null && !IsBusy);
         DiscardDraftCommand = new RelayCommand(DiscardDraft, () => CurrentDiagram is not null || IsBusy);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public IAsyncRelayCommand GenerateDraftCommand { get; }
-
-    public IAsyncRelayCommand RegenerateCommand { get; }
-
-    public IRelayCommand AcceptDraftCommand { get; }
 
     public IRelayCommand DiscardDraftCommand { get; }
 
@@ -205,7 +199,7 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
             }
 
             CurrentDiagram = draftBuilder.Build(workflow);
-            SetStatusMessage(Warnings.Count == 0 ? "Draft generated." : "Draft generated with warnings.", Warnings.Count == 0 ? SuccessColor : WarningColor);
+            SetStatusMessage(Warnings.Count == 0 ? "Draft accepted." : "Draft accepted with warnings.", Warnings.Count == 0 ? SuccessColor : WarningColor);
         }
         catch (OperationCanceledException)
         {
@@ -230,19 +224,6 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
                 discardRequested = false;
             }
         }
-    }
-
-    public async Task RegenerateAsync()
-        => await GenerateDraftAsync();
-
-    public void AcceptDraft()
-    {
-        if (CurrentDiagram is null)
-        {
-            return;
-        }
-
-        SetStatusMessage("Draft accepted.", SuccessColor);
     }
 
     public void DiscardDraft()
@@ -309,8 +290,6 @@ public sealed class ProcessDiagramViewModel : INotifyPropertyChanged
     private void NotifyCommandStates()
     {
         GenerateDraftCommand.NotifyCanExecuteChanged();
-        RegenerateCommand.NotifyCanExecuteChanged();
-        AcceptDraftCommand.NotifyCanExecuteChanged();
         DiscardDraftCommand.NotifyCanExecuteChanged();
     }
 
