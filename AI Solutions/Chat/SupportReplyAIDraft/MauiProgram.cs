@@ -24,8 +24,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<Services.IChatSuggestionService, Services.ChatSuggestionService>();
         builder.Services.AddSingleton<Services.ISupportReplyService, Services.SupportReplyService>();
         builder.Services.AddSingleton<Services.SupportReplyValidator>();
-        builder.Services.AddSingleton<ViewModels.SupportChatViewModel>();
-        builder.Services.AddSingleton<Views.SupportChatPage>();
+        builder.Services.AddTransient<ViewModels.SupportChatViewModel>();
+        builder.Services.AddTransient<Views.SupportChatPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

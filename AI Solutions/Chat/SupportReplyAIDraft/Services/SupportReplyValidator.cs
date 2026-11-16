@@ -7,7 +7,7 @@ public sealed class SupportReplyValidator
 {
     private const int MaximumReplyLength = 1000;
 
-    public static SupportReplyValidationResult Validate(string? rawResponse)
+    public SupportReplyValidationResult Validate(string? rawResponse)
     {
         if (string.IsNullOrWhiteSpace(rawResponse))
         {

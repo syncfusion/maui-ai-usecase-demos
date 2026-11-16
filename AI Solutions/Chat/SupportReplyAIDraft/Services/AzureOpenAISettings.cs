@@ -1,4 +1,3 @@
-using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace SupportReplyAIDraft.Services;
@@ -11,8 +10,10 @@ public sealed class AzureOpenAISettings
     public string ApiKey { get; init; } = string.Empty;
     public string DeploymentName { get; init; } = string.Empty;
 
-    public static async Task<AzureOpenAISettings> LoadAsync(CancellationToken cancellationToken = default)
+    public static Task<AzureOpenAISettings> LoadAsync(CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT");
         var apiKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY");
         var deploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME");
@@ -21,20 +22,8 @@ public sealed class AzureOpenAISettings
             || string.IsNullOrWhiteSpace(apiKey)
             || string.IsNullOrWhiteSpace(deploymentName))
         {
-            await using var stream = await FileSystem.OpenAppPackageFileAsync("azure-openai.local.json").ConfigureAwait(false);
-            var localSettings = await JsonSerializer.DeserializeAsync<AzureOpenAISettings>(
-                stream,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true },
-                cancellationToken).ConfigureAwait(false);
-
-            if (localSettings is null)
-            {
-                throw new InvalidOperationException("The local Azure OpenAI settings file is empty or invalid.");
-            }
-
-            endpoint = localSettings.Endpoint;
-            apiKey = localSettings.ApiKey;
-            deploymentName = localSettings.DeploymentName;
+            throw new InvalidOperationException(
+                "Azure OpenAI credentials are unavailable. Configure the required environment variables.");
         }
 
         var normalizedEndpoint = ExtractEndpoint(endpoint);
@@ -56,12 +45,12 @@ public sealed class AzureOpenAISettings
             throw new InvalidOperationException("Azure OpenAI deployment name is missing.");
         }
 
-        return new AzureOpenAISettings
+        return Task.FromResult(new AzureOpenAISettings
         {
             Endpoint = endpointUri.AbsoluteUri.TrimEnd('/'),
             ApiKey = apiKey,
             DeploymentName = deploymentName.Trim()
-        };
+        });
     }
 
     private static string ExtractEndpoint(string? endpoint)
