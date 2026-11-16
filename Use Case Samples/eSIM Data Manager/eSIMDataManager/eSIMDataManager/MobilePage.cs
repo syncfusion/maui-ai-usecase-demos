@@ -296,7 +296,8 @@ public sealed class MobilePage : ContentPage
             HeightRequest = 260,
             WidthRequest = 260,
             HorizontalOptions = LayoutOptions.Center,
-            VerticalOptions = LayoutOptions.Center
+            VerticalOptions = LayoutOptions.Center,
+            BackgroundColor = Colors.White
         };
         var axis = new RadialAxis
         {
@@ -306,9 +307,10 @@ public sealed class MobilePage : ContentPage
             EndAngle = 270,
             ShowLabels = false,
             ShowTicks = false,
-            ShowAxisLine = false,
             RadiusFactor = 0.9,
             AxisLineStyle = new RadialLineStyle { Thickness = 18, ThicknessUnit = SizeUnit.Pixel, Fill = new SolidColorBrush(Color.FromArgb("#EEF3FF")) },
+            MajorTickStyle = new RadialTickStyle { Length = 0, Stroke = new SolidColorBrush(Colors.Transparent) },
+            MinorTickStyle = new RadialTickStyle { Length = 0, Stroke = new SolidColorBrush(Colors.Transparent) },
             Pointers =
             {
                 new RangePointer { Value = Math.Clamp(vm.Consumed, 0, maximum), PointerWidth = 18, WidthUnit = SizeUnit.Pixel, Fill = new SolidColorBrush(Color.FromArgb("#0752FF")), CornerStyle = CornerStyle.BothCurve }
