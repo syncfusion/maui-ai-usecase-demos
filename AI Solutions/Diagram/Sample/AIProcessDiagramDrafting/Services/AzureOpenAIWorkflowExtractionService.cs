@@ -43,6 +43,7 @@ public sealed class AzureOpenAIWorkflowExtractionService : AzureBaseService, IWo
         var options = new OpenAI.Chat.ChatCompletionOptions
         {
             Temperature = 0f,
+            ResponseFormat = OpenAI.Chat.ChatResponseFormat.CreateJsonObjectFormat(),
             MaxOutputTokenCount = 2048
         };
 
@@ -62,6 +63,10 @@ public sealed class AzureOpenAIWorkflowExtractionService : AzureBaseService, IWo
         catch (JsonException ex)
         {
             throw new InvalidOperationException("Azure OpenAI returned an invalid workflow response.", ex);
+        }
+        catch (Exception ex) when (ex is not InvalidOperationException)
+        {
+            throw new InvalidOperationException($"Azure OpenAI request failed: {ex.Message}", ex);
         }
     }
 
