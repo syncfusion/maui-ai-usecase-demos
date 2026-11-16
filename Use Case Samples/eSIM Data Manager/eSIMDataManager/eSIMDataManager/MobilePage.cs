@@ -185,7 +185,7 @@ public sealed class MobilePage : ContentPage
     private void AddTab(Grid bar,string icon,string label,MobileTab target,int col){var b=new Button{Text=$"{icon}\n{label}",FontSize=11,Padding=0,BackgroundColor=Colors.Transparent,TextColor=tab==target?Color.FromArgb("#0649D5"):Color.FromArgb("#101D35")}; b.Clicked+=async(_,_)=>await Shell.Current.GoToAsync(target switch{MobileTab.Dashboard=>"//dashboard",MobileTab.Profiles=>"//profiles",_=>"//store"});bar.Add(b,col,0);}
     private View Header(string title)=>new Grid{ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Auto)},Children={Text(title,22,"#101D35",true),Text("▮  ◉",18,"#0649D5").SetColumn(1)}};
     private static VerticalStackLayout PageStack()=>new(){Padding=new Thickness(16,12,16,20),Spacing=14};
-    private static Label Text(string value,double size,string color,bool bold=false)=>new(){Text=value,FontFamily="Inter",FontSize=size,TextColor=Color.FromArgb(color),FontAttributes=bold?FontAttributes.Bold:FontAttributes.None,LineBreakMode=LineBreakMode.WordWrap,VerticalOptions=LayoutOptions.Center};
+    private static Label Text(string value,double size,string color,bool bold=false)=>new(){Text=value,FontFamily="Inter",FontSize=size,TextColor=Color.FromArgb(color),FontAttributes=bold?FontAttributes.Bold:FontAttributes.None,LineBreakMode=LineBreakMode.WordWrap,VerticalOptions=LayoutOptions.Center,HorizontalOptions=LayoutOptions.Center};
     private static Border Card(View content,string bg="#FFFFFF")=>new(){Content=content,Padding=14,BackgroundColor=Color.FromArgb(bg),Stroke=Color.FromArgb("#E7EDF8"),StrokeThickness=1,StrokeShape=new Microsoft.Maui.Controls.Shapes.RoundRectangle{CornerRadius=16}};
     private static Border Pill(string value)=>new(){Content=Text(value,11,"#0649D5",true),Padding=new Thickness(9,5),BackgroundColor=Color.FromArgb("#EAF0FF"),StrokeThickness=0,StrokeShape=new Microsoft.Maui.Controls.Shapes.RoundRectangle{CornerRadius=12},VerticalOptions=LayoutOptions.Center};
     private static Button Button(string text,Action action){var b=new Button{Text=text,BackgroundColor=Color.FromArgb("#0649D5"),TextColor=Colors.White,CornerRadius=10,FontSize=13,Padding=new Thickness(12,7)};b.Clicked+=(_,_)=>action();return b;}
@@ -203,7 +203,7 @@ public sealed class MobilePage : ContentPage
         content.Add(header);
         content.Add(Activity("⊕", "#DCE8FF", "#0649D5", "Top-Up Purchased", "Nov 21, 14:15 JST", "+3.0 GB", "$6.50 USD", "#006141"));
         content.Add(Activity("◩", "#D8EAF0", "#007C8A", "High-Speed Roaming", "Yesterday in Shinjuku", "1.2 GB", "5G Sub-6", "#00687A"));
-        content.Add(Activity("⌁", "#D9EFE8", "#00856A", "Profile Activated", "Nov 14, 08:31 JST", "Haneda (HND)", null, "#006141"));
+        content.Add(Activity("✈︎", "#D9EFE8", "#00856A", "Profile Activated", "Nov 14, 08:31 JST", "Haneda (HND)", null, "#006141"));
         return Card(content);
     }
 
