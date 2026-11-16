@@ -258,7 +258,7 @@ public sealed class MobilePage : ContentPage
         }
 
         var footer = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8 };
-        footer.Add(new HorizontalStackLayout { Spacing = 7, Children = { new Ellipse { WidthRequest = 12, HeightRequest = 12, Fill = Color.FromArgb("#0649D5"), VerticalOptions = LayoutOptions.Center }, Text($"Peak: {peak.Day} ({peak.UsedGb:0.#} GB in Shibuya)", 14, "#46516A") } });
+        footer.Add(new HorizontalStackLayout { Spacing = 7, Children = { new BoxView { WidthRequest = 12, HeightRequest = 12, CornerRadius = 6, Color = Color.FromArgb("#0649D5"), VerticalOptions = LayoutOptions.Center }, Text($"Peak: {peak.Day} ({peak.UsedGb:0.#} GB in Shibuya)", 14, "#46516A") } });
         footer.Add(Text("Daily limit: Unlimited", 14, "#46516A"), 1, 0);
 
         return new VerticalStackLayout { Spacing = 20, Children = { header, charts, footer } };
