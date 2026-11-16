@@ -7,8 +7,10 @@ namespace eSIMDataManager;
 public sealed class MobilePage : ContentView
 {
     public enum MobileTab { Dashboard, Profiles, Store }
+    public enum ProfileFilter { Active, Ready, Expired }
     private readonly MainViewModel vm;
     private MobileTab tab;
+    private ProfileFilter profileFilter = ProfileFilter.Active;
     private readonly DemoPage actions;
     private readonly Grid root = new() { RowDefinitions = { new RowDefinition(GridLength.Star), new RowDefinition(GridLength.Auto) } };
     private readonly ScrollView scroll = new() { VerticalScrollBarVisibility = ScrollBarVisibility.Never };
@@ -35,7 +37,15 @@ public sealed class MobilePage : ContentView
         actions = new DemoPage(vm);
         BackgroundColor = Color.FromArgb("#F6F8FF");
         scroll.Content = PageContent();
-        vm.Store.Changed += (_, _) => MainThread.BeginInvokeOnMainThread(() => scroll.Content = PageContent());
+        vm.Store.Changed += (_, _) => MainThread.BeginInvokeOnMainThread(RefreshContent);
+        vm.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName is nameof(MainViewModel.FilteredPlans) or nameof(MainViewModel.SelectedFilterLabel)
+                or nameof(MainViewModel.NetworkFilterText) or nameof(MainViewModel.QuotaFilterText)
+                or nameof(MainViewModel.DurationFilterText) or nameof(MainViewModel.SortFilterText)
+                or nameof(MainViewModel.CoverageFilterText) or nameof(MainViewModel.Search))
+                MainThread.BeginInvokeOnMainThread(RefreshContent);
+        };
         root.Add(scroll, 0, 0);
         bottomNavigation = BottomNavigation();
         root.Add(bottomNavigation, 0, 1);
@@ -49,6 +59,12 @@ public sealed class MobilePage : ContentView
         root.Children.Add(actions.PurchasePopupView);
         Content = root;
         SizeChanged += (_, _) => actions.UpdateTopUpPopupWidth(Width, Height);
+    }
+
+    private void RefreshContent()
+    {
+        if (scroll.Content is not null)
+            scroll.Content = PageContent();
     }
 
     private View PageContent() => tab switch
@@ -161,16 +177,24 @@ public sealed class MobilePage : ContentView
     {
         var stack = PageStack();
         var titleRow = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 12 };
-        titleRow.Add(new VerticalStackLayout { Spacing = 2, VerticalOptions = LayoutOptions.Center, Children = { Text("My eSIMs", 28, "#101D35", true), Text("Manage profiles & data roaming", 13, "#46516A") } });
+        titleRow.Add(new VerticalStackLayout { Spacing = 2, VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.Start, Children = {
+            new Label { Text = "My eSIMs", FontFamily = "Inter", FontSize = 28, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35"), HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center },
+            new Label { Text = "Manage profiles & data roaming", FontFamily = "Inter", FontSize = 13, TextColor = Color.FromArgb("#46516A"), HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center } } });
         titleRow.Add(RoundIconButton("\uE715", "MaterialAssets", "#0649D5", () => { }), 1, 0);
         titleRow.Add(RoundIconButton("\uE70D", "MaterialAssets", "#0649D5", () => navigate(MobileTab.Store)), 2, 0);
         stack.Add(titleRow);
-        var filters = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) }, ColumnSpacing = 6, BackgroundColor = Color.FromArgb("#E7EEFF"), Padding = 5 };
-        filters.Add(FilterLabel($"Active  {vm.ActiveProfiles.Count}", true), 0, 0);
-        filters.Add(FilterLabel($"Ready  {vm.ReadyProfiles.Count}"), 1, 0);
-        filters.Add(FilterLabel($"Expired  {vm.ExpiredProfiles.Count}"), 2, 0);
+        var filters = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) }, ColumnSpacing = 4, BackgroundColor = Color.FromArgb("#E7EEFF"), Padding = new Thickness(4, 3), HeightRequest = 40 };
+        filters.Add(ProfileFilterTab($"Active  {vm.ActiveProfiles.Count}", ProfileFilter.Active), 0, 0);
+        filters.Add(ProfileFilterTab($"Ready  {vm.ReadyProfiles.Count}", ProfileFilter.Ready), 1, 0);
+        filters.Add(ProfileFilterTab($"Expired  {vm.ExpiredProfiles.Count}", ProfileFilter.Expired), 2, 0);
         stack.Add(filters);
-        foreach (var profile in vm.ActiveProfiles.Concat(vm.ReadyProfiles).Concat(vm.ExpiredProfiles))
+        var visibleProfiles = profileFilter switch
+        {
+            ProfileFilter.Ready => vm.ReadyProfiles,
+            ProfileFilter.Expired => vm.ExpiredProfiles,
+            _ => vm.ActiveProfiles
+        };
+        foreach (var profile in visibleProfiles)
         {
             var context = new Border { BindingContext = profile };
             if (profile.Status == ProfileStatus.Active)
@@ -186,6 +210,12 @@ public sealed class MobilePage : ContentView
                 tap.Tapped += (_, _) => openAction();
                 card.GestureRecognizers.Add(tap);
                 stack.Add(card);
+                if (isReady)
+                {
+                    var activate = new Button { Text = "Show QR / Activate demo", FontFamily = "Inter", FontSize = 14, FontAttributes = FontAttributes.Bold, TextColor = Colors.White, BackgroundColor = Color.FromArgb("#0649D5"), CornerRadius = 12, Padding = new Thickness(14, 9) };
+                    activate.Clicked += (_, _) => openAction();
+                    stack.Add(activate);
+                }
             }
         }
         stack.Add(StoreCallout());
@@ -337,12 +367,16 @@ public sealed class MobilePage : ContentView
             "Italy" => "🇮🇹",
             _ => "🌐"
         };
-        var row = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8 };
+        var row = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8 };
         row.Add(new Border { WidthRequest = 46, HeightRequest = 46, Content = Text(flag, 22, "#101D35"), BackgroundColor = Color.FromArgb("#EEF2FB"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 14 } });
-        var details = new VerticalStackLayout { Spacing = 1, VerticalOptions = LayoutOptions.Center, Children = { new Label { Text = profile.ProfileName, FontFamily = "Inter", FontSize = 17, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35"), MaxLines = 1, LineBreakMode = LineBreakMode.TailTruncation }, new Label { Text = $"{profile.Carrier} • {profile.AllocatedGb:0.#} GB", FontFamily = "Inter", FontSize = 12, TextColor = Color.FromArgb("#46516A"), MaxLines = 1, LineBreakMode = LineBreakMode.TailTruncation } } };
+        var details = new VerticalStackLayout { Spacing = 1, VerticalOptions = LayoutOptions.Center };
+        details.Add(new Label { Text = profile.ProfileName, FontFamily = "Inter", FontSize = 17, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35"), MaxLines = 1, LineBreakMode = LineBreakMode.TailTruncation, HorizontalOptions = LayoutOptions.Start });
+        details.Add(new Label { Text = profile.Carrier, FontFamily = "Inter", FontSize = 12, TextColor = Color.FromArgb("#46516A"), MaxLines = 1, LineBreakMode = LineBreakMode.TailTruncation, HorizontalOptions = LayoutOptions.Start });
+        details.Add(new Label { Text = isReady ? profile.Country : $"Expired {profile.ExpiryDate:MMM d, yyyy}", FontFamily = "Inter", FontSize = 12, TextColor = isReady ? Color.FromArgb("#46516A") : Color.FromArgb("#63748B"), HorizontalOptions = LayoutOptions.Start });
+        if (!isReady)
+            details.Add(new Label { Text = $"{profile.ConsumedGb:0.#} GB Used", FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#63748B"), HorizontalOptions = LayoutOptions.Start });
         row.Add(details, 1, 0);
-        row.Add(new Border { Content = new Label { Text = isReady ? "Ready to Install" : "Expired", FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = isReady ? Color.FromArgb("#00687A") : Color.FromArgb("#63748B") }, Padding = new Thickness(11, 6), BackgroundColor = isReady ? Color.FromArgb("#DDF8FF") : Color.FromArgb("#F1F4FA"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 18 } }, 2, 0);
-        row.Add(Text("⌄", 18, "#46516A"), 3, 0);
+        row.Add(new Border { Content = new Label { Text = isReady ? "● Ready" : "Expired", FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = isReady ? Color.FromArgb("#00687A") : Color.FromArgb("#63748B") }, Padding = new Thickness(11, 6), BackgroundColor = isReady ? Color.FromArgb("#DDF8FF") : Color.FromArgb("#F1F4FA"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 18 }, VerticalOptions = LayoutOptions.Start }, 2, 0);
         return row;
     }
 
@@ -358,14 +392,94 @@ public sealed class MobilePage : ContentView
         return Card(row, "#EEF3FF");
     }
 
-    private static View FilterLabel(string text, bool selected = false) => new Border { Content = new Label { Text = text, HorizontalOptions = LayoutOptions.Center, FontFamily = "Inter", FontSize = 13, FontAttributes = FontAttributes.Bold, TextColor = selected ? Color.FromArgb("#0649D5") : Color.FromArgb("#26334B") }, Padding = new Thickness(8, 9), BackgroundColor = selected ? Colors.White : Colors.Transparent, StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 } };
+    private static View FilterLabel(string text, bool selected = false) => new Border
+    {
+        Content = new Label { Text = text, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center, FontFamily = "Inter", FontSize = 13, FontAttributes = FontAttributes.Bold, TextColor = selected ? Color.FromArgb("#0649D5") : Color.FromArgb("#26334B") },
+        Padding = new Thickness(8, 6),
+        BackgroundColor = selected ? Colors.White : Colors.Transparent,
+        StrokeThickness = 0,
+        StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 10 },
+        HeightRequest = 32,
+        VerticalOptions = LayoutOptions.Center
+    };
+
+    private View ProfileFilterTab(string text, ProfileFilter target)
+    {
+        var selected = profileFilter == target;
+        var tab = new Border
+        {
+            Content = new Label { Text = text, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center, FontFamily = "Inter", FontSize = 13, FontAttributes = FontAttributes.Bold, TextColor = selected ? Color.FromArgb("#0649D5") : Color.FromArgb("#26334B") },
+            Padding = new Thickness(8, 6),
+            BackgroundColor = selected ? Colors.White : Colors.Transparent,
+            StrokeThickness = 0,
+            StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 10 },
+            HeightRequest = 32,
+            VerticalOptions = LayoutOptions.Center
+        };
+        var tap = new TapGestureRecognizer();
+        tap.Tapped += (_, _) => SelectProfileFilter(target);
+        tab.GestureRecognizers.Add(tap);
+        return tab;
+    }
+
+    private void SelectProfileFilter(ProfileFilter target)
+    {
+        if (profileFilter == target)
+            return;
+
+        profileFilter = target;
+        RefreshContent();
+    }
+
+    private static ScrollView HorizontalScroller(View content) => new()
+    {
+        Content = content,
+        Orientation = ScrollOrientation.Horizontal,
+        HorizontalScrollBarVisibility = ScrollBarVisibility.Never,
+        VerticalScrollBarVisibility = ScrollBarVisibility.Never,
+        HorizontalOptions = LayoutOptions.Fill
+    };
+
+    /// <summary>Builds a labelled, horizontally scrollable row of filter chips.</summary>
+    private static View FilterScroller(string label, IReadOnlyList<string> options, string selectedOption, Action<string> onSelected)
+    {
+        var row = new HorizontalStackLayout { Spacing = 6 };
+        row.Add(new Label { Text = label, FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#455168"), VerticalOptions = LayoutOptions.Center });
+        foreach (var option in options)
+        {
+            var value = option;
+            var selected = value == selectedOption;
+            var chip = new Border
+            {
+                Content = new Label { Text = value, FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = selected ? Color.FromArgb("#0645D8") : Color.FromArgb("#26334B"), VerticalOptions = LayoutOptions.Center },
+                Padding = new Thickness(12, 6),
+                BackgroundColor = selected ? Color.FromArgb("#EAF0FF") : Colors.White,
+                StrokeThickness = 0,
+                StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 }
+            };
+            var tap = new TapGestureRecognizer();
+            tap.Tapped += (_, _) => onSelected(value);
+            chip.GestureRecognizers.Add(tap);
+            row.Add(chip);
+        }
+        return HorizontalScroller(row);
+    }
+
+    /// <summary>Strips the flag and code prefix from a trending destination label.</summary>
+    private static string DestinationName(string destination)
+    {
+        var parts = destination.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length > 1 ? string.Join(' ', parts.Skip(1)) : parts.FirstOrDefault() ?? string.Empty;
+    }
 
     private View StoreContent()
     {
         var stack = PageStack();
-        stack.Add(new VerticalStackLayout { Spacing = 3, Children = { Text("●  ZERO ROAMING FEES", 12, "#0752DB", true), Text("Instant high-speed travel data in 190+ countries", 13, "#46516A") } });
+        stack.Add(new VerticalStackLayout { Spacing = 3, HorizontalOptions = LayoutOptions.Start, Children = {
+            new Label { Text = "●  ZERO ROAMING FEES", FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#0752DB"), HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center },
+            new Label { Text = "Instant high-speed travel data in 190+ countries", FontFamily = "Inter", FontSize = 13, TextColor = Color.FromArgb("#46516A"), HorizontalOptions = LayoutOptions.Start, VerticalOptions = LayoutOptions.Center } } });
 
-        var search = new Entry { Placeholder = "Search country or region (e.g. Japan, France)", BackgroundColor = Colors.White, TextColor = Color.FromArgb("#101D35"), PlaceholderColor = Color.FromArgb("#6C7890"), FontSize = 14 };
+        var search = new Entry { Placeholder = "Search country or region (e.g. Japan, France)", Text = vm.Search, BackgroundColor = Colors.White, TextColor = Color.FromArgb("#101D35"), PlaceholderColor = Color.FromArgb("#6C7890"), FontSize = 14 };
         search.TextChanged += (_, e) => vm.Search = e.NewTextValue ?? "";
         var searchRow = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star) }, ColumnSpacing = 8 };
         searchRow.Add(new Label { Text = "\uE715", FontFamily = "MaterialAssets", FontSize = 19, TextColor = Color.FromArgb("#26334B"), VerticalOptions = LayoutOptions.Center });
@@ -373,12 +487,12 @@ public sealed class MobilePage : ContentView
         stack.Add(new Border { Content = searchRow, Padding = new Thickness(12, 0), BackgroundColor = Colors.White, StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 16 }, HeightRequest = 46 });
 
         var countries = new HorizontalStackLayout { Spacing = 8 };
-        foreach (var country in new[] { "🇯🇵 Japan", "🇺🇸 USA", "🇫🇷 France", "🇰🇷 Korea" })
+        foreach (var country in vm.TrendingDestinations)
         {
             var name = country;
             var destination = new Border
             {
-                Content = new Label { Text = country, FontFamily = "Inter", FontSize = 13, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35") },
+                Content = new Label { Text = country, FontFamily = "Inter", FontSize = 13, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35"), VerticalOptions = LayoutOptions.Center },
                 Padding = new Thickness(12, 7),
                 BackgroundColor = Colors.White,
                 Stroke = Color.FromArgb("#E5EBF4"),
@@ -386,32 +500,37 @@ public sealed class MobilePage : ContentView
                 StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 20 }
             };
             var tap = new TapGestureRecognizer();
-            tap.Tapped += (_, _) => vm.SelectCountry(name.Split(' ', 2)[1]);
+            tap.Tapped += (_, _) => vm.SelectCountry(DestinationName(name));
             destination.GestureRecognizers.Add(tap);
             countries.Add(destination);
         }
-        stack.Add(countries);
+        stack.Add(HorizontalScroller(countries));
+
+        stack.Add(FilterScroller("Coverage", vm.CoverageOptions, vm.CoverageFilterText == "All" ? "All" : vm.CoverageFilterText, vm.SelectCoverage));
+        stack.Add(FilterScroller("Network", vm.NetworkFilterOptions, vm.NetworkFilterText, vm.SetNetworkFilter));
+        stack.Add(FilterScroller("Quota", vm.QuotaFilterOptions, vm.QuotaFilterText, vm.SetQuotaFilter));
+        stack.Add(FilterScroller("Duration", vm.DurationFilterOptions, vm.DurationFilterText, vm.SetDurationFilter));
+        stack.Add(FilterScroller("Sort by", vm.SortFilterOptions, vm.SortFilterText, vm.SetSortFilter));
 
         var filterRow = new HorizontalStackLayout { Spacing = 6 };
-        foreach (var filter in new[] { "Local", "Regional", "Global" })
+        foreach (var filter in vm.FilterOptions)
         {
-            var coverage = filter;
+            var option = filter;
+            var selected = vm.SelectedFilterLabel == option;
             var chip = new Border
             {
-                Content = new Label { Text = coverage, FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#26334B") },
+                Content = new Label { Text = option, FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = selected ? Color.FromArgb("#0645D8") : Color.FromArgb("#26334B"), VerticalOptions = LayoutOptions.Center },
                 Padding = new Thickness(12, 6),
-                BackgroundColor = Colors.White,
+                BackgroundColor = selected ? Color.FromArgb("#EAF0FF") : Colors.White,
                 StrokeThickness = 0,
                 StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 }
             };
             var tap = new TapGestureRecognizer();
-            tap.Tapped += (_, _) => vm.SelectCoverage(coverage);
+            tap.Tapped += (_, _) => vm.ToggleFilter(option);
             chip.GestureRecognizers.Add(tap);
             filterRow.Add(chip);
         }
-        filterRow.Add(new Border { Content = new Label { Text = "⚡ 5G Ultra", FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#0752DB") }, Padding = new Thickness(12, 6), BackgroundColor = Color.FromArgb("#EAF0FF"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 } });
-        filterRow.Add(new Border { Content = new Label { Text = "Unlimited Only", FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#26334B") }, Padding = new Thickness(12, 6), BackgroundColor = Colors.White, StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 } });
-        stack.Add(filterRow);
+        stack.Add(HorizontalScroller(filterRow));
 
         stack.Add(FeaturedDestinationCard());
         stack.Add(new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, Children = { new HorizontalStackLayout { Spacing = 8, VerticalOptions = LayoutOptions.Center, Children = { Text("Available Plans", 17, "#101D35", true), new Border { Content = new Label { Text = $"{vm.FilteredPlans.Count} active", FontFamily = "Inter", FontSize = 11, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#0649D5") }, Padding = new Thickness(9, 4), BackgroundColor = Color.FromArgb("#EAF0FF"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 } } } }, new Label { Text = "Tax included  ⓘ", FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#0649D5"), VerticalOptions = LayoutOptions.Center }.SetColumn(1) } });
