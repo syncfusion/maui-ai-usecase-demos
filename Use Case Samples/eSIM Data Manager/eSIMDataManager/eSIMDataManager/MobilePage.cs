@@ -13,15 +13,27 @@ public sealed class MobilePage : ContentPage
     private readonly Grid root = new() { RowDefinitions = { new RowDefinition(GridLength.Star), new RowDefinition(GridLength.Auto) } };
     private readonly ScrollView scroll = new() { VerticalScrollBarVisibility = ScrollBarVisibility.Never };
 
-    public MobilePage(MainViewModel viewModel, MobileTab selectedTab)
+    private readonly Action<MobileTab> navigate;
+
+    public MobilePage(MainViewModel viewModel, MobileTab selectedTab, Action<MobileTab>? navigate = null)
     {
         vm = viewModel;
         tab = selectedTab;
+        this.navigate = navigate ?? (target =>
+        {
+            var shell = Shell.Current;
+            if (shell is null)
+                return;
+            _ = shell.GoToAsync(target switch
+            {
+                MobileTab.Dashboard => "//dashboard",
+                MobileTab.Profiles => "//profiles",
+                _ => "//store"
+            });
+        });
         actions = new DemoPage(vm);
         Title = string.Empty;
         BackgroundColor = Color.FromArgb("#F6F8FF");
-        Shell.SetNavBarIsVisible(this, false);
-        Shell.SetTabBarIsVisible(this, false);
         scroll.Content = PageContent();
         vm.Store.Changed += (_, _) => MainThread.BeginInvokeOnMainThread(() => scroll.Content = PageContent());
         root.Add(scroll, 0, 0);
@@ -122,7 +134,7 @@ public sealed class MobilePage : ContentPage
         };
         stack.Add(plan);
         var actionsGrid = new Grid { ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star)}, ColumnSpacing=14 };
-        actionsGrid.Add(DashboardActionButton("\uE721", "Buy Plan", true, () => Shell.Current.GoToAsync("//store")), 0, 0);
+        actionsGrid.Add(DashboardActionButton("\uE721", "Buy Plan", true, () => navigate(MobileTab.Store)), 0, 0);
         actionsGrid.Add(DashboardActionButton("\uE707", "Top Up", false, () => actions.TopUpActiveClicked(this, EventArgs.Empty)), 1, 0);
         actionsGrid.Add(DashboardActionButton("\uE712", "Show QR", false, () => actions.QrActiveClicked(this, EventArgs.Empty)), 2, 0);
         stack.Add(actionsGrid);
@@ -137,7 +149,7 @@ public sealed class MobilePage : ContentPage
         var titleRow = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 12 };
         titleRow.Add(new VerticalStackLayout { Spacing = 2, VerticalOptions = LayoutOptions.Center, Children = { Text("My eSIMs", 28, "#101D35", true), Text("Manage profiles & data roaming", 13, "#46516A") } });
         titleRow.Add(RoundIconButton("\uE715", "MaterialAssets", "#0649D5", () => { }), 1, 0);
-        titleRow.Add(RoundIconButton("\uE70D", "MaterialAssets", "#0649D5", () => Shell.Current.GoToAsync("//store")), 2, 0);
+        titleRow.Add(RoundIconButton("\uE70D", "MaterialAssets", "#0649D5", () => navigate(MobileTab.Store)), 2, 0);
         stack.Add(titleRow);
         var filters = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) }, ColumnSpacing = 6, BackgroundColor = Color.FromArgb("#E7EEFF"), Padding = 5 };
         filters.Add(FilterLabel($"Active  {vm.ActiveProfiles.Count}", true), 0, 0);
@@ -327,7 +339,7 @@ public sealed class MobilePage : ContentPage
         var details = new VerticalStackLayout { Spacing = 1, VerticalOptions = LayoutOptions.Center, Children = { Text("Need a new plan?", 15, "#101D35", true), Text("Browse destinations in 190+ countries", 13, "#46516A") } };
         row.Add(details, 1, 0);
         var goToStore = new Button { Text = "Go to Store", FontFamily = "Inter", FontSize = 14, FontAttributes = FontAttributes.Bold, TextColor = Colors.White, BackgroundColor = Color.FromArgb("#0649D5"), CornerRadius = 14, Padding = new Thickness(16, 10) };
-        goToStore.Clicked += async (_, _) => await Shell.Current.GoToAsync("//store");
+        goToStore.Clicked += (_, _) => navigate(MobileTab.Store);
         row.Add(goToStore, 2, 0);
         return Card(row, "#EEF3FF");
     }
@@ -510,7 +522,7 @@ public sealed class MobilePage : ContentPage
         };
         var button = new Border { Content = content, BackgroundColor = Colors.Transparent, StrokeThickness = 0 };
         var tap = new TapGestureRecognizer();
-        tap.Tapped += async (_, _) => await Shell.Current.GoToAsync(target switch { MobileTab.Dashboard => "//dashboard", MobileTab.Profiles => "//profiles", _ => "//store" });
+        tap.Tapped += (_, _) => navigate(target);
         button.GestureRecognizers.Add(tap);
         bar.Add(button, col, 0);
     }
@@ -613,7 +625,7 @@ public sealed class MobilePage : ContentPage
         var header = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) } };
         header.Add(Text("Recent Activity", 20, "#101D35", true));
         var viewAll = new Button { Text = "View All  ›", FontSize = 14, Padding = 0, BackgroundColor = Colors.Transparent, TextColor = Color.FromArgb("#0649D5") };
-        viewAll.Clicked += async (_, _) => await Shell.Current.GoToAsync("//profiles");
+        viewAll.Clicked += (_, _) => navigate(MobileTab.Profiles);
         header.Add(viewAll, 1, 0);
 
         var content = new VerticalStackLayout { Spacing = 9 };

@@ -9,15 +9,9 @@ public partial class AppShell : Shell
         InitializeComponent();
 
         var section = new ShellSection { Route = "main", Title = string.Empty };
-#if ANDROID || IOS
-        section.Items.Add(CreatePage("dashboard", () => new MobilePage(viewModel, MobilePage.MobileTab.Dashboard)));
-        section.Items.Add(CreatePage("profiles", () => new MobilePage(viewModel, MobilePage.MobileTab.Profiles)));
-        section.Items.Add(CreatePage("store", () => new MobilePage(viewModel, MobilePage.MobileTab.Store)));
-#else
         section.Items.Add(CreatePage("dashboard", () => new DashboardPage(viewModel)));
         section.Items.Add(CreatePage("profiles", () => new ProfilesPage(viewModel)));
         section.Items.Add(CreatePage("store", () => new StorePage(viewModel)));
-#endif
         Shell.SetFlyoutBehavior(section, FlyoutBehavior.Disabled);
         Shell.SetNavBarIsVisible(section, false);
         Shell.SetTabBarIsVisible(section, false);

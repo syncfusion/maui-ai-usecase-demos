@@ -147,7 +147,7 @@ public class DemoPage
             popupContent.Children.Add(new Label { Text = $"{plan.Country} · {plan.Provider} · {plan.DataLabel} · {plan.ValidityDays} days", TextColor = Color.FromArgb("#63748B") });
             popupContent.Children.Add(new Label { Text = $"Plan: ${plan.Price:0.00}  |  Illustrative tax: ${ViewModel.SelectedPlanTax:0.00}  |  Total: ${ViewModel.SelectedPlanTotal:0.00} USD", FontAttributes = FontAttributes.Bold });
             var confirm = new Syncfusion.Maui.Buttons.SfButton { Text = "Confirm demo purchase" };
-            confirm.Clicked += (_, _) => { ViewModel.Store.Purchase(plan); popup.Dismiss(); _ = Shell.Current.GoToAsync("//profiles"); };
+            confirm.Clicked += (_, _) => { ViewModel.Store.Purchase(plan); popup.Dismiss(); _ = AppNavigation.ToProfilesAsync(); };
             popupContent.Children.Add(confirm);
             var cancel = new Syncfusion.Maui.Buttons.SfButton { Text = "Cancel" };
             cancel.Clicked += (_, _) => popup.Dismiss();
@@ -253,7 +253,7 @@ public class DemoPage
             $"{plan.Country} · {plan.DataLabel} was added to your dashboard.\n\nDemo only — no payment was taken and no eSIM was provisioned.",
             "View profiles");
         if (ViewModel.ProfilesCount != before)
-            await Shell.Current.GoToAsync("//profiles");
+            await AppNavigation.ToProfilesAsync();
     }
     public void DestinationClicked(object? sender, EventArgs e) { var text = sender switch { Syncfusion.Maui.Core.SfChip chip => chip.Text, Syncfusion.Maui.Buttons.SfButton button => button.Text, _ => null }; if (!string.IsNullOrWhiteSpace(text)) { var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries); ViewModel.SelectCountry(words.Length > 1 ? string.Join(' ', words.Skip(1)) : words[0]); } }
     public void FilterClicked(object? sender, EventArgs e) { if (sender is Syncfusion.Maui.Buttons.SfButton button && button.Text is not null) ViewModel.SelectCoverage(button.Text); }
