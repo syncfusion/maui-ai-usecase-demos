@@ -1,5 +1,6 @@
 using eSIMDataManager.Models;
 using eSIMDataManager.ViewModels;
+using Syncfusion.Maui.Gauges;
 
 namespace eSIMDataManager;
 
@@ -67,8 +68,8 @@ public sealed class MobilePage : ContentPage
                         {
                             new Border { WidthRequest = 54, HeightRequest = 54, Content = Text("JP", 23, "#101D35"), BackgroundColor = Color.FromArgb("#E5EEFF"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 18 } },
                             new VerticalStackLayout { Spacing = 1, VerticalOptions = LayoutOptions.Center, Children = { Text("Japan Unlimited", 19, "#101D35", true), new HorizontalStackLayout { Spacing = 4, Children = { Text("SoftBank Corp.", 13, "#26334B"), Text("•", 12, "#AAB6CB"), new Label { Text = "18ms ping", FontFamily = "monospace", FontSize = 12, TextColor = Color.FromArgb("#007C91"), VerticalOptions = LayoutOptions.Center } } } } }.SetColumn(1),
-                            new Border { Content = Text("5G+", 13, "#0752DB", true), Padding = new Thickness(10, 5), BackgroundColor = Color.FromArgb("#E1EBFF"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 18 } }.SetColumn(2),
-                            new Border { Content = new HorizontalStackLayout { Spacing = 6, Children = { new BoxView { WidthRequest = 9, HeightRequest = 9, CornerRadius = 5, Color = Color.FromArgb("#007A56"), VerticalOptions = LayoutOptions.Center }, Text("Connected", 13, "#006141", true) } }, Padding = new Thickness(10, 5), BackgroundColor = Color.FromArgb("#D6F2ED"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 20 } }.SetColumn(3)
+                            new Border { Content = Text("5G+", 13, "#0752DB", true), HeightRequest = 38, Padding = new Thickness(10, 0), BackgroundColor = Color.FromArgb("#E1EBFF"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 19 }, VerticalOptions = LayoutOptions.Center }.SetColumn(2),
+                            new Border { Content = new HorizontalStackLayout { Spacing = 6, VerticalOptions = LayoutOptions.Center, Children = { new BoxView { WidthRequest = 9, HeightRequest = 9, CornerRadius = 5, Color = Color.FromArgb("#007A56"), VerticalOptions = LayoutOptions.Center }, Text("Connected", 13, "#006141", true) } }, HeightRequest = 38, Padding = new Thickness(10, 0), BackgroundColor = Color.FromArgb("#D6F2ED"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 19 }, VerticalOptions = LayoutOptions.Center }.SetColumn(3)
                         }
                     },
                     new Grid
@@ -79,7 +80,7 @@ public sealed class MobilePage : ContentPage
                         HorizontalOptions = LayoutOptions.Center,
                         Children =
                         {
-                            new GraphicsView { HeightRequest = 260, WidthRequest = 260, Drawable = new UsageRingDrawable(vm.UsedPercent) },
+                            CreateUsageGauge(),
                             new VerticalStackLayout
                             {
                                 HorizontalOptions = LayoutOptions.Center,
@@ -287,6 +288,36 @@ public sealed class MobilePage : ContentPage
         button.GestureRecognizers.Add(tap);
         return button;
     }
+    private View CreateUsageGauge()
+    {
+        var maximum = Math.Max(vm.Allocation, 0.1);
+        var gauge = new SfRadialGauge
+        {
+            HeightRequest = 260,
+            WidthRequest = 260,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center
+        };
+        var axis = new RadialAxis
+        {
+            Minimum = 0,
+            Maximum = maximum,
+            StartAngle = 270,
+            EndAngle = 270,
+            ShowLabels = false,
+            ShowTicks = false,
+            ShowAxisLine = false,
+            RadiusFactor = 0.9,
+            AxisLineStyle = new RadialLineStyle { Thickness = 18, ThicknessUnit = SizeUnit.Pixel, Fill = new SolidColorBrush(Color.FromArgb("#EEF3FF")) },
+            Pointers =
+            {
+                new RangePointer { Value = Math.Clamp(vm.Consumed, 0, maximum), PointerWidth = 18, WidthUnit = SizeUnit.Pixel, Fill = new SolidColorBrush(Color.FromArgb("#0752FF")), CornerStyle = CornerStyle.BothCurve }
+            }
+        };
+        gauge.Axes.Add(axis);
+        return gauge;
+    }
+
     private static View DashboardMetric(string icon, string background, string color, string label, string value)
     {
         return new Border
@@ -300,7 +331,7 @@ public sealed class MobilePage : ContentPage
                 Spacing = 10,
                 Children =
                 {
-                    new Border { WidthRequest = 44, HeightRequest = 44, Content = new Label { Text = icon, FontFamily = "UiKitIcons", FontSize = 23, TextColor = Color.FromArgb(color), HorizontalTextAlignment = TextAlignment.Center, VerticalTextAlignment = TextAlignment.Center }, BackgroundColor = Color.FromArgb(background), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 14 }, VerticalOptions = LayoutOptions.Center },
+                    new Border { WidthRequest = 44, HeightRequest = 44, Content = new Label { Text = icon, FontFamily = icon == "\uE74C" ? "MaterialAssets" : "UiKitIcons", FontSize = 23, TextColor = Color.FromArgb(color), HorizontalTextAlignment = TextAlignment.Center, VerticalTextAlignment = TextAlignment.Center }, BackgroundColor = Color.FromArgb(background), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 14 }, VerticalOptions = LayoutOptions.Center },
                     new VerticalStackLayout { Spacing = 1, VerticalOptions = LayoutOptions.Center, Children = { new Label { Text = label, FontFamily = "Inter", FontSize = 13, TextColor = Color.FromArgb("#26334B"), HorizontalOptions = LayoutOptions.Fill, VerticalTextAlignment = TextAlignment.Center }, new Label { Text = value, FontFamily = "Inter", FontSize = 16, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35"), HorizontalOptions = LayoutOptions.Fill, VerticalTextAlignment = TextAlignment.Center } } }
                 }
             }
@@ -381,20 +412,6 @@ public sealed class MobilePage : ContentPage
     }
 }
 
-internal sealed class UsageRingDrawable(double progress) : IDrawable
-{
-    public void Draw(ICanvas canvas, RectF dirtyRect)
-    {
-        const float inset = 12;
-        canvas.StrokeSize = 16;
-        canvas.StrokeLineCap = LineCap.Round;
-        canvas.StrokeColor = Color.FromArgb("#E8EEFC");
-        canvas.DrawCircle(dirtyRect.Center.X, dirtyRect.Center.Y, dirtyRect.Width / 2 - inset);
-        canvas.StrokeColor = Color.FromArgb("#0752DB");
-        var rect = new RectF(inset, inset, dirtyRect.Width - inset * 2, dirtyRect.Height - inset * 2);
-        canvas.DrawArc(rect, -90, (float)(360 * progress / 100), false, false);
-    }
-}
 
 internal static class MobileViewExtensions
 {
