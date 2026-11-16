@@ -43,7 +43,9 @@ public sealed class MobilePage : ContentView
             if (e.PropertyName is nameof(MainViewModel.FilteredPlans) or nameof(MainViewModel.SelectedFilterLabel)
                 or nameof(MainViewModel.NetworkFilterText) or nameof(MainViewModel.QuotaFilterText)
                 or nameof(MainViewModel.DurationFilterText) or nameof(MainViewModel.SortFilterText)
-                or nameof(MainViewModel.CoverageFilterText) or nameof(MainViewModel.Search))
+                or nameof(MainViewModel.CoverageFilterText) or nameof(MainViewModel.Search)
+                or nameof(MainViewModel.SelectedCoverageFilter) or nameof(MainViewModel.SelectedNetworkFilter)
+                or nameof(MainViewModel.SelectedQuotaFilter) or nameof(MainViewModel.SelectedValidityFilter))
                 MainThread.BeginInvokeOnMainThread(RefreshContent);
         };
         root.Add(scroll, 0, 0);
@@ -440,30 +442,22 @@ public sealed class MobilePage : ContentView
         HorizontalOptions = LayoutOptions.Fill
     };
 
-    /// <summary>Builds a labelled, horizontally scrollable row of filter chips.</summary>
-    private static View FilterScroller(string label, IReadOnlyList<string> options, string selectedOption, Action<string> onSelected)
+    /// <summary>Reports whether the quick filter chip for the given option is active.</summary>
+    private bool IsFilterSelected(string option) => option switch
     {
-        var row = new HorizontalStackLayout { Spacing = 6 };
-        row.Add(new Label { Text = label, FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#455168"), VerticalOptions = LayoutOptions.Center });
-        foreach (var option in options)
-        {
-            var value = option;
-            var selected = value == selectedOption;
-            var chip = new Border
-            {
-                Content = new Label { Text = value, FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = selected ? Color.FromArgb("#0645D8") : Color.FromArgb("#26334B"), VerticalOptions = LayoutOptions.Center },
-                Padding = new Thickness(12, 6),
-                BackgroundColor = selected ? Color.FromArgb("#EAF0FF") : Colors.White,
-                StrokeThickness = 0,
-                StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 }
-            };
-            var tap = new TapGestureRecognizer();
-            tap.Tapped += (_, _) => onSelected(value);
-            chip.GestureRecognizers.Add(tap);
-            row.Add(chip);
-        }
-        return HorizontalScroller(row);
-    }
+        "All" => vm.SelectedCoverageFilter is null,
+        "Local" => vm.SelectedCoverageFilter == nameof(CoverageType.Local),
+        "Regional" => vm.SelectedCoverageFilter == nameof(CoverageType.Regional),
+        "Global" => vm.SelectedCoverageFilter == nameof(CoverageType.Global),
+        "4G" => vm.SelectedNetworkFilter == NetworkType.FourG,
+        "5G" => vm.SelectedNetworkFilter == NetworkType.FiveG,
+        "Limited" => vm.SelectedQuotaFilter == PlanType.Limited,
+        "Unlimited" => vm.SelectedQuotaFilter == PlanType.Unlimited,
+        "7 Days" => vm.SelectedValidityFilter == 7,
+        "15 Days" => vm.SelectedValidityFilter == 15,
+        "30 Days" => vm.SelectedValidityFilter == 30,
+        _ => false
+    };
 
     /// <summary>Strips the flag and code prefix from a trending destination label.</summary>
     private static string DestinationName(string destination)
@@ -506,17 +500,11 @@ public sealed class MobilePage : ContentView
         }
         stack.Add(HorizontalScroller(countries));
 
-        stack.Add(FilterScroller("Coverage", vm.CoverageOptions, vm.CoverageFilterText == "All" ? "All" : vm.CoverageFilterText, vm.SelectCoverage));
-        stack.Add(FilterScroller("Network", vm.NetworkFilterOptions, vm.NetworkFilterText, vm.SetNetworkFilter));
-        stack.Add(FilterScroller("Quota", vm.QuotaFilterOptions, vm.QuotaFilterText, vm.SetQuotaFilter));
-        stack.Add(FilterScroller("Duration", vm.DurationFilterOptions, vm.DurationFilterText, vm.SetDurationFilter));
-        stack.Add(FilterScroller("Sort by", vm.SortFilterOptions, vm.SortFilterText, vm.SetSortFilter));
-
         var filterRow = new HorizontalStackLayout { Spacing = 6 };
         foreach (var filter in vm.FilterOptions)
         {
             var option = filter;
-            var selected = vm.SelectedFilterLabel == option;
+            var selected = IsFilterSelected(option);
             var chip = new Border
             {
                 Content = new Label { Text = option, FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = selected ? Color.FromArgb("#0645D8") : Color.FromArgb("#26334B"), VerticalOptions = LayoutOptions.Center },
