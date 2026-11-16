@@ -25,7 +25,8 @@ public class AzureOpenAIOptions
 	/// <summary>
 	/// Gets the default Azure OpenAI API key.
 	/// </summary>
-	public const string Key = "AZURE_OPENAI_KEY";
+	public const string Key = "AZURE_OPENAI_API_KEY";
+	public const string LegacyKey = "AZURE_OPENAI_KEY";
 
 	/// <summary>
 	/// Gets the resolved Azure OpenAI endpoint.
@@ -60,8 +61,10 @@ public class AzureOpenAIOptions
 
 		KeyValue =
 			(Environment.GetEnvironmentVariable(
-				"AZURE_OPENAI_KEY")
-			 ?? Key).Trim();
+				Key)
+				 ?? Environment.GetEnvironmentVariable(
+					LegacyKey)
+				 ?? Key).Trim();
 	}
 
 
