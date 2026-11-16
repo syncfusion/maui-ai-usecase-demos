@@ -332,7 +332,7 @@ public sealed class MobilePage : ContentPage
         return Card(row, "#EEF3FF");
     }
 
-    private static View FilterLabel(string text, bool selected = false) => new Border { Content = new Label { Text = text, FontFamily = "Inter", FontSize = 13, FontAttributes = FontAttributes.Bold, TextColor = selected ? Color.FromArgb("#0649D5") : Color.FromArgb("#26334B") }, Padding = new Thickness(8, 9), BackgroundColor = selected ? Colors.White : Colors.Transparent, StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 } };
+    private static View FilterLabel(string text, bool selected = false) => new Border { Content = new Label { Text = text, HorizontalOptions = LayoutOptions.Center, FontFamily = "Inter", FontSize = 13, FontAttributes = FontAttributes.Bold, TextColor = selected ? Color.FromArgb("#0649D5") : Color.FromArgb("#26334B") }, Padding = new Thickness(8, 9), BackgroundColor = selected ? Colors.White : Colors.Transparent, StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 } };
 
     private View StoreContent()
     {
