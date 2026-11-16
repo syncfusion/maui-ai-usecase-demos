@@ -18,7 +18,7 @@ public sealed class MobilePage : ContentPage
         vm = viewModel;
         tab = selectedTab;
         actions = new DemoPage(vm);
-        Title = selectedTab.ToString();
+        Title = string.Empty;
         BackgroundColor = Color.FromArgb("#F6F8FF");
         Shell.SetNavBarIsVisible(this, false);
         Shell.SetTabBarIsVisible(this, false);
