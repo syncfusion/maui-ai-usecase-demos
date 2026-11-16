@@ -101,8 +101,8 @@ public sealed class MobilePage : ContentPage
                         ColumnSpacing = 8,
                         Children =
                         {
-                            DashboardMetric("\uE73A", "#E0E9FF", "#0752DB", "Quota Status", $"{vm.AvailablePercent:0}% Available"),
-                            DashboardMetric("\uE723", "#D9ECF4", "#007C91", "Backup Reserve", "Unlimited\n256kbps").SetColumn(1)
+                            DashboardMetric("\uE74C", "#E0E9FF", "#0752DB", "Quota Status", $"{vm.AvailablePercent:0}% Available"),
+                            DashboardMetric("\uE725", "#D9ECF4", "#007C91", "Backup Reserve", "Unlimited\n256kbps").SetColumn(1)
                         }
                     },
                     new VerticalStackLayout
@@ -110,7 +110,7 @@ public sealed class MobilePage : ContentPage
                         Spacing = 8,
                         Children =
                         {
-                            new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, Children = { new HorizontalStackLayout { Spacing = 8, Children = { new Label { Text = "\uE70F", FontFamily = "UiKitIcons", FontSize = 21, TextColor = Color.FromArgb("#0752DB"), VerticalOptions = LayoutOptions.Center }, Text($"{vm.DaysRemaining} Days Left", 25, "#101D35", true) } }, Pill("Auto-renew ON").SetColumn(1) } },
+                            new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, Children = { new HorizontalStackLayout { Spacing = 8, Children = { new Label { Text = "\uE70D", FontFamily = "UiKitIcons", FontSize = 21, TextColor = Color.FromArgb("#0752DB"), VerticalOptions = LayoutOptions.Center }, Text($"{vm.DaysRemaining} Days Left", 25, "#101D35", true) } }, Pill("Auto-renew ON").SetColumn(1) } },
                             new ProgressBar { Progress = vm.ValidityFraction, ProgressColor = Color.FromArgb("#0649D5"), BackgroundColor = Color.FromArgb("#DFE9FC"), HeightRequest = 7 },
                             new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, Children = { Text($"Started {vm.ActiveProfile?.ActivationDate?.ToString("MMM d") ?? "—"}", 14, "#46516A", false).SetColumn(0), Text($"Expires {vm.ActiveProfile?.ExpiryDate.ToString("MMM d") ?? "—"}, 23:59 JST", 14, "#46516A", false).SetColumn(1) } }
                         }
