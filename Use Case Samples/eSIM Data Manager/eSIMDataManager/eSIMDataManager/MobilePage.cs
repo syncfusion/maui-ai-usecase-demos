@@ -226,21 +226,13 @@ public sealed class MobilePage : ContentView
 
     private View ActiveProfileCard(EsimProfile profile, Border context)
     {
-        var countryFlag = profile.Country switch
-        {
-            "Japan" => "🇯🇵",
-            "France" => "🇫🇷",
-            "USA" => "🇺🇸",
-            "Thailand" => "🇹🇭",
-            "Italy" => "🇮🇹",
-            _ => "🌐"
-        };
-
         var header = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 10 };
-        header.Add(new Border { WidthRequest = 52, HeightRequest = 52, Content = Text(countryFlag, 24, "#101D35"), BackgroundColor = Color.FromArgb("#EEF2FB"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 16 } });
-        header.Add(new VerticalStackLayout { Spacing = 1, VerticalOptions = LayoutOptions.Center, Children = { Text(profile.ProfileName, 19, "#101D35", true), Text(profile.Carrier, 13, "#46516A") } }, 1, 0);
-        header.Add(new Border { Content = new HorizontalStackLayout { Spacing = 5, VerticalOptions = LayoutOptions.Center, Children = { new BoxView { WidthRequest = 8, HeightRequest = 8, CornerRadius = 4, Color = Color.FromArgb("#00805A"), VerticalOptions = LayoutOptions.Center }, Text("Active", 13, "#006141", true) } }, Padding = new Thickness(11, 6), BackgroundColor = Color.FromArgb("#DDF8EE"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 18 } }, 2, 0);
-        header.Add(Text("⌃", 17, "#46516A", true), 3, 0);
+        header.Add(new Border { WidthRequest = 44, HeightRequest = 44, Content = new Label { Text = CountryCode(profile.Country), FontFamily = "Inter", FontSize = 17, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35"), HorizontalTextAlignment = TextAlignment.Center, VerticalTextAlignment = TextAlignment.Center }, BackgroundColor = Color.FromArgb("#EEF2FB"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 14 } });
+        header.Add(new VerticalStackLayout { Spacing = 2, VerticalOptions = LayoutOptions.Center, Children = {
+            new Label { Text = profile.ProfileName, FontFamily = "Inter", FontSize = 17, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35"), MaxLines = 1, LineBreakMode = LineBreakMode.TailTruncation, HorizontalOptions = LayoutOptions.Start },
+            new Label { Text = profile.Carrier, FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#00707A"), MaxLines = 1, LineBreakMode = LineBreakMode.TailTruncation, HorizontalOptions = LayoutOptions.Start } } }, 1, 0);
+        header.Add(new Border { Content = new HorizontalStackLayout { Spacing = 5, VerticalOptions = LayoutOptions.Center, Children = { new BoxView { WidthRequest = 8, HeightRequest = 8, CornerRadius = 4, Color = Color.FromArgb("#00805A"), VerticalOptions = LayoutOptions.Center }, Text("Active", 13, "#006141", true) } }, Padding = new Thickness(10, 5), BackgroundColor = Color.FromArgb("#DDF8EE"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 }, VerticalOptions = LayoutOptions.Center }, 2, 0);
+        header.Add(new Label { Text = "⌃", FontFamily = "Inter", FontSize = 17, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#46516A"), VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.End }, 3, 0);
 
         var stats = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8 };
         stats.Add(new Label { Text = "\uE74C", FontFamily = "MaterialAssets", FontSize = 18, TextColor = Color.FromArgb("#0649D5"), VerticalOptions = LayoutOptions.Center }, 0, 0);
@@ -311,7 +303,7 @@ public sealed class MobilePage : ContentView
         return formatted;
     }
 
-    private static Border SoftPanel(View content) => new Border { Content = content, Padding = new Thickness(14, 12), BackgroundColor = Color.FromArgb("#EEF3FF"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 18 } };
+    private static Border SoftPanel(View content) => new Border { Content = content, Padding = new Thickness(14, 12), BackgroundColor = Color.FromArgb("#EFF3FC"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 16 } };
 
     private static View ProfileActionButton(string icon, string fontFamily, string label, bool primary, Action action)
     {
@@ -360,17 +352,8 @@ public sealed class MobilePage : ContentView
 
     private static Grid CompactProfileRow(EsimProfile profile, bool isReady)
     {
-        var flag = profile.Country switch
-        {
-            "Japan" => "🇯🇵",
-            "France" => "🇫🇷",
-            "USA" => "🇺🇸",
-            "Thailand" => "🇹🇭",
-            "Italy" => "🇮🇹",
-            _ => "🌐"
-        };
-        var row = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8 };
-        row.Add(new Border { WidthRequest = 46, HeightRequest = 46, Content = Text(flag, 22, "#101D35"), BackgroundColor = Color.FromArgb("#EEF2FB"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 14 } });
+        var row = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 10 };
+        row.Add(new Border { WidthRequest = 44, HeightRequest = 44, Content = new Label { Text = CountryCode(profile.Country), FontFamily = "Inter", FontSize = 17, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35"), HorizontalTextAlignment = TextAlignment.Center, VerticalTextAlignment = TextAlignment.Center }, BackgroundColor = Color.FromArgb("#EEF2FB"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 14 } });
         var details = new VerticalStackLayout { Spacing = 1, VerticalOptions = LayoutOptions.Center };
         details.Add(new Label { Text = profile.ProfileName, FontFamily = "Inter", FontSize = 17, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35"), MaxLines = 1, LineBreakMode = LineBreakMode.TailTruncation, HorizontalOptions = LayoutOptions.Start });
         details.Add(new Label { Text = profile.Carrier, FontFamily = "Inter", FontSize = 12, TextColor = Color.FromArgb("#46516A"), MaxLines = 1, LineBreakMode = LineBreakMode.TailTruncation, HorizontalOptions = LayoutOptions.Start });
@@ -547,31 +530,30 @@ public sealed class MobilePage : ContentView
 
     private View StorePlanCard(Plan plan, Border planContext)
     {
-        var flag = plan.Country switch
-        {
-            "Japan" => "🇯🇵",
-            "United States" => "🇺🇸",
-            "France" => "🇫🇷",
-            "South Korea" => "🇰🇷",
-            "Europe Regional" => "🇪🇺",
-            _ => "🌐"
-        };
-
         var header = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 10 };
-        header.Add(new Border { WidthRequest = 40, HeightRequest = 40, Content = Text(flag, 20, "#101D35"), BackgroundColor = Color.FromArgb("#EEF2FB"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 } });
-        header.Add(new VerticalStackLayout { Spacing = 1, VerticalOptions = LayoutOptions.Center, Children = { new Label { Text = plan.Region, FontFamily = "Inter", FontSize = 17, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35"), MaxLines = 1, LineBreakMode = LineBreakMode.TailTruncation }, new Label { Text = $"{plan.Provider}  •  {plan.NetworkLabel}", FontFamily = "Inter", FontSize = 12, TextColor = Color.FromArgb("#46516A"), MaxLines = 1, LineBreakMode = LineBreakMode.TailTruncation } } }, 1, 0);
-        header.Add(new Border { Content = new Label { Text = plan.Badge, FontFamily = "Inter", FontSize = 11, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#006141") }, Padding = new Thickness(9, 5), BackgroundColor = Color.FromArgb("#DDF8EE"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 } }, 2, 0);
+        header.Add(new Border { WidthRequest = 44, HeightRequest = 44, Content = new Label { Text = plan.CountryCode, FontFamily = "Inter", FontSize = 17, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35"), HorizontalTextAlignment = TextAlignment.Center, VerticalTextAlignment = TextAlignment.Center }, BackgroundColor = Color.FromArgb("#EEF2FB"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 14 } });
+        header.Add(new VerticalStackLayout { Spacing = 2, VerticalOptions = LayoutOptions.Center, Children = {
+            new Label { Text = $"{plan.Country} {plan.Region}", FontFamily = "Inter", FontSize = 17, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35"), MaxLines = 1, LineBreakMode = LineBreakMode.TailTruncation, HorizontalOptions = LayoutOptions.Start },
+            new HorizontalStackLayout { Spacing = 6, VerticalOptions = LayoutOptions.Center, Children = {
+                new Label { Text = plan.Provider, FontFamily = "Inter", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#00707A"), VerticalOptions = LayoutOptions.Center },
+                new Label { Text = "•", FontFamily = "Inter", FontSize = 12, TextColor = Color.FromArgb("#AAB6CB"), VerticalOptions = LayoutOptions.Center },
+                new Label { Text = plan.NetworkLabel, FontFamily = "Inter", FontSize = 12, TextColor = Color.FromArgb("#46516A"), VerticalOptions = LayoutOptions.Center } } } } }, 1, 0);
+        header.Add(new Border { Content = new Label { Text = plan.Badge, FontFamily = "Inter", FontSize = 11, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#006141") }, Padding = new Thickness(10, 5), BackgroundColor = Color.FromArgb("#DDF8EE"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 }, VerticalOptions = LayoutOptions.Center }, 2, 0);
 
         var specs = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) }, ColumnSpacing = 8 };
         specs.Add(PlanSpec("Data Size", plan.DataLabel), 0, 0);
         specs.Add(PlanSpec("Validity", $"{plan.ValidityDays} Days"), 1, 0);
         specs.Add(PlanSpec("Network", plan.NetworkLabel), 2, 0);
 
-        var buyButton = new Button { Text = "Buy Plan  →", FontFamily = "Inter", FontSize = 15, FontAttributes = FontAttributes.Bold, TextColor = Colors.White, BackgroundColor = Color.FromArgb("#0649D5"), CornerRadius = 14, Padding = new Thickness(16, 10), HorizontalOptions = LayoutOptions.End };
+        var buyButton = new Button { Text = "Buy Plan  →", FontFamily = "Inter", FontSize = 16, FontAttributes = FontAttributes.Bold, TextColor = Colors.White, BackgroundColor = Color.FromArgb("#0649D5"), CornerRadius = 14, Padding = new Thickness(22, 12), HorizontalOptions = LayoutOptions.End, VerticalOptions = LayoutOptions.Center };
         buyButton.Clicked += (_, _) => actions.BuyPlanClicked(planContext, EventArgs.Empty);
 
         var priceRow = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 10 };
-        priceRow.Add(new VerticalStackLayout { Spacing = 0, VerticalOptions = LayoutOptions.Center, Children = { Text("Price", 12, "#46516A"), new HorizontalStackLayout { Spacing = 5, VerticalOptions = LayoutOptions.End, Children = { Text($"${plan.Price:0.00}", 24, "#101D35", true), Text("USD", 12, "#46516A", false) } } } });
+        priceRow.Add(new VerticalStackLayout { Spacing = 0, VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.Start, Children = {
+            new Label { Text = "Price", FontFamily = "Inter", FontSize = 12, TextColor = Color.FromArgb("#46516A"), HorizontalOptions = LayoutOptions.Start },
+            new HorizontalStackLayout { Spacing = 5, VerticalOptions = LayoutOptions.End, Children = {
+                new Label { Text = $"${plan.Price:0.00}", FontFamily = "Inter", FontSize = 26, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35"), VerticalOptions = LayoutOptions.Center },
+                new Label { Text = "USD", FontFamily = "Inter", FontSize = 12, TextColor = Color.FromArgb("#46516A"), VerticalOptions = LayoutOptions.Center } } } } });
         priceRow.Add(buyButton, 1, 0);
 
         return Card(new VerticalStackLayout
@@ -581,13 +563,51 @@ public sealed class MobilePage : ContentView
             {
                 header,
                 SoftPanel(specs),
-                Text(plan.FeatureList, 12, "#26334B"),
+                PlanFeatures(plan),
                 priceRow
             }
         });
     }
 
-    private static View PlanSpec(string label, string value) => new VerticalStackLayout { Spacing = 3, Children = { new Label { Text = label, FontFamily = "Inter", FontSize = 12, TextColor = Color.FromArgb("#46516A") }, new Label { Text = value, FontFamily = "Inter", FontSize = 16, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#0649D5") } } };
+    private static View PlanSpec(string label, string value) => new VerticalStackLayout
+    {
+        Spacing = 3,
+        HorizontalOptions = LayoutOptions.Start,
+        Children =
+        {
+            new Label { Text = label, FontFamily = "Inter", FontSize = 12, TextColor = Color.FromArgb("#46516A"), HorizontalOptions = LayoutOptions.Start },
+            new Label { Text = value, FontFamily = "Inter", FontSize = 16, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#101D35"), HorizontalOptions = LayoutOptions.Start }
+        }
+    };
+
+    /// <summary>Maps a profile country to its two-letter code shown in the card tile.</summary>
+    private static string CountryCode(string country) => country switch
+    {
+        "Japan" => "JP",
+        "France" => "FR",
+        "USA" => "US",
+        "United States" => "US",
+        "Thailand" => "TH",
+        "Italy" => "IT",
+        "South Korea" => "KR",
+        _ => "EU"
+    };
+
+    /// <summary>Renders the plan feature lines as individual icon + text rows.</summary>
+    private static View PlanFeatures(Plan plan)
+    {
+        var panel = new VerticalStackLayout { Spacing = 6, HorizontalOptions = LayoutOptions.Start };
+        foreach (var line in plan.FeatureList.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var trimmed = line.Trim();
+            var symbol = trimmed.Length > 0 ? trimmed[..1] : string.Empty;
+            var text = trimmed.Length > 1 ? trimmed[1..].Trim() : trimmed;
+            panel.Add(new HorizontalStackLayout { Spacing = 7, VerticalOptions = LayoutOptions.Center, Children = {
+                new Label { Text = symbol, FontFamily = "Inter", FontSize = 13, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#0649D5"), VerticalOptions = LayoutOptions.Center, WidthRequest = 14, HorizontalTextAlignment = TextAlignment.Center },
+                new Label { Text = text, FontFamily = "Inter", FontSize = 12, TextColor = Color.FromArgb("#26334B"), VerticalOptions = LayoutOptions.Center, MaxLines = 1, LineBreakMode = LineBreakMode.TailTruncation } } });
+        }
+        return panel;
+    }
 
     private static View StoreBenefits()
     {
@@ -649,7 +669,7 @@ public sealed class MobilePage : ContentView
     }
     private static VerticalStackLayout PageStack()=>new(){Padding=new Thickness(16,12,16,20),Spacing=14};
     private static Label Text(string value,double size,string color,bool bold=false)=>new(){Text=value,FontFamily="Inter",FontSize=size,TextColor=Color.FromArgb(color),FontAttributes=bold?FontAttributes.Bold:FontAttributes.None,LineBreakMode=LineBreakMode.WordWrap,VerticalOptions=LayoutOptions.Center,HorizontalOptions=LayoutOptions.Center};
-    private static Border Card(View content,string bg="#FFFFFF")=>new(){Content=content,Padding=14,BackgroundColor=Color.FromArgb(bg),Stroke=Color.FromArgb("#E7EDF8"),StrokeThickness=1,StrokeShape=new Microsoft.Maui.Controls.Shapes.RoundRectangle{CornerRadius=16}};
+    private static Border Card(View content,string bg="#FFFFFF")=>new(){Content=content,Padding=new Thickness(16),BackgroundColor=Color.FromArgb(bg),Stroke=Color.FromArgb("#E7EDF8"),StrokeThickness=1,StrokeShape=new Microsoft.Maui.Controls.Shapes.RoundRectangle{CornerRadius=20}};
     private static Border Pill(string value)=>new(){Content=Text(value,11,"#0649D5",true),Padding=new Thickness(9,5),BackgroundColor=Color.FromArgb("#EAF0FF"),StrokeThickness=0,StrokeShape=new Microsoft.Maui.Controls.Shapes.RoundRectangle{CornerRadius=12},VerticalOptions=LayoutOptions.Center};
     private static View DashboardActionButton(string icon, string label, bool primary, Action action)
     {
