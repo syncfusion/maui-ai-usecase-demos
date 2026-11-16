@@ -61,9 +61,9 @@ public sealed class MobilePage : ContentPage
         }}, "#FFFFFF");
         stack.Add(plan);
         var actionsGrid = new Grid { ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star)}, ColumnSpacing=8 };
-        actionsGrid.Add(ActionButton("🛒", "Buy Plan", "#0649D5", Colors.White, () => Shell.Current.GoToAsync("//store")),0,0);
-        actionsGrid.Add(ActionButton("ϟ", "Top Up", "#FFFFFF", Color.FromArgb("#101D35"), () => actions.TopUpActiveClicked(this, EventArgs.Empty)),1,0);
-        actionsGrid.Add(ActionButton("▦", "Show QR", "#FFFFFF", Color.FromArgb("#101D35"), () => actions.QrActiveClicked(this, EventArgs.Empty)),2,0);
+        actionsGrid.Add(DashboardActionButton("\uE70D", "Buy Plan", true, () => Shell.Current.GoToAsync("//store")), 0, 0);
+        actionsGrid.Add(DashboardActionButton("\uE707", "Top Up", false, () => actions.TopUpActiveClicked(this, EventArgs.Empty)), 1, 0);
+        actionsGrid.Add(DashboardActionButton("\uE71F", "Show QR", false, () => actions.QrActiveClicked(this, EventArgs.Empty)), 2, 0);
         stack.Add(actionsGrid);
         stack.Add(Card(UsageCard()));
         stack.Add(RecentActivityCard());
@@ -189,7 +189,44 @@ public sealed class MobilePage : ContentPage
     private static Border Card(View content,string bg="#FFFFFF")=>new(){Content=content,Padding=14,BackgroundColor=Color.FromArgb(bg),Stroke=Color.FromArgb("#E7EDF8"),StrokeThickness=1,StrokeShape=new Microsoft.Maui.Controls.Shapes.RoundRectangle{CornerRadius=16}};
     private static Border Pill(string value)=>new(){Content=Text(value,11,"#0649D5",true),Padding=new Thickness(9,5),BackgroundColor=Color.FromArgb("#EAF0FF"),StrokeThickness=0,StrokeShape=new Microsoft.Maui.Controls.Shapes.RoundRectangle{CornerRadius=12},VerticalOptions=LayoutOptions.Center};
     private static Button Button(string text,Action action){var b=new Button{Text=text,BackgroundColor=Color.FromArgb("#0649D5"),TextColor=Colors.White,CornerRadius=10,FontSize=13,Padding=new Thickness(12,7)};b.Clicked+=(_,_)=>action();return b;}
-    private static View ActionButton(string icon,string label,string bg,Color fg,Action action){var b=new Button{Text=$"{icon}\n{label}",BackgroundColor=Color.FromArgb(bg),TextColor=fg,CornerRadius=15,HeightRequest=84,FontSize=15,FontAttributes=FontAttributes.Bold};b.Clicked+=(_,_)=>action();return b;}
+    private static View DashboardActionButton(string icon, string label, bool primary, Action action)
+    {
+        var iconColor = primary ? Colors.White : Color.FromArgb("#006F82");
+        var content = new VerticalStackLayout
+        {
+            Spacing = 8,
+            HorizontalOptions = LayoutOptions.Fill,
+            VerticalOptions = LayoutOptions.Center,
+            Children =
+            {
+                new Border
+                {
+                    WidthRequest = 68,
+                    HeightRequest = 68,
+                    Content = new Label { Text = icon, FontFamily = "UiKitIcons", FontSize = 27, TextColor = iconColor, HorizontalTextAlignment = TextAlignment.Center, VerticalTextAlignment = TextAlignment.Center },
+                    BackgroundColor = Color.FromArgb(primary ? "#3470D6" : label == "Top Up" ? "#BDEFF6" : "#E4ECFF"),
+                    StrokeThickness = 0,
+                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 34 },
+                    HorizontalOptions = LayoutOptions.Center
+                },
+                Text(label, 20, primary ? "#FFFFFF" : "#101D35", primary)
+            }
+        };
+        var button = new Border
+        {
+            Content = content,
+            BackgroundColor = Color.FromArgb(primary ? "#0649D5" : "#FFFFFF"),
+            StrokeThickness = 0,
+            StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 20 },
+            HeightRequest = 134,
+            Padding = new Thickness(8, 10),
+            Shadow = primary ? null : new Shadow { Brush = Color.FromArgb("#24324A"), Opacity = 0.08f, Radius = 6, Offset = new Point(0, 2) }
+        };
+        var tap = new TapGestureRecognizer();
+        tap.Tapped += (_, _) => action();
+        button.GestureRecognizers.Add(tap);
+        return button;
+    }
     private static View Metric(string label,string value,int col=0)=>new VerticalStackLayout{Spacing=3,Children={Text(label,10,"#46516A"),Text(value,13,"#101D35",true)}}.SetColumn(col);
     private static View RecentActivityCard()
     {
