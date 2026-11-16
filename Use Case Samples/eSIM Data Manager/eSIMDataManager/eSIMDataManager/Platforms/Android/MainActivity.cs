@@ -28,7 +28,8 @@ namespace eSIMDataManager
             if (window is null)
                 return;
 
-            window.DecorView.SystemUiVisibility = StatusBarVisibility.Fullscreen | StatusBarVisibility.HideNavigation;
+            window.SetFlags(WindowManagerFlags.Fullscreen, WindowManagerFlags.Fullscreen);
+            window.DecorView.SystemUiVisibility = (StatusBarVisibility)(SystemUiFlags.Fullscreen | SystemUiFlags.HideNavigation);
         }
     }
 }
