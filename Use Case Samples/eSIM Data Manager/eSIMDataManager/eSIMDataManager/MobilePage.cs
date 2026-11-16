@@ -65,7 +65,7 @@ public sealed class MobilePage : ContentPage
         actionsGrid.Add(ActionButton("ϟ", "Top Up", "#FFFFFF", Color.FromArgb("#101D35"), () => actions.TopUpActiveClicked(this, EventArgs.Empty)),1,0);
         actionsGrid.Add(ActionButton("▦", "Show QR", "#FFFFFF", Color.FromArgb("#101D35"), () => actions.QrActiveClicked(this, EventArgs.Empty)),2,0);
         stack.Add(actionsGrid);
-        stack.Add(Card(new VerticalStackLayout { Spacing=12, Children={new Grid { ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Auto)}, Children={Text("Last 7 Days Usage",20,"#101D35",true),Pill($"{vm.SevenDayTotal:0.00} GB Total")} }, UsageBars()} }));
+        stack.Add(Card(UsageCard()));
         stack.Add(RecentActivityCard());
         return stack;
     }
@@ -226,7 +226,43 @@ public sealed class MobilePage : ContentPage
         row.Add(trailing, 2, 0);
         return new Border { Content = row, Padding = new Thickness(12, 10), BackgroundColor = Color.FromArgb("#EEF3FF"), StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 16 } };
     }
-    private static View UsageBars(){var row=new Grid{ColumnDefinitions={new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star),new ColumnDefinition(GridLength.Star)},ColumnSpacing=5,HeightRequest=96};var values=new[]{.7,.9,1.1,.8,.9,1.0,1.4};for(int i=0;i<7;i++){var col=new VerticalStackLayout{VerticalOptions=LayoutOptions.End,Spacing=2,Children={Text(values[i].ToString("0.0"),10,i==6?"#0649D5":"#26334B"),new BoxView{HeightRequest=values[i]*38,Color=Color.FromArgb(i==6?"#0649D5":"#DCE8FF"),VerticalOptions=LayoutOptions.End},Text(new[]{"F","S","S","M","T","W","T"}[i],10,"#101D35")}};row.Add(col,i,0);}return row;}
+    private View UsageCard()
+    {
+        var header = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8 };
+        header.Add(new HorizontalStackLayout { Spacing = 10, Children = { Text("▥", 24, "#006F82", true), Text("Last 7 Days Usage", 23, "#101D35", true) } });
+        header.Add(Pill($"{vm.SevenDayTotal:0.00} GB Total"), 1, 0);
+
+        var points = new[]
+        {
+            new DailyUsage("Fri", .7), new DailyUsage("Sat", .9), new DailyUsage("Sun", 1.1),
+            new DailyUsage("Mon", .8), new DailyUsage("Tue", .9), new DailyUsage("Wed", 1.0),
+            new DailyUsage("Thu", 1.4)
+        };
+        var peak = points.OrderByDescending(point => point.UsedGb).First();
+        var peakIndex = Array.IndexOf(points, peak);
+        var maxValue = Math.Max(peak.UsedGb, 0.1);
+        var charts = new Grid { ColumnSpacing = 5, HeightRequest = 236 };
+        foreach (var _ in points)
+            charts.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+
+        for (var i = 0; i < points.Length; i++)
+        {
+            var point = points[i];
+            var height = (float)(Math.Max(point.UsedGb / maxValue, 0.08) * 132);
+            var label = new VerticalStackLayout { Spacing = 7, VerticalOptions = LayoutOptions.End };
+            label.Add(Text(point.UsedGb.ToString("0.0"), 14, i == peakIndex ? "#0649D5" : "#26334B", i == peakIndex));
+            var bar = new BoxView { HeightRequest = height, Color = Color.FromArgb(i == peakIndex ? "#0649D5" : "#E2ECFF"), HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.End };
+            label.Add(new Border { Content = bar, StrokeThickness = 0, StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = new CornerRadius(13, 13, 0, 0) } });
+            label.Add(Text(point.Day[..1], 17, i == peakIndex ? "#0649D5" : "#26334B", i == peakIndex));
+            charts.Add(label, i, 0);
+        }
+
+        var footer = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 8 };
+        footer.Add(new HorizontalStackLayout { Spacing = 7, Children = { new Ellipse { WidthRequest = 12, HeightRequest = 12, Fill = Color.FromArgb("#0649D5"), VerticalOptions = LayoutOptions.Center }, Text($"Peak: {peak.Day} ({peak.UsedGb:0.#} GB in Shibuya)", 14, "#46516A") } });
+        footer.Add(Text("Daily limit: Unlimited", 14, "#46516A"), 1, 0);
+
+        return new VerticalStackLayout { Spacing = 20, Children = { header, charts, footer } };
+    }
 }
 
 internal sealed class UsageRingDrawable(double progress) : IDrawable
