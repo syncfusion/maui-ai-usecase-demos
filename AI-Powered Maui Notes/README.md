@@ -89,15 +89,7 @@ Set the required environment variables in the app's launch environment before ru
 
 ## Output
 
-The app provides platform-specific layouts: a single-page mobile experience on Android and a two-column layout on iOS, macOS, and Windows.
-
-**Windows**
-
-![AI-Powered Maui Notes running on Windows](https://github.com/user-attachments/assets/bd6ea986-40ec-4d5a-8960-636e5d06de67)
-
-**Android**
-
-![AI-Powered Maui Notes running on Android](https://github.com/user-attachments/assets/9b819485-1007-4046-90ce-0a8666eb7a2c)
+![AI-Powered Maui Notes running on Windows](MauiNotes_windows.gif)
 
 ## Project Structure
 
