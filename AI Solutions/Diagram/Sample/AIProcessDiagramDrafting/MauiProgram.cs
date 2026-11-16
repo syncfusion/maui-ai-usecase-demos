@@ -19,7 +19,7 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        builder.Services.AddSingleton<IWorkflowExtractionService>(_ => CreateWorkflowExtractionService());
+        builder.Services.AddSingleton<IWorkflowExtractionService>(_ => new AzureOpenAIWorkflowExtractionService());
         builder.Services.AddSingleton<WorkflowResponseValidator>();
         builder.Services.AddSingleton<DiagramDraftBuilder>();
         builder.Services.AddSingleton<ProcessDiagramViewModel>();
@@ -30,32 +30,5 @@ public static class MauiProgram
 #endif
 
         return builder.Build();
-    }
-
-    private static IWorkflowExtractionService CreateWorkflowExtractionService()
-    {
-        var fakeMode = Environment.GetEnvironmentVariable("AI_PROCESS_DIAGRAM_FAKE_MODE");
-        if (!string.IsNullOrWhiteSpace(fakeMode))
-        {
-            return new FakeWorkflowExtractionService(fakeMode);
-        }
-
-        if (HasAzureOpenAIConfiguration())
-        {
-            return new AzureOpenAIWorkflowExtractionService();
-        }
-
-        return new FakeWorkflowExtractionService();
-    }
-
-    private static bool HasAzureOpenAIConfiguration()
-    {
-        var endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT");
-        var deployment = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT");
-        var apiKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY");
-
-        return !string.IsNullOrWhiteSpace(endpoint)
-            && !string.IsNullOrWhiteSpace(deployment)
-            && !string.IsNullOrWhiteSpace(apiKey);
     }
 }
