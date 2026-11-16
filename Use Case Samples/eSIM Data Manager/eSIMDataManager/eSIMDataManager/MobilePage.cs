@@ -20,6 +20,8 @@ public sealed class MobilePage : ContentPage
         actions = new DemoPage(vm);
         Title = selectedTab.ToString();
         BackgroundColor = Color.FromArgb("#F6F8FF");
+        Shell.SetNavBarIsVisible(this, false);
+        Shell.SetTabBarIsVisible(this, false);
         scroll.Content = PageContent();
         vm.Store.Changed += (_, _) => MainThread.BeginInvokeOnMainThread(() => scroll.Content = PageContent());
         root.Add(scroll, 0, 0);
@@ -504,11 +506,10 @@ public sealed class MobilePage : ContentPage
 
     private View BottomNavigation()
     {
-        var bar = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) }, BackgroundColor = Colors.White, Padding = new Thickness(3, 8), HeightRequest = 68 };
+        var bar = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) }, BackgroundColor = Colors.White, Padding = new Thickness(3, 8), HeightRequest = 68 };
         AddTab(bar, "\uE714", "UiKitIcons", "Dashboard", MobileTab.Dashboard, 0);
         AddTab(bar, "\uE713", "UiKitIcons", "My eSIMs", MobileTab.Profiles, 1);
         AddTab(bar, "\uE729", "UiKitIcons", "Store", MobileTab.Store, 2);
-        AddTab(bar, "\uE711", "MaterialAssets", "Orders", MobileTab.Profiles, 3);
         return bar;
     }
 
