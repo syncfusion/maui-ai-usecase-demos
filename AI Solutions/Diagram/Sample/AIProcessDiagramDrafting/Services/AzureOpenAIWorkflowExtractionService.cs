@@ -1,14 +1,14 @@
-using System.ClientModel;
+using System.Net.Http;
+using System.Text;
 using System.Text.Json;
-using Azure;
-using Azure.AI.OpenAI;
 using AIProcessDiagramDrafting.Models;
-using OpenAI.Chat;
 
 namespace AIProcessDiagramDrafting.Services;
 
 public sealed class AzureOpenAIWorkflowExtractionService : AzureBaseService, IWorkflowExtractionService
 {
+    private static readonly HttpClient HttpClient = new();
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
@@ -33,48 +33,61 @@ public sealed class AzureOpenAIWorkflowExtractionService : AzureBaseService, IWo
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(processDescription);
 
-        var client = CreateClient();
-        var chatClient = client.GetChatClient(DeploymentName);
+        var request = new HttpRequestMessage(HttpMethod.Post, GetChatCompletionsUri());
+        request.Headers.TryAddWithoutValidation("api-key", ApiKey);
 
-        var messages = new List<ChatMessage>
+        var payload = new
         {
-            new SystemChatMessage(SystemPrompt),
-            new UserChatMessage(processDescription)
+            model = DeploymentName,
+            messages = new object[]
+            {
+                new { role = "system", content = SystemPrompt },
+                new { role = "user", content = processDescription }
+            },
+            temperature = 0f,
+            max_completion_tokens = 2048,
+            response_format = new { type = "json_object" }
         };
 
-        var options = new ChatCompletionOptions
-        {
-            Temperature = 0f,
-            ResponseFormat = ChatResponseFormat.CreateJsonObjectFormat(),
-            MaxOutputTokenCount = 2048
-        };
+        request.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
 
-        ClientResult<ChatCompletion> result;
+        HttpResponseMessage response;
         try
         {
-            result = await chatClient.CompleteChatAsync(messages, options, cancellationToken);
+            response = await HttpClient.SendAsync(request, cancellationToken);
         }
-        catch (RequestFailedException ex)
+        catch (HttpRequestException ex)
         {
             throw new InvalidOperationException($"Azure OpenAI request failed: {ex.Message}", ex);
         }
-        catch (ClientResultException ex)
-        {
-            throw new InvalidOperationException($"Azure OpenAI request failed: {ex.Message}", ex);
-        }
 
-        var completion = result.Value;
-        var content = string.Concat(completion.Content.Select(content => content.Text ?? string.Empty));
-        var json = ExtractJsonPayload(content);
+        using (response)
+        {
+            var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        try
-        {
-            return JsonSerializer.Deserialize<WorkflowResponse>(json, JsonOptions)
-                ?? throw new InvalidOperationException("Azure OpenAI returned an empty workflow response.");
-        }
-        catch (JsonException ex)
-        {
-            throw new InvalidOperationException("Azure OpenAI returned an invalid workflow response.", ex);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new InvalidOperationException($"Azure OpenAI request failed: HTTP {(int)response.StatusCode} ({response.ReasonPhrase}): {responseBody}");
+            }
+
+            using var responseDocument = JsonDocument.Parse(responseBody);
+            var content = responseDocument.RootElement
+                .GetProperty("choices")[0]
+                .GetProperty("message")
+                .GetProperty("content")
+                .GetString() ?? string.Empty;
+
+            var json = ExtractJsonPayload(content);
+
+            try
+            {
+                return JsonSerializer.Deserialize<WorkflowResponse>(json, JsonOptions)
+                    ?? throw new InvalidOperationException("Azure OpenAI returned an empty workflow response.");
+            }
+            catch (JsonException ex)
+            {
+                throw new InvalidOperationException("Azure OpenAI returned an invalid workflow response.", ex);
+            }
         }
     }
 
