@@ -73,8 +73,8 @@
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
-		<PackageReference Include="Syncfusion.Maui.Core" Version="100.2.2761" />
-		<PackageReference Include="Syncfusion.Maui.DataForm" Version="100.2.1644" />
+		<PackageReference Include="Syncfusion.Maui.Core" Version="*" />
+		<PackageReference Include="Syncfusion.Maui.DataForm" Version="*" />
 	</ItemGroup>
 
 </Project>

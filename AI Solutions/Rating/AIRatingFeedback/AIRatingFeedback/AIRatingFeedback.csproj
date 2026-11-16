@@ -64,9 +64,9 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
-		<PackageReference Include="Syncfusion.Maui.Cards" Version="34.2.9" />
-		<PackageReference Include="Syncfusion.Maui.Core" Version="34.2.9" />
-		<PackageReference Include="Syncfusion.Maui.Inputs" Version="34.2.9" />
+		<PackageReference Include="Syncfusion.Maui.Cards" Version="*" />
+		<PackageReference Include="Syncfusion.Maui.Core" Version="*" />
+		<PackageReference Include="Syncfusion.Maui.Inputs" Version="*" />
 		<!-- Azure SDK versions aligned with AIFileSearchTreeView. If credentials are
 		     rejected, verify the endpoint, deployment name, and key — not the SDK. -->
 		<PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
