@@ -33,6 +33,7 @@ public sealed class QrPopupContent
     private const string IconCircleCheck = "\uE78C";
     private const string IconUser = "\uE71B";
     private const string IconPhone = "\uE718";
+    private const string IconShare = "\uE80D";
 
     /// <summary>
     /// Shadows the app-level Label style. The app style sets TextColor through an AppThemeBinding,
@@ -160,11 +161,11 @@ public sealed class QrPopupContent
         if (compact)
         {
             // One full-width column on the phone so the stacked content is not squeezed
-            // into half of the sheet.
+            // into half of the sheet. The sheet body is built to match the phone reference.
             bodyGrid.ColumnDefinitions.Clear();
             bodyGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
-            compactStack.Add(scanCardHost);
-            compactStack.Add(stepsHost);
+            compactStack.Children.Clear();
+            compactStack.Add(BuildSheetBody(profile, activationCode));
             bodyGrid.Children.Add(compactStack);
             return;
         }
@@ -718,6 +719,240 @@ public sealed class QrPopupContent
         grid.Add(horizontal, 0, 0);
         grid.Add(vertical, 0, 0);
         return grid;
+    }
+
+    /// <summary>
+    /// Builds the phone sheet body: the QR card, the activation code block, the quick setup
+    /// guide and the collapsible manual activation section, all stacked vertically.
+    /// </summary>
+    private static View BuildSheetBody(EsimProfile? profile, string activationCode)
+    {
+        var body = new VerticalStackLayout { Spacing = 14 };
+
+        body.Add(BuildSheetQrCard(profile, activationCode));
+        body.Add(BuildSheetActivationCode(activationCode));
+        body.Add(BuildSheetSetupGuide());
+        body.Add(BuildSheetManualActivation());
+
+        return body;
+    }
+
+    /// <summary>The QR card with the readiness pill, the code and the caption.</summary>
+    private static View BuildSheetQrCard(EsimProfile? profile, string activationCode)
+    {
+        var barcode = new SfBarcodeGenerator
+        {
+            ShowText = false,
+            HeightRequest = 190,
+            WidthRequest = 190,
+            BackgroundColor = Colors.White,
+            ForegroundColor = Colors.Black,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            Symbology = new QRCode(),
+            Value = activationCode
+        };
+
+        var checkBadge = new Border
+        {
+            WidthRequest = 30,
+            HeightRequest = 30,
+            BackgroundColor = Color.FromArgb(PrimaryColor),
+            Stroke = Colors.White,
+            StrokeThickness = 2,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(15) },
+            Content = Icon(IconCheckTick, 13, Colors.White, "MaterialAssets")
+        };
+
+        var qrStack = new Grid
+        {
+            WidthRequest = 190,
+            HeightRequest = 190,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center
+        };
+        qrStack.Add(barcode, 0, 0);
+        qrStack.Add(checkBadge, 0, 0);
+
+        var caption = new HorizontalStackLayout { Spacing = 5, HorizontalOptions = LayoutOptions.Center };
+        caption.Add(Icon(IconCircleCheck, 10, Color.FromArgb("#006141"), "MaterialAssets"));
+        caption.Add(Text("Single-use eSIM cryptographic key", 9.5, Color.FromArgb(MutedColor)));
+
+        var stack = new VerticalStackLayout { Spacing = 12 };
+        stack.Add(qrStack);
+        stack.Add(caption);
+
+        return new Border
+        {
+            BackgroundColor = Color.FromArgb(SurfaceLow),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
+            Padding = new Thickness(14, 16),
+            Content = stack
+        };
+    }
+
+    /// <summary>The activation code block with the code, the copy button and the two actions.</summary>
+    private static View BuildSheetActivationCode(string activationCode)
+    {
+        var labelRow = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+            VerticalOptions = LayoutOptions.Center
+        };
+        labelRow.Add(Text("Activation Code", 12, Color.FromArgb(InkColor), FontAttributes.Bold), 0, 0);
+
+        var lpaBadge = new Border
+        {
+            BackgroundColor = Color.FromArgb(SurfaceLow),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(6) },
+            Padding = new Thickness(6, 2),
+            VerticalOptions = LayoutOptions.Center,
+            Content = Text("LPA STRING", 8.5, Color.FromArgb(MutedColor), FontAttributes.Bold)
+        };
+        labelRow.Add(lpaBadge, 1, 0);
+
+        var codeRow = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+            ColumnSpacing = 8,
+            VerticalOptions = LayoutOptions.Center
+        };
+        var codeText = MonoText(activationCode, 10, Color.FromArgb(InkColor), truncate: false);
+        codeText.LineBreakMode = LineBreakMode.TailTruncation;
+        codeRow.Add(codeText, 0, 0);
+        codeRow.Add(BuildSheetCopyButton(), 1, 0);
+
+        var codeBlock = new Border
+        {
+            BackgroundColor = Color.FromArgb(SurfaceLow),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(8) },
+            Padding = new Thickness(10, 7),
+            Content = codeRow
+        };
+
+        // Two equal-width actions under the code.
+        var copyCode = BuildSheetActionButton("Copy Code", IconCopy, PrimaryColor, Colors.White);
+        var saveShare = BuildSheetActionButton("Save / Share", IconShare, Colors.White, Color.FromArgb(InkColor));
+        var actions = new Grid
+        {
+            ColumnSpacing = 8,
+            ColumnDefinitions =
+            {
+                new ColumnDefinition(GridLength.Star),
+                new ColumnDefinition(GridLength.Star)
+            }
+        };
+        actions.Add(copyCode, 0, 0);
+        actions.Add(saveShare, 1, 0);
+
+        var stack = new VerticalStackLayout { Spacing = 8 };
+        stack.Add(labelRow);
+        stack.Add(codeBlock);
+        stack.Add(actions);
+
+        return new Border
+        {
+            BackgroundColor = Colors.White,
+            Stroke = Color.FromArgb(OutlineVariant),
+            StrokeThickness = 0.1,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
+            Padding = new Thickness(14, 12),
+            Content = stack
+        };
+    }
+
+    private static View BuildSheetCopyButton()
+    {
+        var copy = new SfButton
+        {
+            Text = IconCopy,
+            FontFamily = "MaterialAssets",
+            FontSize = 11,
+            Background = Colors.Transparent,
+            TextColor = Color.FromArgb(PrimaryColor),
+            WidthRequest = 26,
+            HeightRequest = 26,
+            Padding = new Thickness(0),
+            CornerRadius = 6
+        };
+        copy.SetAppThemeColor(SfButton.TextColorProperty, Color.FromArgb(PrimaryColor), Color.FromArgb(PrimaryColor));
+        return copy;
+    }
+
+    /// <summary>An outlined or filled action button used by the phone sheet.</summary>
+    private static View BuildSheetActionButton(string label, string glyph, Color background, Color foreground)
+    {
+        var row = new HorizontalStackLayout { Spacing = 6, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center };
+        row.Add(Icon(glyph, 12, foreground, "MaterialAssets"));
+        row.Add(Text(label, 11.5, foreground, FontAttributes.Bold));
+
+        return new Border
+        {
+            BackgroundColor = background,
+            Stroke = background == Colors.White ? Color.FromArgb(OutlineVariant) : background,
+            StrokeThickness = background == Colors.White ? 1 : 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(10) },
+            Padding = new Thickness(12, 10),
+            HorizontalOptions = LayoutOptions.Fill,
+            Content = row
+        };
+    }
+
+    /// <summary>The quick setup guide with the three numbered steps.</summary>
+    private static View BuildSheetSetupGuide()
+    {
+        var header = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+            VerticalOptions = LayoutOptions.Center
+        };
+        header.Add(Text("Quick Setup Guide", 13, Color.FromArgb(InkColor), FontAttributes.Bold), 0, 0);
+        header.Add(Text("iOS & Android", 10.5, Color.FromArgb(MutedColor)), 1, 0);
+
+        var stack = new VerticalStackLayout { Spacing = 10 };
+        stack.Add(header);
+        stack.Add(ActivationStep("1", "Open Mobile Network Settings",
+            "Navigate to Settings > Cellular > Mobile Service."));
+        stack.Add(ActivationStep("2", "Tap \"Add eSIM\" & Scan QR",
+            "Use your phone camera or select \"Use QR Code\" from the cellular prompt."));
+        stack.Add(ActivationStep("3", "Turn On Data Roaming",
+            "Switch this profile on and enable Data Roaming when entering Japan."));
+
+        return new Border
+        {
+            BackgroundColor = Colors.White,
+            Stroke = Color.FromArgb(OutlineVariant),
+            StrokeThickness = 0.1,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
+            Padding = new Thickness(14, 12),
+            Content = stack
+        };
+    }
+
+    /// <summary>The collapsed manual activation section shown at the bottom of the sheet.</summary>
+    private static View BuildSheetManualActivation()
+    {
+        var row = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+            ColumnSpacing = 8,
+            VerticalOptions = LayoutOptions.Center
+        };
+        row.Add(Icon(IconTable, 13, Color.FromArgb(MutedColor), "MaterialAssets"), 0, 0);
+        row.Add(Text("Need Manual SM-DP+ Address?", 12, Color.FromArgb(InkColor), FontAttributes.Bold), 1, 0);
+        row.Add(Text("\uE5CF", 14, Color.FromArgb(MutedColor), "MaterialAssets"), 2, 0);
+
+        return new Border
+        {
+            BackgroundColor = Color.FromArgb(SurfaceLow),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
+            Padding = new Thickness(12, 12),
+            Content = row
+        };
     }
 
     private static View BuildSteps(EsimProfile? profile, string activationCode)
