@@ -864,7 +864,7 @@ public sealed class TopUpPopupContent : IDisposable
             FontFamily = UiFont,
             FontSize = 11,
             FontAttributes = FontAttributes.Bold,
-            TextColor = Color.FromArgb(TertiaryContainer),
+            TextColor = Color.FromArgb("#006141"),
             VerticalOptions = LayoutOptions.Start
         };
         var noteText = new Label

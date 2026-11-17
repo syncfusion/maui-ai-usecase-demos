@@ -487,22 +487,23 @@ public sealed class PurchasePopupContent
         quotaLabelRow.Add(Text("High-Speed Roaming Quota", 11.5, Color.FromArgb(MutedColor)), 0, 0);
         quotaLabelRow.Add(MonoText("5.120 MB  /  5.0 GB", 11, Color.FromArgb(PrimaryColor), FontAttributes.Bold), 1, 0);
 
+        // The track is a Grid so the fill can sit at the start of the bar; a Border has
+        // no StrokeShape/StrokeThickness of its own for this purpose.
         var quotaTrack = new Grid
         {
             HeightRequest = 5,
-            BackgroundColor = Color.FromArgb(SurfaceHighest),
-            StrokeThickness = 0,
-            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(3) }
+            BackgroundColor = Color.FromArgb(SurfaceHighest)
         };
-        var quotaFill = new Grid
+        var quotaFill = new Border
         {
             WidthRequest = 36,
             BackgroundColor = Color.FromArgb(PrimaryColor),
-            HorizontalOptions = LayoutOptions.Start,
             StrokeThickness = 0,
-            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(3) }
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(3) },
+            HorizontalOptions = LayoutOptions.Start,
+            VerticalOptions = LayoutOptions.Fill
         };
-        quotaTrack.Add(quotaFill);
+        quotaTrack.Add(quotaFill, 0, 0);
 
         var guaranteeRow = new Grid
         {

@@ -834,7 +834,7 @@ public sealed class QrPopupContent
         };
 
         // Two equal-width actions under the code.
-        var copyCode = BuildSheetActionButton("Copy Code", IconCopy, PrimaryColor, Colors.White);
+        var copyCode = BuildSheetActionButton("Copy Code", IconCopy, Color.FromArgb(PrimaryColor), Colors.White);
         var saveShare = BuildSheetActionButton("Save / Share", IconShare, Colors.White, Color.FromArgb(InkColor));
         var actions = new Grid
         {
@@ -943,7 +943,7 @@ public sealed class QrPopupContent
         };
         row.Add(Icon(IconTable, 13, Color.FromArgb(MutedColor), "MaterialAssets"), 0, 0);
         row.Add(Text("Need Manual SM-DP+ Address?", 12, Color.FromArgb(InkColor), FontAttributes.Bold), 1, 0);
-        row.Add(Text("\uE5CF", 14, Color.FromArgb(MutedColor), "MaterialAssets"), 2, 0);
+        row.Add(Icon("\uE5CF", 14, Color.FromArgb(MutedColor), "MaterialAssets"), 2, 0);
 
         return new Border
         {
