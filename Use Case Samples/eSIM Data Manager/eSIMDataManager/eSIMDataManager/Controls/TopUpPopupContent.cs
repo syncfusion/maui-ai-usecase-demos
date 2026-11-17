@@ -32,11 +32,13 @@ public sealed class TopUpPopupContent : IDisposable
     private readonly List<Label> tierSizes = [];
     private readonly Label allowanceLabel;
     private readonly Label purchaseLabel;
+    private readonly Label totalValueLabel;
     private readonly View accentBar;
     private readonly VerticalStackLayout chromeView;
     private readonly VerticalStackLayout sheetBody;
     private readonly ScrollView bodyScroll;
     private readonly VerticalStackLayout bannerHost;
+    private readonly VerticalStackLayout summaryHost;
     private readonly VerticalStackLayout footerHost;
     private double viewportHeight;
     private bool isCompact;
@@ -62,6 +64,7 @@ public sealed class TopUpPopupContent : IDisposable
         tierContainer = new Grid();
         allowanceLabel = BuildAllowanceLabel();
         purchaseLabel = BuildPurchaseLabel();
+        totalValueLabel = BuildTotalValueLabel();
 
         accentBar = BuildAccentBar();
         chromeView = new VerticalStackLayout { Spacing = 0 };
@@ -78,7 +81,9 @@ public sealed class TopUpPopupContent : IDisposable
         bannerHost.Add(BuildProfileBanner());
         sheetBody.Add(bannerHost);
         sheetBody.Add(BuildTierSection());
-        sheetBody.Add(BuildSummarySection());
+        summaryHost = new VerticalStackLayout { Spacing = 0 };
+        summaryHost.Add(BuildSummarySection());
+        sheetBody.Add(summaryHost);
         bodyScroll = new ScrollView
         {
             VerticalScrollBarVisibility = ScrollBarVisibility.Never,
@@ -114,6 +119,7 @@ public sealed class TopUpPopupContent : IDisposable
         isCompact = compact;
         BuildTiers();
         RebuildBanner();
+        RebuildSummary();
         RebuildFooter();
     }
 
@@ -126,6 +132,7 @@ public sealed class TopUpPopupContent : IDisposable
         isCompact = sheet || isCompact;
         BuildTiers();
         RebuildBanner();
+        RebuildSummary();
         RebuildFooter();
     }
 
@@ -134,6 +141,13 @@ public sealed class TopUpPopupContent : IDisposable
     {
         footerHost.Children.Clear();
         footerHost.Add(BuildFooter());
+    }
+
+    /// <summary>Rebuilds the summary card so it matches the current sheet arrangement.</summary>
+    private void RebuildSummary()
+    {
+        summaryHost.Children.Clear();
+        summaryHost.Add(BuildSummarySection());
     }
 
     /// <summary>Rebuilds the profile banner so it matches the current sheet arrangement.</summary>
@@ -228,6 +242,7 @@ public sealed class TopUpPopupContent : IDisposable
     {
         if (e.PropertyName != nameof(MainViewModel.SelectedTopUpGb)) return;
         RefreshSelection();
+        totalValueLabel.Text = viewModel.SelectedTopUpPack.PriceText;
     }
 
     private void RefreshSelection()
@@ -777,9 +792,7 @@ public sealed class TopUpPopupContent : IDisposable
             TextColor = Color.FromArgb(InkColor),
             VerticalOptions = LayoutOptions.Center
         };
-        var speedRow = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) } };
-        speedRow.Add(speedLeft);
-        speedRow.Add(speedRight, 1);
+        var speedRow = BuildSummaryRow(speedLeft, speedRight);
 
         var allowanceLeft = new Label
         {
@@ -789,9 +802,7 @@ public sealed class TopUpPopupContent : IDisposable
             TextColor = Color.FromArgb(MutedColor),
             VerticalOptions = LayoutOptions.Center
         };
-        var allowanceRow = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) } };
-        allowanceRow.Add(allowanceLeft);
-        allowanceRow.Add(allowanceLabel, 1);
+        var allowanceRow = BuildSummaryRow(allowanceLeft, allowanceLabel);
 
         var cardBadge = new Border
         {
@@ -835,14 +846,36 @@ public sealed class TopUpPopupContent : IDisposable
         };
         change.Clicked += (_, _) => ChangePaymentRequested?.Invoke(this, EventArgs.Empty);
 
-        var cardRow = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) } };
-        cardRow.Add(cardLeft);
-        cardRow.Add(change, 1);
+        var cardRow = BuildSummaryRow(cardLeft, change);
+
+        // Total due row, shown like the reference sheet.
+        var totalLabel = new Label
+        {
+            Text = "Total Due",
+            FontFamily = UiFont,
+            FontSize = 13,
+            TextColor = Color.FromArgb(MutedColor),
+            VerticalOptions = LayoutOptions.Center
+        };
+        var totalCurrency = new Label
+        {
+            Text = "USD",
+            FontFamily = UiFont,
+            FontSize = 12,
+            TextColor = Color.FromArgb(MutedColor),
+            VerticalOptions = LayoutOptions.End
+        };
+        var totalRight = new HorizontalStackLayout { Spacing = 6, VerticalOptions = LayoutOptions.Center };
+        totalRight.Add(totalCurrency);
+        totalRight.Add(totalValueLabel);
+
+        var totalRow = BuildSummaryRow(totalLabel, totalRight);
 
         var body = new VerticalStackLayout { Spacing = 10 };
         body.Add(speedRow);
         body.Add(allowanceRow);
         body.Add(cardRow);
+        body.Add(totalRow);
 
         var host = new Border
         {
@@ -857,6 +890,41 @@ public sealed class TopUpPopupContent : IDisposable
         wrapper.Content = host;
         return wrapper;
     }
+
+    /// <summary>
+    /// Builds one label/value row of the summary card. On the phone the value moves under
+    /// the label so the row never squeezes the text.
+    /// </summary>
+    private View BuildSummaryRow(View label, View value)
+    {
+        if (isCompact)
+        {
+            var stacked = new VerticalStackLayout { Spacing = 2 };
+            stacked.Add(label);
+            stacked.Add(value);
+            return stacked;
+        }
+
+        var row = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+            ColumnSpacing = 8,
+            VerticalOptions = LayoutOptions.Center
+        };
+        row.Add(label, 0, 0);
+        row.Add(value, 1, 0);
+        return row;
+    }
+
+    private Label BuildTotalValueLabel() => new Label
+    {
+        Text = viewModel.SelectedTopUpPack.PriceText,
+        FontFamily = UiFont,
+        FontSize = 26,
+        FontAttributes = FontAttributes.Bold,
+        TextColor = Color.FromArgb(InkColor),
+        VerticalOptions = LayoutOptions.Center
+    };
 
     private Label BuildPurchaseLabel() => new Label
     {

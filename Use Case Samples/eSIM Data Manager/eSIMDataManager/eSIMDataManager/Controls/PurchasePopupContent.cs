@@ -63,15 +63,19 @@ public sealed class PurchasePopupContent
 
     private readonly Grid root;
     private readonly ScrollView bodyScroll;
+    private readonly VerticalStackLayout bodyStack;
     private readonly VerticalStackLayout chromeView;
     private readonly View footerView;
     private readonly View accentBar;
+    private readonly Plan? plan;
     private bool isCompact;
     private bool isSheet;
     private double viewportHeight;
 
     public PurchasePopupContent(Plan? plan)
     {
+        this.plan = plan;
+
         // Three rows: chrome (auto), body (star, scrolls when needed), footer (auto).
         // The body row fills any remaining vertical space so the action buttons stay pinned
         // to the bottom of the sheet.
@@ -94,22 +98,21 @@ public sealed class PurchasePopupContent
         chromeView.Add(BuildHeader());
         root.Add(chromeView, 0, 0);
 
-        var body = new VerticalStackLayout { Spacing = 18 };
-        body.Add(BuildPlanBanner(plan));
-        body.Add(BuildCostBreakdown(plan));
-        body.Add(BuildPaymentMethod());
-        body.Add(BuildTrustBadges());
-
+        // The body holds the plan banner, the price summary, the payment method and the
+        // trust badges. It is rebuilt when the sheet arrangement changes.
+        bodyStack = new VerticalStackLayout { Spacing = 18 };
         bodyScroll = new ScrollView
         {
             VerticalScrollBarVisibility = ScrollBarVisibility.Never,
-            Content = body
+            Content = bodyStack
         };
 
         root.Add(bodyScroll, 1, 0);
         footerView = BuildFooter(plan);
         root.Add(footerView, 2, 0);
         root.SizeChanged += (_, _) => OnRootSized();
+
+        RebuildBody();
     }
 
     public View Content => root;
@@ -131,6 +134,7 @@ public sealed class PurchasePopupContent
     {
         if (isCompact == compact) return;
         isCompact = compact;
+        RebuildBody();
     }
 
     /// <summary>Switches the dialog into the mobile bottom-sheet presentation.</summary>
@@ -140,6 +144,17 @@ public sealed class PurchasePopupContent
         isSheet = sheet;
         accentBar.IsVisible = !sheet;
         isCompact = sheet || isCompact;
+        RebuildBody();
+    }
+
+    /// <summary>Rebuilds the body so its sections use the current sheet arrangement.</summary>
+    private void RebuildBody()
+    {
+        bodyStack.Children.Clear();
+        bodyStack.Add(BuildPlanBanner(plan));
+        bodyStack.Add(BuildCostBreakdown(plan));
+        bodyStack.Add(BuildPaymentMethod());
+        bodyStack.Add(BuildTrustBadges());
     }
 
     /// <summary>Used by the popup host to tell the content about the available screen height.</summary>

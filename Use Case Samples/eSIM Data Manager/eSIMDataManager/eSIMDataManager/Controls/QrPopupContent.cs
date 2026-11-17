@@ -459,23 +459,32 @@ public sealed class QrPopupContent
         var stack = new VerticalStackLayout { Spacing = 8 };
         if (isSheet)
         {
-            // On the phone the profile line wraps so it does not overflow the narrow sheet.
-            var nameRow = new HorizontalStackLayout { Spacing = 6, VerticalOptions = LayoutOptions.Center };
-            nameRow.Add(Text(countryCode, 13, Color.FromArgb(InkColor), FontAttributes.Bold));
-            nameRow.Add(Text(profile?.ProfileName ?? "Japan 5G Explorer", 13, Color.FromArgb(InkColor), FontAttributes.Bold));
+            // The phone sheet shows a single readiness line, as in the reference.
+            var readyDot = Icon(IconCircleCheck, 11, Color.FromArgb("#006172"), "MaterialAssets");
+            var readyText = Text($"Ready to Install  •  {profile?.Carrier ?? "SoftBank SG"}",
+                11, Color.FromArgb("#006172"), FontAttributes.Bold);
+            var readyRow = new HorizontalStackLayout { Spacing = 5, VerticalOptions = LayoutOptions.Center };
+            readyRow.Add(readyDot);
+            readyRow.Add(readyText);
 
-            var metaRow = new HorizontalStackLayout { Spacing = 6, VerticalOptions = LayoutOptions.Center };
-            metaRow.Add(Text($"{profile?.Carrier ?? "SoftBank Corp."}", 11, Color.FromArgb(MutedColor)));
-            metaRow.Add(Text($"({network})", 11, Color.FromArgb(MutedColor)));
+            var readyPill = new Border
+            {
+                BackgroundColor = Colors.White,
+                Stroke = Color.FromArgb(OutlineVariant),
+                StrokeThickness = 1,
+                StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(999) },
+                Padding = new Thickness(9, 4),
+                HorizontalOptions = LayoutOptions.Start,
+                Content = readyRow
+            };
 
-            stack.Add(nameRow);
-            stack.Add(metaRow);
+            stack.Add(readyPill);
         }
         else
         {
             stack.Add(titleRow);
+            stack.Add(tier);
         }
-        stack.Add(tier);
 
         return new Border
         {
