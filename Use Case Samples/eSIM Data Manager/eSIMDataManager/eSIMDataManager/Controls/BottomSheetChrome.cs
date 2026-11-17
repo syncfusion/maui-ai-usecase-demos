@@ -8,6 +8,9 @@ namespace eSIMDataManager.Controls;
 /// </summary>
 internal static class BottomSheetChrome
 {
+    /// <summary>The radius applied to the two top corners of a bottom sheet.</summary>
+    public const double TopCornerRadius = 24;
+
     /// <summary>Builds the rounded drag handle shown at the top of a bottom sheet.</summary>
     public static View BuildHandle() => new Border
     {
@@ -20,4 +23,10 @@ internal static class BottomSheetChrome
         StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(3) },
         Margin = new Thickness(0, 10, 0, 4)
     };
+
+    /// <summary>
+    /// Returns a <see cref="CornerRadius"/> that rounds only the two top corners. The bottom
+    /// corners stay square because the sheet sits flush against the bottom edge of the screen.
+    /// </summary>
+    public static CornerRadius TopCorners() => new(TopCornerRadius, TopCornerRadius, 0, 0);
 }
