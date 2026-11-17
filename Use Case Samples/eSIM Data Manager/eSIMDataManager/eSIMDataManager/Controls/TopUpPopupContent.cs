@@ -25,7 +25,7 @@ public sealed class TopUpPopupContent : IDisposable
     private static readonly Style PopupLabelStyle = new(typeof(Label));
 
     private readonly MainViewModel viewModel;
-    private readonly Grid root;
+    private readonly VerticalStackLayout root;
     private readonly Grid tierContainer;
     private readonly List<Border> tierCards = [];
     private readonly List<Border> tierRadios = [];
@@ -33,8 +33,8 @@ public sealed class TopUpPopupContent : IDisposable
     private readonly Label allowanceLabel;
     private readonly Label purchaseLabel;
     private readonly View accentBar;
+    private readonly VerticalStackLayout sheetBody;
     private readonly ScrollView bodyScroll;
-    private readonly View footerView;
     private double viewportHeight;
     private bool isCompact;
     private bool isSheet;
@@ -42,47 +42,30 @@ public sealed class TopUpPopupContent : IDisposable
     public TopUpPopupContent(MainViewModel viewModel)
     {
         this.viewModel = viewModel;
-        // The sheet root is a three-row grid: chrome (auto), body (star), footer (auto).
-        // The body row is star-sized so it absorbs any remaining vertical space when the
-        // content overflows. The footer row is auto-sized so it stays flush against the
-        // bottom of the sheet.
-        root = new Grid
-        {
-            RowDefinitions =
-            {
-                new RowDefinition(GridLength.Auto),
-                new RowDefinition(GridLength.Star),
-                new RowDefinition(GridLength.Auto)
-            },
-            BackgroundColor = Colors.White,
-        };
+        root = new VerticalStackLayout { Spacing = 0, BackgroundColor = Colors.White };
         root.Resources.Add(PopupLabelStyle);
         tierContainer = new Grid();
         allowanceLabel = BuildAllowanceLabel();
         purchaseLabel = BuildPurchaseLabel();
 
         accentBar = BuildAccentBar();
-        root.Add(accentBar, 0, 0);
-        root.Add(BottomSheetChrome.BuildHandle(), 0, 0);
-        root.Add(BuildHeader(), 0, 0);
+        root.Add(accentBar);
+        root.Add(BottomSheetChrome.BuildHandle());
+        root.Add(BuildHeader());
 
-        // The body is a scrollable list of sections. It only starts scrolling once its
-        // MaximumHeightRequest is set, so a short sheet shows everything without any scroll
-        // bar. When the popup gets taller than the screen, ApplyViewport clamps it.
-        var body = new VerticalStackLayout { Spacing = 14 };
-        body.Add(BuildProfileBanner());
-        body.Add(BuildTierSection());
-        body.Add(BuildSummarySection());
+        // On the phone the sheet can be taller than the screen, so the body scrolls
+        // while the header and the purchase button stay pinned.
+        sheetBody = new VerticalStackLayout { Spacing = 14 };
+        sheetBody.Add(BuildProfileBanner());
+        sheetBody.Add(BuildTierSection());
+        sheetBody.Add(BuildSummarySection());
         bodyScroll = new ScrollView
         {
             VerticalScrollBarVisibility = ScrollBarVisibility.Never,
-            Content = body
+            Content = sheetBody
         };
-        root.Add(bodyScroll, 1, 0);
-
-        footerView = BuildFooter();
-        root.Add(footerView, 2, 0);
-
+        root.Add(bodyScroll);
+        root.Add(BuildFooter());
         root.SizeChanged += (_, _) => ApplyViewport();
 
         BuildTiers();
@@ -117,32 +100,21 @@ public sealed class TopUpPopupContent : IDisposable
         BuildTiers();
     }
 
-    /// <summary>Used by the popup host to cap the sheet height to the visible screen.</summary>
+    /// <summary>Caps the scrollable body so the purchase button stays pinned inside the sheet.</summary>
     public void SetViewport(double viewportHeight)
     {
         this.viewportHeight = viewportHeight;
+        ApplyViewport();
     }
 
-    /// <summary>
-    /// Clamps the scrollable body so the footer stays pinned to the bottom of the sheet. When
-    /// the content fits, the body shrinks to its natural height and the sheet hugs its
-    /// content. When it overflows, the body fills the remaining vertical space and scrolls.
-    /// </summary>
-    public void ApplyViewport()
+    private void ApplyViewport()
     {
         if (viewportHeight <= 0) return;
-        var chromeHeight = EstimateChromeHeight();
-        var limit = Math.Max(200, viewportHeight - chromeHeight);
+        var chrome = root.Height - bodyScroll.Height;
+        if (chrome <= 0) return;
+        var limit = Math.Max(200, viewportHeight - chrome);
         if (Math.Abs(bodyScroll.MaximumHeightRequest - limit) > 0.5)
             bodyScroll.MaximumHeightRequest = limit;
-    }
-
-    private double EstimateChromeHeight()
-    {
-        // Footer height after layout. If not laid out yet, use the design height of the
-        // action buttons so the first cap is in the right ballpark.
-        if (footerView.Height > 0) return footerView.Height;
-        return 88;
     }
 
     private void BuildTiers()

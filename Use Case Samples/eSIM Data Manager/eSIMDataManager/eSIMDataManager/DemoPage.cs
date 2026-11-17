@@ -109,11 +109,6 @@ public class DemoPage
             topUpContent?.SetViewport(viewport);
             qrContent?.SetViewport(viewport);
             purchaseContent?.SetViewport(viewport);
-            // Now that the popup has a target viewport, push the scroll cap down to the
-            // content so the body only scrolls when the content really overflows.
-            topUpContent?.ApplyViewport();
-            qrContent?.ApplyViewport();
-            purchaseContent?.ApplyViewport();
             return;
         }
 
@@ -154,22 +149,24 @@ public class DemoPage
     }
 
     /// <summary>
-    /// Turns the popup into a full-width bottom sheet: anchored to the bottom edge, with the
-    /// slide-up animation used by mobile sheets. The sheet hugs its measured content; when the
-    /// content overflows the screen, the body scrolls and the footer stays pinned at the bottom.
+    /// Turns the popup into a full-width bottom sheet: anchored to the bottom edge, taller
+    /// than the desktop dialog, with the slide-up animation used by mobile sheets.
     /// </summary>
     private void ApplyBottomSheet(SfPopup target, double availableWidth)
     {
         target.WidthRequest = Math.Max(320, availableWidth - 16);
-        target.AutoSizeMode = PopupAutoSizeMode.Height;
+        target.AutoSizeMode = PopupAutoSizeMode.None;
         target.AnimationMode = PopupAnimationMode.SlideOnBottom;
-        target.PopupStyle.CornerRadius = BottomSheetChrome.TopCorners();
+        target.PopupStyle.CornerRadius = 24;
 
-        // Cap the sheet height to the visible screen. The content's MaximumHeightRequest keeps
-        // the body scrolling only when it has to, so a short sheet sits naturally without any
-        // scroll bar.
+        // The sheet is anchored by its top edge, so the height has to be known up front.
+        // The sheet fills most of the viewport and its body scrolls instead of growing.
         var viewport = (int)Math.Max(360, availableHeight > 0 ? availableHeight : 640);
-        target.MaximumHeightRequest = viewport;
+        var sheetHeight = (int)Math.Max(360, Math.Min(viewport - 24, viewport * 0.88));
+        target.HeightRequest = sheetHeight;
+        target.MaximumHeightRequest = sheetHeight;
+        target.StartY = viewport - sheetHeight;
+        target.StartX = 8;
     }
 
     protected void ShowDemoPopup(string title, EsimProfile? profile = null)

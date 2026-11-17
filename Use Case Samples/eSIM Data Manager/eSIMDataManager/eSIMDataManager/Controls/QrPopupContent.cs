@@ -50,14 +50,13 @@ public sealed class QrPopupContent
         }
     };
 
-    private readonly Grid root;
+    private readonly VerticalStackLayout root;
     private readonly Grid bodyGrid;
     private readonly VerticalStackLayout compactStack;
     private readonly ScrollView bodyScroll;
     private readonly View scanCardHost;
     private readonly View stepsHost;
     private readonly View accentBar;
-    private readonly View footerView;
     private bool isCompact;
     private bool isSheet;
     private double availableHeight;
@@ -66,27 +65,15 @@ public sealed class QrPopupContent
     {
         var activationCode = profile?.ActivationCode ?? "LPA:1$rsp.global-esim.net$SAMPLE";
 
-        // The sheet root is a three-row grid: chrome (auto), body (star), footer (auto).
-        // The body row absorbs any remaining vertical space when the content overflows. The
-        // footer row stays flush against the bottom of the sheet.
-        root = new Grid
-        {
-            RowDefinitions =
-            {
-                new RowDefinition(GridLength.Auto),
-                new RowDefinition(GridLength.Star),
-                new RowDefinition(GridLength.Auto)
-            },
-            BackgroundColor = Colors.White,
-        };
+        root = new VerticalStackLayout { Spacing = 0, BackgroundColor = Colors.White };
         root.Resources.Add(PopupLabelStyle);
         root.SizeChanged += RootOnSizeChanged;
 
         accentBar = BuildAccentBar();
-        root.Add(accentBar, 0, 0);
-        root.Add(BottomSheetChrome.BuildHandle(), 0, 0);
-        root.Add(BuildHeader(profile), 0, 0);
-        root.Add(BuildProfileBanner(profile), 0, 0);
+        root.Add(accentBar);
+        root.Add(BottomSheetChrome.BuildHandle());
+        root.Add(BuildHeader(profile));
+        root.Add(BuildProfileBanner(profile));
 
         scanCardHost = BuildScanCard(profile, activationCode);
         stepsHost = BuildSteps(profile, activationCode);
@@ -109,9 +96,8 @@ public sealed class QrPopupContent
             Content = bodyGrid
         };
 
-        root.Add(bodyScroll, 1, 0);
-        footerView = BuildFooter(profile, activationCode);
-        root.Add(footerView, 2, 0);
+        root.Add(bodyScroll);
+        root.Add(BuildFooter(profile, activationCode));
 
         ApplyLayout(isCompact);
     }
@@ -163,24 +149,18 @@ public sealed class QrPopupContent
         if (sheet) SetCompact(true);
     }
 
-    /// <summary>Used by the popup host to cap the sheet height to the visible screen.</summary>
+    /// <summary>Caps the scrollable body so the footer stays on screen.</summary>
     public void SetViewport(double availableHeight)
     {
         this.availableHeight = availableHeight;
     }
 
-    private void RootOnSizeChanged(object? sender, EventArgs e) => ApplyViewport();
-
-    /// <summary>
-    /// Clamps the scrollable body so the footer stays pinned. When the content fits, the body
-    /// hugs its natural height and the sheet has no scroll bar. When the content overflows,
-    /// the body fills the remaining vertical space and scrolls.
-    /// </summary>
-    public void ApplyViewport()
+    private void RootOnSizeChanged(object? sender, EventArgs e)
     {
         if (availableHeight <= 0) return;
-        var chromeHeight = footerView.Height > 0 ? footerView.Height : 88;
-        var limit = Math.Max(200, availableHeight - chromeHeight);
+        var chrome = root.Height - bodyScroll.Height;
+        if (chrome <= 0) return;
+        var limit = Math.Max(200, availableHeight - 24 - chrome);
         if (Math.Abs(bodyScroll.MaximumHeightRequest - limit) > 0.5)
             bodyScroll.MaximumHeightRequest = limit;
     }
