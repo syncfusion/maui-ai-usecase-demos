@@ -1125,6 +1125,15 @@ public sealed class QrPopupContent
         return string.Join(' ', Enumerable.Range(0, (digits.Length + 3) / 4)
             .Select(i => digits.Substring(i * 4, Math.Min(4, digits.Length - i * 4))));
     }
+
+    /// <summary>Raised when the sheet content resizes, so the popup can be re-anchored.</summary>
+    public event EventHandler? SheetResized;
+
+    private void OnRootSized()
+    {
+        ApplyViewport();
+        SheetResized?.Invoke(this, EventArgs.Empty);
+    }
 }
 
 internal static class LabelExtensions
@@ -1135,13 +1144,4 @@ internal static class LabelExtensions
         configure(obj);
         return obj;
     }
-    /// <summary>Raised when the sheet content resizes, so the popup can be re-anchored.</summary>
-    public event EventHandler? SheetResized;
-
-    private void OnRootSized()
-    {
-        ApplyViewport();
-        SheetResized?.Invoke(this, EventArgs.Empty);
-    }
-
 }
