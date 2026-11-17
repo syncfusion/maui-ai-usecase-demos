@@ -158,7 +158,8 @@ public sealed class PurchasePopupContent
 
         // Natural height of the body content, measured without a height constraint.
         var constraint = root.Width > 0 ? root.Width : double.PositiveInfinity;
-        var natural = bodyScroll.Content.Measure(constraint, double.PositiveInfinity).Request.Height;
+        var body = bodyScroll.Content;
+        var natural = body is null ? 0 : body.Measure(constraint, double.PositiveInfinity).Height;
 
         // The sheet may not grow past the screen, so the body gets whatever is left after
         // the chrome and the footer.

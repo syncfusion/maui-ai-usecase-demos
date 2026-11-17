@@ -161,16 +161,17 @@ public sealed class QrPopupContent
         {
             // One full-width column on the phone so the stacked content is not squeezed
             // into half of the sheet.
-            bodyGrid.ColumnDefinitions[0].Width = GridLength.Star;
-            bodyGrid.ColumnDefinitions[1].Width = GridLength.Absolute(0);
+            bodyGrid.ColumnDefinitions.Clear();
+            bodyGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
             compactStack.Add(scanCardHost);
             compactStack.Add(stepsHost);
             bodyGrid.Children.Add(compactStack);
             return;
         }
 
-        bodyGrid.ColumnDefinitions[0].Width = GridLength.Star;
-        bodyGrid.ColumnDefinitions[1].Width = GridLength.Star;
+        bodyGrid.ColumnDefinitions.Clear();
+        bodyGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+        bodyGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
         bodyGrid.Add(scanCardHost, 0, 0);
         bodyGrid.Add(stepsHost, 1, 0);
     }
@@ -214,7 +215,7 @@ public sealed class QrPopupContent
 
         // Natural height of the body content, measured without a height constraint.
         var constraint = root.Width > 0 ? root.Width : double.PositiveInfinity;
-        var natural = bodyGrid.Measure(constraint, double.PositiveInfinity).Request.Height;
+        var natural = bodyGrid.Measure(constraint, double.PositiveInfinity).Height;
 
         // The sheet may not grow past the screen, so the body gets whatever is left after
         // the chrome and the footer.
@@ -1064,7 +1065,7 @@ public sealed class QrPopupContent
             var completed = new SfButton
             {
                 Background = Color.FromArgb(PrimaryColor),
-                Stroke = Color.Transparent,
+                Stroke = Colors.Transparent,
                 StrokeThickness = 0,
                 CornerRadius = 10,
                 Padding = new Thickness(20, 10),

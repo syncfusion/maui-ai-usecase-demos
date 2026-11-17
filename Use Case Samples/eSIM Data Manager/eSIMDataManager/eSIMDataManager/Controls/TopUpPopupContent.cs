@@ -165,7 +165,7 @@ public sealed class TopUpPopupContent : IDisposable
 
         // Natural height of the body content, measured without a height constraint.
         var constraint = width > 0 ? width : double.PositiveInfinity;
-        var natural = sheetBody.Measure(constraint, double.PositiveInfinity).Request.Height;
+        var natural = sheetBody.Measure(constraint, double.PositiveInfinity).Height;
 
         // The sheet may not grow past the screen, so the body gets whatever is left after
         // the chrome and the footer.
