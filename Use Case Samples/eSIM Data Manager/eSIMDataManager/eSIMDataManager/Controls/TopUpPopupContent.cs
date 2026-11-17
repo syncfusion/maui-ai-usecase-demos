@@ -297,52 +297,32 @@ public sealed class TopUpPopupContent : IDisposable
 
     private View BuildHeader()
     {
-        var plusIcon = new Grid { WidthRequest = 30, HeightRequest = 40, VerticalOptions = LayoutOptions.Center };
-        plusIcon.Add(new Label
+        // The reference sheet shows a lightning bolt next to the title.
+        var boltIcon = new Label
         {
-            Text = "\uE73F",
+            Text = "\uE707",
             FontFamily = "MaterialAssets",
-            FontSize = 25,
+            FontSize = 20,
             TextColor = Color.FromArgb(PrimaryColor),
-            HorizontalTextAlignment = TextAlignment.Center,
-            VerticalTextAlignment = TextAlignment.Center
-        });
-        plusIcon.Add(new Label
-        {
-            Text = "\uE70D",
-            FontFamily = "MaterialAssets",
-            FontSize = 15,
-            FontAttributes = FontAttributes.Bold,
-            TextColor = Color.FromArgb(PrimaryColor),
-            HorizontalTextAlignment = TextAlignment.Center,
-            VerticalTextAlignment = TextAlignment.Center
-        });
+            VerticalOptions = LayoutOptions.Center
+        };
 
         var title = new Label
         {
-            Text = "Top-Up Data",
+            Text = "Add More Data",
             FontFamily = UiFont,
-            FontSize = 32,
+            FontSize = 24,
             FontAttributes = FontAttributes.Bold,
             TextColor = Color.FromArgb(InkColor),
             VerticalOptions = LayoutOptions.Center
         };
 
-        var heading = new HorizontalStackLayout { Spacing = 10, VerticalOptions = LayoutOptions.Center };
-        heading.Add(plusIcon);
+        var heading = new HorizontalStackLayout { Spacing = 8, VerticalOptions = LayoutOptions.Center };
         heading.Add(title);
-
-        var subtitle = new Label
-        {
-            Text = "Add extra high-speed data to your active Japan 5G Explorer profile.",
-            FontFamily = UiFont,
-            FontSize = 14,
-            TextColor = Color.FromArgb(MutedColor)
-        };
+        heading.Add(boltIcon);
 
         var left = new VerticalStackLayout { Spacing = 4 };
         left.Add(heading);
-        left.Add(subtitle);
 
         var close = new SfButton
         {
@@ -386,8 +366,8 @@ public sealed class TopUpPopupContent : IDisposable
         {
             Text = $"{viewModel.TopUpProfileName} ({viewModel.TopUpCarrierName})",
             FontFamily = UiFont,
-            FontSize = 13,
-            TextColor = Color.FromArgb(MutedColor),
+            FontSize = 12.5,
+            TextColor = Color.FromArgb(InkColor),
             VerticalOptions = LayoutOptions.Center
         };
 
@@ -877,6 +857,28 @@ public sealed class TopUpPopupContent : IDisposable
         body.Add(cardRow);
         body.Add(totalRow);
 
+        // Note below the summary card, as shown in the reference sheet.
+        var noteDot = new Label
+        {
+            Text = "\u2713",
+            FontFamily = UiFont,
+            FontSize = 11,
+            FontAttributes = FontAttributes.Bold,
+            TextColor = Color.FromArgb(TertiaryContainer),
+            VerticalOptions = LayoutOptions.Start
+        };
+        var noteText = new Label
+        {
+            Text = "No re-installation needed. Roaming continues automatically.",
+            FontFamily = UiFont,
+            FontSize = 11,
+            TextColor = Color.FromArgb(MutedColor),
+            VerticalOptions = LayoutOptions.Start
+        };
+        var noteLeft = new HorizontalStackLayout { Spacing = 6, VerticalOptions = LayoutOptions.Start };
+        noteLeft.Add(noteDot);
+        noteLeft.Add(noteText);
+
         var host = new Border
         {
             BackgroundColor = Color.FromArgb("#F5F8FF"),
@@ -886,8 +888,12 @@ public sealed class TopUpPopupContent : IDisposable
         };
         host.Content = body;
 
+        var wrapperStack = new VerticalStackLayout { Spacing = 8 };
+        wrapperStack.Add(host);
+        wrapperStack.Add(noteLeft);
+
         var wrapper = new Border { Padding = new Thickness(28, 18, 28, 0), StrokeThickness = 0 };
-        wrapper.Content = host;
+        wrapper.Content = wrapperStack;
         return wrapper;
     }
 

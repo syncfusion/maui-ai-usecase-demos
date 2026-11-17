@@ -112,7 +112,7 @@ public partial class MainViewModel : ObservableObject
 
     public string TopUpProfileName => TopUpProfile?.ProfileName ?? "No active profile";
     public string TopUpCarrierName => TopUpProfile?.Carrier ?? "—";
-    public string TopUpRemainingText => $"{TopUpProfile?.RemainingGb ?? 0:0.#} GB left";
+    public string TopUpRemainingText => $"{TopUpProfile?.RemainingGb ?? 0:0.#} GB remaining";
     public string TopUpDaysLeftText => $"{TopUpProfile?.DaysRemaining ?? 0} Days Left";
     public string TopUpAllowanceSummary => $"{SelectedTopUpPack.DataLabel} Data Pool ({SelectedTopUpPack.PriceText})";
     public string TopUpSubmitLabel => $"Purchase Top-Up • {SelectedTopUpPack.PriceText}";
