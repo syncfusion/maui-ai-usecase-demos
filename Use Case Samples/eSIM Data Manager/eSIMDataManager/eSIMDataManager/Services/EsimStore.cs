@@ -98,8 +98,8 @@ public sealed class EsimStore
 
     public static IReadOnlyList<TopUpPack> TopUpPacks { get; } =
     [
-        new(1, 3, 7, "Quick boost for messaging & maps"),
-        new(3, 7, 15, "Ideal for social media & navigation", "Most Popular", true),
-        new(5, 10, 30, "Generous allowance for streaming & work", "Best Value ($2/GB)")
+        new(1, 3, 7, "Ideal for instant messaging & navigation"),
+        new(3, 7, 15, "Best balance for remote work & city sharing", "Most Popular", true),
+        new(5, 10, 30, "High-speed streaming and continuous hotspots", "Best Value")
     ];
 }

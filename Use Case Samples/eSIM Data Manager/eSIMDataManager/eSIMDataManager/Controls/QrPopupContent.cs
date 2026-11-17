@@ -99,6 +99,7 @@ public sealed class QrPopupContent
         bannerHost = new VerticalStackLayout { Spacing = 0 };
         bannerHost.Add(BuildProfileBanner(profile));
         chromeView.Add(bannerHost);
+        // Grid.Add(view, column, row): the chrome, body and footer are rows, not columns.
         root.Add(chromeView, 0, 0);
 
         scanCardHost = BuildScanCard(profile, activationCode);
@@ -124,10 +125,10 @@ public sealed class QrPopupContent
             Content = bodyGrid
         };
 
-        root.Add(bodyScroll, 1, 0);
+        root.Add(bodyScroll, 0, 1);
         footerHost = new VerticalStackLayout { Spacing = 0 };
         footerHost.Add(BuildFooter(profile, activationCode));
-        root.Add(footerHost, 2, 0);
+        root.Add(footerHost, 0, 2);
 
         ApplyLayout(isCompact);
     }

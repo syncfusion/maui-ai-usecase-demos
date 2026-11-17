@@ -95,6 +95,10 @@ public class DemoPage
     public void UpdateTopUpPopupWidth(double availableWidth, double availableHeight = 0)
     {
         if (availableHeight > 0) this.availableHeight = availableHeight;
+        // Remember the real width on every path. The mobile branch used to return before
+        // this assignment, so the popups were sized from the 720 default instead of the
+        // actual screen width.
+        availableTopUpWidth = availableWidth;
 
         if (IsBottomSheetHost)
         {
@@ -121,7 +125,6 @@ public class DemoPage
         topUpPopup.WidthRequest = width;
         topUpPopup.AutoSizeMode = PopupAutoSizeMode.Height;
         topUpContent?.SetCompact(compact);
-        availableTopUpWidth = availableWidth;
 
         popup.WidthRequest = Math.Clamp(availableWidth - 32, 320, 700);
         if (this.availableHeight > 0)
@@ -159,7 +162,8 @@ public class DemoPage
     /// </summary>
     private void ApplyBottomSheet(SfPopup target, double availableWidth)
     {
-        target.WidthRequest = Math.Max(320, availableWidth - 16);
+        // The sheet spans the full width of the screen, edge to edge.
+        target.WidthRequest = Math.Max(320, availableWidth);
         // The sheet hugs its content and never grows past the visible screen.
         target.AutoSizeMode = PopupAutoSizeMode.Height;
         target.AnimationMode = PopupAnimationMode.SlideOnBottom;

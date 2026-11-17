@@ -30,7 +30,6 @@ public sealed class TopUpPopupContent : IDisposable
     private readonly List<Border> tierCards = [];
     private readonly List<Border> tierRadios = [];
     private readonly List<Label> tierSizes = [];
-    private readonly Label allowanceLabel;
     private readonly Label purchaseLabel;
     private readonly Label totalValueLabel;
     private readonly View accentBar;
@@ -62,7 +61,6 @@ public sealed class TopUpPopupContent : IDisposable
         };
         root.Resources.Add(PopupLabelStyle);
         tierContainer = new Grid();
-        allowanceLabel = BuildAllowanceLabel();
         purchaseLabel = BuildPurchaseLabel();
         totalValueLabel = BuildTotalValueLabel();
 
@@ -71,6 +69,7 @@ public sealed class TopUpPopupContent : IDisposable
         chromeView.Add(accentBar);
         chromeView.Add(BottomSheetChrome.BuildHandle());
         chromeView.Add(BuildHeader());
+        // Grid.Add(view, column, row): the chrome, body and footer are rows, not columns.
         root.Add(chromeView, 0, 0);
 
         // The body is a scrollable list of sections. It only starts scrolling once its
@@ -89,12 +88,12 @@ public sealed class TopUpPopupContent : IDisposable
             VerticalScrollBarVisibility = ScrollBarVisibility.Never,
             Content = sheetBody
         };
-        root.Add(bodyScroll, 1, 0);
+        root.Add(bodyScroll, 0, 1);
 
         // The footer is rebuilt when the sheet mode changes, so it is hosted in a stack.
         footerHost = new VerticalStackLayout { Spacing = 0 };
         footerHost.Add(BuildFooter());
-        root.Add(footerHost, 2, 0);
+        root.Add(footerHost, 0, 2);
 
         root.SizeChanged += (_, _) => OnRootSized();
 
@@ -256,11 +255,11 @@ public sealed class TopUpPopupContent : IDisposable
             var size = tierSizes[index];
 
             card.BackgroundColor = Color.FromArgb(selected ? "#FFFFFF" : SurfaceLow);
-            card.Stroke = Color.FromArgb(selected ? PrimaryColor : SurfaceLow);
+            card.Stroke = Color.FromArgb(selected ? PrimaryActionColor : SurfaceLow);
             card.StrokeThickness = selected ? 2 : 1;
             size.TextColor = Color.FromArgb(selected ? PrimaryColor : InkColor);
 
-            radio.BackgroundColor = Color.FromArgb(selected ? PrimaryColor : SurfaceHighest);
+            radio.BackgroundColor = Color.FromArgb(selected ? PrimaryActionColor : SurfaceHighest);
             radio.Content = new Label
             {
                 Text = selected ? "\u2713" : string.Empty,
@@ -273,7 +272,6 @@ public sealed class TopUpPopupContent : IDisposable
             };
         }
 
-        allowanceLabel.Text = viewModel.TopUpAllowanceSummary;
         purchaseLabel.Text = viewModel.TopUpSubmitLabel;
     }
 
@@ -324,19 +322,30 @@ public sealed class TopUpPopupContent : IDisposable
         var left = new VerticalStackLayout { Spacing = 4 };
         left.Add(heading);
 
-        var close = new SfButton
+        // The reference sheet shows a round, softly filled close button.
+        var close = new Border
         {
-            Text = "\uE70B",
-            FontFamily = "MaterialAssets",
-            FontSize = 16,
-            Background = Colors.Transparent,
-            TextColor = Color.FromArgb(MutedColor),
-            WidthRequest = 40,
-            HeightRequest = 40,
-            CornerRadius = 10,
-            Padding = new Thickness(0)
+            WidthRequest = 36,
+            HeightRequest = 36,
+            BackgroundColor = Color.FromArgb(SurfaceLow),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(18) },
+            VerticalOptions = LayoutOptions.Center,
+            Content = new Label
+            {
+                Text = "\uE70B",
+                FontFamily = "MaterialAssets",
+                FontSize = 15,
+                TextColor = Color.FromArgb(MutedColor),
+                HorizontalTextAlignment = TextAlignment.Center,
+                VerticalTextAlignment = TextAlignment.Center
+            }
         };
-        close.Clicked += (_, _) => CloseRequested?.Invoke(this, EventArgs.Empty);
+        var closeTap = new Grid();
+        closeTap.Add(close);
+        var closeGesture = new TapGestureRecognizer();
+        closeGesture.Tapped += (_, _) => CloseRequested?.Invoke(this, EventArgs.Empty);
+        closeTap.GestureRecognizers.Add(closeGesture);
 
         var header = new Grid
         {
@@ -344,104 +353,58 @@ public sealed class TopUpPopupContent : IDisposable
             Padding = new Thickness(28, 20, 20, 8)
         };
         header.Add(left);
-        header.Add(close, 1);
+        header.Add(closeTap, 1);
         return header;
     }
 
     private View BuildProfileBanner()
     {
-        var dot = new Ellipse { WidthRequest = 9, HeightRequest = 9, Fill = Color.FromArgb("#007A56"), VerticalOptions = LayoutOptions.Center };
-
-        var caption = new Label
+        // The reference sheet shows a plain line: a green status dot, the profile name and
+        // the remaining allowance. There is no card behind it.
+        var dot = new Ellipse
         {
-            Text = "Current Profile:",
-            FontFamily = UiFont,
-            FontSize = 13,
-            FontAttributes = FontAttributes.Bold,
-            TextColor = Color.FromArgb(InkColor),
-            VerticalOptions = LayoutOptions.Center
+            WidthRequest = 8,
+            HeightRequest = 8,
+            Fill = Color.FromArgb("#007A56"),
+            VerticalOptions = LayoutOptions.Start,
+            Margin = new Thickness(0, 5, 0, 0)
         };
 
-        var name = new Label
+        // The profile name stays dark while the remaining allowance is blue and bold.
+        // A single label per run keeps the two colours on the same wrapping line.
+        var text = new Label
         {
-            Text = $"{viewModel.TopUpProfileName} ({viewModel.TopUpCarrierName})",
-            FontFamily = UiFont,
-            FontSize = 12.5,
-            TextColor = Color.FromArgb(InkColor),
-            VerticalOptions = LayoutOptions.Center
+            LineBreakMode = LineBreakMode.WordWrap,
+            FormattedText = new FormattedString
+            {
+                Spans =
+                {
+                    new Span
+                    {
+                        Text = $"{viewModel.TopUpProfileName} ({viewModel.TopUpCarrierName})  \u2022  ",
+                        FontFamily = UiFont,
+                        FontSize = 13,
+                        TextColor = Color.FromArgb(InkColor)
+                    },
+                    new Span
+                    {
+                        Text = viewModel.TopUpRemainingText,
+                        FontFamily = UiFont,
+                        FontSize = 13,
+                        FontAttributes = FontAttributes.Bold,
+                        TextColor = Color.FromArgb(PrimaryColor)
+                    }
+                }
+            }
         };
 
-        var left = new HorizontalStackLayout { Spacing = 8, VerticalOptions = LayoutOptions.Center };
-        left.Add(dot);
-        left.Add(caption);
-        left.Add(name);
+        var row = new HorizontalStackLayout { Spacing = 7 };
+        row.Add(dot);
+        row.Add(text);
 
-        var remaining = new Label
-        {
-            Text = viewModel.TopUpRemainingText,
-            FontFamily = MonoFont,
-            FontSize = 13,
-            FontAttributes = FontAttributes.Bold,
-            TextColor = Color.FromArgb(PrimaryColor),
-            VerticalOptions = LayoutOptions.Center
-        };
-
-        var separator = new Label
-        {
-            Text = "•",
-            FontFamily = UiFont,
-            FontSize = 13,
-            TextColor = Color.FromArgb(OutlineVariant),
-            VerticalOptions = LayoutOptions.Center
-        };
-
-        var days = new Label
-        {
-            Text = viewModel.TopUpDaysLeftText,
-            FontFamily = MonoFont,
-            FontSize = 13,
-            TextColor = Color.FromArgb(MutedColor),
-            VerticalOptions = LayoutOptions.Center
-        };
-
-        var right = new HorizontalStackLayout { Spacing = 8, VerticalOptions = LayoutOptions.Center };
-        right.Add(remaining);
-        right.Add(separator);
-        right.Add(days);
-
-        // On the phone the two halves do not fit on one line, so they stack.
-        var banner = isCompact
-            ? BuildStackedBanner(left, right)
-            : BuildSideBySideBanner(left, right);
-
-        var host = new Border
-        {
-            BackgroundColor = Color.FromArgb(SurfaceLow),
-            StrokeThickness = 0,
-            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
-            Padding = new Thickness(16, 11)
-        };
-        host.Content = banner;
-
-        var wrapper = new Border { Padding = new Thickness(28, 4, 28, 0), StrokeThickness = 0 };
-        wrapper.Content = host;
+        var wrapper = new Border { Padding = new Thickness(28, 0, 28, 6), StrokeThickness = 0 };
+        wrapper.Content = row;
         return wrapper;
-    }
-
-    private static View BuildSideBySideBanner(View left, View right)
-    {
-        var banner = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 12 };
-        banner.Add(left);
-        banner.Add(right, 1);
-        return banner;
-    }
-
-    private static View BuildStackedBanner(View left, View right)
-    {
-        var banner = new VerticalStackLayout { Spacing = 4 };
-        banner.Add(left);
-        banner.Add(right);
-        return banner;
     }
 
     private View BuildTierSection()
@@ -614,7 +577,7 @@ public sealed class TopUpPopupContent : IDisposable
             HeightRequest = 22,
             StrokeThickness = 0,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(11) },
-            BackgroundColor = Color.FromArgb(selected ? PrimaryColor : "#FFFFFF"),
+            BackgroundColor = Color.FromArgb(selected ? PrimaryActionColor : "#FFFFFF"),
             Padding = new Thickness(0),
             VerticalOptions = LayoutOptions.Start,
             Content = new Label
@@ -629,14 +592,23 @@ public sealed class TopUpPopupContent : IDisposable
             }
         };
 
-        var extension = new Label
+        // The reference shows "+N Days" as a soft rounded chip next to the data amount.
+        var extension = new Border
         {
-            Text = pack.ExtensionLabel.Replace(" extension", string.Empty),
-            FontFamily = MonoFont,
-            FontSize = 12,
-            FontAttributes = FontAttributes.Bold,
-            TextColor = Color.FromArgb("#006141"),
-            VerticalOptions = LayoutOptions.Center
+            BackgroundColor = Color.FromArgb(SurfaceLow),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(8) },
+            Padding = new Thickness(7, 3),
+            VerticalOptions = LayoutOptions.Center,
+            Content = new Label
+            {
+                Text = pack.ExtensionLabel.Replace(" extension", string.Empty),
+                FontFamily = UiFont,
+                FontSize = 11.5,
+                FontAttributes = FontAttributes.Bold,
+                TextColor = Color.FromArgb(PrimaryColor),
+                VerticalOptions = LayoutOptions.Center
+            }
         };
 
         var description = new Label
@@ -691,7 +663,7 @@ public sealed class TopUpPopupContent : IDisposable
         var card = new Border
         {
             BackgroundColor = Color.FromArgb(selected ? SurfaceContainer : SurfaceLow),
-            Stroke = Color.FromArgb(selected ? PrimaryColor : SurfaceLow),
+            Stroke = Color.FromArgb(selected ? PrimaryActionColor : SurfaceLow),
             StrokeThickness = selected ? 2 : 1,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(16) },
             Padding = new Thickness(16, 14),
@@ -708,110 +680,101 @@ public sealed class TopUpPopupContent : IDisposable
 
         if (pack.Tag is not { } tag) return card;
 
+        // The badge sits on the top-right corner of the card and overlaps its edge.
         var badge = new Border
         {
-            BackgroundColor = Color.FromArgb(pack.IsPopular ? PrimaryColor : SurfaceHighest),
+            BackgroundColor = Color.FromArgb(pack.IsPopular ? PrimaryColor : "#007C55"),
             StrokeThickness = 0,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(999) },
             Padding = new Thickness(10, 3),
-            HorizontalOptions = LayoutOptions.Center,
+            HorizontalOptions = LayoutOptions.End,
             VerticalOptions = LayoutOptions.Start,
             TranslationY = -10,
             Content = new Label
             {
-                Text = tag.ToUpperInvariant(),
+                Text = tag,
                 FontFamily = UiFont,
                 FontSize = 10,
                 FontAttributes = FontAttributes.Bold,
-                TextColor = Color.FromArgb(pack.IsPopular ? "#FFFFFF" : PrimaryColor)
+                TextColor = Colors.White
             }
         };
 
-        var stack = new Grid { Padding = new Thickness(0, 10, 0, 0) };
+        var stack = new Grid { Padding = new Thickness(0, 12, 0, 0) };
         stack.Add(card);
         stack.Add(badge);
         return stack;
     }
 
-    private Label BuildAllowanceLabel() => new Label
-    {
-        Text = viewModel.TopUpAllowanceSummary,
-        FontFamily = MonoFont,
-        FontSize = 13,
-        FontAttributes = FontAttributes.Bold,
-        TextColor = Color.FromArgb(InkColor),
-        VerticalOptions = LayoutOptions.Center
-    };
-
     private View BuildSummarySection()
     {
-        var speedIcon = new Label
+        var extensionIcon = new Label
         {
-            Text = "⚡️",
-            FontSize = 15,
-            TextColor = Color.FromArgb("#006141"),
+            Text = "\u26A1",
+            FontSize = 14,
+            TextColor = Color.FromArgb(PrimaryColor),
             VerticalOptions = LayoutOptions.Center
         };
-        var speedLabel = new Label
+        var extensionLabel = new Label
         {
-            Text = "Provisioning Speed",
+            Text = "Data Extension",
             FontFamily = UiFont,
             FontSize = 13,
             TextColor = Color.FromArgb(MutedColor),
             VerticalOptions = LayoutOptions.Center
         };
-        var speedLeft = new HorizontalStackLayout { Spacing = 6, VerticalOptions = LayoutOptions.Center };
-        speedLeft.Add(speedIcon);
-        speedLeft.Add(speedLabel);
-        var speedRight = new Label
+        var extensionLeft = new HorizontalStackLayout { Spacing = 7, VerticalOptions = LayoutOptions.Center };
+        extensionLeft.Add(extensionIcon);
+        extensionLeft.Add(extensionLabel);
+        var extensionRight = new Label
         {
-            Text = "Instant Activation Upon Payment",
+            Text = $"{viewModel.SelectedTopUpPack.DataLabel} added instantly to eSIM",
             FontFamily = UiFont,
             FontSize = 13,
             FontAttributes = FontAttributes.Bold,
             TextColor = Color.FromArgb(InkColor),
             VerticalOptions = LayoutOptions.Center
         };
-        var speedRow = BuildSummaryRow(speedLeft, speedRight);
+        var extensionRow = BuildSummaryRow(extensionLeft, extensionRight);
 
-        var allowanceLeft = new Label
+        var cardIcon = new Label
         {
-            Text = "Selected Top-Up Allowance",
+            Text = "\uD83D\uDD3A",
+            FontSize = 14,
+            VerticalOptions = LayoutOptions.Center
+        };
+
+        var cardLabel = new Label
+        {
+            Text = "Payment Method",
             FontFamily = UiFont,
             FontSize = 13,
             TextColor = Color.FromArgb(MutedColor),
             VerticalOptions = LayoutOptions.Center
         };
-        var allowanceRow = BuildSummaryRow(allowanceLeft, allowanceLabel);
+        var cardLeft = new HorizontalStackLayout { Spacing = 7, VerticalOptions = LayoutOptions.Center };
+        cardLeft.Add(cardIcon);
+        cardLeft.Add(cardLabel);
 
-        var cardBadge = new Border
+        // The masked card number sits in its own white pill.
+        var cardNumber = new Border
         {
             BackgroundColor = Colors.White,
             StrokeThickness = 0,
-            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(5) },
-            Padding = new Thickness(8, 2),
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(8) },
+            Padding = new Thickness(10, 4),
             VerticalOptions = LayoutOptions.Center,
             Content = new Label
             {
-                Text = "VISA",
-                FontFamily = UiFont,
-                FontSize = 10,
+                Text = "Visa  \u2022\u2022\u2022\u2022  4242",
+                FontFamily = MonoFont,
+                FontSize = 12.5,
                 FontAttributes = FontAttributes.Bold,
-                TextColor = Color.FromArgb(PrimaryColor)
+                TextColor = Color.FromArgb(InkColor),
+                VerticalOptions = LayoutOptions.Center
             }
         };
 
-        var cardLabel = new Label
-        {
-            Text = "Auto-applied card ending in 4242",
-            FontFamily = UiFont,
-            FontSize = 13,
-            TextColor = Color.FromArgb(InkColor),
-            VerticalOptions = LayoutOptions.Center
-        };
-        var cardLeft = new HorizontalStackLayout { Spacing = 10, VerticalOptions = LayoutOptions.Center };
-        cardLeft.Add(cardBadge);
-        cardLeft.Add(cardLabel);
 
         var change = new SfButton
         {
@@ -826,7 +789,11 @@ public sealed class TopUpPopupContent : IDisposable
         };
         change.Clicked += (_, _) => ChangePaymentRequested?.Invoke(this, EventArgs.Empty);
 
-        var cardRow = BuildSummaryRow(cardLeft, change);
+        var cardRight = new HorizontalStackLayout { Spacing = 8, VerticalOptions = LayoutOptions.Center };
+        cardRight.Add(cardNumber);
+        cardRight.Add(change);
+
+        var cardRow = BuildSummaryRow(cardLeft, cardRight);
 
         // Total due row, shown like the reference sheet.
         var totalLabel = new Label
@@ -852,8 +819,7 @@ public sealed class TopUpPopupContent : IDisposable
         var totalRow = BuildSummaryRow(totalLabel, totalRight);
 
         var body = new VerticalStackLayout { Spacing = 10 };
-        body.Add(speedRow);
-        body.Add(allowanceRow);
+        body.Add(extensionRow);
         body.Add(cardRow);
         body.Add(totalRow);
 
@@ -881,7 +847,7 @@ public sealed class TopUpPopupContent : IDisposable
 
         var host = new Border
         {
-            BackgroundColor = Color.FromArgb("#F5F8FF"),
+            BackgroundColor = Color.FromArgb(SurfaceLow),
             StrokeThickness = 0,
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
             Padding = new Thickness(16)
@@ -898,19 +864,12 @@ public sealed class TopUpPopupContent : IDisposable
     }
 
     /// <summary>
-    /// Builds one label/value row of the summary card. On the phone the value moves under
-    /// the label so the row never squeezes the text.
+    /// Builds one label/value row of the summary card. The label takes the remaining width
+    /// and the value keeps its natural width, so the two stay on one line as in the
+    /// reference sheet.
     /// </summary>
     private View BuildSummaryRow(View label, View value)
     {
-        if (isCompact)
-        {
-            var stacked = new VerticalStackLayout { Spacing = 2 };
-            stacked.Add(label);
-            stacked.Add(value);
-            return stacked;
-        }
-
         var row = new Grid
         {
             ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
@@ -972,12 +931,13 @@ public sealed class TopUpPopupContent : IDisposable
         };
         purchase.Clicked += (_, _) => PurchaseRequested?.Invoke(this, EventArgs.Empty);
 
+        // The reference sheet shows Cancel as a plain text link under the purchase button.
         var cancel = new SfButton
         {
             Text = "Cancel",
             FontFamily = UiFont,
             FontSize = 15,
-            Background = Color.FromArgb(SurfaceLow),
+            Background = Colors.Transparent,
             TextColor = Color.FromArgb(InkColor),
             CornerRadius = 10,
             Padding = new Thickness(20, 6),

@@ -96,6 +96,7 @@ public sealed class PurchasePopupContent
         chromeView.Add(accentBar);
         chromeView.Add(BottomSheetChrome.BuildHandle());
         chromeView.Add(BuildHeader());
+        // Grid.Add(view, column, row): the chrome, body and footer are rows, not columns.
         root.Add(chromeView, 0, 0);
 
         // The body holds the plan banner, the price summary, the payment method and the
@@ -107,9 +108,9 @@ public sealed class PurchasePopupContent
             Content = bodyStack
         };
 
-        root.Add(bodyScroll, 1, 0);
+        root.Add(bodyScroll, 0, 1);
         footerView = BuildFooter(plan);
-        root.Add(footerView, 2, 0);
+        root.Add(footerView, 0, 2);
         root.SizeChanged += (_, _) => OnRootSized();
 
         RebuildBody();
