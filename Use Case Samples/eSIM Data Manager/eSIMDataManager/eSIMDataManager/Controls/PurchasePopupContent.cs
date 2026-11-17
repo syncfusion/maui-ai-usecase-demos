@@ -477,6 +477,51 @@ public sealed class PurchasePopupContent
 
         var stack = new VerticalStackLayout { Spacing = 10 };
 
+        // Quota bar: used versus allocated high-speed roaming data.
+        var quotaLabelRow = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+            ColumnSpacing = 8,
+            VerticalOptions = LayoutOptions.Center
+        };
+        quotaLabelRow.Add(Text("High-Speed Roaming Quota", 11.5, Color.FromArgb(MutedColor)), 0, 0);
+        quotaLabelRow.Add(MonoText("5.120 MB  /  5.0 GB", 11, Color.FromArgb(PrimaryColor), FontAttributes.Bold), 1, 0);
+
+        var quotaTrack = new Grid
+        {
+            HeightRequest = 5,
+            BackgroundColor = Color.FromArgb(SurfaceHighest),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(3) }
+        };
+        var quotaFill = new Grid
+        {
+            WidthRequest = 36,
+            BackgroundColor = Color.FromArgb(PrimaryColor),
+            HorizontalOptions = LayoutOptions.Start,
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(3) }
+        };
+        quotaTrack.Add(quotaFill);
+
+        var guaranteeRow = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+            ColumnSpacing = 8,
+            VerticalOptions = LayoutOptions.Center
+        };
+        var guaranteeLeft = new HorizontalStackLayout { Spacing = 5, VerticalOptions = LayoutOptions.Center };
+        guaranteeLeft.Add(Icon(IconCircleCheck, 12, Color.FromArgb(TertiaryContainer)));
+        guaranteeLeft.Add(Text("Zero-throttle guarantee", 11.5, Color.FromArgb(TertiaryContainer)));
+        guaranteeRow.Add(guaranteeLeft, 0, 0);
+        guaranteeRow.Add(MonoText("Band n77/n78/n257", 11, Color.FromArgb(MutedColor)), 1, 0);
+
+        stack.Add(quotaLabelRow);
+        stack.Add(quotaTrack);
+        stack.Add(guaranteeRow);
+
+        stack.Add(Text("Price Summary", 14, Color.FromArgb(InkColor), FontAttributes.Bold));
+
         stack.Add(BuildCostRow(
             Text($"eSIM Package Cost ({provider} • {dataLabel})", 11.5, Color.FromArgb(MutedColor)),
             MonoText($"${packageCost:0.00}", 11.5, Color.FromArgb(InkColor), FontAttributes.Bold)));
