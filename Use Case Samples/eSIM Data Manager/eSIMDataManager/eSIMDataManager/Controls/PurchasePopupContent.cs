@@ -63,6 +63,7 @@ public sealed class PurchasePopupContent
 
     private readonly Grid root;
     private readonly ScrollView bodyScroll;
+    private readonly VerticalStackLayout chromeView;
     private readonly View footerView;
     private readonly View accentBar;
     private bool isCompact;
@@ -79,7 +80,7 @@ public sealed class PurchasePopupContent
             RowDefinitions =
             {
                 new RowDefinition(GridLength.Auto),
-                new RowDefinition(GridLength.Star),
+                new RowDefinition(GridLength.Auto),
                 new RowDefinition(GridLength.Auto)
             },
             BackgroundColor = Colors.White,
@@ -87,9 +88,11 @@ public sealed class PurchasePopupContent
         root.Resources.Add(PopupLabelStyle);
 
         accentBar = BuildAccentBar();
-        root.Add(accentBar, 0, 0);
-        root.Add(BottomSheetChrome.BuildHandle(), 0, 0);
-        root.Add(BuildHeader(), 0, 0);
+        chromeView = new VerticalStackLayout { Spacing = 0 };
+        chromeView.Add(accentBar);
+        chromeView.Add(BottomSheetChrome.BuildHandle());
+        chromeView.Add(BuildHeader());
+        root.Add(chromeView, 0, 0);
 
         var body = new VerticalStackLayout { Spacing = 18 };
         body.Add(BuildPlanBanner(plan));
@@ -106,7 +109,7 @@ public sealed class PurchasePopupContent
         root.Add(bodyScroll, 1, 0);
         footerView = BuildFooter(plan);
         root.Add(footerView, 2, 0);
-        root.SizeChanged += (_, _) => ApplyViewport();
+        root.SizeChanged += (_, _) => OnRootSized();
     }
 
     public View Content => root;
@@ -152,12 +155,28 @@ public sealed class PurchasePopupContent
     public void ApplyViewport()
     {
         if (viewportHeight <= 0) return;
-        var chromeHeight = (root.Height > 0 ? root.Height : (int)Math.Max(360, viewportHeight * 0.88))
-                           - bodyScroll.Height;
-        if (chromeHeight <= 0) return;
-        var limit = Math.Max(200, viewportHeight * 0.88 - chromeHeight);
-        if (Math.Abs(bodyScroll.MaximumHeightRequest - limit) > 0.5)
-            bodyScroll.MaximumHeightRequest = limit;
+
+        // Natural height of the body content, measured without a height constraint.
+        var constraint = root.Width > 0 ? root.Width : double.PositiveInfinity;
+        var natural = bodyScroll.Content.Measure(constraint, double.PositiveInfinity).Request.Height;
+
+        // The sheet may not grow past the screen, so the body gets whatever is left after
+        // the chrome and the footer.
+        var chromeHeight = chromeView.Height > 0 ? chromeView.Height : 0;
+        var footerHeight = footerView.Height > 0 ? footerView.Height : 0;
+        var limit = viewportHeight - chromeHeight - footerHeight;
+
+        // Only cap when the content really overflows, so a short sheet never scrolls.
+        if (natural <= limit)
+        {
+            if (bodyScroll.MaximumHeightRequest != double.PositiveInfinity)
+                bodyScroll.MaximumHeightRequest = double.PositiveInfinity;
+            return;
+        }
+
+        var target = Math.Max(120, limit);
+        if (Math.Abs(bodyScroll.MaximumHeightRequest - target) > 0.5)
+            bodyScroll.MaximumHeightRequest = target;
     }
 
     // -- helpers ----------------------------------------------------------
@@ -692,4 +711,13 @@ public sealed class PurchasePopupContent
             Content = stack
         };
     }
+    /// <summary>Raised when the sheet content resizes, so the popup can be re-anchored.</summary>
+    public event EventHandler? SheetResized;
+
+    private void OnRootSized()
+    {
+        ApplyViewport();
+        SheetResized?.Invoke(this, EventArgs.Empty);
+    }
+
 }

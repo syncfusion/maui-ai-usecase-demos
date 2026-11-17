@@ -33,9 +33,11 @@ public sealed class TopUpPopupContent : IDisposable
     private readonly Label allowanceLabel;
     private readonly Label purchaseLabel;
     private readonly View accentBar;
+    private readonly VerticalStackLayout chromeView;
     private readonly VerticalStackLayout sheetBody;
     private readonly ScrollView bodyScroll;
-    private readonly View footerView;
+    private readonly VerticalStackLayout bannerHost;
+    private readonly VerticalStackLayout footerHost;
     private double viewportHeight;
     private bool isCompact;
     private bool isSheet;
@@ -43,15 +45,15 @@ public sealed class TopUpPopupContent : IDisposable
     public TopUpPopupContent(MainViewModel viewModel)
     {
         this.viewModel = viewModel;
-        // Three rows: chrome (auto), body (star, scrolls when needed), footer (auto).
-        // The body row fills any remaining vertical space so the action buttons stay pinned
-        // to the bottom of the sheet.
+        // Three auto-sized rows: chrome, body and footer. The body is capped by the
+        // scroll view, so the sheet is exactly as tall as the content needs and never
+        // taller than the screen.
         root = new Grid
         {
             RowDefinitions =
             {
                 new RowDefinition(GridLength.Auto),
-                new RowDefinition(GridLength.Star),
+                new RowDefinition(GridLength.Auto),
                 new RowDefinition(GridLength.Auto)
             },
             BackgroundColor = Colors.White,
@@ -62,15 +64,19 @@ public sealed class TopUpPopupContent : IDisposable
         purchaseLabel = BuildPurchaseLabel();
 
         accentBar = BuildAccentBar();
-        root.Add(accentBar, 0, 0);
-        root.Add(BottomSheetChrome.BuildHandle(), 0, 0);
-        root.Add(BuildHeader(), 0, 0);
+        chromeView = new VerticalStackLayout { Spacing = 0 };
+        chromeView.Add(accentBar);
+        chromeView.Add(BottomSheetChrome.BuildHandle());
+        chromeView.Add(BuildHeader());
+        root.Add(chromeView, 0, 0);
 
         // The body is a scrollable list of sections. It only starts scrolling once its
         // MaximumHeightRequest is set, so a short sheet shows everything without any scroll
         // bar. When the sheet is taller than the screen, ApplyViewport clamps it.
         sheetBody = new VerticalStackLayout { Spacing = 14 };
-        sheetBody.Add(BuildProfileBanner());
+        bannerHost = new VerticalStackLayout { Spacing = 0 };
+        bannerHost.Add(BuildProfileBanner());
+        sheetBody.Add(bannerHost);
         sheetBody.Add(BuildTierSection());
         sheetBody.Add(BuildSummarySection());
         bodyScroll = new ScrollView
@@ -80,10 +86,12 @@ public sealed class TopUpPopupContent : IDisposable
         };
         root.Add(bodyScroll, 1, 0);
 
-        footerView = BuildFooter();
-        root.Add(footerView, 2, 0);
+        // The footer is rebuilt when the sheet mode changes, so it is hosted in a stack.
+        footerHost = new VerticalStackLayout { Spacing = 0 };
+        footerHost.Add(BuildFooter());
+        root.Add(footerHost, 2, 0);
 
-        root.SizeChanged += (_, _) => ApplyViewport();
+        root.SizeChanged += (_, _) => OnRootSized();
 
         BuildTiers();
 
@@ -105,6 +113,8 @@ public sealed class TopUpPopupContent : IDisposable
         if (isCompact == compact) return;
         isCompact = compact;
         BuildTiers();
+        RebuildBanner();
+        RebuildFooter();
     }
 
     /// <summary>Switches the dialog into the mobile bottom-sheet presentation.</summary>
@@ -115,6 +125,22 @@ public sealed class TopUpPopupContent : IDisposable
         accentBar.IsVisible = !sheet;
         isCompact = sheet || isCompact;
         BuildTiers();
+        RebuildBanner();
+        RebuildFooter();
+    }
+
+    /// <summary>Rebuilds the footer so it matches the current sheet arrangement.</summary>
+    private void RebuildFooter()
+    {
+        footerHost.Children.Clear();
+        footerHost.Add(BuildFooter());
+    }
+
+    /// <summary>Rebuilds the profile banner so it matches the current sheet arrangement.</summary>
+    private void RebuildBanner()
+    {
+        bannerHost.Children.Clear();
+        bannerHost.Add(BuildProfileBanner());
     }
 
     /// <summary>Used by the popup host to tell the content about the available screen height.</summary>
@@ -124,20 +150,40 @@ public sealed class TopUpPopupContent : IDisposable
     }
 
     /// <summary>
-    /// Clamps the scrollable body so the footer stays pinned to the bottom of the sheet. The
-    /// body only starts scrolling once the sheet reaches the viewport height.
+    /// Caps the scrollable body so the sheet never grows past the visible screen. When the
+    /// content fits, the body keeps its natural height and the sheet hugs it. When it does
+    /// not fit, the body is capped and scrolls instead.
     /// </summary>
     public void ApplyViewport()
     {
+        ApplyViewport(root.Width);
+    }
+
+    private void ApplyViewport(double width)
+    {
         if (viewportHeight <= 0) return;
-        // The sheet itself is sized to 88% of the viewport (set by DemoPage.ApplyBottomSheet).
-        // Reserve room for chrome (top), footer (bottom), and a little padding.
-        var chromeHeight = (root.Height > 0 ? root.Height : (int)Math.Max(360, viewportHeight * 0.88))
-                           - bodyScroll.Height;
-        if (chromeHeight <= 0) return;
-        var limit = Math.Max(200, viewportHeight * 0.88 - chromeHeight);
-        if (Math.Abs(bodyScroll.MaximumHeightRequest - limit) > 0.5)
-            bodyScroll.MaximumHeightRequest = limit;
+
+        // Natural height of the body content, measured without a height constraint.
+        var constraint = width > 0 ? width : double.PositiveInfinity;
+        var natural = sheetBody.Measure(constraint, double.PositiveInfinity).Request.Height;
+
+        // The sheet may not grow past the screen, so the body gets whatever is left after
+        // the chrome and the footer.
+        var chromeHeight = chromeView.Height > 0 ? chromeView.Height : 0;
+        var footerHeight = footerHost.Height > 0 ? footerHost.Height : 0;
+        var limit = viewportHeight - chromeHeight - footerHeight;
+
+        // Only cap when the content really overflows, so a short sheet never scrolls.
+        if (natural <= limit)
+        {
+            if (bodyScroll.MaximumHeightRequest != double.PositiveInfinity)
+                bodyScroll.MaximumHeightRequest = double.PositiveInfinity;
+            return;
+        }
+
+        var target = Math.Max(120, limit);
+        if (Math.Abs(bodyScroll.MaximumHeightRequest - target) > 0.5)
+            bodyScroll.MaximumHeightRequest = target;
     }
 
     private void BuildTiers()
@@ -368,9 +414,10 @@ public sealed class TopUpPopupContent : IDisposable
         right.Add(separator);
         right.Add(days);
 
-        var banner = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 12 };
-        banner.Add(left);
-        banner.Add(right, 1);
+        // On the phone the two halves do not fit on one line, so they stack.
+        var banner = isCompact
+            ? BuildStackedBanner(left, right)
+            : BuildSideBySideBanner(left, right);
 
         var host = new Border
         {
@@ -384,6 +431,22 @@ public sealed class TopUpPopupContent : IDisposable
         var wrapper = new Border { Padding = new Thickness(28, 4, 28, 0), StrokeThickness = 0 };
         wrapper.Content = host;
         return wrapper;
+    }
+
+    private static View BuildSideBySideBanner(View left, View right)
+    {
+        var banner = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, ColumnSpacing = 12 };
+        banner.Add(left);
+        banner.Add(right, 1);
+        return banner;
+    }
+
+    private static View BuildStackedBanner(View left, View right)
+    {
+        var banner = new VerticalStackLayout { Spacing = 4 };
+        banner.Add(left);
+        banner.Add(right);
+        return banner;
     }
 
     private View BuildTierSection()
@@ -849,17 +912,41 @@ public sealed class TopUpPopupContent : IDisposable
         };
         cancel.Clicked += (_, _) => CancelRequested?.Invoke(this, EventArgs.Empty);
 
-        var actions = new Grid
+        // On the phone the purchase button fills the width and Cancel sits below it, which
+        // matches the reference sheet. The wide dialog keeps them on one row.
+        var actions = new VerticalStackLayout { Spacing = 12 };
+        if (isCompact)
         {
-            ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) },
-            ColumnSpacing = 12,
-            HorizontalOptions = LayoutOptions.End
-        };
-        actions.Add(cancel);
-        actions.Add(purchase, 1);
+            purchase.HorizontalOptions = LayoutOptions.Fill;
+            purchase.VerticalOptions = LayoutOptions.Fill;
+            cancel.HorizontalOptions = LayoutOptions.Center;
+            actions.Add(purchase);
+            actions.Add(cancel);
+        }
+        else
+        {
+            var row = new Grid
+            {
+                ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) },
+                ColumnSpacing = 12,
+                HorizontalOptions = LayoutOptions.End
+            };
+            row.Add(cancel);
+            row.Add(purchase, 1);
+            actions.Add(row);
+        }
 
         var footer = new Border { Padding = new Thickness(28, 16, 28, 22), StrokeThickness = 0 };
         footer.Content = actions;
         return footer;
     }
+    /// <summary>Raised when the sheet content resizes, so the popup can be re-anchored.</summary>
+    public event EventHandler? SheetResized;
+
+    private void OnRootSized()
+    {
+        ApplyViewport();
+        SheetResized?.Invoke(this, EventArgs.Empty);
+    }
+
 }

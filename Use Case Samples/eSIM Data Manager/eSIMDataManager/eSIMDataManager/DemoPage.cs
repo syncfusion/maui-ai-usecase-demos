@@ -153,25 +153,35 @@ public class DemoPage
     }
 
     /// <summary>
-    /// Turns the popup into a full-width bottom sheet: anchored to the bottom edge, taller
-    /// than the desktop dialog, with the slide-up animation used by mobile sheets. The sheet
-    /// rounds only the top corners because the bottom edge sits flush against the screen.
+    /// Turns the popup into a full-width bottom sheet: anchored to the bottom edge, with the
+    /// slide-up animation used by mobile sheets. The sheet rounds only the top corners
+    /// because the bottom edge sits flush against the screen.
     /// </summary>
     private void ApplyBottomSheet(SfPopup target, double availableWidth)
     {
         target.WidthRequest = Math.Max(320, availableWidth - 16);
-        target.AutoSizeMode = PopupAutoSizeMode.None;
+        // The sheet hugs its content and never grows past the visible screen.
+        target.AutoSizeMode = PopupAutoSizeMode.Height;
         target.AnimationMode = PopupAnimationMode.SlideOnBottom;
         target.PopupStyle.CornerRadius = BottomSheetChrome.TopCorners();
 
-        // The sheet is anchored by its top edge, so the height has to be known up front.
-        // The sheet fills most of the viewport and its body scrolls instead of growing.
         var viewport = (int)Math.Max(360, availableHeight > 0 ? availableHeight : 640);
-        var sheetHeight = (int)Math.Max(360, Math.Min(viewport - 24, viewport * 0.88));
-        target.HeightRequest = sheetHeight;
-        target.MaximumHeightRequest = sheetHeight;
-        target.StartY = viewport - sheetHeight;
-        target.StartX = 8;
+        target.MaximumHeightRequest = viewport;
+    }
+
+    /// <summary>
+    /// Keeps a bottom sheet anchored to the bottom edge of the screen. The sheet hugs its
+    /// content, so the top edge moves as the content grows or shrinks.
+    /// </summary>
+    private void AnchorSheetToBottom(SfPopup target)
+    {
+        if (!IsBottomSheetHost) return;
+
+        var viewport = (int)Math.Max(360, availableHeight > 0 ? availableHeight : 640);
+        var sheetHeight = target.Height > 0 ? target.Height : 0;
+        if (sheetHeight <= 0) return;
+
+        target.StartY = Math.Max(0, viewport - (int)Math.Ceiling(sheetHeight));
     }
 
     protected void ShowDemoPopup(string title, EsimProfile? profile = null)
@@ -216,6 +226,7 @@ public class DemoPage
         // reserved for the desktop dialog.
         qrContent.SetCompact(IsBottomSheetHost || qrPopup.WidthRequest < 620);
         qrContent.SetViewport(availableHeight);
+        qrContent.SheetResized += (_, _) => AnchorSheetToBottom(qrPopup);
         qrPopup.Show();
     }
 
@@ -239,6 +250,7 @@ public class DemoPage
         topUpContent.ChangePaymentRequested += (_, _) => ChangePaymentRequested();
         topUpContent.PurchaseRequested += (_, _) => ConfirmTopUp(profile);
 
+        topUpContent.SheetResized += (_, _) => AnchorSheetToBottom(topUpPopup);
         topUpPopup.ContentTemplate = new DataTemplate(() => topUpContent!.Content);
         UpdateTopUpPopupWidth(availableTopUpWidth);
         topUpPopup.Show();
@@ -291,6 +303,7 @@ public class DemoPage
         purchaseContent.ChangePaymentRequested += (_, _) => ChangePaymentRequested();
         purchaseContent.PurchaseRequested += (_, _) => ConfirmPurchase(plan);
 
+        purchaseContent.SheetResized += (_, _) => AnchorSheetToBottom(purchasePopup);
         purchasePopup.ContentTemplate = new DataTemplate(() => purchaseContent!.Content);
         UpdateTopUpPopupWidth(availableTopUpWidth);
         purchasePopup.Show();

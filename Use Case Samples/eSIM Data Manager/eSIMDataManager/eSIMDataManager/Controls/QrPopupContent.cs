@@ -57,36 +57,48 @@ public sealed class QrPopupContent
     private readonly View scanCardHost;
     private readonly View stepsHost;
     private readonly View accentBar;
-    private readonly View footerView;
+    private readonly VerticalStackLayout chromeView;
+    private readonly VerticalStackLayout headerHost;
+    private readonly VerticalStackLayout bannerHost;
+    private readonly VerticalStackLayout footerHost;
+    private readonly EsimProfile? profile;
+    private readonly string activationCode;
     private bool isCompact;
     private bool isSheet;
     private double availableHeight;
 
     public QrPopupContent(EsimProfile? profile)
     {
-        var activationCode = profile?.ActivationCode ?? "LPA:1$rsp.global-esim.net$SAMPLE";
+        this.profile = profile;
+        activationCode = profile?.ActivationCode ?? "LPA:1$rsp.global-esim.net$SAMPLE";
 
-        // Three rows: chrome (auto), body (star, scrolls when needed), footer (auto).
-        // The body row fills any remaining vertical space so the action buttons stay pinned
-        // to the bottom of the sheet.
+        // Three auto-sized rows: chrome, body and footer. The body is capped by the scroll
+        // view, so the sheet is exactly as tall as the content needs and never taller than
+        // the screen.
         root = new Grid
         {
             RowDefinitions =
             {
                 new RowDefinition(GridLength.Auto),
-                new RowDefinition(GridLength.Star),
+                new RowDefinition(GridLength.Auto),
                 new RowDefinition(GridLength.Auto)
             },
             BackgroundColor = Colors.White,
         };
         root.Resources.Add(PopupLabelStyle);
-        root.SizeChanged += RootOnSizeChanged;
+        root.SizeChanged += (_, _) => OnRootSized();
 
         accentBar = BuildAccentBar();
-        root.Add(accentBar, 0, 0);
-        root.Add(BottomSheetChrome.BuildHandle(), 0, 0);
-        root.Add(BuildHeader(profile), 0, 0);
-        root.Add(BuildProfileBanner(profile), 0, 0);
+        chromeView = new VerticalStackLayout { Spacing = 0 };
+        chromeView.Add(accentBar);
+        chromeView.Add(BottomSheetChrome.BuildHandle());
+        headerHost = new VerticalStackLayout { Spacing = 0 };
+        headerHost.Add(BuildHeader(profile));
+        chromeView.Add(headerHost);
+        bannerHost = new VerticalStackLayout { Spacing = 0 };
+        bannerHost.Add(BuildProfileBanner(profile));
+        chromeView.Add(bannerHost);
+        root.Add(chromeView, 0, 0);
 
         scanCardHost = BuildScanCard(profile, activationCode);
         stepsHost = BuildSteps(profile, activationCode);
@@ -96,6 +108,8 @@ public sealed class QrPopupContent
         // is not in use is detached before the other one is filled.
         compactStack = new VerticalStackLayout { Spacing = 12 };
 
+        // The grid only splits into two columns on the wide desktop dialog. On the phone the
+        // hosts are stacked in a single full-width column.
         bodyGrid = new Grid
         {
             ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) },
@@ -110,8 +124,9 @@ public sealed class QrPopupContent
         };
 
         root.Add(bodyScroll, 1, 0);
-        footerView = BuildFooter(profile, activationCode);
-        root.Add(footerView, 2, 0);
+        footerHost = new VerticalStackLayout { Spacing = 0 };
+        footerHost.Add(BuildFooter(profile, activationCode));
+        root.Add(footerHost, 2, 0);
 
         ApplyLayout(isCompact);
     }
@@ -144,12 +159,18 @@ public sealed class QrPopupContent
 
         if (compact)
         {
+            // One full-width column on the phone so the stacked content is not squeezed
+            // into half of the sheet.
+            bodyGrid.ColumnDefinitions[0].Width = GridLength.Star;
+            bodyGrid.ColumnDefinitions[1].Width = GridLength.Absolute(0);
             compactStack.Add(scanCardHost);
             compactStack.Add(stepsHost);
             bodyGrid.Children.Add(compactStack);
             return;
         }
 
+        bodyGrid.ColumnDefinitions[0].Width = GridLength.Star;
+        bodyGrid.ColumnDefinitions[1].Width = GridLength.Star;
         bodyGrid.Add(scanCardHost, 0, 0);
         bodyGrid.Add(stepsHost, 1, 0);
     }
@@ -161,6 +182,18 @@ public sealed class QrPopupContent
         isSheet = sheet;
         accentBar.IsVisible = !sheet;
         if (sheet) SetCompact(true);
+        RebuildChrome();
+    }
+
+    /// <summary>Rebuilds the header, banner and footer for the current sheet arrangement.</summary>
+    private void RebuildChrome()
+    {
+        headerHost.Children.Clear();
+        headerHost.Add(BuildHeader(profile));
+        bannerHost.Children.Clear();
+        bannerHost.Add(BuildProfileBanner(profile));
+        footerHost.Children.Clear();
+        footerHost.Add(BuildFooter(profile, activationCode));
     }
 
     /// <summary>Used by the popup host to tell the content about the available screen height.</summary>
@@ -169,7 +202,7 @@ public sealed class QrPopupContent
         this.availableHeight = availableHeight;
     }
 
-    private void RootOnSizeChanged(object? sender, EventArgs e) => ApplyViewport();
+    private void RootOnSizeChanged(object? sender, EventArgs e) => OnRootSized();
 
     /// <summary>
     /// Clamps the scrollable body so the footer stays pinned to the bottom of the sheet. The
@@ -178,12 +211,28 @@ public sealed class QrPopupContent
     public void ApplyViewport()
     {
         if (availableHeight <= 0) return;
-        var chromeHeight = (root.Height > 0 ? root.Height : (int)Math.Max(360, availableHeight * 0.88))
-                           - bodyScroll.Height;
-        if (chromeHeight <= 0) return;
-        var limit = Math.Max(200, availableHeight * 0.88 - chromeHeight);
-        if (Math.Abs(bodyScroll.MaximumHeightRequest - limit) > 0.5)
-            bodyScroll.MaximumHeightRequest = limit;
+
+        // Natural height of the body content, measured without a height constraint.
+        var constraint = root.Width > 0 ? root.Width : double.PositiveInfinity;
+        var natural = bodyGrid.Measure(constraint, double.PositiveInfinity).Request.Height;
+
+        // The sheet may not grow past the screen, so the body gets whatever is left after
+        // the chrome and the footer.
+        var chromeHeight = chromeView.Height > 0 ? chromeView.Height : 0;
+        var footerHeight = footerHost.Height > 0 ? footerHost.Height : 0;
+        var limit = availableHeight - chromeHeight - footerHeight;
+
+        // Only cap when the content really overflows, so a short sheet never scrolls.
+        if (natural <= limit)
+        {
+            if (bodyScroll.MaximumHeightRequest != double.PositiveInfinity)
+                bodyScroll.MaximumHeightRequest = double.PositiveInfinity;
+            return;
+        }
+
+        var target = Math.Max(120, limit);
+        if (Math.Abs(bodyScroll.MaximumHeightRequest - target) > 0.5)
+            bodyScroll.MaximumHeightRequest = target;
     }
 
     // -- helpers ----------------------------------------------------------
@@ -323,10 +372,34 @@ public sealed class QrPopupContent
         header.Add(titles, 1, 0);
         header.Add(readyPill, 2, 0);
         header.Add(close, 3, 0);
+
+        if (isSheet)
+        {
+            // The phone sheet centres the icon above the title, as in the reference.
+            var centered = new VerticalStackLayout { Spacing = 10, HorizontalOptions = LayoutOptions.Center };
+            centered.Add(iconTile);
+            centered.Add(titles);
+            var centeredHeader = new Grid
+            {
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition(GridLength.Auto),
+                    new ColumnDefinition(GridLength.Star),
+                    new ColumnDefinition(GridLength.Auto)
+                },
+                ColumnSpacing = 12,
+                Padding = new Thickness(16, 12, 12, 8)
+            };
+            centeredHeader.Add(new Label(), 0, 0);
+            centeredHeader.Add(centered, 1, 0);
+            centeredHeader.Add(close, 2, 0);
+            return centeredHeader;
+        }
+
         return header;
     }
 
-    private static View BuildProfileBanner(EsimProfile? profile)
+    private View BuildProfileBanner(EsimProfile? profile)
     {
         var country = profile?.Country ?? "Japan";
         var countryCode = country.Equals("Japan", StringComparison.OrdinalIgnoreCase) ? "JP" : country[..2].ToUpperInvariant();
@@ -383,7 +456,24 @@ public sealed class QrPopupContent
         };
 
         var stack = new VerticalStackLayout { Spacing = 8 };
-        stack.Add(titleRow);
+        if (isSheet)
+        {
+            // On the phone the profile line wraps so it does not overflow the narrow sheet.
+            var nameRow = new HorizontalStackLayout { Spacing = 6, VerticalOptions = LayoutOptions.Center };
+            nameRow.Add(Text(countryCode, 13, Color.FromArgb(InkColor), FontAttributes.Bold));
+            nameRow.Add(Text(profile?.ProfileName ?? "Japan 5G Explorer", 13, Color.FromArgb(InkColor), FontAttributes.Bold));
+
+            var metaRow = new HorizontalStackLayout { Spacing = 6, VerticalOptions = LayoutOptions.Center };
+            metaRow.Add(Text($"{profile?.Carrier ?? "SoftBank Corp."}", 11, Color.FromArgb(MutedColor)));
+            metaRow.Add(Text($"({network})", 11, Color.FromArgb(MutedColor)));
+
+            stack.Add(nameRow);
+            stack.Add(metaRow);
+        }
+        else
+        {
+            stack.Add(titleRow);
+        }
         stack.Add(tier);
 
         return new Border
@@ -963,6 +1053,54 @@ public sealed class QrPopupContent
         footer.Add(sendEmail, 1, 0);
         footer.Add(scanned, 2, 0);
 
+        if (isSheet)
+        {
+            // The phone sheet uses a single full-width primary button with a text link
+            // underneath, as in the reference.
+            var completedRow = new HorizontalStackLayout { Spacing = 8, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center };
+            completedRow.Add(Icon(IconCircleCheck, 16, Colors.White, "MaterialAssets"));
+            completedRow.Add(Text("I've Completed Setup", 14, Colors.White, FontAttributes.Bold));
+
+            var completed = new SfButton
+            {
+                Background = Color.FromArgb(PrimaryColor),
+                Stroke = Color.Transparent,
+                StrokeThickness = 0,
+                CornerRadius = 10,
+                Padding = new Thickness(20, 10),
+                HorizontalOptions = LayoutOptions.Fill,
+                HeightRequest = 48,
+                Content = new DataTemplate(() => completedRow)
+            };
+            completed.Clicked += (_, _) => ScannedRequested?.Invoke(this, EventArgs.Empty);
+
+            var troubleshoot = new SfButton
+            {
+                Text = "Troubleshoot Connection",
+                FontFamily = UiFont,
+                FontSize = 13,
+                Background = Colors.Transparent,
+                TextColor = Color.FromArgb(MutedColor),
+                CornerRadius = 8,
+                Padding = new Thickness(12, 6),
+                HorizontalOptions = LayoutOptions.Center,
+                HeightRequest = 40
+            };
+            troubleshoot.Clicked += (_, _) => ScannedRequested?.Invoke(this, EventArgs.Empty);
+
+            var sheetFooter = new VerticalStackLayout { Spacing = 6, Padding = new Thickness(16, 14, 16, 16) };
+            sheetFooter.Add(completed);
+            sheetFooter.Add(troubleshoot);
+
+            return new Border
+            {
+                BackgroundColor = Colors.White,
+                StrokeThickness = 0,
+                Stroke = Color.FromArgb(OutlineVariant),
+                Content = sheetFooter
+            };
+        }
+
         return new Border
         {
             BackgroundColor = Colors.White,
@@ -997,4 +1135,13 @@ internal static class LabelExtensions
         configure(obj);
         return obj;
     }
+    /// <summary>Raised when the sheet content resizes, so the popup can be re-anchored.</summary>
+    public event EventHandler? SheetResized;
+
+    private void OnRootSized()
+    {
+        ApplyViewport();
+        SheetResized?.Invoke(this, EventArgs.Empty);
+    }
+
 }
