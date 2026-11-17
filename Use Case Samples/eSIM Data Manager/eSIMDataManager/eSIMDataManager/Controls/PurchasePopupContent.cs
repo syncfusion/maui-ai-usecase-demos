@@ -61,8 +61,9 @@ public sealed class PurchasePopupContent
         }
     };
 
-    private readonly VerticalStackLayout root;
+    private readonly Grid root;
     private readonly ScrollView bodyScroll;
+    private readonly View footerView;
     private readonly View accentBar;
     private bool isCompact;
     private bool isSheet;
@@ -70,13 +71,25 @@ public sealed class PurchasePopupContent
 
     public PurchasePopupContent(Plan? plan)
     {
-        root = new VerticalStackLayout { Spacing = 0, BackgroundColor = Colors.White };
+        // Three rows: chrome (auto), body (star, scrolls when needed), footer (auto).
+        // The body row fills any remaining vertical space so the action buttons stay pinned
+        // to the bottom of the sheet.
+        root = new Grid
+        {
+            RowDefinitions =
+            {
+                new RowDefinition(GridLength.Auto),
+                new RowDefinition(GridLength.Star),
+                new RowDefinition(GridLength.Auto)
+            },
+            BackgroundColor = Colors.White,
+        };
         root.Resources.Add(PopupLabelStyle);
 
         accentBar = BuildAccentBar();
-        root.Add(accentBar);
-        root.Add(BottomSheetChrome.BuildHandle());
-        root.Add(BuildHeader());
+        root.Add(accentBar, 0, 0);
+        root.Add(BottomSheetChrome.BuildHandle(), 0, 0);
+        root.Add(BuildHeader(), 0, 0);
 
         var body = new VerticalStackLayout { Spacing = 18 };
         body.Add(BuildPlanBanner(plan));
@@ -90,8 +103,9 @@ public sealed class PurchasePopupContent
             Content = body
         };
 
-        root.Add(bodyScroll);
-        root.Add(BuildFooter(plan));
+        root.Add(bodyScroll, 1, 0);
+        footerView = BuildFooter(plan);
+        root.Add(footerView, 2, 0);
         root.SizeChanged += (_, _) => ApplyViewport();
     }
 
@@ -125,19 +139,23 @@ public sealed class PurchasePopupContent
         isCompact = sheet || isCompact;
     }
 
-    /// <summary>Caps the scrollable body so the footer stays pinned inside the sheet.</summary>
+    /// <summary>Used by the popup host to tell the content about the available screen height.</summary>
     public void SetViewport(double viewportHeight)
     {
         this.viewportHeight = viewportHeight;
-        ApplyViewport();
     }
 
-    private void ApplyViewport()
+    /// <summary>
+    /// Clamps the scrollable body so the footer stays pinned to the bottom of the sheet. The
+    /// body only starts scrolling once the sheet reaches the viewport height.
+    /// </summary>
+    public void ApplyViewport()
     {
         if (viewportHeight <= 0) return;
-        var chrome = root.Height - bodyScroll.Height;
-        if (chrome <= 0) return;
-        var limit = Math.Max(200, viewportHeight - chrome);
+        var chromeHeight = (root.Height > 0 ? root.Height : (int)Math.Max(360, viewportHeight * 0.88))
+                           - bodyScroll.Height;
+        if (chromeHeight <= 0) return;
+        var limit = Math.Max(200, viewportHeight * 0.88 - chromeHeight);
         if (Math.Abs(bodyScroll.MaximumHeightRequest - limit) > 0.5)
             bodyScroll.MaximumHeightRequest = limit;
     }

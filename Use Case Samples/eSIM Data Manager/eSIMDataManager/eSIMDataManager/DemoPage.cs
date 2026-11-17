@@ -109,6 +109,10 @@ public class DemoPage
             topUpContent?.SetViewport(viewport);
             qrContent?.SetViewport(viewport);
             purchaseContent?.SetViewport(viewport);
+            // Push the scroll cap down to the content now that the sheet size is known.
+            topUpContent?.ApplyViewport();
+            qrContent?.ApplyViewport();
+            purchaseContent?.ApplyViewport();
             return;
         }
 
@@ -150,14 +154,15 @@ public class DemoPage
 
     /// <summary>
     /// Turns the popup into a full-width bottom sheet: anchored to the bottom edge, taller
-    /// than the desktop dialog, with the slide-up animation used by mobile sheets.
+    /// than the desktop dialog, with the slide-up animation used by mobile sheets. The sheet
+    /// rounds only the top corners because the bottom edge sits flush against the screen.
     /// </summary>
     private void ApplyBottomSheet(SfPopup target, double availableWidth)
     {
         target.WidthRequest = Math.Max(320, availableWidth - 16);
         target.AutoSizeMode = PopupAutoSizeMode.None;
         target.AnimationMode = PopupAnimationMode.SlideOnBottom;
-        target.PopupStyle.CornerRadius = 24;
+        target.PopupStyle.CornerRadius = BottomSheetChrome.TopCorners();
 
         // The sheet is anchored by its top edge, so the height has to be known up front.
         // The sheet fills most of the viewport and its body scrolls instead of growing.

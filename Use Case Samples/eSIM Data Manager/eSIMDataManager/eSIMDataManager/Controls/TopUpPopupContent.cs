@@ -25,7 +25,7 @@ public sealed class TopUpPopupContent : IDisposable
     private static readonly Style PopupLabelStyle = new(typeof(Label));
 
     private readonly MainViewModel viewModel;
-    private readonly VerticalStackLayout root;
+    private readonly Grid root;
     private readonly Grid tierContainer;
     private readonly List<Border> tierCards = [];
     private readonly List<Border> tierRadios = [];
@@ -35,6 +35,7 @@ public sealed class TopUpPopupContent : IDisposable
     private readonly View accentBar;
     private readonly VerticalStackLayout sheetBody;
     private readonly ScrollView bodyScroll;
+    private readonly View footerView;
     private double viewportHeight;
     private bool isCompact;
     private bool isSheet;
@@ -42,19 +43,32 @@ public sealed class TopUpPopupContent : IDisposable
     public TopUpPopupContent(MainViewModel viewModel)
     {
         this.viewModel = viewModel;
-        root = new VerticalStackLayout { Spacing = 0, BackgroundColor = Colors.White };
+        // Three rows: chrome (auto), body (star, scrolls when needed), footer (auto).
+        // The body row fills any remaining vertical space so the action buttons stay pinned
+        // to the bottom of the sheet.
+        root = new Grid
+        {
+            RowDefinitions =
+            {
+                new RowDefinition(GridLength.Auto),
+                new RowDefinition(GridLength.Star),
+                new RowDefinition(GridLength.Auto)
+            },
+            BackgroundColor = Colors.White,
+        };
         root.Resources.Add(PopupLabelStyle);
         tierContainer = new Grid();
         allowanceLabel = BuildAllowanceLabel();
         purchaseLabel = BuildPurchaseLabel();
 
         accentBar = BuildAccentBar();
-        root.Add(accentBar);
-        root.Add(BottomSheetChrome.BuildHandle());
-        root.Add(BuildHeader());
+        root.Add(accentBar, 0, 0);
+        root.Add(BottomSheetChrome.BuildHandle(), 0, 0);
+        root.Add(BuildHeader(), 0, 0);
 
-        // On the phone the sheet can be taller than the screen, so the body scrolls
-        // while the header and the purchase button stay pinned.
+        // The body is a scrollable list of sections. It only starts scrolling once its
+        // MaximumHeightRequest is set, so a short sheet shows everything without any scroll
+        // bar. When the sheet is taller than the screen, ApplyViewport clamps it.
         sheetBody = new VerticalStackLayout { Spacing = 14 };
         sheetBody.Add(BuildProfileBanner());
         sheetBody.Add(BuildTierSection());
@@ -64,8 +78,11 @@ public sealed class TopUpPopupContent : IDisposable
             VerticalScrollBarVisibility = ScrollBarVisibility.Never,
             Content = sheetBody
         };
-        root.Add(bodyScroll);
-        root.Add(BuildFooter());
+        root.Add(bodyScroll, 1, 0);
+
+        footerView = BuildFooter();
+        root.Add(footerView, 2, 0);
+
         root.SizeChanged += (_, _) => ApplyViewport();
 
         BuildTiers();
@@ -100,19 +117,25 @@ public sealed class TopUpPopupContent : IDisposable
         BuildTiers();
     }
 
-    /// <summary>Caps the scrollable body so the purchase button stays pinned inside the sheet.</summary>
+    /// <summary>Used by the popup host to tell the content about the available screen height.</summary>
     public void SetViewport(double viewportHeight)
     {
         this.viewportHeight = viewportHeight;
-        ApplyViewport();
     }
 
-    private void ApplyViewport()
+    /// <summary>
+    /// Clamps the scrollable body so the footer stays pinned to the bottom of the sheet. The
+    /// body only starts scrolling once the sheet reaches the viewport height.
+    /// </summary>
+    public void ApplyViewport()
     {
         if (viewportHeight <= 0) return;
-        var chrome = root.Height - bodyScroll.Height;
-        if (chrome <= 0) return;
-        var limit = Math.Max(200, viewportHeight - chrome);
+        // The sheet itself is sized to 88% of the viewport (set by DemoPage.ApplyBottomSheet).
+        // Reserve room for chrome (top), footer (bottom), and a little padding.
+        var chromeHeight = (root.Height > 0 ? root.Height : (int)Math.Max(360, viewportHeight * 0.88))
+                           - bodyScroll.Height;
+        if (chromeHeight <= 0) return;
+        var limit = Math.Max(200, viewportHeight * 0.88 - chromeHeight);
         if (Math.Abs(bodyScroll.MaximumHeightRequest - limit) > 0.5)
             bodyScroll.MaximumHeightRequest = limit;
     }
