@@ -131,7 +131,8 @@ public sealed class WorkflowResponseValidator
                 return false;
             }
 
-            if (connector.Label.Length > WorkflowLimits.ConnectorLabel)
+            var connectorLabel = connector.Label ?? string.Empty;
+            if (connectorLabel.Length > WorkflowLimits.ConnectorLabel)
             {
                 errorMessage = $"Connector '{connector.Id}' exceeds the label limit of {WorkflowLimits.ConnectorLabel} characters.";
                 return false;

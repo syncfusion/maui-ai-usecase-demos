@@ -56,8 +56,7 @@
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
-		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
-		
+
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
 
@@ -67,10 +66,11 @@
 
 	<ItemGroup>
     <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.120" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
-    <PackageReference Include="Syncfusion.Maui.Core" Version="35.1.43" />
-    <PackageReference Include="Syncfusion.Maui.Diagram" Version="35.1.43" />
+    <PackageReference Include="Syncfusion.Maui.Core" Version="*" />
+    <PackageReference Include="Syncfusion.Maui.Diagram" Version="*" />
   </ItemGroup>
 
 </Project>

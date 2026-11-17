@@ -1,11 +1,14 @@
+using System.Net.Http;
+using System.Text;
 using System.Text.Json;
-using Azure.AI.OpenAI;
 using AIProcessDiagramDrafting.Models;
 
 namespace AIProcessDiagramDrafting.Services;
 
 public sealed class AzureOpenAIWorkflowExtractionService : AzureBaseService, IWorkflowExtractionService
 {
+    private static readonly HttpClient HttpClient = new();
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
@@ -30,26 +33,97 @@ public sealed class AzureOpenAIWorkflowExtractionService : AzureBaseService, IWo
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(processDescription);
 
-        var client = CreateClient();
-        var chatClient = client.GetChatClient(DeploymentName);
+        var request = new HttpRequestMessage(HttpMethod.Post, GetChatCompletionsUri());
+        request.Headers.TryAddWithoutValidation("api-key", ApiKey);
 
-        var messages = new List<OpenAI.Chat.ChatMessage>
+        var payload = new
         {
-            new OpenAI.Chat.SystemChatMessage(SystemPrompt),
-            new OpenAI.Chat.UserChatMessage(processDescription)
+            model = DeploymentName,
+            messages = new object[]
+            {
+                new { role = "system", content = SystemPrompt },
+                new { role = "user", content = processDescription }
+            },
+            temperature = 0f,
+            max_completion_tokens = 2048,
+            response_format = new { type = "json_object" }
         };
 
-        var options = new OpenAI.Chat.ChatCompletionOptions
+        request.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+
+        HttpResponseMessage response;
+        try
         {
-            Temperature = 0f,
-            ResponseFormat = OpenAI.Chat.ChatResponseFormat.CreateJsonObjectFormat(),
-            MaxOutputTokenCount = 2048
-        };
+            response = await HttpClient.SendAsync(request, cancellationToken);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new InvalidOperationException($"Azure OpenAI request failed: {ex.Message}", ex);
+        }
 
-        var completion = await chatClient.CompleteChatAsync(messages, options, cancellationToken);
-        var json = string.Concat(completion.Value.Content.Select(content => content.Text ?? string.Empty));
+        using (response)
+        {
+            var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        return JsonSerializer.Deserialize<WorkflowResponse>(json, JsonOptions)
-            ?? throw new InvalidOperationException("Azure OpenAI returned an empty workflow response.");
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new InvalidOperationException($"Azure OpenAI request failed: HTTP {(int)response.StatusCode} ({response.ReasonPhrase}): {responseBody}");
+            }
+
+            using var responseDocument = JsonDocument.Parse(responseBody);
+            var content = responseDocument.RootElement
+                .GetProperty("choices")[0]
+                .GetProperty("message")
+                .GetProperty("content")
+                .GetString() ?? string.Empty;
+
+            var json = ExtractJsonPayload(content);
+
+            try
+            {
+                return JsonSerializer.Deserialize<WorkflowResponse>(json, JsonOptions)
+                    ?? throw new InvalidOperationException("Azure OpenAI returned an empty workflow response.");
+            }
+            catch (JsonException ex)
+            {
+                throw new InvalidOperationException("Azure OpenAI returned an invalid workflow response.", ex);
+            }
+        }
+    }
+
+    private static string ExtractJsonPayload(string content)
+    {
+        var cleaned = CleanJson(content);
+        var startIndex = cleaned.IndexOf('{');
+        var endIndex = cleaned.LastIndexOf('}');
+
+        if (startIndex >= 0 && endIndex > startIndex)
+        {
+            return cleaned[startIndex..(endIndex + 1)];
+        }
+
+        return cleaned;
+    }
+
+    private static string CleanJson(string content)
+    {
+        content = content.Trim();
+
+        if (content.StartsWith("```json", StringComparison.OrdinalIgnoreCase))
+        {
+            content = content[7..];
+        }
+
+        if (content.StartsWith("```", StringComparison.Ordinal))
+        {
+            content = content[3..];
+        }
+
+        if (content.EndsWith("```", StringComparison.Ordinal))
+        {
+            content = content[..^3];
+        }
+
+        return content.Trim();
     }
 }
