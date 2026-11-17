@@ -34,6 +34,7 @@
                     <Label
                         Text="{Binding DateTime, StringFormat='{0:h:mm tt}'}"
                         Style="{StaticResource MessageTimeStyle}"
+                        FontFamily="{OnPlatform Android=monospace, iOS=Courier}"
                         LineBreakMode="NoWrap"
                         VerticalTextAlignment="Center"
                         VerticalOptions="Center" />

@@ -66,6 +66,7 @@
                     <Label
                         Text="{Binding DateTime, StringFormat='{0:h:mm tt}'}"
                         Style="{StaticResource MessageTimeStyle}"
+                        FontFamily="{OnPlatform Android=monospace, iOS=Courier}"
                         LineBreakMode="NoWrap"
                         VerticalTextAlignment="Center"
                         VerticalOptions="Center" />
@@ -84,7 +85,7 @@
                     MaximumWidthRequest="{OnIdiom Phone=320, Tablet=500, Desktop=680, Default=680}"
                     HorizontalOptions="Start"
                     VerticalOptions="Start"
-                    BackgroundColor="#F1F5FA"
+                    BackgroundColor="{OnIdiom Phone='#FFFFFF', Tablet='#F1F5FA', Desktop='#F1F5FA', Default='#FFFFFF'}"
                     Stroke="{StaticResource BubbleBorderColor}"
                     StrokeThickness="1"
                     StrokeShape="RoundRectangle 8">
