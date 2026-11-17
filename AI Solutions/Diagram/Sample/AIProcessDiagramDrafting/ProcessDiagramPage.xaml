@@ -59,52 +59,6 @@
                 </VerticalStackLayout>
             </Border>
 
-            <Border IsVisible="{Binding HasDraftSummary}"
-                    Stroke="#E5E7EB"
-                    StrokeThickness="1"
-                    BackgroundColor="White"
-                    Padding="16"
-                    StrokeShape="RoundRectangle 16">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Draft summary"
-                           FontAttributes="Bold"
-                           FontSize="16" />
-
-                    <VerticalStackLayout Spacing="4"
-                                         IsVisible="{Binding HasDraftTitle}">
-                        <Label Text="Title"
-                               FontSize="12"
-                               TextColor="#6B7280" />
-                        <Label Text="{Binding DraftTitle}"
-                               FontSize="18"
-                               FontAttributes="Bold" />
-                    </VerticalStackLayout>
-
-                    <VerticalStackLayout Spacing="8"
-                                         IsVisible="{Binding HasWarnings}">
-                        <Label Text="Warnings"
-                               FontSize="12"
-                               TextColor="#6B7280" />
-                        <VerticalStackLayout Spacing="8"
-                                             BindableLayout.ItemsSource="{Binding Warnings}">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid ColumnDefinitions="Auto,*"
-                                          ColumnSpacing="8">
-                                        <BoxView WidthRequest="8"
-                                                 HeightRequest="8"
-                                                 Color="#F59E0B"
-                                                 VerticalOptions="Center" />
-                                        <Label Grid.Column="1"
-                                               Text="{Binding Message}"
-                                               LineBreakMode="WordWrap" />
-                                    </Grid>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </VerticalStackLayout>
-                    </VerticalStackLayout>
-                </VerticalStackLayout>
-            </Border>
         </VerticalStackLayout>
 
         <Border x:Name="DiagramSection"
