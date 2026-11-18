@@ -30,6 +30,9 @@ public partial class SupportChatPage : ContentPage
         ViewModel.ConfirmRegenerateAsync =
             ConfirmRegenerateAsync;
 
+        ViewModel.ConfirmDiscardAsync =
+            ConfirmDiscardAsync;
+
         ViewModel.ConfirmSelectionChangeAsync =
             ConfirmSelectionChangeAsync;
 
@@ -219,12 +222,49 @@ public partial class SupportChatPage : ContentPage
         }
     }
 
-    private async Task<bool> ConfirmRegenerateAsync()
+    private Task<bool> ConfirmRegenerateAsync()
     {
-        return await DisplayAlertAsync(
+        return ConfirmActionAsync(
             "Replace draft?",
             "Regenerating will replace your current edited draft.",
-            "Regenerate",
+            "Regenerate");
+    }
+
+    private Task<bool> ConfirmDiscardAsync()
+    {
+        return ConfirmActionAsync(
+            "Discard draft?",
+            "This will discard the current draft and clear the selection.",
+            "Discard");
+    }
+
+    /*
+     * Desktop (Windows, macOS) shows a dialog; Android and iOS show a
+     * bottom action sheet.
+     */
+    private async Task<bool> ConfirmActionAsync(
+        string title,
+        string message,
+        string accept)
+    {
+        if (DeviceInfo.Platform == DevicePlatform.Android
+            || DeviceInfo.Platform == DevicePlatform.iOS)
+        {
+            var choice = await DisplayActionSheetAsync(
+                $"{title} {message}",
+                "Cancel",
+                accept);
+
+            return string.Equals(
+                choice,
+                accept,
+                StringComparison.Ordinal);
+        }
+
+        return await DisplayAlertAsync(
+            title,
+            message,
+            accept,
             "Cancel");
     }
 

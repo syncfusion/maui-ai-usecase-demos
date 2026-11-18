@@ -146,6 +146,8 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
     public Func<Task<bool>>? ConfirmRegenerateAsync { get; set; }
 
+    public Func<Task<bool>>? ConfirmDiscardAsync { get; set; }
+
     public Func<Task<bool>>? ConfirmSelectionChangeAsync { get; set; }
 
     public bool CanDraftReply =>
@@ -260,6 +262,13 @@ public sealed partial class SupportChatViewModel : ObservableObject
                     DiscardSuggestion,
                     StringComparison.OrdinalIgnoreCase))
             {
+                if (HasDraft
+                    && ConfirmDiscardAsync is not null
+                    && !await ConfirmDiscardAsync())
+                {
+                    return;
+                }
+
                 CancelAndDisposeGenerationToken();
 
                 _lastGeneratedDraft = string.Empty;
@@ -597,9 +606,21 @@ public sealed partial class SupportChatViewModel : ObservableObject
     {
         return HasDraft
             && !string.Equals(
-                EditorText.Trim(),
-                _lastGeneratedDraft.Trim(),
+                NormalizeLineEndings(EditorText).Trim(),
+                NormalizeLineEndings(_lastGeneratedDraft).Trim(),
                 StringComparison.Ordinal);
+    }
+
+    /*
+     * Native editors report different line endings (WinUI uses CR,
+     * others LF), so compare drafts independent of the platform.
+     */
+    private static string NormalizeLineEndings(
+        string text)
+    {
+        return text
+            .Replace("\r\n", "\n")
+            .Replace('\r', '\n');
     }
 
     private void TransitionTo(
