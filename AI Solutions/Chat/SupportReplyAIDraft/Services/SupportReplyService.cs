@@ -167,7 +167,11 @@ public sealed class SupportReplyService : ISupportReplyService
             return SupportReplyValidationResult.Failure(
                 exception.Message);
         }
+#if DEBUG
         catch (Exception exception)
+#else
+        catch (Exception)
+#endif
         {
 #if DEBUG
             Console.Error.WriteLine(

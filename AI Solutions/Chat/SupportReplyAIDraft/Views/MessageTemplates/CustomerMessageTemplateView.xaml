@@ -92,7 +92,7 @@
 
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.SelectMessageCommand}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=SelectMessageCommand, x:DataType=views:SupportChatPage}"
                             CommandParameter="{Binding .}" />
                     </Border.GestureRecognizers>
 
@@ -105,8 +105,9 @@
                                 <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
                                     <Binding Path="." />
                                     <Binding
-                                        Path="BindingContext.SelectedMessage"
-                                        Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
+                                        Path="ViewModel.SelectedMessage"
+                                        Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}"
+                                        x:DataType="views:SupportChatPage" />
                                 </MultiBinding>
                             </DataTrigger.Binding>
 
@@ -146,8 +147,9 @@
                                         <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
                                             <Binding Path="." />
                                             <Binding
-                                                Path="BindingContext.SelectedMessage"
-                                                Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
+                                                Path="ViewModel.SelectedMessage"
+                                                Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}"
+                                                x:DataType="views:SupportChatPage" />
                                         </MultiBinding>
                                     </DataTrigger.Binding>
 
@@ -210,8 +212,8 @@
 
                         <!-- Draft Reply action -->
                         <Button
-                            Text="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.DraftReplyButtonText}"
-                            IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.CanDraftReply}"
+                            Text="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=ViewModel.DraftReplyButtonText, x:DataType=views:SupportChatPage}"
+                            IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=ViewModel.CanDraftReply, x:DataType=views:SupportChatPage}"
                             IsVisible="False"
                             Padding="0"
                             Margin="0"
@@ -223,7 +225,7 @@
                             TextColor="{StaticResource AccentColor}"
                             FontSize="14"
                             FontAttributes="Bold"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.DraftReplyCommand}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=DraftReplyCommand, x:DataType=views:SupportChatPage}"
                             CommandParameter="{Binding .}"
                             SemanticProperties.Description="Draft reply for selected customer message">
 
@@ -236,8 +238,9 @@
                                         <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
                                             <Binding Path="." />
                                             <Binding
-                                                Path="BindingContext.SelectedMessage"
-                                                Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
+                                                Path="ViewModel.SelectedMessage"
+                                                Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}"
+                                                x:DataType="views:SupportChatPage" />
                                         </MultiBinding>
                                     </DataTrigger.Binding>
 
@@ -249,7 +252,7 @@
 
                                 <DataTrigger
                                     TargetType="Button"
-                                    Binding="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.IsDraftReplyVisible}"
+                                    Binding="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=ViewModel.IsDraftReplyVisible, x:DataType=views:SupportChatPage}"
                                     Value="False">
 
                                     <Setter
@@ -277,8 +280,9 @@
                                         <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
                                             <Binding Path="." />
                                             <Binding
-                                                Path="BindingContext.SelectedMessage"
-                                                Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
+                                                Path="ViewModel.SelectedMessage"
+                                                Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}"
+                                                x:DataType="views:SupportChatPage" />
                                         </MultiBinding>
                                     </DataTrigger.Binding>
 
@@ -290,7 +294,7 @@
 
                                 <DataTrigger
                                     TargetType="HorizontalStackLayout"
-                                    Binding="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.IsDrafting}"
+                                    Binding="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=ViewModel.IsDrafting, x:DataType=views:SupportChatPage}"
                                     Value="False">
 
                                     <Setter
@@ -307,7 +311,7 @@
                                 Color="{StaticResource AccentColor}" />
 
                             <Label
-                                Text="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.ProgressMessage}"
+                                Text="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=ViewModel.ProgressMessage, x:DataType=views:SupportChatPage}"
                                 Style="{StaticResource MessageTimeStyle}"
                                 TextColor="{StaticResource AccentColor}"
                                 VerticalTextAlignment="Center"
@@ -317,7 +321,7 @@
 
                         <!-- Review hint -->
                         <Label
-                            Text="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.InlineMessage}"
+                            Text="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=ViewModel.InlineMessage, x:DataType=views:SupportChatPage}"
                             IsVisible="False"
                             Style="{StaticResource MessageTimeStyle}">
 
@@ -330,8 +334,9 @@
                                         <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
                                             <Binding Path="." />
                                             <Binding
-                                                Path="BindingContext.SelectedMessage"
-                                                Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
+                                                Path="ViewModel.SelectedMessage"
+                                                Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}"
+                                                x:DataType="views:SupportChatPage" />
                                         </MultiBinding>
                                     </DataTrigger.Binding>
 
@@ -343,7 +348,7 @@
 
                                 <DataTrigger
                                     TargetType="Label"
-                                    Binding="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.ShowReviewHint}"
+                                    Binding="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=ViewModel.ShowReviewHint, x:DataType=views:SupportChatPage}"
                                     Value="False">
 
                                     <Setter
@@ -357,7 +362,7 @@
 
                         <!-- Error message -->
                         <Label
-                            Text="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.InlineMessage}"
+                            Text="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=ViewModel.InlineMessage, x:DataType=views:SupportChatPage}"
                             IsVisible="False"
                             Style="{StaticResource MessageTimeStyle}"
                             TextColor="{StaticResource DangerColor}">
@@ -371,8 +376,9 @@
                                         <MultiBinding Converter="{StaticResource SelectedMessageMatchConverter}">
                                             <Binding Path="." />
                                             <Binding
-                                                Path="BindingContext.SelectedMessage"
-                                                Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}" />
+                                                Path="ViewModel.SelectedMessage"
+                                                Source="{RelativeSource AncestorType={x:Type views:SupportChatPage}}"
+                                                x:DataType="views:SupportChatPage" />
                                         </MultiBinding>
                                     </DataTrigger.Binding>
 
@@ -384,7 +390,7 @@
 
                                 <DataTrigger
                                     TargetType="Label"
-                                    Binding="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=BindingContext.ShowErrorMessage}"
+                                    Binding="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=ViewModel.ShowErrorMessage, x:DataType=views:SupportChatPage}"
                                     Value="False">
 
                                     <Setter
