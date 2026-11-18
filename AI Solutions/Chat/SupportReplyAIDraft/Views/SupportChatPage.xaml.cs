@@ -229,8 +229,9 @@ public partial class SupportChatPage : ContentPage
     }
 
     /*
-     * Confirmations: desktop (Windows, macOS) shows a dialog;
-     * Android and iOS show a bottom action sheet.
+     * Confirmations follow the device form factor: desktop devices
+     * (Windows, Mac Catalyst) show a dialog; phones and tablets
+     * running Android or iOS show a bottom action sheet.
      */
     private async Task<bool> ConfirmActionAsync(
         string title,
@@ -238,8 +239,12 @@ public partial class SupportChatPage : ContentPage
         string accept,
         string cancel)
     {
-        if (DeviceInfo.Platform == DevicePlatform.Android
-            || DeviceInfo.Platform == DevicePlatform.iOS)
+        var useBottomSheet =
+            (DeviceInfo.Platform == DevicePlatform.Android
+                || DeviceInfo.Platform == DevicePlatform.iOS)
+            && DeviceInfo.Idiom != DeviceIdiom.Desktop;
+
+        if (useBottomSheet)
         {
             var choice = await DisplayActionSheetAsync(
                 $"{title} {message}",
