@@ -100,43 +100,43 @@ public sealed partial class SupportChatViewModel : ObservableObject
     public ChatTypingIndicator TypingIndicator { get; }
 
     [ObservableProperty]
-    private TextMessage? selectedMessage;
+    public partial TextMessage? SelectedMessage { get; set; }
 
     [ObservableProperty]
-    private ChatSuggestions? chatSuggestions;
+    public partial ChatSuggestions? ChatSuggestions { get; set; }
 
     [ObservableProperty]
-    private bool showTypingIndicator;
+    public partial bool ShowTypingIndicator { get; set; }
 
     [ObservableProperty]
-    private bool isComposerEnabled;
+    public partial bool IsComposerEnabled { get; set; }
 
     [ObservableProperty]
-    private bool isComposerReadOnly;
+    public partial bool IsComposerReadOnly { get; set; }
 
     [ObservableProperty]
-    private string composerPlaceholder = InitialPlaceholder;
+    public partial string ComposerPlaceholder { get; set; } = InitialPlaceholder;
 
     [ObservableProperty]
-    private string editorText = string.Empty;
+    public partial string EditorText { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private bool isDrafting;
+    public partial bool IsDrafting { get; set; }
 
     [ObservableProperty]
-    private bool hasDraft;
+    public partial bool HasDraft { get; set; }
 
     [ObservableProperty]
-    private bool showReviewHint;
+    public partial bool ShowReviewHint { get; set; }
 
     [ObservableProperty]
-    private bool showErrorMessage;
+    public partial bool ShowErrorMessage { get; set; }
 
     [ObservableProperty]
-    private string inlineMessage = string.Empty;
+    public partial string InlineMessage { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private string progressMessage = string.Empty;
+    public partial string ProgressMessage { get; set; } = string.Empty;
 
     public IAsyncRelayCommand<TextMessage?> SelectMessageCommand { get; }
 
