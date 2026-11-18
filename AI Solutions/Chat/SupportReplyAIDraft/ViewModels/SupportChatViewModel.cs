@@ -146,8 +146,6 @@ public sealed partial class SupportChatViewModel : ObservableObject
 
     public Func<Task<bool>>? ConfirmRegenerateAsync { get; set; }
 
-    public Func<Task<bool>>? ConfirmDiscardAsync { get; set; }
-
     public Func<Task<bool>>? ConfirmSelectionChangeAsync { get; set; }
 
     public bool CanDraftReply =>
@@ -262,13 +260,6 @@ public sealed partial class SupportChatViewModel : ObservableObject
                     DiscardSuggestion,
                     StringComparison.OrdinalIgnoreCase))
             {
-                if (HasDraft
-                    && ConfirmDiscardAsync is not null
-                    && !await ConfirmDiscardAsync())
-                {
-                    return;
-                }
-
                 CancelAndDisposeGenerationToken();
 
                 _lastGeneratedDraft = string.Empty;

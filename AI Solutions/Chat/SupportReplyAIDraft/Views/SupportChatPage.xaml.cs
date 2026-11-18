@@ -30,9 +30,6 @@ public partial class SupportChatPage : ContentPage
         ViewModel.ConfirmRegenerateAsync =
             ConfirmRegenerateAsync;
 
-        ViewModel.ConfirmDiscardAsync =
-            ConfirmDiscardAsync;
-
         ViewModel.ConfirmSelectionChangeAsync =
             ConfirmSelectionChangeAsync;
 
@@ -230,17 +227,9 @@ public partial class SupportChatPage : ContentPage
             "Regenerate");
     }
 
-    private Task<bool> ConfirmDiscardAsync()
-    {
-        return ConfirmActionAsync(
-            "Discard draft?",
-            "This will discard the current draft and clear the selection.",
-            "Discard");
-    }
-
     /*
-     * Desktop (Windows, macOS) shows a dialog; Android and iOS show a
-     * bottom action sheet.
+     * Regenerate confirmation: desktop (Windows, macOS) shows a dialog;
+     * Android and iOS show a bottom action sheet.
      */
     private async Task<bool> ConfirmActionAsync(
         string title,
