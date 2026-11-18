@@ -223,25 +223,27 @@ public partial class SupportChatPage : ContentPage
     {
         return ConfirmActionAsync(
             "Replace draft?",
-            "Regenerating will replace your current edited draft.",
-            "Regenerate");
+            "Regenerating will replace your current draft.",
+            "Regenerate",
+            "Cancel");
     }
 
     /*
-     * Regenerate confirmation: desktop (Windows, macOS) shows a dialog;
+     * Confirmations: desktop (Windows, macOS) shows a dialog;
      * Android and iOS show a bottom action sheet.
      */
     private async Task<bool> ConfirmActionAsync(
         string title,
         string message,
-        string accept)
+        string accept,
+        string cancel)
     {
         if (DeviceInfo.Platform == DevicePlatform.Android
             || DeviceInfo.Platform == DevicePlatform.iOS)
         {
             var choice = await DisplayActionSheetAsync(
                 $"{title} {message}",
-                "Cancel",
+                cancel,
                 accept);
 
             return string.Equals(
@@ -254,12 +256,12 @@ public partial class SupportChatPage : ContentPage
             title,
             message,
             accept,
-            "Cancel");
+            cancel);
     }
 
-    private async Task<bool> ConfirmSelectionChangeAsync()
+    private Task<bool> ConfirmSelectionChangeAsync()
     {
-        return await DisplayAlertAsync(
+        return ConfirmActionAsync(
             "Discard current draft?",
             "Selecting another customer message will discard the current draft.",
             "Discard draft",

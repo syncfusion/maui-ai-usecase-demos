@@ -285,16 +285,13 @@ public sealed partial class SupportChatViewModel : ObservableObject
                     return;
                 }
 
-                if (HasDraftBeenEdited())
-                {
-                    var confirmed =
-                        ConfirmRegenerateAsync is null
-                        || await ConfirmRegenerateAsync();
+                var confirmed =
+                    ConfirmRegenerateAsync is null
+                    || await ConfirmRegenerateAsync();
 
-                    if (!confirmed)
-                    {
-                        return;
-                    }
+                if (!confirmed)
+                {
+                    return;
                 }
 
                 await GenerateDraftAsync(
@@ -591,27 +588,6 @@ public sealed partial class SupportChatViewModel : ObservableObject
         _lastStableDraftText = string.Empty;
 
         TransitionTo(WorkflowState.Sent);
-    }
-
-    private bool HasDraftBeenEdited()
-    {
-        return HasDraft
-            && !string.Equals(
-                NormalizeLineEndings(EditorText).Trim(),
-                NormalizeLineEndings(_lastGeneratedDraft).Trim(),
-                StringComparison.Ordinal);
-    }
-
-    /*
-     * Native editors report different line endings (WinUI uses CR,
-     * others LF), so compare drafts independent of the platform.
-     */
-    private static string NormalizeLineEndings(
-        string text)
-    {
-        return text
-            .Replace("\r\n", "\n")
-            .Replace('\r', '\n');
     }
 
     private void TransitionTo(
