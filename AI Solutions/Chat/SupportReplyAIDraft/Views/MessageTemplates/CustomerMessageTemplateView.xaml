@@ -10,7 +10,7 @@
 
     <Grid
         Padding="0"
-        Margin="0,0,0,24"
+        Margin="0,8,0,16"
         HorizontalOptions="Start"
         VerticalOptions="Start">
 
@@ -90,12 +90,6 @@
                     StrokeThickness="1"
                     StrokeShape="RoundRectangle 8">
 
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=SelectMessageCommand, x:DataType=views:SupportChatPage}"
-                            CommandParameter="{Binding .}" />
-                    </Border.GestureRecognizers>
-
                     <Border.Triggers>
                         <DataTrigger
                             TargetType="Border"
@@ -137,6 +131,12 @@
                             IsVisible="False"
                             HorizontalOptions="Fill"
                             VerticalOptions="Start">
+
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=SelectMessageCommand, x:DataType=views:SupportChatPage}"
+                                CommandParameter="{Binding .}" />
+                            </VerticalStackLayout.GestureRecognizers>
 
                             <VerticalStackLayout.Triggers>
                                 <DataTrigger
@@ -208,7 +208,14 @@
                             Text="{Binding Text}"
                             Style="{StaticResource MessageBodyStyle}"
                             HorizontalTextAlignment="Start"
-                            VerticalTextAlignment="Start" />
+                            VerticalTextAlignment="Start">
+
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type views:SupportChatPage}}, Path=SelectMessageCommand, x:DataType=views:SupportChatPage}"
+                                CommandParameter="{Binding .}" />
+                            </Label.GestureRecognizers>
+                        </Label>
 
                         <!-- Draft Reply action -->
                         <Button
