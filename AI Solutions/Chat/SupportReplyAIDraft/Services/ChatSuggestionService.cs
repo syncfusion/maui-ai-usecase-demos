@@ -7,13 +7,13 @@ namespace SupportReplyAIDraft.Services;
 public sealed class ChatSuggestionService : IChatSuggestionService
 {
     private static readonly ImageSource RegenerateSuggestionImage =
-        ImageSource.FromFile("support_reply_regenerate");
+        ImageSource.FromFile("support_reply_regenerate.png");
 
     private static readonly ImageSource RetrySuggestionImage =
-        ImageSource.FromFile("support_reply_retry");
+        ImageSource.FromFile("support_reply_retry.png");
 
     private static readonly ImageSource DiscardSuggestionImage =
-        ImageSource.FromFile("support_reply_discard");
+        ImageSource.FromFile("support_reply_discard.png");
 
     public ChatSuggestions Create(params string[] items)
     {
