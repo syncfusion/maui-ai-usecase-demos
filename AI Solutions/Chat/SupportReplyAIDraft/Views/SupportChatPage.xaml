@@ -446,8 +446,6 @@
                     Margin="0"
                     Messages="{Binding Messages}"
                     CurrentUser="{Binding CurrentUser}"
-                    TypingIndicator="{Binding TypingIndicator}"
-                    ShowTypingIndicator="{Binding ShowTypingIndicator}"
                     Suggestions="{Binding ChatSuggestions}"
                     SuggestionItemSelected="OnSuggestionItemSelected"
                     ShowMessageInputView="True"
