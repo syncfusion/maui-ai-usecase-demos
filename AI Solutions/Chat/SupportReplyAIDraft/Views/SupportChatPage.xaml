@@ -442,7 +442,7 @@
 
                 <chat:SfChat
                     x:Name="ConversationChat"
-                    Padding="{OnIdiom Phone='12,8', Tablet='20,12', Desktop='24,16', Default='12,8'}"
+                    Padding="{OnIdiom Phone='12,8,12,0', Tablet='20,12,20,0', Desktop='24,16,24,0', Default='12,8,12,0'}"
                     Margin="0"
                     Messages="{Binding Messages}"
                     CurrentUser="{Binding CurrentUser}"
