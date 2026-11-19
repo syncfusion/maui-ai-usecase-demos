@@ -34,6 +34,8 @@ public sealed class QrPopupContent
     private const string IconUser = "\uE71B";
     private const string IconPhone = "\uE718";
     private const string IconShare = "\uE80D";
+    private const string IconArrowLeft = "\uE72E";   // MaterialAssets "arrow-left"
+    private const string IconChevronDown = "\uE706";  // MaterialAssets "chevron-down"
 
     /// <summary>
     /// Shadows the app-level Label style. The app style sets TextColor through an AppThemeBinding,
@@ -285,6 +287,64 @@ public sealed class QrPopupContent
         return label;
     }
 
+    /// <summary>
+    /// A circular back/close button used in the sticky sheet header. The button is a
+    /// non-interactive <see cref="Border"/> wrapped in a tap gesture because <see cref="SfButton"/>
+    /// reserves extra padding that doesn't fit a 36x36 icon-only target.
+    /// </summary>
+    private static View BuildSheetNavButton(string glyph, double size, Action onTapped)
+    {
+        var icon = Icon(glyph, size, Color.FromArgb(MutedColor), "MaterialAssets");
+        var tile = new Border
+        {
+            WidthRequest = 36,
+            HeightRequest = 36,
+            BackgroundColor = Color.FromArgb(SurfaceLow),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(18) },
+            Content = icon
+        };
+        var grid = new Grid();
+        grid.Add(tile);
+        var tap = new TapGestureRecognizer();
+        tap.Tapped += (_, _) => onTapped();
+        grid.GestureRecognizers.Add(tap);
+        return grid;
+    }
+
+    /// <summary>
+    /// The "PROFILE READY" pill shown in the centred cell of the sticky sheet nav row.
+    /// The pill sits in its own light-cyan background and contains a green status dot plus
+    /// the bold uppercase label.
+    /// </summary>
+    private static View BuildProfileReadyPill()
+    {
+        var dot = new Ellipse
+        {
+            WidthRequest = 7,
+            HeightRequest = 7,
+            Fill = Color.FromArgb("#007A56"),
+            VerticalOptions = LayoutOptions.Center
+        };
+
+        var text = Text("PROFILE READY", 10.5, Color.FromArgb(MutedColor), FontAttributes.Bold);
+
+        var row = new HorizontalStackLayout { Spacing = 6, VerticalOptions = LayoutOptions.Center };
+        row.Add(dot);
+        row.Add(text);
+
+        return new Border
+        {
+            BackgroundColor = Color.FromArgb("#DCEDFE"),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(999) },
+            Padding = new Thickness(10, 4),
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            Content = row
+        };
+    }
+
     // -- sections --------------------------------------------------------
 
     private static View BuildAccentBar() => new BoxView
@@ -378,10 +438,47 @@ public sealed class QrPopupContent
 
         if (isSheet)
         {
-            // The phone sheet centres the icon above the title, as in the reference.
-            var centered = new VerticalStackLayout { Spacing = 10, HorizontalOptions = LayoutOptions.Center };
-            centered.Add(iconTile);
-            centered.Add(titles);
+            // The phone sheet is split into two stacked rows inside the sticky chrome:
+            //   1) navigation row (back arrow, PROFILE READY pill, close)
+            //   2) centered icon, title and subtitle (the "Activate Your eSIM" block)
+            // Both rows live above the scrollable body, so the title stays pinned to the
+            // top while the QR card, activation code and setup guide are scrolled.
+
+            var navBack = BuildSheetNavButton(IconArrowLeft, 16, () => CloseRequested?.Invoke(this, EventArgs.Empty));
+            var navClose = BuildSheetNavButton(IconClose, 16, () => CloseRequested?.Invoke(this, EventArgs.Empty));
+            var profileReady = BuildProfileReadyPill();
+
+            var navRow = new Grid
+            {
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition(GridLength.Auto),  // 0 back
+                    new ColumnDefinition(GridLength.Star),  // 1 centered pill
+                    new ColumnDefinition(GridLength.Auto)   // 2 close
+                },
+                ColumnSpacing = 8,
+                Padding = new Thickness(16, 12, 12, 0)
+            };
+            navRow.Add(navBack, 0, 0);
+            navRow.Add(profileReady, 1, 0);
+            navRow.Add(navClose, 2, 0);
+
+            // Centre the title and subtitle below the nav row, as in the reference.
+            var sheetTitle = Text("Activate Your eSIM", 21, Color.FromArgb(InkColor), FontAttributes.Bold);
+            sheetTitle.HorizontalTextAlignment = TextAlignment.Center;
+            var sheetSubtitle = Text(
+                "Scan this QR code from your device settings or print/share to another screen.",
+                11.5, Color.FromArgb(MutedColor));
+            sheetSubtitle.HorizontalTextAlignment = TextAlignment.Center;
+
+            var centeredTitles = new VerticalStackLayout { Spacing = 4, HorizontalOptions = LayoutOptions.Center };
+            centeredTitles.Add(sheetTitle);
+            centeredTitles.Add(sheetSubtitle);
+
+            var centeredBlock = new VerticalStackLayout { Spacing = 12, HorizontalOptions = LayoutOptions.Center };
+            centeredBlock.Add(iconTile);
+            centeredBlock.Add(centeredTitles);
+
             var centeredHeader = new Grid
             {
                 ColumnDefinitions =
@@ -391,12 +488,16 @@ public sealed class QrPopupContent
                     new ColumnDefinition(GridLength.Auto)
                 },
                 ColumnSpacing = 12,
-                Padding = new Thickness(16, 12, 12, 8)
+                Padding = new Thickness(16, 14, 16, 12)
             };
             centeredHeader.Add(new Label(), 0, 0);
-            centeredHeader.Add(centered, 1, 0);
-            centeredHeader.Add(close, 2, 0);
-            return centeredHeader;
+            centeredHeader.Add(centeredBlock, 1, 0);
+            centeredHeader.Add(new Label(), 2, 0);
+
+            var sheetHeader = new VerticalStackLayout { Spacing = 0 };
+            sheetHeader.Add(navRow);
+            sheetHeader.Add(centeredHeader);
+            return sheetHeader;
         }
 
         return header;
@@ -404,6 +505,14 @@ public sealed class QrPopupContent
 
     private View BuildProfileBanner(EsimProfile? profile)
     {
+        if (isSheet)
+        {
+            // On the mobile bottom sheet, the profile readiness pill is embedded directly
+            // inside the QR card at the top of the scrollable body, so the banner host in
+            // the sticky chrome stays empty.
+            return new BoxView { HeightRequest = 0, Color = Colors.Transparent, IsVisible = false };
+        }
+
         var country = profile?.Country ?? "Japan";
         var countryCode = country.Equals("Japan", StringComparison.OrdinalIgnoreCase) ? "JP" : country[..2].ToUpperInvariant();
         var network = profile?.Network == NetworkType.FiveG ? "5G" : "4G / LTE";
@@ -754,15 +863,20 @@ public sealed class QrPopupContent
             Value = activationCode
         };
 
+        // Centre badge — a small blue square with rounded corners and a white check mark,
+        // matching the desktop QR card. The badge sits inside the QR code's centre square
+        // by anchoring it to all four edges of the cell.
         var checkBadge = new Border
         {
-            WidthRequest = 30,
-            HeightRequest = 30,
-            BackgroundColor = Color.FromArgb(PrimaryColor),
+            WidthRequest = 34,
+            HeightRequest = 34,
+            BackgroundColor = Color.FromArgb(PrimaryActionColor),
             Stroke = Colors.White,
             StrokeThickness = 2,
-            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(15) },
-            Content = Icon(IconCheckTick, 13, Colors.White, "MaterialAssets")
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(8) },
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            Content = Icon(IconCheckTick, 14, Colors.White, "MaterialAssets")
         };
 
         var qrStack = new Grid
@@ -775,12 +889,28 @@ public sealed class QrPopupContent
         qrStack.Add(barcode, 0, 0);
         qrStack.Add(checkBadge, 0, 0);
 
+        // Four L-shaped corner brackets frame the QR code, matching the desktop card and
+        // the phone reference.
+        var qrFrame = new Grid
+        {
+            RowDefinitions = { new RowDefinition(GridLength.Auto), new RowDefinition(GridLength.Auto), new RowDefinition(GridLength.Auto) },
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) },
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center
+        };
+        qrFrame.Add(BuildCornerBracket(Corner.TopLeft), 0, 0);
+        qrFrame.Add(BuildCornerBracket(Corner.TopRight), 2, 0);
+        qrFrame.Add(BuildCornerBracket(Corner.BottomLeft), 0, 2);
+        qrFrame.Add(BuildCornerBracket(Corner.BottomRight), 2, 2);
+        qrFrame.Add(qrStack, 1, 1);
+
         var caption = new HorizontalStackLayout { Spacing = 5, HorizontalOptions = LayoutOptions.Center };
         caption.Add(Icon(IconCircleCheck, 10, Color.FromArgb("#006141"), "MaterialAssets"));
         caption.Add(Text("Single-use eSIM cryptographic key", 9.5, Color.FromArgb(MutedColor)));
 
-        var stack = new VerticalStackLayout { Spacing = 12 };
-        stack.Add(qrStack);
+        var stack = new VerticalStackLayout { Spacing = 14 };
+        stack.Add(BuildSheetReadyPill(profile));
+        stack.Add(qrFrame);
         stack.Add(caption);
 
         return new Border
@@ -790,6 +920,57 @@ public sealed class QrPopupContent
             StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
             Padding = new Thickness(14, 16),
             Content = stack
+        };
+    }
+
+    /// <summary>
+    /// The white readiness pill at the top of the mobile QR card: "Ready to Install • Carrier".
+    /// The pill is the only place the carrier is named inside the scrollable body, so the
+    /// user can confirm the install target without scrolling back to the chrome banner.
+    /// </summary>
+    private static View BuildSheetReadyPill(EsimProfile? profile)
+    {
+        var dot = Icon(IconCircleCheck, 11, Color.FromArgb("#007A56"), "MaterialAssets");
+
+        var labelText = new FormattedString
+        {
+            Spans =
+            {
+                new Span
+                {
+                    Text = "Ready to Install  \u2022  ",
+                    FontFamily = UiFont,
+                    FontSize = 11.5,
+                    FontAttributes = FontAttributes.Bold,
+                    TextColor = Color.FromArgb(InkColor)
+                },
+                new Span
+                {
+                    Text = profile?.Carrier ?? "SoftBank 5G",
+                    FontFamily = UiFont,
+                    FontSize = 11.5,
+                    FontAttributes = FontAttributes.Bold,
+                    TextColor = Color.FromArgb(PrimaryColor)
+                }
+            }
+        };
+
+        var label = new Label { FormattedText = labelText, VerticalOptions = LayoutOptions.Center };
+
+        var row = new HorizontalStackLayout { Spacing = 6, VerticalOptions = LayoutOptions.Center };
+        row.Add(dot);
+        row.Add(label);
+
+        return new Border
+        {
+            BackgroundColor = Colors.White,
+            Stroke = Color.FromArgb(OutlineVariant),
+            StrokeThickness = 1,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(999) },
+            Padding = new Thickness(10, 5),
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            Content = row
         };
     }
 
@@ -867,20 +1048,19 @@ public sealed class QrPopupContent
 
     private static View BuildSheetCopyButton()
     {
-        var copy = new SfButton
+        var row = new HorizontalStackLayout { Spacing = 4, VerticalOptions = LayoutOptions.Center };
+        row.Add(Icon(IconCopy, 11, Color.FromArgb(PrimaryColor), "MaterialAssets"));
+        row.Add(Text("Copy", 10.5, Color.FromArgb(PrimaryColor), FontAttributes.Bold));
+
+        return new Border
         {
-            Text = IconCopy,
-            FontFamily = "MaterialAssets",
-            FontSize = 11,
-            Background = Colors.Transparent,
-            TextColor = Color.FromArgb(PrimaryColor),
-            WidthRequest = 26,
-            HeightRequest = 26,
-            Padding = new Thickness(0),
-            CornerRadius = 6
+            BackgroundColor = Colors.White,
+            Stroke = Color.FromArgb(OutlineVariant),
+            StrokeThickness = 1,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(6) },
+            Padding = new Thickness(8, 3),
+            Content = row
         };
-        copy.SetAppThemeColor(SfButton.TextColorProperty, Color.FromArgb(PrimaryColor), Color.FromArgb(PrimaryColor));
-        return copy;
     }
 
     /// <summary>An outlined or filled action button used by the phone sheet.</summary>
