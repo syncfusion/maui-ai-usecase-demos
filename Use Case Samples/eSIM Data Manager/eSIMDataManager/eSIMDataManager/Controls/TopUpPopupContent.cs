@@ -356,8 +356,8 @@ public sealed class TopUpPopupContent : IDisposable
         };
 
         var heading = new HorizontalStackLayout { Spacing = 8, VerticalOptions = LayoutOptions.Center };
-        heading.Add(title);
         heading.Add(boltIcon);
+        heading.Add(title);
 
         var left = new VerticalStackLayout { Spacing = 4 };
         left.Add(heading);
