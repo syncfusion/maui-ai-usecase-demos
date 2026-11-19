@@ -182,7 +182,19 @@ public class DemoPage
         if (!IsBottomSheetHost) return;
 
         var viewport = (int)Math.Max(360, availableHeight > 0 ? availableHeight : 640);
+
+        // The popup itself is not laid out by the MAUI visual tree, so its Height stays
+        // unset. The measured height of the sheet content is used instead.
         var sheetHeight = target.Height > 0 ? target.Height : 0;
+        if (sheetHeight <= 0)
+        {
+            if (target == qrPopup && qrContent != null)
+                sheetHeight = qrContent.SheetHeight;
+            else if (target == topUpPopup && topUpContent != null)
+                sheetHeight = topUpContent.SheetHeight;
+            else if (target == purchasePopup && purchaseContent != null)
+                sheetHeight = purchaseContent.SheetHeight;
+        }
         if (sheetHeight <= 0) return;
 
         target.StartY = Math.Max(0, viewport - (int)Math.Ceiling(sheetHeight));
@@ -229,8 +241,9 @@ public class DemoPage
         // On mobile the sheet always uses the stacked arrangement; the wide layout is
         // reserved for the desktop dialog.
         qrContent.SetCompact(IsBottomSheetHost || qrPopup.WidthRequest < 620);
-        qrContent.SetViewport(availableHeight);
         qrContent.SheetResized += (_, _) => AnchorSheetToBottom(qrPopup);
+        UpdateTopUpPopupWidth(availableTopUpWidth);
+        AnchorSheetToBottom(qrPopup);
         qrPopup.Show();
     }
 
@@ -257,6 +270,7 @@ public class DemoPage
         topUpContent.SheetResized += (_, _) => AnchorSheetToBottom(topUpPopup);
         topUpPopup.ContentTemplate = new DataTemplate(() => topUpContent!.Content);
         UpdateTopUpPopupWidth(availableTopUpWidth);
+        AnchorSheetToBottom(topUpPopup);
         topUpPopup.Show();
     }
 
@@ -310,6 +324,7 @@ public class DemoPage
         purchaseContent.SheetResized += (_, _) => AnchorSheetToBottom(purchasePopup);
         purchasePopup.ContentTemplate = new DataTemplate(() => purchaseContent!.Content);
         UpdateTopUpPopupWidth(availableTopUpWidth);
+        AnchorSheetToBottom(purchasePopup);
         purchasePopup.Show();
     }
 

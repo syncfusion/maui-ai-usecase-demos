@@ -34,8 +34,14 @@ public sealed class QrPopupContent
     private const string IconUser = "\uE71B";
     private const string IconPhone = "\uE718";
     private const string IconShare = "\uE80D";
-    private const string IconArrowLeft = "\uE72E";   // MaterialAssets "arrow-left"
+    private const string IconArrowLeft = "\uE72D";   // MaterialAssets "arrow-left"
     private const string IconChevronDown = "\uE706";  // MaterialAssets "chevron-down"
+
+    /// <summary>Fallback width used before the sheet has been measured.</summary>
+    private const double DefaultWidth = 390;
+
+    /// <summary>Strip kept free above a bottom sheet so the rounded corners stay visible.</summary>
+    private const double SheetTopInset = 36;
 
     /// <summary>
     /// Shadows the app-level Label style. The app style sets TextColor through an AppThemeBinding,
@@ -75,15 +81,15 @@ public sealed class QrPopupContent
         this.profile = profile;
         activationCode = profile?.ActivationCode ?? "LPA:1$rsp.global-esim.net$SAMPLE";
 
-        // Three auto-sized rows: chrome, body and footer. The body is capped by the scroll
-        // view, so the sheet is exactly as tall as the content needs and never taller than
-        // the screen.
+        // Three rows: chrome (auto), body (star) and footer (auto). The chrome and the
+        // footer live outside the scroll view, so they stay pinned to the top and to the
+        // bottom of the sheet while the body scrolls in the space between them.
         root = new Grid
         {
             RowDefinitions =
             {
                 new RowDefinition(GridLength.Auto),
-                new RowDefinition(GridLength.Auto),
+                new RowDefinition(GridLength.Star),
                 new RowDefinition(GridLength.Auto)
             },
             BackgroundColor = Colors.White,
@@ -205,39 +211,75 @@ public sealed class QrPopupContent
     public void SetViewport(double availableHeight)
     {
         this.availableHeight = availableHeight;
+        ApplyViewport();
     }
+
+    /// <summary>The sheet height the content currently occupies, in device independent units.</summary>
+    public double SheetHeight => currentSheetHeight;
+
+    private double currentSheetHeight;
 
     private void RootOnSizeChanged(object? sender, EventArgs e) => OnRootSized();
 
     /// <summary>
-    /// Clamps the scrollable body so the footer stays pinned to the bottom of the sheet. The
-    /// body only starts scrolling once the sheet reaches the viewport height.
+    /// Sizes the sheet so the chrome stays pinned to the top and the footer stays pinned to
+    /// the bottom, while the body scrolls in between. When the whole sheet fits on screen
+    /// it hugs its content and nothing scrolls. When it does not fit, the sheet is capped to
+    /// the viewport and only the body scrolls.
     /// </summary>
     public void ApplyViewport()
     {
         if (availableHeight <= 0) return;
 
+        var width = root.Width > 0 ? root.Width : DefaultWidth;
+
+        // Measure the chrome and the footer at their natural height. The measured value is
+        // used instead of View.Height, because Height is -1 until the view is arranged.
+        var chromeHeight = chromeView.Measure(width, double.PositiveInfinity).Height;
+        if (chromeHeight <= 0 && chromeView.Height > 0) chromeHeight = chromeView.Height;
+
+        var footerHeight = footerHost.Measure(width, double.PositiveInfinity).Height;
+        if (footerHeight <= 0 && footerHost.Height > 0) footerHeight = footerHost.Height;
+
         // Natural height of the body content, measured without a height constraint.
-        var constraint = root.Width > 0 ? root.Width : double.PositiveInfinity;
-        var natural = bodyGrid.Measure(constraint, double.PositiveInfinity).Height;
+        var body = bodyScroll.Content;
+        var naturalBody = body is null ? 0 : body.Measure(width, double.PositiveInfinity).Height;
+        var totalNatural = chromeHeight + naturalBody + footerHeight;
 
-        // The sheet may not grow past the screen, so the body gets whatever is left after
-        // the chrome and the footer.
-        var chromeHeight = chromeView.Height > 0 ? chromeView.Height : 0;
-        var footerHeight = footerHost.Height > 0 ? footerHost.Height : 0;
-        var limit = availableHeight - chromeHeight - footerHeight;
+        // The sheet never grows past the screen. On a bottom sheet a small strip is kept
+        // free at the top so the rounded corners stay visible above the status bar.
+        var maxSheetHeight = isSheet
+            ? Math.Max(320, availableHeight - SheetTopInset)
+            : Math.Max(320, availableHeight - 24);
+        var maxBody = Math.Max(120, maxSheetHeight - chromeHeight - footerHeight);
 
-        // Only cap when the content really overflows, so a short sheet never scrolls.
-        if (natural <= limit)
+        if (totalNatural <= maxSheetHeight)
         {
+            // Everything fits on screen: hug the content and let the body breathe.
+            if (bodyScroll.HeightRequest != -1) bodyScroll.HeightRequest = -1;
             if (bodyScroll.MaximumHeightRequest != double.PositiveInfinity)
                 bodyScroll.MaximumHeightRequest = double.PositiveInfinity;
+            if (root.HeightRequest != -1) root.HeightRequest = -1;
+            if (root.MaximumHeightRequest != double.PositiveInfinity)
+                root.MaximumHeightRequest = double.PositiveInfinity;
+
+            currentSheetHeight = totalNatural;
             return;
         }
 
-        var target = Math.Max(120, limit);
-        if (Math.Abs(bodyScroll.MaximumHeightRequest - target) > 0.5)
-            bodyScroll.MaximumHeightRequest = target;
+        // The content overflows the screen. The sheet is pinned to the viewport height and
+        // the body is capped to the remaining space, so the body scrolls while the chrome
+        // and the footer stay in place.
+        if (Math.Abs(bodyScroll.HeightRequest - maxBody) > 0.5)
+            bodyScroll.HeightRequest = maxBody;
+        if (Math.Abs(bodyScroll.MaximumHeightRequest - maxBody) > 0.5)
+            bodyScroll.MaximumHeightRequest = maxBody;
+        if (Math.Abs(root.HeightRequest - maxSheetHeight) > 0.5)
+            root.HeightRequest = maxSheetHeight;
+        if (Math.Abs(root.MaximumHeightRequest - maxSheetHeight) > 0.5)
+            root.MaximumHeightRequest = maxSheetHeight;
+
+        currentSheetHeight = maxSheetHeight;
     }
 
     // -- helpers ----------------------------------------------------------
