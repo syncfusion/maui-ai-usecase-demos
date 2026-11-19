@@ -64,6 +64,10 @@ public partial class MainViewModel : ObservableObject
     public string DurationFilterText => selectedValidity is int days ? $"{days} Days" : "30 Days";
     public string CoverageFilterText => selectedCoverage switch { CoverageType.Local => "Local", CoverageType.Regional => "Regional", CoverageType.Global => "Global", _ => "All" };
     public string SortFilterText => selectedSort switch { "PriceLow" => "Price: Low to High", "DataHigh" => "Data: High to Low", "Duration" => "Duration: Longest", _ => "Recommended" };
+    public string? SelectedCoverageFilter => selectedCoverage?.ToString();
+    public NetworkType? SelectedNetworkFilter => selectedNetwork;
+    public PlanType? SelectedQuotaFilter => selectedType;
+    public int? SelectedValidityFilter => selectedValidity;
     public int NetworkFilterIndex => selectedNetworkIndex;
     public int QuotaFilterIndex => selectedQuotaIndex;
     public int DurationFilterIndex => selectedDurationIndex;
@@ -108,7 +112,7 @@ public partial class MainViewModel : ObservableObject
 
     public string TopUpProfileName => TopUpProfile?.ProfileName ?? "No active profile";
     public string TopUpCarrierName => TopUpProfile?.Carrier ?? "—";
-    public string TopUpRemainingText => $"{TopUpProfile?.RemainingGb ?? 0:0.#} GB left";
+    public string TopUpRemainingText => $"{TopUpProfile?.RemainingGb ?? 0:0.#} GB remaining";
     public string TopUpDaysLeftText => $"{TopUpProfile?.DaysRemaining ?? 0} Days Left";
     public string TopUpAllowanceSummary => $"{SelectedTopUpPack.DataLabel} Data Pool ({SelectedTopUpPack.PriceText})";
     public string TopUpSubmitLabel => $"Purchase Top-Up • {SelectedTopUpPack.PriceText}";
@@ -275,20 +279,50 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(LocalCoverageTextColor));
         OnPropertyChanged(nameof(RegionalCoverageTextColor));
         OnPropertyChanged(nameof(GlobalCoverageTextColor));
+        OnPropertyChanged(nameof(SelectedCoverageFilter));
         RefreshPlans();
     }
 
     public void ToggleFilter(string label)
     {
-        SelectedFilterLabel = SelectedFilterLabel == label ? string.Empty : label;
-        if (label is "All" or "Local" or "Regional" or "Global")
+        switch (label)
         {
-            SelectCoverage(label);
-            return;
+            case "All":
+                selectedCoverage = null;
+                break;
+            case "Local":
+            case "Regional":
+            case "Global":
+                var coverage = label switch { "Local" => CoverageType.Local, "Regional" => CoverageType.Regional, _ => CoverageType.Global };
+                selectedCoverage = selectedCoverage == coverage ? null : coverage;
+                break;
+            case "4G":
+                selectedNetwork = selectedNetwork == NetworkType.FourG ? null : NetworkType.FourG;
+                break;
+            case "5G":
+                selectedNetwork = selectedNetwork == NetworkType.FiveG ? null : NetworkType.FiveG;
+                break;
+            case "Limited":
+                selectedType = selectedType == PlanType.Limited ? null : PlanType.Limited;
+                break;
+            case "Unlimited":
+                selectedType = selectedType == PlanType.Unlimited ? null : PlanType.Unlimited;
+                break;
+            case "7 Days":
+            case "15 Days":
+            case "30 Days":
+                var days = label switch { "7 Days" => 7, "15 Days" => 15, _ => 30 };
+                selectedValidity = selectedValidity == days ? null : days;
+                break;
         }
-        selectedNetwork = SelectedFilterLabel switch { "4G" => NetworkType.FourG, "5G" => NetworkType.FiveG, _ => null };
-        selectedType = SelectedFilterLabel switch { "Limited" => PlanType.Limited, "Unlimited" => PlanType.Unlimited, _ => null };
-        selectedValidity = SelectedFilterLabel switch { "7 Days" => 7, "15 Days" => 15, "30 Days" => 30, _ => null };
+
+        SelectedFilterLabel = string.Empty;
+        OnPropertyChanged(nameof(SelectedCoverageFilter));
+        OnPropertyChanged(nameof(SelectedNetworkFilter));
+        OnPropertyChanged(nameof(SelectedQuotaFilter));
+        OnPropertyChanged(nameof(SelectedValidityFilter));
+        OnPropertyChanged(nameof(CoverageFilterText));
+        OnPropertyChanged(nameof(CoverageFilterIndex));
         RefreshPlans();
     }
 
@@ -321,6 +355,10 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(QuotaFilterIndex));
         OnPropertyChanged(nameof(DurationFilterIndex));
         OnPropertyChanged(nameof(SortFilterIndex));
+        OnPropertyChanged(nameof(SelectedCoverageFilter));
+        OnPropertyChanged(nameof(SelectedNetworkFilter));
+        OnPropertyChanged(nameof(SelectedQuotaFilter));
+        OnPropertyChanged(nameof(SelectedValidityFilter));
         Search = string.Empty;
         SelectedFilterLabel = string.Empty;
         RefreshPlans();
@@ -337,7 +375,7 @@ public partial class MainViewModel : ObservableObject
         SelectedProfile = store.Purchase(plan);
         IsPurchaseInProgress = false;
         await Application.Current.Windows[0].Page!.DisplayAlert("Plan added", "Your sample eSIM is ready to install. This is a simulation only; no eSIM was provisioned.", "View profiles");
-        await Shell.Current.GoToAsync("//profiles");
+        await AppNavigation.ToProfilesAsync();
     }
 
     [RelayCommand]

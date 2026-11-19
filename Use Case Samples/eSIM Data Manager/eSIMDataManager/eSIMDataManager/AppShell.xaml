@@ -4,4 +4,6 @@
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        FlyoutBehavior="Disabled"
        Shell.NavBarIsVisible="False"
-       Shell.TabBarIsVisible="False" />
+       Shell.TabBarIsVisible="False"
+       Shell.BackgroundColor="#F6F8FF"
+       Shell.NavBarHasShadow="False" />

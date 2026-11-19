@@ -10,6 +10,14 @@ public class DemoPage
 {
     private MainViewModel ViewModel { get; }
 
+    /// <summary>True on the phone targets, where every dialog is presented as a bottom sheet.</summary>
+    private static bool IsBottomSheetHost =>
+#if ANDROID || IOS
+        true;
+#else
+        false;
+#endif
+
     private readonly SfPopup popup = new()
     {
         ShowHeader = false,
@@ -86,21 +94,45 @@ public class DemoPage
 
     public void UpdateTopUpPopupWidth(double availableWidth, double availableHeight = 0)
     {
+        if (availableHeight > 0) this.availableHeight = availableHeight;
+        // Remember the real width on every path. The mobile branch used to return before
+        // this assignment, so the popups were sized from the 720 default instead of the
+        // actual screen width.
+        availableTopUpWidth = availableWidth;
+
+        if (IsBottomSheetHost)
+        {
+            ApplyBottomSheet(popup, availableWidth);
+            ApplyBottomSheet(qrPopup, availableWidth);
+            ApplyBottomSheet(topUpPopup, availableWidth);
+            ApplyBottomSheet(purchasePopup, availableWidth);
+            topUpContent?.SetCompact(true);
+            qrContent?.SetCompact(true);
+            purchaseContent?.SetCompact(true);
+            var viewport = this.availableHeight > 0 ? this.availableHeight : 640;
+            topUpContent?.SetViewport(viewport);
+            qrContent?.SetViewport(viewport);
+            purchaseContent?.SetViewport(viewport);
+            // Push the scroll cap down to the content now that the sheet size is known.
+            topUpContent?.ApplyViewport();
+            qrContent?.ApplyViewport();
+            purchaseContent?.ApplyViewport();
+            return;
+        }
+
         var compact = availableWidth < 620;
         var width = compact ? Math.Max(320, availableWidth - 24) : Math.Clamp(availableWidth - 32, 480, 720);
         topUpPopup.WidthRequest = width;
         topUpPopup.AutoSizeMode = PopupAutoSizeMode.Height;
         topUpContent?.SetCompact(compact);
-        availableTopUpWidth = availableWidth;
 
-        if (availableHeight > 0) this.availableHeight = availableHeight;
         popup.WidthRequest = Math.Clamp(availableWidth - 32, 320, 700);
         if (this.availableHeight > 0)
         {
             // Size to content but never taller than the screen, so the footer stays visible
             // and the body scrolls instead of overflowing.
             popup.AutoSizeMode = PopupAutoSizeMode.Height;
-            popup.MaximumHeightRequest = Math.Max(360, this.availableHeight - 24);
+            popup.MaximumHeightRequest = (int)Math.Max(360, this.availableHeight - 24);
         }
         qrPopup.WidthRequest = popup.WidthRequest;
         if (this.availableHeight > 0)
@@ -108,7 +140,7 @@ public class DemoPage
             // Let the dialog hug its content but never grow past the screen; the scrolling
             // body inside absorbs the difference, so the footer is always visible.
             qrPopup.AutoSizeMode = PopupAutoSizeMode.Height;
-            qrPopup.MaximumHeightRequest = Math.Max(360, this.availableHeight - 24);
+            qrPopup.MaximumHeightRequest = (int)Math.Max(360, this.availableHeight - 24);
         }
         qrContent?.SetCompact(qrPopup.WidthRequest < 620);
         if (this.availableHeight > 0)
@@ -118,9 +150,54 @@ public class DemoPage
         if (this.availableHeight > 0)
         {
             purchasePopup.AutoSizeMode = PopupAutoSizeMode.Height;
-            purchasePopup.MaximumHeightRequest = Math.Max(360, this.availableHeight - 24);
+            purchasePopup.MaximumHeightRequest = (int)Math.Max(360, this.availableHeight - 24);
         }
         purchaseContent?.SetCompact(purchasePopup.WidthRequest < 420);
+    }
+
+    /// <summary>
+    /// Turns the popup into a full-width bottom sheet: anchored to the bottom edge, with the
+    /// slide-up animation used by mobile sheets. The sheet rounds only the top corners
+    /// because the bottom edge sits flush against the screen.
+    /// </summary>
+    private void ApplyBottomSheet(SfPopup target, double availableWidth)
+    {
+        // The sheet spans the full width of the screen, edge to edge.
+        target.WidthRequest = Math.Max(320, availableWidth);
+        // The sheet hugs its content and never grows past the visible screen.
+        target.AutoSizeMode = PopupAutoSizeMode.Height;
+        target.AnimationMode = PopupAnimationMode.SlideOnBottom;
+        target.PopupStyle.CornerRadius = BottomSheetChrome.TopCorners();
+
+        var viewport = (int)Math.Max(360, availableHeight > 0 ? availableHeight : 640);
+        target.MaximumHeightRequest = viewport;
+    }
+
+    /// <summary>
+    /// Keeps a bottom sheet anchored to the bottom edge of the screen. The sheet hugs its
+    /// content, so the top edge moves as the content grows or shrinks.
+    /// </summary>
+    private void AnchorSheetToBottom(SfPopup target)
+    {
+        if (!IsBottomSheetHost) return;
+
+        var viewport = (int)Math.Max(360, availableHeight > 0 ? availableHeight : 640);
+
+        // The popup itself is not laid out by the MAUI visual tree, so its Height stays
+        // unset. The measured height of the sheet content is used instead.
+        var sheetHeight = target.Height > 0 ? target.Height : 0;
+        if (sheetHeight <= 0)
+        {
+            if (target == qrPopup && qrContent != null)
+                sheetHeight = qrContent.SheetHeight;
+            else if (target == topUpPopup && topUpContent != null)
+                sheetHeight = topUpContent.SheetHeight;
+            else if (target == purchasePopup && purchaseContent != null)
+                sheetHeight = purchaseContent.SheetHeight;
+        }
+        if (sheetHeight <= 0) return;
+
+        target.StartY = Math.Max(0, viewport - (int)Math.Ceiling(sheetHeight));
     }
 
     protected void ShowDemoPopup(string title, EsimProfile? profile = null)
@@ -147,7 +224,7 @@ public class DemoPage
             popupContent.Children.Add(new Label { Text = $"{plan.Country} · {plan.Provider} · {plan.DataLabel} · {plan.ValidityDays} days", TextColor = Color.FromArgb("#63748B") });
             popupContent.Children.Add(new Label { Text = $"Plan: ${plan.Price:0.00}  |  Illustrative tax: ${ViewModel.SelectedPlanTax:0.00}  |  Total: ${ViewModel.SelectedPlanTotal:0.00} USD", FontAttributes = FontAttributes.Bold });
             var confirm = new Syncfusion.Maui.Buttons.SfButton { Text = "Confirm demo purchase" };
-            confirm.Clicked += (_, _) => { ViewModel.Store.Purchase(plan); popup.Dismiss(); _ = Shell.Current.GoToAsync("//profiles"); };
+            confirm.Clicked += (_, _) => { ViewModel.Store.Purchase(plan); popup.Dismiss(); _ = AppNavigation.ToProfilesAsync(); };
             popupContent.Children.Add(confirm);
             var cancel = new Syncfusion.Maui.Buttons.SfButton { Text = "Cancel" };
             cancel.Clicked += (_, _) => popup.Dismiss();
@@ -157,11 +234,16 @@ public class DemoPage
         }
         popupProfile = profile ?? ViewModel.SelectedProfile;
         qrContent = new QrPopupContent(popupProfile);
+        qrContent.SetSheet(IsBottomSheetHost);
         qrContent.ScannedRequested += (_, _) => qrPopup.Dismiss();
         qrContent.CloseRequested += (_, _) => qrPopup.Dismiss();
         qrPopup.ContentTemplate = new DataTemplate(() => qrContent!.Content);
-        qrContent.SetCompact(qrPopup.WidthRequest < 620);
-        qrContent.SetViewport(availableHeight);
+        // On mobile the sheet always uses the stacked arrangement; the wide layout is
+        // reserved for the desktop dialog.
+        qrContent.SetCompact(IsBottomSheetHost || qrPopup.WidthRequest < 620);
+        qrContent.SheetResized += (_, _) => AnchorSheetToBottom(qrPopup);
+        UpdateTopUpPopupWidth(availableTopUpWidth);
+        AnchorSheetToBottom(qrPopup);
         qrPopup.Show();
     }
 
@@ -179,13 +261,16 @@ public class DemoPage
 
         topUpContent?.Dispose();
         topUpContent = new TopUpPopupContent(ViewModel);
+        topUpContent.SetSheet(IsBottomSheetHost);
         topUpContent.CloseRequested += (_, _) => CloseTopUp();
         topUpContent.CancelRequested += (_, _) => CloseTopUp();
         topUpContent.ChangePaymentRequested += (_, _) => ChangePaymentRequested();
         topUpContent.PurchaseRequested += (_, _) => ConfirmTopUp(profile);
 
+        topUpContent.SheetResized += (_, _) => AnchorSheetToBottom(topUpPopup);
         topUpPopup.ContentTemplate = new DataTemplate(() => topUpContent!.Content);
         UpdateTopUpPopupWidth(availableTopUpWidth);
+        AnchorSheetToBottom(topUpPopup);
         topUpPopup.Show();
     }
 
@@ -230,13 +315,16 @@ public class DemoPage
     private void OpenPurchase(Plan plan)
     {
         purchaseContent = new PurchasePopupContent(plan);
+        purchaseContent.SetSheet(IsBottomSheetHost);
         purchaseContent.CloseRequested += (_, _) => purchasePopup.Dismiss();
         purchaseContent.CancelRequested += (_, _) => purchasePopup.Dismiss();
         purchaseContent.ChangePaymentRequested += (_, _) => ChangePaymentRequested();
         purchaseContent.PurchaseRequested += (_, _) => ConfirmPurchase(plan);
 
+        purchaseContent.SheetResized += (_, _) => AnchorSheetToBottom(purchasePopup);
         purchasePopup.ContentTemplate = new DataTemplate(() => purchaseContent!.Content);
         UpdateTopUpPopupWidth(availableTopUpWidth);
+        AnchorSheetToBottom(purchasePopup);
         purchasePopup.Show();
     }
 
@@ -253,7 +341,7 @@ public class DemoPage
             $"{plan.Country} · {plan.DataLabel} was added to your dashboard.\n\nDemo only — no payment was taken and no eSIM was provisioned.",
             "View profiles");
         if (ViewModel.ProfilesCount != before)
-            await Shell.Current.GoToAsync("//profiles");
+            await AppNavigation.ToProfilesAsync();
     }
     public void DestinationClicked(object? sender, EventArgs e) { var text = sender switch { Syncfusion.Maui.Core.SfChip chip => chip.Text, Syncfusion.Maui.Buttons.SfButton button => button.Text, _ => null }; if (!string.IsNullOrWhiteSpace(text)) { var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries); ViewModel.SelectCountry(words.Length > 1 ? string.Join(' ', words.Skip(1)) : words[0]); } }
     public void FilterClicked(object? sender, EventArgs e) { if (sender is Syncfusion.Maui.Buttons.SfButton button && button.Text is not null) ViewModel.SelectCoverage(button.Text); }

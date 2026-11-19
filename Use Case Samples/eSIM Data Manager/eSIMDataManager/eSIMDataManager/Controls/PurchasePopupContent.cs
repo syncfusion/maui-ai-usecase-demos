@@ -45,6 +45,12 @@ public sealed class PurchasePopupContent
     private const string IconShieldCheck = "\uE78B";
     private const string IconCircleCheck = "\uE78C";
 
+    /// <summary>Fallback width used before the sheet has been measured.</summary>
+    private const double DefaultWidth = 390;
+
+    /// <summary>Strip kept free above a bottom sheet so the rounded corners stay visible.</summary>
+    private const double SheetTopInset = 36;
+
     /// <summary>
     /// Shadows the app-level Label style. The app style sets TextColor through an AppThemeBinding,
     /// which MAUI resolves as a theme-specific value that overrides explicit colors and renders
@@ -61,32 +67,59 @@ public sealed class PurchasePopupContent
         }
     };
 
-    private readonly VerticalStackLayout root;
+    private readonly Grid root;
     private readonly ScrollView bodyScroll;
+    private readonly VerticalStackLayout bodyStack;
+    private readonly VerticalStackLayout chromeView;
+    private readonly View footerView;
+    private readonly View accentBar;
+    private readonly Plan? plan;
     private bool isCompact;
+    private bool isSheet;
+    private double viewportHeight;
 
     public PurchasePopupContent(Plan? plan)
     {
-        root = new VerticalStackLayout { Spacing = 0, BackgroundColor = Colors.White };
+        this.plan = plan;
+
+        // Three rows: chrome (auto), body (star, scrolls when needed), footer (auto).
+        // The body row fills any remaining vertical space so the action buttons stay pinned
+        // to the bottom of the sheet.
+        root = new Grid
+        {
+            RowDefinitions =
+            {
+                new RowDefinition(GridLength.Auto),
+                new RowDefinition(GridLength.Star),
+                new RowDefinition(GridLength.Auto)
+            },
+            BackgroundColor = Colors.White,
+        };
         root.Resources.Add(PopupLabelStyle);
 
-        root.Add(BuildAccentBar());
-        root.Add(BuildHeader());
+        accentBar = BuildAccentBar();
+        chromeView = new VerticalStackLayout { Spacing = 0 };
+        chromeView.Add(accentBar);
+        chromeView.Add(BottomSheetChrome.BuildHandle());
+        chromeView.Add(BuildHeader());
+        // Grid.Add(view, column, row): the chrome, body and footer are rows, not columns.
+        root.Add(chromeView, 0, 0);
 
-        var body = new VerticalStackLayout { Spacing = 18 };
-        body.Add(BuildPlanBanner(plan));
-        body.Add(BuildCostBreakdown(plan));
-        body.Add(BuildPaymentMethod());
-        body.Add(BuildTrustBadges());
-
+        // The body holds the plan banner, the price summary, the payment method and the
+        // trust badges. It is rebuilt when the sheet arrangement changes.
+        bodyStack = new VerticalStackLayout { Spacing = 18 };
         bodyScroll = new ScrollView
         {
             VerticalScrollBarVisibility = ScrollBarVisibility.Never,
-            Content = body
+            Content = bodyStack
         };
 
-        root.Add(bodyScroll);
-        root.Add(BuildFooter(plan));
+        root.Add(bodyScroll, 0, 1);
+        footerView = BuildFooter(plan);
+        root.Add(footerView, 0, 2);
+        root.SizeChanged += (_, _) => OnRootSized();
+
+        RebuildBody();
     }
 
     public View Content => root;
@@ -108,6 +141,97 @@ public sealed class PurchasePopupContent
     {
         if (isCompact == compact) return;
         isCompact = compact;
+        RebuildBody();
+    }
+
+    /// <summary>Switches the dialog into the mobile bottom-sheet presentation.</summary>
+    public void SetSheet(bool sheet)
+    {
+        if (isSheet == sheet) return;
+        isSheet = sheet;
+        accentBar.IsVisible = !sheet;
+        isCompact = sheet || isCompact;
+        RebuildBody();
+    }
+
+    /// <summary>Rebuilds the body so its sections use the current sheet arrangement.</summary>
+    private void RebuildBody()
+    {
+        bodyStack.Children.Clear();
+        bodyStack.Add(BuildPlanBanner(plan));
+        bodyStack.Add(BuildCostBreakdown(plan));
+        bodyStack.Add(BuildPaymentMethod());
+        bodyStack.Add(BuildTrustBadges());
+    }
+
+    /// <summary>Used by the popup host to tell the content about the available screen height.</summary>
+    public void SetViewport(double viewportHeight)
+    {
+        this.viewportHeight = viewportHeight;
+        ApplyViewport();
+    }
+
+    /// <summary>The sheet height the content currently occupies, in device independent units.</summary>
+    public double SheetHeight => currentSheetHeight;
+
+    private double currentSheetHeight;
+
+    /// <summary>
+    /// Clamps the scrollable body so the footer stays pinned to the bottom of the sheet. The
+    /// body only starts scrolling once the sheet reaches the viewport height.
+    /// </summary>
+    public void ApplyViewport()
+    {
+        if (viewportHeight <= 0) return;
+
+        var constraint = root.Width > 0 ? root.Width : DefaultWidth;
+
+        // Measure the chrome and the footer at their natural height. The measured value is
+        // used instead of View.Height, because Height is -1 until the view is arranged.
+        var chromeHeight = chromeView.Measure(constraint, double.PositiveInfinity).Height;
+        if (chromeHeight <= 0 && chromeView.Height > 0) chromeHeight = chromeView.Height;
+
+        var footerHeight = footerView.Measure(constraint, double.PositiveInfinity).Height;
+        if (footerHeight <= 0 && footerView.Height > 0) footerHeight = footerView.Height;
+
+        var body = bodyScroll.Content;
+        var natural = body is null ? 0 : body.Measure(constraint, double.PositiveInfinity).Height;
+        var totalNatural = chromeHeight + natural + footerHeight;
+
+        // The sheet never grows past the screen. On a bottom sheet a small strip is kept
+        // free at the top so the rounded corners stay visible above the status bar.
+        var maxSheetHeight = isSheet
+            ? Math.Max(320, viewportHeight - SheetTopInset)
+            : Math.Max(320, viewportHeight - 24);
+        var maxBody = Math.Max(120, maxSheetHeight - chromeHeight - footerHeight);
+
+        if (totalNatural <= maxSheetHeight)
+        {
+            // Everything fits on screen: hug the content and let the body breathe.
+            if (bodyScroll.HeightRequest != -1) bodyScroll.HeightRequest = -1;
+            if (bodyScroll.MaximumHeightRequest != double.PositiveInfinity)
+                bodyScroll.MaximumHeightRequest = double.PositiveInfinity;
+            if (root.HeightRequest != -1) root.HeightRequest = -1;
+            if (root.MaximumHeightRequest != double.PositiveInfinity)
+                root.MaximumHeightRequest = double.PositiveInfinity;
+
+            currentSheetHeight = totalNatural;
+            return;
+        }
+
+        // The content overflows the screen. The sheet is pinned to the viewport height and
+        // the body is capped to the remaining space, so the body scrolls while the chrome
+        // and the footer stay in place.
+        if (Math.Abs(bodyScroll.HeightRequest - maxBody) > 0.5)
+            bodyScroll.HeightRequest = maxBody;
+        if (Math.Abs(bodyScroll.MaximumHeightRequest - maxBody) > 0.5)
+            bodyScroll.MaximumHeightRequest = maxBody;
+        if (Math.Abs(root.HeightRequest - maxSheetHeight) > 0.5)
+            root.HeightRequest = maxSheetHeight;
+        if (Math.Abs(root.MaximumHeightRequest - maxSheetHeight) > 0.5)
+            root.MaximumHeightRequest = maxSheetHeight;
+
+        currentSheetHeight = maxSheetHeight;
     }
 
     // -- helpers ----------------------------------------------------------
@@ -392,6 +516,52 @@ public sealed class PurchasePopupContent
 
         var stack = new VerticalStackLayout { Spacing = 10 };
 
+        // Quota bar: used versus allocated high-speed roaming data.
+        var quotaLabelRow = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+            ColumnSpacing = 8,
+            VerticalOptions = LayoutOptions.Center
+        };
+        quotaLabelRow.Add(Text("High-Speed Roaming Quota", 11.5, Color.FromArgb(MutedColor)), 0, 0);
+        quotaLabelRow.Add(MonoText("5.120 MB  /  5.0 GB", 11, Color.FromArgb(PrimaryColor), FontAttributes.Bold), 1, 0);
+
+        // The track is a Grid so the fill can sit at the start of the bar; a Border has
+        // no StrokeShape/StrokeThickness of its own for this purpose.
+        var quotaTrack = new Grid
+        {
+            HeightRequest = 5,
+            BackgroundColor = Color.FromArgb(SurfaceHighest)
+        };
+        var quotaFill = new Border
+        {
+            WidthRequest = 36,
+            BackgroundColor = Color.FromArgb(PrimaryColor),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(3) },
+            HorizontalOptions = LayoutOptions.Start,
+            VerticalOptions = LayoutOptions.Fill
+        };
+        quotaTrack.Add(quotaFill, 0, 0);
+
+        var guaranteeRow = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+            ColumnSpacing = 8,
+            VerticalOptions = LayoutOptions.Center
+        };
+        var guaranteeLeft = new HorizontalStackLayout { Spacing = 5, VerticalOptions = LayoutOptions.Center };
+        guaranteeLeft.Add(Icon(IconCircleCheck, 12, Color.FromArgb(TertiaryContainer)));
+        guaranteeLeft.Add(Text("Zero-throttle guarantee", 11.5, Color.FromArgb(TertiaryContainer)));
+        guaranteeRow.Add(guaranteeLeft, 0, 0);
+        guaranteeRow.Add(MonoText("Band n77/n78/n257", 11, Color.FromArgb(MutedColor)), 1, 0);
+
+        stack.Add(quotaLabelRow);
+        stack.Add(quotaTrack);
+        stack.Add(guaranteeRow);
+
+        stack.Add(Text("Price Summary", 14, Color.FromArgb(InkColor), FontAttributes.Bold));
+
         stack.Add(BuildCostRow(
             Text($"eSIM Package Cost ({provider} • {dataLabel})", 11.5, Color.FromArgb(MutedColor)),
             MonoText($"${packageCost:0.00}", 11.5, Color.FromArgb(InkColor), FontAttributes.Bold)));
@@ -642,4 +812,13 @@ public sealed class PurchasePopupContent
             Content = stack
         };
     }
+    /// <summary>Raised when the sheet content resizes, so the popup can be re-anchored.</summary>
+    public event EventHandler? SheetResized;
+
+    private void OnRootSized()
+    {
+        ApplyViewport();
+        SheetResized?.Invoke(this, EventArgs.Empty);
+    }
+
 }

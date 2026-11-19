@@ -33,6 +33,15 @@ public sealed class QrPopupContent
     private const string IconCircleCheck = "\uE78C";
     private const string IconUser = "\uE71B";
     private const string IconPhone = "\uE718";
+    private const string IconShare = "\uE80D";
+    private const string IconArrowLeft = "\uE72D";   // MaterialAssets "arrow-left"
+    private const string IconChevronDown = "\uE706";  // MaterialAssets "chevron-down"
+
+    /// <summary>Fallback width used before the sheet has been measured.</summary>
+    private const double DefaultWidth = 390;
+
+    /// <summary>Strip kept free above a bottom sheet so the rounded corners stay visible.</summary>
+    private const double SheetTopInset = 36;
 
     /// <summary>
     /// Shadows the app-level Label style. The app style sets TextColor through an AppThemeBinding,
@@ -50,42 +59,73 @@ public sealed class QrPopupContent
         }
     };
 
-    private readonly VerticalStackLayout root;
+    private readonly Grid root;
     private readonly Grid bodyGrid;
     private readonly VerticalStackLayout compactStack;
     private readonly ScrollView bodyScroll;
     private readonly View scanCardHost;
     private readonly View stepsHost;
+    private readonly View accentBar;
+    private readonly VerticalStackLayout chromeView;
+    private readonly VerticalStackLayout headerHost;
+    private readonly VerticalStackLayout bannerHost;
+    private readonly VerticalStackLayout footerHost;
+    private readonly EsimProfile? profile;
+    private readonly string activationCode;
     private bool isCompact;
+    private bool isSheet;
     private double availableHeight;
 
     public QrPopupContent(EsimProfile? profile)
     {
-        var activationCode = profile?.ActivationCode ?? "LPA:1$rsp.global-esim.net$SAMPLE";
+        this.profile = profile;
+        activationCode = profile?.ActivationCode ?? "LPA:1$rsp.global-esim.net$SAMPLE";
 
-        root = new VerticalStackLayout { Spacing = 0, BackgroundColor = Colors.White };
+        // Three rows: chrome (auto), body (star) and footer (auto). The chrome and the
+        // footer live outside the scroll view, so they stay pinned to the top and to the
+        // bottom of the sheet while the body scrolls in the space between them.
+        root = new Grid
+        {
+            RowDefinitions =
+            {
+                new RowDefinition(GridLength.Auto),
+                new RowDefinition(GridLength.Star),
+                new RowDefinition(GridLength.Auto)
+            },
+            BackgroundColor = Colors.White,
+        };
         root.Resources.Add(PopupLabelStyle);
-        root.SizeChanged += RootOnSizeChanged;
+        root.SizeChanged += (_, _) => OnRootSized();
 
-        root.Add(BuildAccentBar());
-        root.Add(BuildHeader(profile));
-        root.Add(BuildProfileBanner(profile));
+        accentBar = BuildAccentBar();
+        chromeView = new VerticalStackLayout { Spacing = 0 };
+        chromeView.Add(accentBar);
+        chromeView.Add(BottomSheetChrome.BuildHandle());
+        headerHost = new VerticalStackLayout { Spacing = 0 };
+        headerHost.Add(BuildHeader(profile));
+        chromeView.Add(headerHost);
+        bannerHost = new VerticalStackLayout { Spacing = 0 };
+        bannerHost.Add(BuildProfileBanner(profile));
+        chromeView.Add(bannerHost);
+        // Grid.Add(view, column, row): the chrome, body and footer are rows, not columns.
+        root.Add(chromeView, 0, 0);
 
         scanCardHost = BuildScanCard(profile, activationCode);
         stepsHost = BuildSteps(profile, activationCode);
 
+        // The two hosts are built once and then moved between the stacked and the
+        // side-by-side arrangement. A view can only have one parent, so the host that
+        // is not in use is detached before the other one is filled.
         compactStack = new VerticalStackLayout { Spacing = 12 };
-        compactStack.Add(scanCardHost);
-        compactStack.Add(stepsHost);
 
+        // The grid only splits into two columns on the wide desktop dialog. On the phone the
+        // hosts are stacked in a single full-width column.
         bodyGrid = new Grid
         {
             ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) },
             ColumnSpacing = 12,
             Padding = new Thickness(14, 0, 14, 12)
         };
-        bodyGrid.Add(scanCardHost, 0, 0);
-        bodyGrid.Add(stepsHost, 1, 0);
 
         bodyScroll = new ScrollView
         {
@@ -93,8 +133,12 @@ public sealed class QrPopupContent
             Content = bodyGrid
         };
 
-        root.Add(bodyGrid);
-        root.Add(BuildFooter(profile, activationCode));
+        root.Add(bodyScroll, 0, 1);
+        footerHost = new VerticalStackLayout { Spacing = 0 };
+        footerHost.Add(BuildFooter(profile, activationCode));
+        root.Add(footerHost, 0, 2);
+
+        ApplyLayout(isCompact);
     }
 
     public View Content => root;
@@ -110,31 +154,132 @@ public sealed class QrPopupContent
     {
         if (isCompact == compact) return;
         isCompact = compact;
-
-        bodyGrid.Children.Clear();
-        if (compact)
-            bodyGrid.Children.Add(compactStack);
-        else
-        {
-            bodyGrid.Add(scanCardHost, 0, 0);
-            bodyGrid.Add(stepsHost, 1, 0);
-        }
+        ApplyLayout(compact);
     }
 
-    /// <summary>Caps the scrollable body so the footer stays on screen.</summary>
+    /// <summary>
+    /// Moves the scan card and the steps into the requested arrangement. Each view is
+    /// detached from its current parent before it is added to the new one, because a
+    /// native view cannot have two parents.
+    /// </summary>
+    private void ApplyLayout(bool compact)
+    {
+        bodyGrid.Children.Clear();
+        compactStack.Children.Clear();
+
+        if (compact)
+        {
+            // One full-width column on the phone so the stacked content is not squeezed
+            // into half of the sheet. The sheet body is built to match the phone reference.
+            bodyGrid.ColumnDefinitions.Clear();
+            bodyGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+            compactStack.Children.Clear();
+            compactStack.Add(BuildSheetBody(profile, activationCode));
+            bodyGrid.Children.Add(compactStack);
+            return;
+        }
+
+        bodyGrid.ColumnDefinitions.Clear();
+        bodyGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+        bodyGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+        bodyGrid.Add(scanCardHost, 0, 0);
+        bodyGrid.Add(stepsHost, 1, 0);
+    }
+
+    /// <summary>Switches the dialog into the mobile bottom-sheet presentation.</summary>
+    public void SetSheet(bool sheet)
+    {
+        if (isSheet == sheet) return;
+        isSheet = sheet;
+        accentBar.IsVisible = !sheet;
+        if (sheet) SetCompact(true);
+        RebuildChrome();
+    }
+
+    /// <summary>Rebuilds the header, banner and footer for the current sheet arrangement.</summary>
+    private void RebuildChrome()
+    {
+        headerHost.Children.Clear();
+        headerHost.Add(BuildHeader(profile));
+        bannerHost.Children.Clear();
+        bannerHost.Add(BuildProfileBanner(profile));
+        footerHost.Children.Clear();
+        footerHost.Add(BuildFooter(profile, activationCode));
+    }
+
+    /// <summary>Used by the popup host to tell the content about the available screen height.</summary>
     public void SetViewport(double availableHeight)
     {
         this.availableHeight = availableHeight;
+        ApplyViewport();
     }
 
-    private void RootOnSizeChanged(object? sender, EventArgs e)
+    /// <summary>The sheet height the content currently occupies, in device independent units.</summary>
+    public double SheetHeight => currentSheetHeight;
+
+    private double currentSheetHeight;
+
+    private void RootOnSizeChanged(object? sender, EventArgs e) => OnRootSized();
+
+    /// <summary>
+    /// Sizes the sheet so the chrome stays pinned to the top and the footer stays pinned to
+    /// the bottom, while the body scrolls in between. When the whole sheet fits on screen
+    /// it hugs its content and nothing scrolls. When it does not fit, the sheet is capped to
+    /// the viewport and only the body scrolls.
+    /// </summary>
+    public void ApplyViewport()
     {
         if (availableHeight <= 0) return;
-        var chrome = root.Height - bodyScroll.Height;
-        if (chrome <= 0) return;
-        var limit = Math.Max(200, availableHeight - 24 - chrome);
-        if (Math.Abs(bodyScroll.MaximumHeightRequest - limit) > 0.5)
-            bodyScroll.MaximumHeightRequest = limit;
+
+        var width = root.Width > 0 ? root.Width : DefaultWidth;
+
+        // Measure the chrome and the footer at their natural height. The measured value is
+        // used instead of View.Height, because Height is -1 until the view is arranged.
+        var chromeHeight = chromeView.Measure(width, double.PositiveInfinity).Height;
+        if (chromeHeight <= 0 && chromeView.Height > 0) chromeHeight = chromeView.Height;
+
+        var footerHeight = footerHost.Measure(width, double.PositiveInfinity).Height;
+        if (footerHeight <= 0 && footerHost.Height > 0) footerHeight = footerHost.Height;
+
+        // Natural height of the body content, measured without a height constraint.
+        var body = bodyScroll.Content;
+        var naturalBody = body is null ? 0 : body.Measure(width, double.PositiveInfinity).Height;
+        var totalNatural = chromeHeight + naturalBody + footerHeight;
+
+        // The sheet never grows past the screen. On a bottom sheet a small strip is kept
+        // free at the top so the rounded corners stay visible above the status bar.
+        var maxSheetHeight = isSheet
+            ? Math.Max(320, availableHeight - SheetTopInset)
+            : Math.Max(320, availableHeight - 24);
+        var maxBody = Math.Max(120, maxSheetHeight - chromeHeight - footerHeight);
+
+        if (totalNatural <= maxSheetHeight)
+        {
+            // Everything fits on screen: hug the content and let the body breathe.
+            if (bodyScroll.HeightRequest != -1) bodyScroll.HeightRequest = -1;
+            if (bodyScroll.MaximumHeightRequest != double.PositiveInfinity)
+                bodyScroll.MaximumHeightRequest = double.PositiveInfinity;
+            if (root.HeightRequest != -1) root.HeightRequest = -1;
+            if (root.MaximumHeightRequest != double.PositiveInfinity)
+                root.MaximumHeightRequest = double.PositiveInfinity;
+
+            currentSheetHeight = totalNatural;
+            return;
+        }
+
+        // The content overflows the screen. The sheet is pinned to the viewport height and
+        // the body is capped to the remaining space, so the body scrolls while the chrome
+        // and the footer stay in place.
+        if (Math.Abs(bodyScroll.HeightRequest - maxBody) > 0.5)
+            bodyScroll.HeightRequest = maxBody;
+        if (Math.Abs(bodyScroll.MaximumHeightRequest - maxBody) > 0.5)
+            bodyScroll.MaximumHeightRequest = maxBody;
+        if (Math.Abs(root.HeightRequest - maxSheetHeight) > 0.5)
+            root.HeightRequest = maxSheetHeight;
+        if (Math.Abs(root.MaximumHeightRequest - maxSheetHeight) > 0.5)
+            root.MaximumHeightRequest = maxSheetHeight;
+
+        currentSheetHeight = maxSheetHeight;
     }
 
     // -- helpers ----------------------------------------------------------
@@ -182,6 +327,64 @@ public sealed class QrPopupContent
         };
         label.SetAppThemeColor(Label.TextColorProperty, color, color);
         return label;
+    }
+
+    /// <summary>
+    /// A circular back/close button used in the sticky sheet header. The button is a
+    /// non-interactive <see cref="Border"/> wrapped in a tap gesture because <see cref="SfButton"/>
+    /// reserves extra padding that doesn't fit a 36x36 icon-only target.
+    /// </summary>
+    private static View BuildSheetNavButton(string glyph, double size, Action onTapped)
+    {
+        var icon = Icon(glyph, size, Color.FromArgb(MutedColor), "MaterialAssets");
+        var tile = new Border
+        {
+            WidthRequest = 36,
+            HeightRequest = 36,
+            BackgroundColor = Color.FromArgb(SurfaceLow),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(18) },
+            Content = icon
+        };
+        var grid = new Grid();
+        grid.Add(tile);
+        var tap = new TapGestureRecognizer();
+        tap.Tapped += (_, _) => onTapped();
+        grid.GestureRecognizers.Add(tap);
+        return grid;
+    }
+
+    /// <summary>
+    /// The "PROFILE READY" pill shown in the centred cell of the sticky sheet nav row.
+    /// The pill sits in its own light-cyan background and contains a green status dot plus
+    /// the bold uppercase label.
+    /// </summary>
+    private static View BuildProfileReadyPill()
+    {
+        var dot = new Ellipse
+        {
+            WidthRequest = 7,
+            HeightRequest = 7,
+            Fill = Color.FromArgb("#007A56"),
+            VerticalOptions = LayoutOptions.Center
+        };
+
+        var text = Text("PROFILE READY", 10.5, Color.FromArgb(MutedColor), FontAttributes.Bold);
+
+        var row = new HorizontalStackLayout { Spacing = 6, VerticalOptions = LayoutOptions.Center };
+        row.Add(dot);
+        row.Add(text);
+
+        return new Border
+        {
+            BackgroundColor = Color.FromArgb("#DCEDFE"),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(999) },
+            Padding = new Thickness(10, 4),
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            Content = row
+        };
     }
 
     // -- sections --------------------------------------------------------
@@ -274,11 +477,84 @@ public sealed class QrPopupContent
         header.Add(titles, 1, 0);
         header.Add(readyPill, 2, 0);
         header.Add(close, 3, 0);
+
+        if (isSheet)
+        {
+            // The phone sheet is split into two stacked rows inside the sticky chrome:
+            //   1) navigation row (back arrow, PROFILE READY pill, close)
+            //   2) centered icon, title and subtitle (the "Activate Your eSIM" block)
+            // Both rows live above the scrollable body, so the title stays pinned to the
+            // top while the QR card, activation code and setup guide are scrolled.
+
+            var navBack = BuildSheetNavButton(IconArrowLeft, 16, () => CloseRequested?.Invoke(this, EventArgs.Empty));
+            var navClose = BuildSheetNavButton(IconClose, 16, () => CloseRequested?.Invoke(this, EventArgs.Empty));
+            var profileReady = BuildProfileReadyPill();
+
+            var navRow = new Grid
+            {
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition(GridLength.Auto),  // 0 back
+                    new ColumnDefinition(GridLength.Star),  // 1 centered pill
+                    new ColumnDefinition(GridLength.Auto)   // 2 close
+                },
+                ColumnSpacing = 8,
+                Padding = new Thickness(16, 12, 12, 0)
+            };
+            navRow.Add(navBack, 0, 0);
+            navRow.Add(profileReady, 1, 0);
+            navRow.Add(navClose, 2, 0);
+
+            // Centre the title and subtitle below the nav row, as in the reference.
+            var sheetTitle = Text("Activate Your eSIM", 21, Color.FromArgb(InkColor), FontAttributes.Bold);
+            sheetTitle.HorizontalTextAlignment = TextAlignment.Center;
+            var sheetSubtitle = Text(
+                "Scan this QR code from your device settings or print/share to another screen.",
+                11.5, Color.FromArgb(MutedColor));
+            sheetSubtitle.HorizontalTextAlignment = TextAlignment.Center;
+
+            var centeredTitles = new VerticalStackLayout { Spacing = 4, HorizontalOptions = LayoutOptions.Center };
+            centeredTitles.Add(sheetTitle);
+            centeredTitles.Add(sheetSubtitle);
+
+            var centeredBlock = new VerticalStackLayout { Spacing = 12, HorizontalOptions = LayoutOptions.Center };
+            centeredBlock.Add(iconTile);
+            centeredBlock.Add(centeredTitles);
+
+            var centeredHeader = new Grid
+            {
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition(GridLength.Auto),
+                    new ColumnDefinition(GridLength.Star),
+                    new ColumnDefinition(GridLength.Auto)
+                },
+                ColumnSpacing = 12,
+                Padding = new Thickness(16, 14, 16, 12)
+            };
+            centeredHeader.Add(new Label(), 0, 0);
+            centeredHeader.Add(centeredBlock, 1, 0);
+            centeredHeader.Add(new Label(), 2, 0);
+
+            var sheetHeader = new VerticalStackLayout { Spacing = 0 };
+            sheetHeader.Add(navRow);
+            sheetHeader.Add(centeredHeader);
+            return sheetHeader;
+        }
+
         return header;
     }
 
-    private static View BuildProfileBanner(EsimProfile? profile)
+    private View BuildProfileBanner(EsimProfile? profile)
     {
+        if (isSheet)
+        {
+            // On the mobile bottom sheet, the profile readiness pill is embedded directly
+            // inside the QR card at the top of the scrollable body, so the banner host in
+            // the sticky chrome stays empty.
+            return new BoxView { HeightRequest = 0, Color = Colors.Transparent, IsVisible = false };
+        }
+
         var country = profile?.Country ?? "Japan";
         var countryCode = country.Equals("Japan", StringComparison.OrdinalIgnoreCase) ? "JP" : country[..2].ToUpperInvariant();
         var network = profile?.Network == NetworkType.FiveG ? "5G" : "4G / LTE";
@@ -334,8 +610,34 @@ public sealed class QrPopupContent
         };
 
         var stack = new VerticalStackLayout { Spacing = 8 };
-        stack.Add(titleRow);
-        stack.Add(tier);
+        if (isSheet)
+        {
+            // The phone sheet shows a single readiness line, as in the reference.
+            var readyDot = Icon(IconCircleCheck, 11, Color.FromArgb("#006172"), "MaterialAssets");
+            var readyText = Text($"Ready to Install  •  {profile?.Carrier ?? "SoftBank SG"}",
+                11, Color.FromArgb("#006172"), FontAttributes.Bold);
+            var readyRow = new HorizontalStackLayout { Spacing = 5, VerticalOptions = LayoutOptions.Center };
+            readyRow.Add(readyDot);
+            readyRow.Add(readyText);
+
+            var readyPill = new Border
+            {
+                BackgroundColor = Colors.White,
+                Stroke = Color.FromArgb(OutlineVariant),
+                StrokeThickness = 1,
+                StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(999) },
+                Padding = new Thickness(9, 4),
+                HorizontalOptions = LayoutOptions.Start,
+                Content = readyRow
+            };
+
+            stack.Add(readyPill);
+        }
+        else
+        {
+            stack.Add(titleRow);
+            stack.Add(tier);
+        }
 
         return new Border
         {
@@ -569,6 +871,311 @@ public sealed class QrPopupContent
         grid.Add(horizontal, 0, 0);
         grid.Add(vertical, 0, 0);
         return grid;
+    }
+
+    /// <summary>
+    /// Builds the phone sheet body: the QR card, the activation code block, the quick setup
+    /// guide and the collapsible manual activation section, all stacked vertically.
+    /// </summary>
+    private static View BuildSheetBody(EsimProfile? profile, string activationCode)
+    {
+        var body = new VerticalStackLayout { Spacing = 14 };
+
+        body.Add(BuildSheetQrCard(profile, activationCode));
+        body.Add(BuildSheetActivationCode(activationCode));
+        body.Add(BuildSheetSetupGuide());
+        body.Add(BuildSheetManualActivation());
+
+        return body;
+    }
+
+    /// <summary>The QR card with the readiness pill, the code and the caption.</summary>
+    private static View BuildSheetQrCard(EsimProfile? profile, string activationCode)
+    {
+        var barcode = new SfBarcodeGenerator
+        {
+            ShowText = false,
+            HeightRequest = 190,
+            WidthRequest = 190,
+            BackgroundColor = Colors.White,
+            ForegroundColor = Colors.Black,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            Symbology = new QRCode(),
+            Value = activationCode
+        };
+
+        // Centre badge — a small blue square with rounded corners and a white check mark,
+        // matching the desktop QR card. The badge sits inside the QR code's centre square
+        // by anchoring it to all four edges of the cell.
+        var checkBadge = new Border
+        {
+            WidthRequest = 34,
+            HeightRequest = 34,
+            BackgroundColor = Color.FromArgb(PrimaryActionColor),
+            Stroke = Colors.White,
+            StrokeThickness = 2,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(8) },
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            Content = Icon(IconCheckTick, 14, Colors.White, "MaterialAssets")
+        };
+
+        var qrStack = new Grid
+        {
+            WidthRequest = 190,
+            HeightRequest = 190,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center
+        };
+        qrStack.Add(barcode, 0, 0);
+        qrStack.Add(checkBadge, 0, 0);
+
+        // Four L-shaped corner brackets frame the QR code, matching the desktop card and
+        // the phone reference.
+        var qrFrame = new Grid
+        {
+            RowDefinitions = { new RowDefinition(GridLength.Auto), new RowDefinition(GridLength.Auto), new RowDefinition(GridLength.Auto) },
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) },
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center
+        };
+        qrFrame.Add(BuildCornerBracket(Corner.TopLeft), 0, 0);
+        qrFrame.Add(BuildCornerBracket(Corner.TopRight), 2, 0);
+        qrFrame.Add(BuildCornerBracket(Corner.BottomLeft), 0, 2);
+        qrFrame.Add(BuildCornerBracket(Corner.BottomRight), 2, 2);
+        qrFrame.Add(qrStack, 1, 1);
+
+        var caption = new HorizontalStackLayout { Spacing = 5, HorizontalOptions = LayoutOptions.Center };
+        caption.Add(Icon(IconCircleCheck, 10, Color.FromArgb("#006141"), "MaterialAssets"));
+        caption.Add(Text("Single-use eSIM cryptographic key", 9.5, Color.FromArgb(MutedColor)));
+
+        var stack = new VerticalStackLayout { Spacing = 14 };
+        stack.Add(BuildSheetReadyPill(profile));
+        stack.Add(qrFrame);
+        stack.Add(caption);
+
+        return new Border
+        {
+            BackgroundColor = Color.FromArgb(SurfaceLow),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
+            Padding = new Thickness(14, 16),
+            Content = stack
+        };
+    }
+
+    /// <summary>
+    /// The white readiness pill at the top of the mobile QR card: "Ready to Install • Carrier".
+    /// The pill is the only place the carrier is named inside the scrollable body, so the
+    /// user can confirm the install target without scrolling back to the chrome banner.
+    /// </summary>
+    private static View BuildSheetReadyPill(EsimProfile? profile)
+    {
+        var dot = Icon(IconCircleCheck, 11, Color.FromArgb("#007A56"), "MaterialAssets");
+
+        var labelText = new FormattedString
+        {
+            Spans =
+            {
+                new Span
+                {
+                    Text = "Ready to Install  \u2022  ",
+                    FontFamily = UiFont,
+                    FontSize = 11.5,
+                    FontAttributes = FontAttributes.Bold,
+                    TextColor = Color.FromArgb(InkColor)
+                },
+                new Span
+                {
+                    Text = profile?.Carrier ?? "SoftBank 5G",
+                    FontFamily = UiFont,
+                    FontSize = 11.5,
+                    FontAttributes = FontAttributes.Bold,
+                    TextColor = Color.FromArgb(PrimaryColor)
+                }
+            }
+        };
+
+        var label = new Label { FormattedText = labelText, VerticalOptions = LayoutOptions.Center };
+
+        var row = new HorizontalStackLayout { Spacing = 6, VerticalOptions = LayoutOptions.Center };
+        row.Add(dot);
+        row.Add(label);
+
+        return new Border
+        {
+            BackgroundColor = Colors.White,
+            Stroke = Color.FromArgb(OutlineVariant),
+            StrokeThickness = 1,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(999) },
+            Padding = new Thickness(10, 5),
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            Content = row
+        };
+    }
+
+    /// <summary>The activation code block with the code, the copy button and the two actions.</summary>
+    private static View BuildSheetActivationCode(string activationCode)
+    {
+        var labelRow = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+            VerticalOptions = LayoutOptions.Center
+        };
+        labelRow.Add(Text("Activation Code", 12, Color.FromArgb(InkColor), FontAttributes.Bold), 0, 0);
+
+        var lpaBadge = new Border
+        {
+            BackgroundColor = Color.FromArgb(SurfaceLow),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(6) },
+            Padding = new Thickness(6, 2),
+            VerticalOptions = LayoutOptions.Center,
+            Content = Text("LPA STRING", 8.5, Color.FromArgb(MutedColor), FontAttributes.Bold)
+        };
+        labelRow.Add(lpaBadge, 1, 0);
+
+        var codeRow = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+            ColumnSpacing = 8,
+            VerticalOptions = LayoutOptions.Center
+        };
+        var codeText = MonoText(activationCode, 10, Color.FromArgb(InkColor), truncate: false);
+        codeText.LineBreakMode = LineBreakMode.TailTruncation;
+        codeRow.Add(codeText, 0, 0);
+        codeRow.Add(BuildSheetCopyButton(), 1, 0);
+
+        var codeBlock = new Border
+        {
+            BackgroundColor = Color.FromArgb(SurfaceLow),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(8) },
+            Padding = new Thickness(10, 7),
+            Content = codeRow
+        };
+
+        // Two equal-width actions under the code.
+        var copyCode = BuildSheetActionButton("Copy Code", IconCopy, Color.FromArgb(PrimaryColor), Colors.White);
+        var saveShare = BuildSheetActionButton("Save / Share", IconShare, Colors.White, Color.FromArgb(InkColor));
+        var actions = new Grid
+        {
+            ColumnSpacing = 8,
+            ColumnDefinitions =
+            {
+                new ColumnDefinition(GridLength.Star),
+                new ColumnDefinition(GridLength.Star)
+            }
+        };
+        actions.Add(copyCode, 0, 0);
+        actions.Add(saveShare, 1, 0);
+
+        var stack = new VerticalStackLayout { Spacing = 8 };
+        stack.Add(labelRow);
+        stack.Add(codeBlock);
+        stack.Add(actions);
+
+        return new Border
+        {
+            BackgroundColor = Colors.White,
+            Stroke = Color.FromArgb(OutlineVariant),
+            StrokeThickness = 0.1,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
+            Padding = new Thickness(14, 12),
+            Content = stack
+        };
+    }
+
+    private static View BuildSheetCopyButton()
+    {
+        var row = new HorizontalStackLayout { Spacing = 4, VerticalOptions = LayoutOptions.Center };
+        row.Add(Icon(IconCopy, 11, Color.FromArgb(PrimaryColor), "MaterialAssets"));
+        row.Add(Text("Copy", 10.5, Color.FromArgb(PrimaryColor), FontAttributes.Bold));
+
+        return new Border
+        {
+            BackgroundColor = Colors.White,
+            Stroke = Color.FromArgb(OutlineVariant),
+            StrokeThickness = 1,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(6) },
+            Padding = new Thickness(8, 3),
+            Content = row
+        };
+    }
+
+    /// <summary>An outlined or filled action button used by the phone sheet.</summary>
+    private static View BuildSheetActionButton(string label, string glyph, Color background, Color foreground)
+    {
+        var row = new HorizontalStackLayout { Spacing = 6, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center };
+        row.Add(Icon(glyph, 12, foreground, "MaterialAssets"));
+        row.Add(Text(label, 11.5, foreground, FontAttributes.Bold));
+
+        return new Border
+        {
+            BackgroundColor = background,
+            Stroke = background == Colors.White ? Color.FromArgb(OutlineVariant) : background,
+            StrokeThickness = background == Colors.White ? 1 : 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(10) },
+            Padding = new Thickness(12, 10),
+            HorizontalOptions = LayoutOptions.Fill,
+            Content = row
+        };
+    }
+
+    /// <summary>The quick setup guide with the three numbered steps.</summary>
+    private static View BuildSheetSetupGuide()
+    {
+        var header = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+            VerticalOptions = LayoutOptions.Center
+        };
+        header.Add(Text("Quick Setup Guide", 13, Color.FromArgb(InkColor), FontAttributes.Bold), 0, 0);
+        header.Add(Text("iOS & Android", 10.5, Color.FromArgb(MutedColor)), 1, 0);
+
+        var stack = new VerticalStackLayout { Spacing = 10 };
+        stack.Add(header);
+        stack.Add(ActivationStep("1", "Open Mobile Network Settings",
+            "Navigate to Settings > Cellular > Mobile Service."));
+        stack.Add(ActivationStep("2", "Tap \"Add eSIM\" & Scan QR",
+            "Use your phone camera or select \"Use QR Code\" from the cellular prompt."));
+        stack.Add(ActivationStep("3", "Turn On Data Roaming",
+            "Switch this profile on and enable Data Roaming when entering Japan."));
+
+        return new Border
+        {
+            BackgroundColor = Colors.White,
+            Stroke = Color.FromArgb(OutlineVariant),
+            StrokeThickness = 0.1,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
+            Padding = new Thickness(14, 12),
+            Content = stack
+        };
+    }
+
+    /// <summary>The collapsed manual activation section shown at the bottom of the sheet.</summary>
+    private static View BuildSheetManualActivation()
+    {
+        var row = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+            ColumnSpacing = 8,
+            VerticalOptions = LayoutOptions.Center
+        };
+        row.Add(Icon(IconTable, 13, Color.FromArgb(MutedColor), "MaterialAssets"), 0, 0);
+        row.Add(Text("Need Manual SM-DP+ Address?", 12, Color.FromArgb(InkColor), FontAttributes.Bold), 1, 0);
+        row.Add(Icon("\uE5CF", 14, Color.FromArgb(MutedColor), "MaterialAssets"), 2, 0);
+
+        return new Border
+        {
+            BackgroundColor = Color.FromArgb(SurfaceLow),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(12) },
+            Padding = new Thickness(12, 12),
+            Content = row
+        };
     }
 
     private static View BuildSteps(EsimProfile? profile, string activationCode)
@@ -914,6 +1521,54 @@ public sealed class QrPopupContent
         footer.Add(sendEmail, 1, 0);
         footer.Add(scanned, 2, 0);
 
+        if (isSheet)
+        {
+            // The phone sheet uses a single full-width primary button with a text link
+            // underneath, as in the reference.
+            var completedRow = new HorizontalStackLayout { Spacing = 8, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center };
+            completedRow.Add(Icon(IconCircleCheck, 16, Colors.White, "MaterialAssets"));
+            completedRow.Add(Text("I've Completed Setup", 14, Colors.White, FontAttributes.Bold));
+
+            var completed = new SfButton
+            {
+                Background = Color.FromArgb(PrimaryColor),
+                Stroke = Colors.Transparent,
+                StrokeThickness = 0,
+                CornerRadius = 10,
+                Padding = new Thickness(20, 10),
+                HorizontalOptions = LayoutOptions.Fill,
+                HeightRequest = 48,
+                Content = new DataTemplate(() => completedRow)
+            };
+            completed.Clicked += (_, _) => ScannedRequested?.Invoke(this, EventArgs.Empty);
+
+            var troubleshoot = new SfButton
+            {
+                Text = "Troubleshoot Connection",
+                FontFamily = UiFont,
+                FontSize = 13,
+                Background = Colors.Transparent,
+                TextColor = Color.FromArgb(MutedColor),
+                CornerRadius = 8,
+                Padding = new Thickness(12, 6),
+                HorizontalOptions = LayoutOptions.Center,
+                HeightRequest = 40
+            };
+            troubleshoot.Clicked += (_, _) => ScannedRequested?.Invoke(this, EventArgs.Empty);
+
+            var sheetFooter = new VerticalStackLayout { Spacing = 6, Padding = new Thickness(16, 14, 16, 16) };
+            sheetFooter.Add(completed);
+            sheetFooter.Add(troubleshoot);
+
+            return new Border
+            {
+                BackgroundColor = Colors.White,
+                StrokeThickness = 0,
+                Stroke = Color.FromArgb(OutlineVariant),
+                Content = sheetFooter
+            };
+        }
+
         return new Border
         {
             BackgroundColor = Colors.White,
@@ -937,6 +1592,15 @@ public sealed class QrPopupContent
         if (digits.Length <= 4) return digits;
         return string.Join(' ', Enumerable.Range(0, (digits.Length + 3) / 4)
             .Select(i => digits.Substring(i * 4, Math.Min(4, digits.Length - i * 4))));
+    }
+
+    /// <summary>Raised when the sheet content resizes, so the popup can be re-anchored.</summary>
+    public event EventHandler? SheetResized;
+
+    private void OnRootSized()
+    {
+        ApplyViewport();
+        SheetResized?.Invoke(this, EventArgs.Empty);
     }
 }
 
