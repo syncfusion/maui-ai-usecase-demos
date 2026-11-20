@@ -94,20 +94,6 @@
 
                 </VerticalStackLayout>
 
-                <!-- Phone header control -->
-                <Border
-                    Grid.Column="2"
-                    WidthRequest="28"
-                    HeightRequest="8"
-                    Padding="0"
-                    BackgroundColor="#F1F2FD"
-                    Stroke="{StaticResource BubbleBorderColor}"
-                    StrokeThickness="1"
-                    StrokeShape="RoundRectangle 4"
-                    HorizontalOptions="End"
-                    VerticalOptions="Center"
-                    IsVisible="{OnIdiom Phone=True, Tablet=False, Desktop=False, Default=False}" />
-
             </Grid>
 
             <!-- Header separator -->
@@ -458,6 +444,35 @@
 
             </Grid>
 
+        </Grid>
+
+        <!-- Confirmation dialog (Android/iOS) -->
+        <Grid
+            x:Name="ConfirmOverlay"
+            IsVisible="False"
+            BackgroundColor="#80000000"
+            Padding="24">
+            <Border
+                BackgroundColor="{StaticResource SurfaceColor}"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 16"
+                Padding="24,24,16,12"
+                MaximumWidthRequest="420"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+                <VerticalStackLayout Spacing="12">
+                    <Label x:Name="ConfirmTitleLabel" FontSize="20" FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimaryColor}" LineBreakMode="WordWrap" />
+                    <Label x:Name="ConfirmMessageLabel" FontSize="15"
+                           TextColor="{StaticResource TextSecondaryColor}" LineBreakMode="WordWrap" />
+                    <HorizontalStackLayout HorizontalOptions="End" Spacing="8" Margin="0,8,0,0">
+                        <Button x:Name="ConfirmCancelButton" BackgroundColor="Transparent"
+                                TextColor="{StaticResource TextSecondaryColor}" Clicked="OnConfirmCancelClicked" />
+                        <Button x:Name="ConfirmAcceptButton" BackgroundColor="Transparent"
+                                FontAttributes="Bold" Clicked="OnConfirmAcceptClicked" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
         </Grid>
 
     </Grid>
