@@ -223,54 +223,59 @@ public partial class SupportChatPage : ContentPage
     {
         return ConfirmActionAsync(
             "Replace draft?",
-            "Regenerating will replace your current draft.",
+            "Regenerating will replace the current draft.",
             "Regenerate",
-            "Cancel");
+            "Cancel",
+            (Color)Application.Current!.Resources["AccentColor"]);
     }
 
-    /*
-     * Confirmations follow the device form factor: desktop devices
-     * (Windows, Mac Catalyst) show a dialog; phones and tablets
-     * running Android or iOS show a bottom action sheet.
-     */
+    private TaskCompletionSource<bool>? _confirmTcs;
+
     private async Task<bool> ConfirmActionAsync(
         string title,
         string message,
         string accept,
-        string cancel)
+        string cancel,
+        Color acceptColor)
     {
-        var useBottomSheet =
+        var useOverlay =
             (DeviceInfo.Platform == DevicePlatform.Android
                 || DeviceInfo.Platform == DevicePlatform.iOS)
             && DeviceInfo.Idiom != DeviceIdiom.Desktop;
 
-        if (useBottomSheet)
+        if (!useOverlay)
         {
-            var choice = await DisplayActionSheetAsync(
-                $"{title} {message}",
-                cancel,
-                accept);
-
-            return string.Equals(
-                choice,
-                accept,
-                StringComparison.Ordinal);
+            return await DisplayAlertAsync(title, message, accept, cancel);
         }
 
-        return await DisplayAlertAsync(
-            title,
-            message,
-            accept,
-            cancel);
+        ConfirmTitleLabel.Text = title;
+        ConfirmMessageLabel.Text = message;
+        ConfirmAcceptButton.Text = accept;
+        ConfirmAcceptButton.TextColor = acceptColor;
+        ConfirmCancelButton.Text = cancel;
+
+        _confirmTcs = new TaskCompletionSource<bool>();
+        ConfirmOverlay.IsVisible = true;
+
+        var result = await _confirmTcs.Task;
+        ConfirmOverlay.IsVisible = false;
+        return result;
     }
+
+    private void OnConfirmAcceptClicked(object? sender, EventArgs e)
+        => _confirmTcs?.TrySetResult(true);
+
+    private void OnConfirmCancelClicked(object? sender, EventArgs e)
+        => _confirmTcs?.TrySetResult(false);
 
     private Task<bool> ConfirmSelectionChangeAsync()
     {
         return ConfirmActionAsync(
-            "Discard current draft?",
+            "Discard draft?",
             "Selecting another customer message will discard the current draft.",
-            "Discard draft",
-            "Keep editing");
+            "Discard",
+            "Cancel",
+            (Color)Application.Current!.Resources["DangerColor"]);
     }
 
     private void OnOutgoingMessageSent(
