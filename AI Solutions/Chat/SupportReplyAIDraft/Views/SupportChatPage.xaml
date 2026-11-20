@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:chat="clr-namespace:Syncfusion.Maui.Chat;assembly=Syncfusion.Maui.Chat"
+    xmlns:viewModels="clr-namespace:SupportReplyAIDraft.ViewModels"
+    x:Class="SupportReplyAIDraft.Views.SupportChatPage"
+    x:Name="RootPage"
+    x:DataType="viewModels:SupportChatViewModel"
+    Title="Support Reply AI Draft"
+    Padding="0"
+    SafeAreaEdges="{OnPlatform iOS=Container, MacCatalyst=Container, Default=None}"
+    BackgroundColor="{StaticResource SurfaceColor}">
+
+    <Grid
+        Padding="0"
+        RowSpacing="0"
+        ColumnSpacing="0"
+        BackgroundColor="{StaticResource SurfaceColor}">
+
+        <Grid
+            Padding="0"
+            RowDefinitions="Auto,1,Auto,1,Auto,1,*"
+            RowSpacing="0"
+            ColumnSpacing="0"
+            BackgroundColor="{StaticResource SurfaceColor}">
+
+            <!-- Application header -->
+            <Grid
+                Grid.Row="0"
+                HeightRequest="{OnIdiom Phone=56, Tablet=48, Desktop=48, Default=56}"
+                Padding="{OnIdiom Phone='16,0', Tablet='20,0', Desktop='20,0', Default='16,0'}"
+                ColumnDefinitions="Auto,1,*"
+                ColumnSpacing="{OnIdiom Phone=0, Tablet=12, Desktop=12, Default=0}"
+                VerticalOptions="Center">
+
+                <HorizontalStackLayout
+                    Grid.Column="0"
+                    Spacing="6"
+                    IsVisible="{OnIdiom Phone=False, Tablet=True, Desktop=True, Default=False}"
+                    VerticalOptions="Center">
+
+                    <Border
+                        WidthRequest="10"
+                        HeightRequest="10"
+                        Padding="0"
+                        BackgroundColor="#CBD5E1"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 5" />
+
+                    <Border
+                        WidthRequest="10"
+                        HeightRequest="10"
+                        Padding="0"
+                        BackgroundColor="#CBD5E1"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 5" />
+
+                    <Border
+                        WidthRequest="10"
+                        HeightRequest="10"
+                        Padding="0"
+                        BackgroundColor="#CBD5E1"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 5" />
+
+                </HorizontalStackLayout>
+
+                <BoxView
+                    Grid.Column="1"
+                    WidthRequest="1"
+                    HeightRequest="24"
+                    IsVisible="{OnIdiom Phone=False, Tablet=True, Desktop=True, Default=False}"
+                    VerticalOptions="Center"
+                    Color="{StaticResource BubbleBorderColor}" />
+
+                <VerticalStackLayout
+                    Grid.Column="2"
+                    Spacing="0"
+                    VerticalOptions="Center">
+
+                    <Label
+                        Text="Support Reply AI Draft"
+                        Style="{StaticResource PageTitleStyle}"
+                        FontSize="{OnIdiom Phone=20, Tablet=14, Desktop=14, Default=20}"
+                        VerticalTextAlignment="Center" />
+
+                    <Label
+                        Text="Customer support workspace"
+                        Style="{StaticResource PageSubtitleStyle}"
+                        IsVisible="{OnIdiom Phone=False, Tablet=True, Desktop=True, Default=False}"
+                        VerticalTextAlignment="Center" />
+
+                </VerticalStackLayout>
+
+            </Grid>
+
+            <!-- Header separator -->
+            <BoxView
+                Grid.Row="1"
+                HeightRequest="1"
+                HorizontalOptions="Fill"
+                Color="{StaticResource BubbleBorderColor}" />
+
+            <!-- Case information -->
+            <Grid
+                Grid.Row="2"
+                Padding="{OnIdiom Phone='12,10', Tablet='20,0', Desktop='24,0', Default='12,10'}"
+                MinimumHeightRequest="{OnIdiom Phone=0, Tablet=56, Desktop=56, Default=0}"
+                RowDefinitions="*"
+                RowSpacing="0"
+                ColumnSpacing="0"
+                BackgroundColor="{StaticResource SurfaceColor}">
+
+                <!-- Desktop and tablet layout -->
+                <Grid
+                    Grid.Row="0"
+                    ColumnDefinitions="Auto,*,Auto"
+                    ColumnSpacing="12"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Center"
+                    IsVisible="{OnIdiom Phone=False, Tablet=True, Desktop=True, Default=True}">
+
+                    <!-- Subject label -->
+                    <Label
+                        Grid.Column="0"
+                        Text="SUBJECT"
+                        TextColor="#8A97B2"
+                        FontSize="11"
+                        CharacterSpacing="1.2"
+                        LineBreakMode="NoWrap"
+                        VerticalTextAlignment="Center"
+                        VerticalOptions="Center" />
+
+                    <!-- Subject value -->
+                    <Label
+                        Grid.Column="1"
+                        Text="License still shows as expired after renewal"
+                        TextColor="{StaticResource TextPrimaryColor}"
+                        FontSize="14"
+                        FontAttributes="Bold"
+                        LineBreakMode="TailTruncation"
+                        MaxLines="1"
+                        VerticalTextAlignment="Center"
+                        VerticalOptions="Center" />
+
+                    <!-- Case metadata -->
+                    <Grid
+                        Grid.Column="2"
+                        ColumnDefinitions="Auto,24,1,24,Auto,24,1,24,Auto"
+                        ColumnSpacing="0"
+                        HorizontalOptions="End"
+                        VerticalOptions="Center">
+
+                        <!-- Case ID -->
+                        <Grid
+                            Grid.Column="0"
+                            HeightRequest="30"
+                            ColumnDefinitions="Auto,Auto"
+                            ColumnSpacing="8"
+                            VerticalOptions="Center">
+
+                            <Label
+                                Grid.Column="0"
+                                Text="Case ID:"
+                                TextColor="#6F7E9D"
+                                FontSize="12"
+                                LineBreakMode="NoWrap"
+                                VerticalTextAlignment="Center"
+                                VerticalOptions="Center" />
+
+                            <Border
+                                Grid.Column="1"
+                                HeightRequest="26"
+                                Padding="10,0"
+                                BackgroundColor="#EDF3FF"
+                                Stroke="#D4E2FF"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 3"
+                                VerticalOptions="Center">
+
+                                <Label
+                                    Text="CS-28417"
+                                    TextColor="{StaticResource AccentColor}"
+                                    FontSize="12"
+                                    FontAttributes="Bold"
+                                    LineBreakMode="NoWrap"
+                                    VerticalTextAlignment="Center"
+                                    VerticalOptions="Center" />
+
+                            </Border>
+
+                        </Grid>
+
+                        <!-- Divider 1 -->
+                        <BoxView
+                            Grid.Column="2"
+                            WidthRequest="1"
+                            HeightRequest="16"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Color="{StaticResource BubbleBorderColor}" />
+
+                        <!-- Customer -->
+                        <Grid
+                            Grid.Column="4"
+                            HeightRequest="30"
+                            ColumnDefinitions="Auto,Auto"
+                            ColumnSpacing="6"
+                            VerticalOptions="Center">
+
+                            <Label
+                                Grid.Column="0"
+                                Text="Customer:"
+                                TextColor="#6F7E9D"
+                                FontSize="12"
+                                LineBreakMode="NoWrap"
+                                VerticalTextAlignment="Center"
+                                VerticalOptions="Center" />
+
+                            <Label
+                                Grid.Column="1"
+                                Text="Alex Morgan"
+                                TextColor="{StaticResource TextPrimaryColor}"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                LineBreakMode="NoWrap"
+                                VerticalTextAlignment="Center"
+                                VerticalOptions="Center" />
+
+                        </Grid>
+
+                        <!-- Divider 2 -->
+                        <BoxView
+                            Grid.Column="6"
+                            WidthRequest="1"
+                            HeightRequest="16"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Color="{StaticResource BubbleBorderColor}" />
+
+                        <!-- Status -->
+                        <Grid
+                            Grid.Column="8"
+                            HeightRequest="30"
+                            ColumnDefinitions="Auto,Auto"
+                            ColumnSpacing="6"
+                            VerticalOptions="Center">
+
+                            <Label
+                                Grid.Column="0"
+                                Text="Status:"
+                                TextColor="#6F7E9D"
+                                FontSize="12"
+                                LineBreakMode="NoWrap"
+                                VerticalTextAlignment="Center"
+                                VerticalOptions="Center" />
+
+                            <Border
+                                Grid.Column="1"
+                                HeightRequest="26"
+                                Padding="10,0"
+                                BackgroundColor="#ECFDF3"
+                                Stroke="#A7E3BE"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 3"
+                                VerticalOptions="Center">
+
+                                <Label
+                                    Text="Open"
+                                    TextColor="#18794E"
+                                    FontSize="12"
+                                    FontAttributes="Bold"
+                                    LineBreakMode="NoWrap"
+                                    VerticalTextAlignment="Center"
+                                    VerticalOptions="Center" />
+
+                            </Border>
+
+                        </Grid>
+
+                    </Grid>
+
+                </Grid>
+
+                <!-- Phone layout -->
+                <VerticalStackLayout
+                    Grid.Row="0"
+                    Spacing="8"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Center"
+                    IsVisible="{OnIdiom Phone=True, Tablet=False, Desktop=False, Default=False}">
+
+                    <Grid
+                        ColumnDefinitions="Auto,*,Auto"
+                        ColumnSpacing="8"
+                        HorizontalOptions="Fill">
+
+                        <!-- Phone Case ID -->
+                        <Border
+                            Grid.Column="0"
+                            HeightRequest="26"
+                            Padding="8,0"
+                            BackgroundColor="#EDF3FF"
+                            Stroke="#D4E2FF"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 3"
+                            VerticalOptions="Center">
+
+                            <Label
+                                Text="CS-28417"
+                                TextColor="{StaticResource AccentColor}"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                FontFamily="{OnPlatform Android=monospace, iOS=Courier}"
+                                LineBreakMode="NoWrap"
+                                VerticalTextAlignment="Center"
+                                VerticalOptions="Center" />
+
+                        </Border>
+
+                        <!-- Phone Customer -->
+                        <Label
+                            Grid.Column="1"
+                            Text="· Alex Morgan"
+                            TextColor="{StaticResource TextSecondaryColor}"
+                            FontSize="14"
+                            LineBreakMode="TailTruncation"
+                            VerticalTextAlignment="Center"
+                            VerticalOptions="Center" />
+
+                        <!-- Phone Status -->
+                        <Border
+                            Grid.Column="2"
+                            HeightRequest="28"
+                            Padding="12,0"
+                            BackgroundColor="#F1F2FD"
+                            Stroke="{StaticResource BubbleBorderColor}"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 14"
+                            VerticalOptions="Center">
+
+                            <Label
+                                Text="Open"
+                                TextColor="{StaticResource TextSecondaryColor}"
+                                FontSize="14"
+                                LineBreakMode="NoWrap"
+                                VerticalTextAlignment="Center"
+                                VerticalOptions="Center" />
+
+                        </Border>
+
+                    </Grid>
+
+                    <Label
+                        Text="License still shows as expired after renewal"
+                        TextColor="{StaticResource TextPrimaryColor}"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        LineBreakMode="WordWrap"
+                        VerticalTextAlignment="Center" />
+
+                </VerticalStackLayout>
+
+            </Grid>
+
+            <!-- Case information separator -->
+            <BoxView
+                Grid.Row="3"
+                HeightRequest="1"
+                HorizontalOptions="Fill"
+                Color="{StaticResource BubbleBorderColor}" />
+
+            <!-- Conversation heading -->
+            <Grid
+                Grid.Row="4"
+                Padding="{OnIdiom Phone='16,12', Tablet='20,12', Desktop='24,14', Default='16,12'}"
+                BackgroundColor="{OnIdiom Phone='#F7F7FD', Tablet='#FFFFFF', Desktop='#FFFFFF', Default='#F7F7FD'}">
+
+                <VerticalStackLayout
+                    Spacing="2"
+                    VerticalOptions="Center">
+
+                    <HorizontalStackLayout
+                        Spacing="8"
+                        VerticalOptions="Center">
+
+                        <Image
+                            Source="support_reply_conversation.svg"
+                            WidthRequest="20"
+                            HeightRequest="20"
+                            VerticalOptions="Center"
+                            IsVisible="{OnIdiom Phone=True, Tablet=False, Desktop=False, Default=False}" />
+
+                        <Label
+                            Text="Conversation"
+                            Style="{StaticResource SectionTitleStyle}"
+                            VerticalTextAlignment="Center" />
+
+                    </HorizontalStackLayout>
+
+                    <Label
+                        Text="Select a customer message to draft a grounded reply."
+                        Style="{StaticResource SectionSubtitleStyle}"
+                        FontSize="{OnIdiom Phone=14, Tablet=12, Desktop=12, Default=14}"
+                        VerticalTextAlignment="Center" />
+
+                </VerticalStackLayout>
+
+            </Grid>
+
+            <!-- Conversation separator -->
+            <BoxView
+                Grid.Row="5"
+                HeightRequest="1"
+                HorizontalOptions="Fill"
+                Color="{StaticResource BubbleBorderColor}" />
+
+            <!-- Syncfusion SfChat conversation area -->
+            <Grid
+                Grid.Row="6"
+                Padding="0"
+                Margin="0"
+                RowSpacing="0"
+                ColumnSpacing="0"
+                BackgroundColor="#F7F9FC">
+
+                <chat:SfChat
+                    x:Name="ConversationChat"
+                    Padding="{OnIdiom Phone='12,0', Tablet='20,0', Desktop='24,0', Default='12,0'}"
+                    Margin="0"
+                    Messages="{Binding Messages}"
+                    CurrentUser="{Binding CurrentUser}"
+                    Suggestions="{Binding ChatSuggestions}"
+                    SuggestionItemSelected="OnSuggestionItemSelected"
+                    ShowMessageInputView="True"
+                    AllowMultilineInput="True"
+                    SendMessageCommand="{Binding NativeSendCommand}"
+                    MessageSpacing="8"
+                    VerticalOptions="Fill"
+                    HorizontalOptions="Fill"
+                    BackgroundColor="#F7F9FC" />
+
+            </Grid>
+
+        </Grid>
+
+        <!-- Confirmation dialog (Android/iOS) -->
+        <Grid
+            x:Name="ConfirmOverlay"
+            IsVisible="False"
+            BackgroundColor="#80000000"
+            Padding="24">
+            <Border
+                BackgroundColor="{StaticResource SurfaceColor}"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 16"
+                Padding="24,24,16,12"
+                MaximumWidthRequest="420"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+                <VerticalStackLayout Spacing="12">
+                    <Label x:Name="ConfirmTitleLabel" FontSize="20" FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimaryColor}" LineBreakMode="WordWrap" />
+                    <Label x:Name="ConfirmMessageLabel" FontSize="15"
+                           TextColor="{StaticResource TextSecondaryColor}" LineBreakMode="WordWrap" />
+                    <HorizontalStackLayout HorizontalOptions="End" Spacing="8" Margin="0,8,0,0">
+                        <Button x:Name="ConfirmCancelButton" BackgroundColor="Transparent"
+                                TextColor="{StaticResource TextSecondaryColor}" Clicked="OnConfirmCancelClicked" />
+                        <Button x:Name="ConfirmAcceptButton" BackgroundColor="Transparent"
+                                FontAttributes="Bold" Clicked="OnConfirmAcceptClicked" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+    </Grid>
+
+</ContentPage>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <Style x:Key="PageTitleStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+    </Style>
+    <Style x:Key="PageSubtitleStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextColor" Value="{StaticResource TextSecondaryColor}" />
+    </Style>
+    <Style x:Key="SectionTitleStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+    </Style>
+    <Style x:Key="SectionSubtitleStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextColor" Value="{StaticResource TextSecondaryColor}" />
+    </Style>
+    <Style x:Key="SurfaceCardStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource SurfaceColor}" />
+        <Setter Property="Stroke" Value="{StaticResource BubbleBorderColor}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 4" />
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="#24000000" Offset="0,8" Radius="18" Opacity="0.12" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="SelectedBadgeStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="#EDF3FF" />
+        <Setter Property="Stroke" Value="#D4E2FF" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 999" />
+        <Setter Property="Padding" Value="10,5" />
+    </Style>
+    <Style x:Key="BadgeTextStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{StaticResource AccentColor}" />
+    </Style>
+    <Style x:Key="SelectedTextStyle" TargetType="Label" BasedOn="{StaticResource BadgeTextStyle}" />
+    <Style x:Key="BadgeIconStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{StaticResource AccentColor}" />
+    </Style>
+    <Style x:Key="ErrorBannerStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource DangerBackground}" />
+        <Setter Property="Stroke" Value="#FECACA" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 10" />
+        <Setter Property="Padding" Value="14" />
+    </Style>
+    <Style x:Key="ErrorTitleStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{StaticResource DangerColor}" />
+    </Style>
+    <Style x:Key="ErrorMessageStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextColor" Value="{StaticResource TextSecondaryColor}" />
+    </Style>
+    <Style x:Key="ErrorIconStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{StaticResource DangerColor}" />
+    </Style>
+    <Style x:Key="PillStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="#F3F6FC" />
+        <Setter Property="Stroke" Value="#DDE4F0" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 999" />
+        <Setter Property="Padding" Value="10,6" />
+    </Style>
+    <Style x:Key="PillTextStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+    </Style>
+    <Style x:Key="ReplyEditorStyle" TargetType="Editor">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="AutoSize" Value="TextChanges" />
+        <Setter Property="Margin" Value="0" />
+    </Style>
+    <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource AccentColor}" />
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="HeightRequest" Value="38" />
+        <Setter Property="Padding" Value="16,0" />
+    </Style>
+    <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="White" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+        <Setter Property="BorderColor" Value="{StaticResource BubbleBorderColor}" />
+        <Setter Property="BorderWidth" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="HeightRequest" Value="38" />
+        <Setter Property="Padding" Value="16,0" />
+    </Style>
+    <Style x:Key="CustomerAvatarStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="#E7ECF3" />
+        <Setter Property="Stroke" Value="#CFD7E4" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 999" />
+        <Setter Property="HeightRequest" Value="34" />
+        <Setter Property="WidthRequest" Value="34" />
+        <Setter Property="HorizontalOptions" Value="Start" />
+        <Setter Property="VerticalOptions" Value="Center" />
+    </Style>
+    <Style x:Key="CustomerAvatarTextStyle" TargetType="Label">
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+        <Setter Property="VerticalTextAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="#44546C" />
+    </Style>
+    <Style x:Key="AgentAvatarStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource AccentColor}" />
+        <Setter Property="Stroke" Value="{StaticResource AccentColor}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 999" />
+        <Setter Property="HeightRequest" Value="34" />
+        <Setter Property="WidthRequest" Value="34" />
+        <Setter Property="HorizontalOptions" Value="Start" />
+        <Setter Property="VerticalOptions" Value="Center" />
+    </Style>
+    <Style x:Key="AgentAvatarTextStyle" TargetType="Label">
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+        <Setter Property="VerticalTextAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="White" />
+    </Style>
+    <Style x:Key="MessageAuthorStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+    </Style>
+    <Style x:Key="MessageTimeStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="TextColor" Value="#6E7FA6" />
+    </Style>
+    <Style x:Key="MessageBodyStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryColor}" />
+    </Style>
+</ResourceDictionary>
