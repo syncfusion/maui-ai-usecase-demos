@@ -10,9 +10,21 @@ The AI never sends a reply automatically. Every generated response must be revie
 
 ## Demo
 
-### Desktop
+### macOS
 
-<img width="800" alt="Support Reply AI Draft - desktop" src="https://github.com/user-attachments/assets/b748a3b9-5a26-42ad-bf80-ccf5d2bcf5ba" />
+https://github.com/user-attachments/assets/d410e700-760d-49e3-b027-0df1f44ab2ff
+
+### Windows
+
+https://github.com/user-attachments/assets/9ee789aa-b976-4083-b8da-f0943f8d4223
+
+### iOS
+
+https://github.com/user-attachments/assets/a842597c-30e8-4922-800d-476b5afa8fc1
+
+### Android
+
+https://github.com/user-attachments/assets/396248ff-b1be-4bd4-961f-642ff428da20
 
 ## Key Features
 
