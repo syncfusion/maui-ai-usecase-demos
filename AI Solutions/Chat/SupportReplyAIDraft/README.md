@@ -12,19 +12,19 @@ The AI never sends a reply automatically. Every generated response must be revie
 
 ### macOS
 
-https://github.com/user-attachments/assets/d410e700-760d-49e3-b027-0df1f44ab2ff
+https://github.com/user-attachments/assets/32e44033-51b0-4fd0-b61d-feb130ff6f18
 
 ### Windows
 
-https://github.com/user-attachments/assets/9ee789aa-b976-4083-b8da-f0943f8d4223
+https://github.com/user-attachments/assets/0eeb3e38-26df-45e8-b38c-ad3a39e1231f
 
 ### iOS
 
-https://github.com/user-attachments/assets/a842597c-30e8-4922-800d-476b5afa8fc1
+https://github.com/user-attachments/assets/cd5a6f26-dc99-4a31-b8c8-2cad1a42c3ee
 
 ### Android
 
-https://github.com/user-attachments/assets/396248ff-b1be-4bd4-961f-642ff428da20
+https://github.com/user-attachments/assets/a3dcb696-e276-4d0f-92b8-a7a54f3233d7
 
 ## Key Features
 
