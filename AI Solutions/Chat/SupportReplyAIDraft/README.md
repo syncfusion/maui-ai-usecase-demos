@@ -10,7 +10,9 @@ The AI never sends a reply automatically. Every generated response must be revie
 
 ## Demo
 
-<!-- Add the final output demo video or GitHub user-attachment URL below. -->
+### Desktop
+
+<img width="800" alt="Support Reply AI Draft - desktop" src="https://github.com/user-attachments/assets/b748a3b9-5a26-42ad-bf80-ccf5d2bcf5ba" />
 
 ## Key Features
 
@@ -23,6 +25,7 @@ The AI never sends a reply automatically. Every generated response must be revie
 - Places the generated reply in the native `SfChat` composer
 - Allows the generated draft to be reviewed and edited before sending
 - Supports `Regenerate`, `Discard`, and `Retry` actions
+- Asks for confirmation before replacing or discarding a draft
 - Preserves the previous draft if regeneration fails
 - Prevents workflow-action text from becoming composer or outgoing message content
 - Inserts the approved reply as a support-agent message
@@ -54,6 +57,8 @@ After generation, the reply appears in the native composer for review and editin
 
 ### Regenerate
 
+Regenerating an existing draft first shows a confirmation dialog (`Replace draft?`) with `Regenerate` and `Cancel` actions.
+
 During regeneration:
 
 - The previous draft remains visible
@@ -66,7 +71,7 @@ If regeneration fails, the previous stable draft is preserved.
 
 ### Discard
 
-Discarding a draft:
+Discarding a draft, or selecting another customer message while a draft exists, shows a confirmation dialog (`Discard draft?`) with `Discard` and `Cancel` actions. Confirming:
 
 - Clears the composer
 - Clears the selected customer message
@@ -221,7 +226,7 @@ Not included:
 
 The project targets .NET 10 for Mac Catalyst, iOS, Android, and Windows.
 
-Run build and end-to-end workflow validation on each target platform (Mac Catalyst, iOS, Android, and Windows) before release.
+The workflow has been verified on Mac Catalyst, iOS, Android, and Windows. On Android and iOS, confirmations appear as centered dialogs; the phone header has no extra controls.
 
 ## Safe Usage
 
