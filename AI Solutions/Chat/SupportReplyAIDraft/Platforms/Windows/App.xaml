@@ -1,6 +1,6 @@
-<MauiWinUIApplication xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                     x:Class="SupportReplyAIDraft.WinUI.App">
-    <Application.Resources>
-    </Application.Resources>
-</MauiWinUIApplication>
+<maui:MauiWinUIApplication
+    x:Class="SupportReplyAIDraft.WinUI.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:maui="using:Microsoft.Maui">
+</maui:MauiWinUIApplication>
