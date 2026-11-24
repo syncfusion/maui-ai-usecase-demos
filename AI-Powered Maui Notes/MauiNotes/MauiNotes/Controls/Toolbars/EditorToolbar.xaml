@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolbar="clr-namespace:Syncfusion.Maui.Toolbar;assembly=Syncfusion.Maui.Toolbar"
+             xmlns:vm="clr-namespace:MauiNotes.ViewModels"
+             x:Class="MauiNotes.Controls.Toolbars.EditorToolbar"
+             x:Name="ToolbarRoot"
+             x:DataType="vm:NotesViewModel"
+             HeightRequest="36">
+    <ContentView.Resources>
+        <OnPlatform x:Key="EditorToolbarIconSize" x:TypeArguments="x:Double" Default="20">
+            <On Platform="Android" Value="20" />
+            <On Platform="iOS" Value="20" />
+        </OnPlatform>
+        <Style x:Key="ToolbarIconLabelStyle" TargetType="Label">
+            <Setter Property="FontFamily" Value="MauiMaterialAssets" />
+            <Setter Property="FontSize" Value="{StaticResource EditorToolbarIconSize}" />
+            <Setter Property="TextColor" Value="#1D1D1F" />
+            <Setter Property="WidthRequest" Value="32" />
+            <Setter Property="HeightRequest" Value="32" />
+            <Setter Property="MinimumWidthRequest" Value="0" />
+            <Setter Property="MinimumHeightRequest" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Setter Property="VerticalTextAlignment" Value="Center" />
+            <Setter Property="HorizontalOptions" Value="Center" />
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
+        </Style>
+    </ContentView.Resources>
+        <Border WidthRequest="184" HeightRequest="36" MinimumHeightRequest="36" MaximumHeightRequest="36"
+            Padding="2,0" HorizontalOptions="Center"
+            Background="White" Stroke="#D2D2D7" StrokeThickness="0.5"
+            StrokeShape="RoundRectangle 18">
+            <Border.Shadow>
+            <Shadow Brush="#000000" Opacity="0.05" Radius="3" Offset="0,1" />
+            </Border.Shadow>
+        <toolbar:SfToolbar x:Name="EditorSfToolbar"
+                           WidthRequest="216"
+                           HeightRequest="32"
+                           MaximumHeightRequest="32"
+                           HorizontalOptions="Center"
+                           Background="Transparent"
+                           CornerRadius="0"
+                           ItemSpacing="4"
+                           OverflowMode="Scroll">
+            <toolbar:SfToolbar.Items>
+                <toolbar:SfToolbarItem Name="AI" ToolTipText="AI assistant" Size="32,32">
+                    <toolbar:SfToolbarItem.View>
+                        <Border WidthRequest="32" HeightRequest="32" StrokeThickness="0" StrokeShape="Ellipse"
+                                BackgroundColor="Transparent" VerticalOptions="Center">
+                            <Border.GestureRecognizers>
+                                <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                            </Border.GestureRecognizers>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Transparent" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#EBEBED" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Transparent" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Label x:Name="ToolbarAI" AutomationId="ToolbarAI" Text="&#xe7d7;"
+                                   Style="{StaticResource ToolbarIconLabelStyle}"
+                                   IsEnabled="{Binding IsAiActionEnabled}"
+                                   ToolTipProperties.Text="AI assistant"
+                                   SemanticProperties.Description="AI assistant">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnAiTapped" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Border>
+                    </toolbar:SfToolbarItem.View>
+                </toolbar:SfToolbarItem>
+                <toolbar:SfToolbarItem Name="Format" ToolTipText="Text styles" Size="32,32">
+                    <toolbar:SfToolbarItem.View>
+                        <Border WidthRequest="32" HeightRequest="32" StrokeThickness="0" StrokeShape="Ellipse"
+                                BackgroundColor="Transparent" VerticalOptions="Center">
+                            <Border.GestureRecognizers>
+                                <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                            </Border.GestureRecognizers>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Transparent" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#EBEBED" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Transparent" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Label x:Name="ToolbarFormat" AutomationId="ToolbarFormat" Text="&#xe755;"
+                                   Style="{StaticResource ToolbarIconLabelStyle}"
+                                   IsEnabled="{Binding IsEditorEditable}"
+                                   ToolTipProperties.Text="Text styles"
+                                   SemanticProperties.Description="Text styles">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnFormatClicked" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Border>
+                    </toolbar:SfToolbarItem.View>
+                </toolbar:SfToolbarItem>
+                <toolbar:SfToolbarItem Name="Undo" ToolTipText="Undo" Size="32,32">
+                    <toolbar:SfToolbarItem.View>
+                        <Border WidthRequest="32" HeightRequest="32" StrokeThickness="0" StrokeShape="Ellipse"
+                                BackgroundColor="Transparent" VerticalOptions="End">
+                            <Border.GestureRecognizers>
+                                <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                            </Border.GestureRecognizers>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Transparent" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#EBEBED" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Transparent" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Label AutomationId="ToolbarUndo" Text="&#xe744;"
+                                   Style="{StaticResource ToolbarIconLabelStyle}"
+                                   IsEnabled="{Binding IsEditorEditable}"
+                                   ToolTipProperties.Text="Undo"
+                                   SemanticProperties.Description="Undo">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnUndoClicked" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Border>
+                    </toolbar:SfToolbarItem.View>
+                </toolbar:SfToolbarItem>
+                <toolbar:SfToolbarItem Name="Redo" ToolTipText="Redo" Size="32,32">
+                    <toolbar:SfToolbarItem.View>
+                        <Border WidthRequest="32" HeightRequest="32" StrokeThickness="0" StrokeShape="Ellipse"
+                                BackgroundColor="Transparent" VerticalOptions="Center">
+                            <Border.GestureRecognizers>
+                                <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                            </Border.GestureRecognizers>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Transparent" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#EBEBED" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Transparent" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Label AutomationId="ToolbarRedo" Text="&#xe745;"
+                                   Style="{StaticResource ToolbarIconLabelStyle}"
+                                   IsEnabled="{Binding IsEditorEditable}"
+                                   ToolTipProperties.Text="Redo"
+                                   SemanticProperties.Description="Redo">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnRedoClicked" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Border>
+                    </toolbar:SfToolbarItem.View>
+                </toolbar:SfToolbarItem>
+                <toolbar:SfToolbarItem Name="Table" ToolTipText="Insert table" Size="32,32">
+                    <toolbar:SfToolbarItem.View>
+                        <Border WidthRequest="32" HeightRequest="32" StrokeThickness="0" StrokeShape="Ellipse"
+                                BackgroundColor="Transparent" VerticalOptions="Center">
+                            <Border.GestureRecognizers>
+                                <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                            </Border.GestureRecognizers>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Transparent" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#EBEBED" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Transparent" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Label AutomationId="ToolbarTable" Text="&#xe7af;"
+                                   Style="{StaticResource ToolbarIconLabelStyle}"
+                                   IsEnabled="{Binding IsEditorEditable}"
+                                   ToolTipProperties.Text="Insert table"
+                                   SemanticProperties.Description="Insert table">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnTableClicked" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Border>
+                    </toolbar:SfToolbarItem.View>
+                </toolbar:SfToolbarItem>
+            </toolbar:SfToolbar.Items>
+        </toolbar:SfToolbar>
+    </Border>
+</ContentView>

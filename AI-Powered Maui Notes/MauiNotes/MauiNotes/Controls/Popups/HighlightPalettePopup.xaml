@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:controls="clr-namespace:MauiNotes.Controls"
+             xmlns:vm="clr-namespace:MauiNotes.ViewModels"
+             x:Class="MauiNotes.Controls.Popups.HighlightPalettePopup"
+             x:DataType="vm:NotesViewModel"
+             WidthRequest="0"
+             HeightRequest="0">
+    <ContentView.Resources>
+        <ResourceDictionary>
+<Style x:Key="PopupOptionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="TextColor" Value="#45464D" />
+            <Setter Property="controls:PopupHoverEffect.IsHoverEnabled" Value="True" />
+        </Style>
+        </ResourceDictionary>
+    </ContentView.Resources>
+    <Grid>
+<popup:SfPopup x:Name="PopupView" WidthRequest="168" AutoSizeMode="Height"
+            ShowHeader="False" ShowFooter="False" ShowOverlayAlways="False" StaysOpen="False"
+            Closed="OnPopupClosed">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle Stroke="Transparent" StrokeThickness="0" CornerRadius="10" />
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:NotesViewModel">
+                            <Border Padding="5" BackgroundColor="White" Stroke="#ECECEF" StrokeThickness="0.5"
+                        StrokeShape="RoundRectangle 10">
+                        <HorizontalStackLayout Spacing="4">
+                            <Button Text="●" TextColor="#FFF176" Style="{StaticResource PopupOptionButtonStyle}" WidthRequest="26" HeightRequest="30" Padding="0" ToolTipProperties.Text="Yellow" Command="{Binding ToolbarActionCommand}" CommandParameter="HighlightColor:#FFFF00" />
+                            <Button Text="●" TextColor="#A5D6A7" Style="{StaticResource PopupOptionButtonStyle}" WidthRequest="26" HeightRequest="30" Padding="0" ToolTipProperties.Text="Green" Command="{Binding ToolbarActionCommand}" CommandParameter="HighlightColor:#A5D6A7" />
+                            <Button Text="●" TextColor="#90CAF9" Style="{StaticResource PopupOptionButtonStyle}" WidthRequest="26" HeightRequest="30" Padding="0" ToolTipProperties.Text="Blue" Command="{Binding ToolbarActionCommand}" CommandParameter="HighlightColor:#90CAF9" />
+                            <Button Text="●" TextColor="#F48FB1" Style="{StaticResource PopupOptionButtonStyle}" WidthRequest="26" HeightRequest="30" Padding="0" ToolTipProperties.Text="Pink" Command="{Binding ToolbarActionCommand}" CommandParameter="HighlightColor:#F48FB1" />
+                            <Button Text="●" TextColor="#FFCC80" Style="{StaticResource PopupOptionButtonStyle}" WidthRequest="26" HeightRequest="30" Padding="0" ToolTipProperties.Text="Orange" Command="{Binding ToolbarActionCommand}" CommandParameter="HighlightColor:#FFCC80" />
+                        </HorizontalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+    </Grid>
+</ContentView>

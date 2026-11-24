@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:tree="clr-namespace:Syncfusion.Maui.TreeView;assembly=Syncfusion.Maui.TreeView"
+             xmlns:controls="clr-namespace:MauiNotes.Controls"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:popups="clr-namespace:MauiNotes.Controls.Popups"
+             xmlns:vm="clr-namespace:MauiNotes.ViewModels"
+             xmlns:models="clr-namespace:MauiNotes.Models"
+             x:Class="MauiNotes.Controls.Notes.NotesTreeDesktopUI"
+             x:DataType="vm:NotesViewModel">
+    <!-- TreeView section - Folder hierarchy and note rows -->
+    <Grid>
+                 <Border BackgroundColor="Transparent" Stroke="Transparent" StrokeThickness="0"
+                    StrokeShape="RoundRectangle 8,0,0,8">
+                    <Grid RowDefinitions="48,*" Padding="10,0,8,8">
+                        <!-- Notes section - Folder summary and create-folder action -->
+                        <Grid ColumnDefinitions="*,36" Margin="0,4,0,0">
+                            <VerticalStackLayout Spacing="0" VerticalOptions="Center">
+                                <Label Text="{Binding SelectedHeaderText}" FontSize="13" FontAttributes="Bold"
+                                    TextColor="#1C1C1E" LineBreakMode="TailTruncation" />
+                                <Label Text="{Binding SelectedCountText}" FontSize="10" TextColor="#7C7D84" />
+                            </VerticalStackLayout>
+                            <Border Grid.Column="1" WidthRequest="36" HeightRequest="36" HorizontalOptions="End"
+                                VerticalOptions="Center" Background="White" Stroke="#ECECEF" StrokeThickness="0.5"
+                                StrokeShape="RoundRectangle 18">
+                                <buttons:SfButton AutomationId="ToolbarNewFolder" ToolTipProperties.Text="New folder"
+                                    WidthRequest="32" HeightRequest="32" MinimumWidthRequest="0"
+                                    MinimumHeightRequest="0" HorizontalOptions="Center" VerticalOptions="Center"
+                                    Background="Transparent" Stroke="Transparent" StrokeThickness="0"
+                                    CornerRadius="16" Padding="8" ShowIcon="True" ImageSize="16"
+                                    ImageAlignment="Default"
+                                    controls:PopupHoverEffect.IsHoverEnabled="True"
+                                    Command="{Binding CreateRootFolderCommand}">
+                                    <buttons:SfButton.ImageSource>
+                                        <FontImageSource Glyph="&#xE712;" FontFamily="MauiMaterialAssets"
+                                            Color="#1D1D1F" Size="16" />
+                                    </buttons:SfButton.ImageSource>
+                                </buttons:SfButton>
+                            </Border>
+                        </Grid>
+                        <BoxView Grid.Row="0" Margin="-10,0,-8,0" HeightRequest="1" Color="#E5E5E7"
+                            VerticalOptions="End" InputTransparent="True" />
+
+                        <!-- TreeView section - Searchable folder and note hierarchy -->
+                        <tree:SfTreeView x:Name="FoldersTreeView" Grid.Row="1" ItemsSource="{Binding TreeNodes}"
+                            ChildPropertyName="Children" NotificationSubscriptionMode="CollectionChange"
+                            SelectionMode="Single" SelectedItem="{Binding SelectedTreeNode, Mode=TwoWay}"
+                            AutoExpandMode="AllNodesExpanded" FilterMode="Contains" FilterPath="FilterTitle"
+                            FilterText="{Binding SearchText}" AutoExpandOnFilter="True" NodeSizeMode="None"
+                            Indentation="18" ExpanderWidth="20" ItemHeight="48" QueryNodeSize="TreeView_QueryNodeSize"
+                            BackgroundColor="Transparent" SelectionBackground="Transparent"
+                            AllowDragging="True">
+                            <tree:SfTreeView.DragAndDropController>
+                                <tree:DragAndDropController CanAutoExpand="True" />
+                            </tree:SfTreeView.DragAndDropController>
+                            <tree:SfTreeView.ExpanderTemplate>
+                        <DataTemplate x:DataType="x:Object">
+                                    <Grid WidthRequest="20" HeightRequest="28" HorizontalOptions="Center"
+                                        VerticalOptions="Center">
+                                        <Label Text="&#xE705;" FontFamily="MauiMaterialAssets" FontSize="14"
+                                            TextColor="#333338" HorizontalTextAlignment="Center"
+                                            VerticalTextAlignment="Center" HorizontalOptions="Center"
+                                            VerticalOptions="Center" WidthRequest="20" HeightRequest="20"
+                                            IsVisible="{Binding HasChildNodes}">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsExpanded}"
+                                                    Value="False">
+                                                    <Setter Property="Text" Value="&#xE706;" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </Grid>
+                                </DataTemplate>
+                            </tree:SfTreeView.ExpanderTemplate>
+                            <tree:SfTreeView.ItemTemplate>
+                                <DataTemplate x:DataType="models:NoteTreeNode">
+                                    <Grid Padding="0" RowDefinitions="Auto,Auto">
+                                        <Border Grid.Row="0" IsVisible="{Binding IsFolder}" HeightRequest="28" Margin="0,0,0,4"
+                                            Padding="4,0,6,0"
+                                            StrokeThickness="0" StrokeShape="RoundRectangle 8"
+                                            BackgroundColor="Transparent">
+                                            <Grid ColumnDefinitions="18,*,Auto,22" ColumnSpacing="4"
+                                                IsClippedToBounds="True"
+                                                SizeChanged="OnFolderRenameCellSizeChanged">
+                                                <Label Text="&#xE712;" FontFamily="MauiMaterialAssets" FontSize="15"
+                                                    TextColor="#1F1F24" HorizontalTextAlignment="Center"
+                                                    VerticalTextAlignment="Center" VerticalOptions="Center">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}"
+                                                            Value="True">
+                                                            <Setter Property="TextColor" Value="#4C4D53" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                                <Label Grid.Column="1" Text="{Binding Title}" FontSize="12"
+                                                    TextColor="#1F1F24" VerticalOptions="Center"
+                                                    LineBreakMode="TailTruncation">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}"
+                                                            Value="True">
+                                                            <Setter Property="TextColor" Value="#4C4D53" />
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsRenaming}"
+                                                            Value="True">
+                                                            <Setter Property="IsVisible" Value="False" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                                <Label Grid.Column="1" AutomationId="FolderRenameTextMeasure"
+                                                    FontSize="12" LineBreakMode="NoWrap" Opacity="0"
+                                                    InputTransparent="True" />
+                                                <Border Grid.Column="1" HeightRequest="22"
+                                                    HorizontalOptions="Start" VerticalOptions="Center"
+                                                    BackgroundColor="White" StrokeThickness="0"
+                                                    InputTransparent="True" IsVisible="{Binding IsRenaming}" />
+                                                <controls:BorderlessEntry Grid.Column="1"
+                                                    Text="{Binding RenameText, Mode=TwoWay}"
+                                                    FontSize="12" TextColor="#1F1F24"
+                                                    Background="Transparent" HeightRequest="22"
+                                                    MinimumHeightRequest="0" MaximumHeightRequest="22"
+                                                    Margin="0" HorizontalOptions="Start"
+                                                    VerticalOptions="Center" VerticalTextAlignment="Center"
+                                                    IsVisible="False"
+                                                    ReturnType="Done" Completed="OnFolderRenameCompleted"
+                                                    TextChanged="OnFolderRenameTextChanged"
+                                                    Unfocused="OnFolderRenameUnfocused"
+                                                    Focused="OnFolderRenameFocused"
+                                                    BindingContextChanged="OnFolderRenameEntryBindingContextChanged"
+                                                    Loaded="OnFolderRenameEntryLoaded"
+                                                    Unloaded="OnFolderRenameEntryUnloaded"
+                                                    HandlerChanged="OnFolderRenameEntryHandlerChanged">
+                                                    <controls:BorderlessEntry.Triggers>
+                                                        <DataTrigger TargetType="controls:BorderlessEntry"
+                                                            Binding="{Binding IsRenaming}"
+                                                            Value="True">
+                                                            <Setter Property="IsVisible" Value="True" />
+                                                        </DataTrigger>
+                                                    </controls:BorderlessEntry.Triggers>
+                                                </controls:BorderlessEntry>
+                                                <Button Grid.Column="2" Text="&#xE759;" FontFamily="MauiMaterialAssets"
+                                                    FontSize="13" TextColor="#6C6C73" BackgroundColor="Transparent"
+                                                    Padding="0" WidthRequest="20" HeightRequest="20"
+                                                    MinimumWidthRequest="0" MinimumHeightRequest="0"
+                                                    VerticalOptions="Center" HorizontalOptions="Center" Opacity="0"
+                                                    InputTransparent="True" Clicked="OnNodeMenuClicked">
+                                                    <Button.Triggers>
+                                                        <DataTrigger TargetType="Button" Binding="{Binding IsHovered}"
+                                                            Value="True">
+                                                            <Setter Property="Opacity" Value="1" />
+                                                            <Setter Property="InputTransparent" Value="False" />
+                                                        </DataTrigger>
+                                                    </Button.Triggers>
+                                                </Button>
+                                                <Label Grid.Column="3" Text="{Binding NoteCount}" FontSize="11"
+                                                    TextColor="#9A9AA0" VerticalTextAlignment="Center"
+                                                    HorizontalTextAlignment="End" Margin="0,0,4,0" />
+                                            </Grid>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsHovered}"
+                                                    Value="True">
+                                                    <Setter Property="BackgroundColor" Value="#EDEDEF" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}"
+                                                    Value="True">
+                                                    <Setter Property="BackgroundColor" Value="#EDEDEF" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Border.GestureRecognizers>
+                                                <PointerGestureRecognizer PointerEntered="OnTreeItemPointerEntered"
+                                                    PointerExited="OnTreeItemPointerExited" />
+                                            </Border.GestureRecognizers>
+                                        </Border>
+                                        <Label Grid.Row="1" Text="{Binding RenameValidationMessage}"
+                                            FontSize="9" TextColor="#C62828" Margin="26,-2,4,2"
+                                            IsVisible="{Binding IsRenameInvalid}" />
+
+                                        <Border Grid.Row="0" IsVisible="{Binding IsNote}" Margin="0,0,0,4"
+                                            Padding="8,4,6,4" Stroke="Transparent" StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 8" BackgroundColor="Transparent">
+                                            <Grid RowDefinitions="Auto,6" ColumnDefinitions="*,Auto,22" ColumnSpacing="0"
+                                                Padding="0">
+                                                <VerticalStackLayout Spacing="0" VerticalOptions="Center"
+                                                    Grid.ColumnSpan="2">
+                                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                                                        <Label Text="{Binding Title}" FontSize="13" TextColor="#1F1F24"
+                                                            LineBreakMode="TailTruncation" />
+                                                        <Label Grid.Column="1" Text="Locked" FontSize="9"
+                                                            TextColor="#6C6C73" IsVisible="{Binding IsLocked}"
+                                                            VerticalOptions="Center" />
+                                                    </Grid>
+                                                    <Label Text="{Binding PreviewLine}" FontSize="11"
+                                                        TextColor="#8D8D95" LineBreakMode="TailTruncation" />
+                                                </VerticalStackLayout>
+                                                <Button Grid.Column="2" Grid.RowSpan="2" Text="&#xE759;"
+                                                    FontFamily="MauiMaterialAssets" FontSize="13" TextColor="#6C6C73"
+                                                    BackgroundColor="Transparent" Padding="0" WidthRequest="20"
+                                                    HeightRequest="20" MinimumWidthRequest="0" MinimumHeightRequest="0"
+                                                    VerticalOptions="Center" HorizontalOptions="Center" Opacity="0"
+                                                    InputTransparent="True" Clicked="OnNodeMenuClicked">
+                                                    <Button.Triggers>
+                                                        <DataTrigger TargetType="Button" Binding="{Binding IsHovered}"
+                                                            Value="True">
+                                                            <Setter Property="Opacity" Value="1" />
+                                                            <Setter Property="InputTransparent" Value="False" />
+                                                        </DataTrigger>
+                                                    </Button.Triggers>
+                                                </Button>
+                                            </Grid>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsHovered}"
+                                                    Value="True">
+                                                    <Setter Property="BackgroundColor" Value="#EDEDEF" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}"
+                                                    Value="True">
+                                                    <Setter Property="BackgroundColor" Value="#EDEDEF" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Border.GestureRecognizers>
+                                                <PointerGestureRecognizer PointerEntered="OnTreeItemPointerEntered"
+                                                    PointerExited="OnTreeItemPointerExited" />
+                                            </Border.GestureRecognizers>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </tree:SfTreeView.ItemTemplate>
+                        </tree:SfTreeView>
+                        <!-- Popup section - Folder and note actions -->
+                        <popups:NodeActionPopups x:Name="NodeActionPopups" />
+                    </Grid>
+                </Border>
+    </Grid>
+</ContentView>
