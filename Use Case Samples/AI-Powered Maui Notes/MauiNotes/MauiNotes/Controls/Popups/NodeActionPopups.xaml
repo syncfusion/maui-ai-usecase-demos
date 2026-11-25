@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:controls="clr-namespace:MauiNotes.Controls"
+             xmlns:vm="clr-namespace:MauiNotes.ViewModels"
+             xmlns:popups="clr-namespace:MauiNotes.Controls.Popups"
+             x:Class="MauiNotes.Controls.Popups.NodeActionPopups"
+             x:Name="PopupHost"
+             x:DataType="vm:NotesViewModel"
+             WidthRequest="0"
+             HeightRequest="0">
+    <ContentView.Resources>
+        <ResourceDictionary>
+<Style x:Key="PopupItemRowStyle" TargetType="Grid">
+            <Setter Property="controls:PopupHoverEffect.IsHoverEnabled" Value="True" />
+        </Style>
+<Style x:Key="DeleteConfirmationButtonStyle" TargetType="Button">
+            <Setter Property="HeightRequest" Value="40" />
+            <Setter Property="MinimumHeightRequest" Value="0" />
+            <Setter Property="Padding" Value="12,0" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="TextColor" Value="#45464D" />
+            <Setter Property="BorderColor" Value="#DADADD" />
+            <Setter Property="BorderWidth" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="controls:PopupHoverEffect.IsHoverEnabled" Value="True" />
+        </Style>
+        </ResourceDictionary>
+    </ContentView.Resources>
+    <Grid>
+<popup:SfPopup x:Name="NodeActionsPopup" WidthRequest="140" AutoSizeMode="Height" ShowHeader="False"
+            ShowFooter="False" ShowOverlayAlways="False" StaysOpen="False">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle Stroke="Transparent" StrokeThickness="0" CornerRadius="10" />
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:NotesViewModel">
+                    <Border Padding="8,6" Stroke="#DADADD" StrokeThickness="0.5" StrokeShape="RoundRectangle 10"
+                        BackgroundColor="White">
+                        <Border.GestureRecognizers>
+                            <PointerGestureRecognizer PointerEntered="OnNodeActionsPopupPointerEntered"
+                                PointerExited="OnNodeActionsPopupPointerExited" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="4">
+                            <Grid IsVisible="{Binding IsNoteMenuTarget}" HeightRequest="28" ColumnDefinitions="16,*"
+                                ColumnSpacing="8" SemanticProperties.Description="Create note"
+                                Style="{StaticResource PopupItemRowStyle}">
+                                <Label Text="&#xE756;" FontFamily="MauiMaterialAssets" FontSize="14" TextColor="#45464D"
+                                    HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                                <Label Grid.Column="1" Text="Create" FontSize="12" TextColor="#45464D"
+                                    VerticalTextAlignment="Center" />
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnCreateNoteMenuOptionTapped" />
+                                    <PointerGestureRecognizer PointerEntered="OnOtherMenuOptionPointerEntered" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                            <Grid IsVisible="{Binding IsNoteMenuTarget}" HeightRequest="28" ColumnDefinitions="16,*,12"
+                                ColumnSpacing="8" SemanticProperties.Description="Move note to folder"
+                                Style="{StaticResource PopupItemRowStyle}">
+                                <Label Text="&#xE726;" FontFamily="MauiMaterialAssets" FontSize="14" TextColor="#45464D"
+                                    HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                                <Label Grid.Column="1" Text="Move To" FontSize="12" TextColor="#45464D"
+                                    VerticalTextAlignment="Center" />
+                                <Label Grid.Column="2" Text="&#x203A;" FontSize="16" TextColor="#77787F"
+                                    HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnMoveToMenuOptionTapped" />
+                                    <PointerGestureRecognizer PointerEntered="OnMoveToMenuOptionPointerEntered" />
+                                    <PointerGestureRecognizer PointerExited="OnMoveToMenuOptionPointerExited" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                            <Grid IsVisible="{Binding IsNoteMenuTarget}" HeightRequest="28" ColumnDefinitions="16,*"
+                                ColumnSpacing="8" SemanticProperties.Description="Lock or unlock note"
+                                Style="{StaticResource PopupItemRowStyle}">
+                                <Label Text="&#xE77c;" FontFamily="MauiMaterialAssets" FontSize="14" TextColor="#45464D"
+                                    HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                                <Label Grid.Column="1" Text="{Binding MenuTargetLockActionText}" FontSize="12"
+                                    TextColor="#45464D" VerticalTextAlignment="Center" />
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnToggleNoteLockMenuOptionTapped" />
+                                    <PointerGestureRecognizer PointerEntered="OnOtherMenuOptionPointerEntered" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                            <Grid IsVisible="{Binding IsNoteMenuTarget}" HeightRequest="28" ColumnDefinitions="16,*"
+                                ColumnSpacing="8" SemanticProperties.Description="Duplicate note"
+                                Style="{StaticResource PopupItemRowStyle}">
+                                <Label Text="&#xE7a0;" FontFamily="MauiMaterialAssets" FontSize="14" TextColor="#45464D"
+                                    HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                                <Label Grid.Column="1" Text="Duplicate" FontSize="12" TextColor="#45464D"
+                                    VerticalTextAlignment="Center" />
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnDuplicateNoteMenuOptionTapped" />
+                                    <PointerGestureRecognizer PointerEntered="OnOtherMenuOptionPointerEntered" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                            <Grid IsVisible="{Binding IsFolderMenuTarget}" HeightRequest="28" ColumnDefinitions="16,*"
+                                ColumnSpacing="8" SemanticProperties.Description="Create subfolder"
+                                Style="{StaticResource PopupItemRowStyle}">
+                                <Label Text="&#xE712;" FontFamily="MauiMaterialAssets" FontSize="14" TextColor="#45464D"
+                                    HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                                <Label Grid.Column="1" Text="New Subfolder" FontSize="12" TextColor="#45464D"
+                                    VerticalTextAlignment="Center" />
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnCreateSubfolderMenuOptionTapped" />
+                                    <PointerGestureRecognizer PointerEntered="OnOtherMenuOptionPointerEntered" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                            <Grid IsVisible="{Binding IsFolderMenuTarget}" HeightRequest="28" ColumnDefinitions="16,*,12"
+                                ColumnSpacing="8" SemanticProperties.Description="Move folder"
+                                Style="{StaticResource PopupItemRowStyle}">
+                                <Label Text="&#xE726;" FontFamily="MauiMaterialAssets" FontSize="14" TextColor="#45464D"
+                                    HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                                <Label Grid.Column="1" Text="Move To" FontSize="12" TextColor="#45464D"
+                                    VerticalTextAlignment="Center" />
+                                <Label Grid.Column="2" Text="&#x203A;" FontSize="16" TextColor="#77787F"
+                                    HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnMoveToMenuOptionTapped" />
+                                    <PointerGestureRecognizer PointerEntered="OnMoveToMenuOptionPointerEntered" />
+                                    <PointerGestureRecognizer PointerExited="OnMoveToMenuOptionPointerExited" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                            <Grid IsVisible="{Binding IsFolderMenuTarget}" HeightRequest="28" ColumnDefinitions="16,*"
+                                ColumnSpacing="8" SemanticProperties.Description="Rename"
+                                Style="{StaticResource PopupItemRowStyle}">
+                                <Label Text="&#xE710;" FontFamily="MauiMaterialAssets" FontSize="14" TextColor="#45464D"
+                                    HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                                <Label Grid.Column="1" Text="Rename" FontSize="12" TextColor="#45464D"
+                                    VerticalTextAlignment="Center" />
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnRenameMenuOptionTapped" />
+                                    <PointerGestureRecognizer PointerEntered="OnOtherMenuOptionPointerEntered" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                            <Grid HeightRequest="28" ColumnDefinitions="16,*" ColumnSpacing="8"
+                                SemanticProperties.Description="Delete" Style="{StaticResource PopupItemRowStyle}">
+                                <Label Text="&#xE70F;" FontFamily="MauiMaterialAssets" FontSize="14" TextColor="#E34B4B"
+                                    HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                                <Label Grid.Column="1" Text="Delete" FontSize="12" TextColor="#E34B4B"
+                                    VerticalTextAlignment="Center" />
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnDeleteMenuOptionTapped" />
+                                    <PointerGestureRecognizer PointerEntered="OnOtherMenuOptionPointerEntered" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+
+        <popup:SfPopup x:Name="DeleteConfirmationPopup" WidthRequest="420" AutoSizeMode="Height"
+            ShowHeader="False" ShowFooter="False" ShowOverlayAlways="True" StaysOpen="False"
+            Closed="OnDeleteConfirmationPopupClosed">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle Stroke="Transparent" StrokeThickness="0" CornerRadius="10" />
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:NotesViewModel">
+                    <Border Stroke="#DADADD" StrokeThickness="0.5" StrokeShape="RoundRectangle 10"
+                        BackgroundColor="White">
+                        <Border.Shadow>
+                            <Shadow Brush="#202027" Opacity="0.20" Radius="18" Offset="0,8" />
+                        </Border.Shadow>
+                        <Grid RowDefinitions="Auto,Auto,Auto">
+                            <Grid Grid.Row="0" ColumnDefinitions="*" Padding="20,18,20,12">
+                                <Label Grid.Column="0" Text="Delete" FontSize="18" FontAttributes="Bold"
+                                    TextColor="#29292D" VerticalTextAlignment="Center" />
+                            </Grid>
+                            <Grid Grid.Row="1" Padding="20,0,20,20">
+                                <Label IsVisible="{Binding IsFolderMenuTarget}" FontSize="14"
+                                    TextColor="#29292D" LineBreakMode="WordWrap">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Are you sure you want to delete the folder '" />
+                                            <Span Text="{Binding MenuTargetTitle}" />
+                                            <Span Text="'?" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label IsVisible="{Binding IsNoteMenuTarget}" FontSize="14"
+                                    TextColor="#29292D" LineBreakMode="WordWrap">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Are you sure you want to delete the note '" />
+                                            <Span Text="{Binding MenuTargetTitle}" />
+                                            <Span Text="'?" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </Grid>
+                            <Border Grid.Row="2" Padding="20" Background="#F8F8F9" Stroke="#E5E5E7"
+                                StrokeThickness="0.5" StrokeShape="RoundRectangle 0,0,10,10">
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                    <Button Grid.Column="0" Text="Delete" TextColor="#E34B4B"
+                                        Style="{StaticResource DeleteConfirmationButtonStyle}"
+                                        Clicked="OnConfirmDeleteTapped" />
+                                    <Button Grid.Column="1" Text="Cancel"
+                                        Style="{StaticResource DeleteConfirmationButtonStyle}"
+                                        Clicked="OnCancelDeleteTapped" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+
+<popup:SfPopup x:Name="MoveDestinationPopup" WidthRequest="200"
+               AutoSizeMode="Height" ShowHeader="False" ShowFooter="False" ShowOverlayAlways="False"
+            StaysOpen="False" Closed="OnMoveDestinationPopupClosed">
+            <popup:SfPopup.PopupStyle>
+                <popup:PopupStyle Stroke="Transparent" StrokeThickness="0" CornerRadius="10" />
+            </popup:SfPopup.PopupStyle>
+            <popup:SfPopup.ContentTemplate>
+                <DataTemplate x:DataType="vm:NotesViewModel">
+                    <Border Padding="6" Stroke="#DADADD" StrokeThickness="0.5"
+                        StrokeShape="RoundRectangle 10" BackgroundColor="White">
+                        <Border.GestureRecognizers>
+                            <PointerGestureRecognizer PointerEntered="OnMoveDestinationPointerEntered"
+                                PointerExited="OnMoveDestinationPointerExited" />
+                        </Border.GestureRecognizers>
+                        <Grid RowDefinitions="Auto,*">
+                            <HorizontalStackLayout Grid.Row="0"
+                                IsVisible="{Binding Source={x:Reference PopupHost}, Path=IsMobilePresentation}"
+                                HeightRequest="42" Spacing="8" Padding="4,0">
+                                <buttons:SfButton Text="&#xe703;"
+                                    FontFamily="MauiMaterialAssets"
+                                    FontSize="18"
+                                    SemanticProperties.Description="Back"
+                                    Clicked="OnMoveDestinationBackTapped"
+                                    Background="Transparent" Stroke="Transparent" StrokeThickness="0"
+                                    TextColor="#45464D" Padding="0"
+                                    WidthRequest="36" MinimumWidthRequest="36" MinimumHeightRequest="36"
+                                    VerticalOptions="Center" CornerRadius="18" />
+                                <Label Text="Move To" FontSize="15" FontAttributes="Bold"
+                                    TextColor="#29292D" VerticalTextAlignment="Center" />
+                            </HorizontalStackLayout>
+                            <CollectionView Grid.Row="1" Loaded="OnMoveDestinationFoldersViewLoaded"
+                                SelectionMode="None" VerticalScrollBarVisibility="Never">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="popups:MoveDestinationMenuItem">
+                                    <Grid HeightRequest="32" Padding="{Binding Indent}"
+                                        IsEnabled="{Binding IsEnabled}" Style="{StaticResource PopupItemRowStyle}">
+                                        <Grid.Triggers>
+                                            <DataTrigger TargetType="Grid" Binding="{Binding IsEnabled}" Value="False">
+                                                <Setter Property="Opacity" Value="0.55" />
+                                            </DataTrigger>
+                                        </Grid.Triggers>
+                                        <Label Text="{Binding Title}" FontSize="13" TextColor="#29292D"
+                                            VerticalTextAlignment="Center" LineBreakMode="TailTruncation">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsEnabled}"
+                                                    Value="False">
+                                                    <Setter Property="TextColor" Value="#8D8D95" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnMoveDestinationSelected" />
+                                        </Grid.GestureRecognizers>
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </popup:SfPopup.ContentTemplate>
+        </popup:SfPopup>
+
+        <popups:RenameFolderPopup x:Name="RenameFolderPopupHost" />
+    </Grid>
+</ContentView>
