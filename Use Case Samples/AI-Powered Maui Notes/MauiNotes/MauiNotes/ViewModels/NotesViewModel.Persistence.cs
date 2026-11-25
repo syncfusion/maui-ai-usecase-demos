@@ -8,7 +8,7 @@ public partial class NotesViewModel
 {
     private bool isLoadingData;
 
-    private void LoadInitialData()
+    private async Task LoadInitialDataAsync()
     {
         isLoadingData = true;
         try
@@ -16,7 +16,7 @@ public partial class NotesViewModel
             NoteStoreDocument? document = null;
             try
             {
-                document = notePersistenceService.Load();
+                document = await notePersistenceService.LoadAsync();
             }
             catch (IOException ex)
             {

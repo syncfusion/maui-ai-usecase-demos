@@ -2,6 +2,7 @@ using System.Diagnostics;
 using MauiNotes.Controls.AI;
 using MauiNotes.Controls.Toolbars;
 using MauiNotes.Controls.Popups;
+using MauiNotes.Services.Editor;
 using MauiNotes.ViewModels;
 using Syncfusion.Maui.RichTextEditor;
 
@@ -25,10 +26,13 @@ public partial class EditorPageMobileUI : ContentPage
     private bool isPopupRepositionQueued;
     private readonly Stopwatch pageStopwatch = Stopwatch.StartNew();
 
-    public EditorPageMobileUI()
+    private readonly IRichTextEditorAdapter editorAdapter;
+
+    public EditorPageMobileUI(NotesViewModel viewModel, IRichTextEditorAdapter editorAdapter)
     {
+        this.editorAdapter = editorAdapter;
         InitializeComponent();
-        BindingContext = AppShell.SharedNotesViewModel;
+        BindingContext = viewModel;
         RichTextEditor.Focused += OnRichTextEditorFocused;
         RichTextEditor.Unfocused += OnRichTextEditorUnfocused;
         RichTextEditor.Loaded += OnEditorLoaded;
@@ -140,7 +144,8 @@ public partial class EditorPageMobileUI : ContentPage
 
         try
         {
-            await viewModel.BeginAiAssistantAsync(RichTextEditor);
+            editorAdapter.Attach(RichTextEditor);
+            await viewModel.BeginAiAssistantAsync();
             if (!await PopupPlacement.WaitForAnchorLayoutAsync(PopupPositionAnchor))
             {
                 viewModel.CloseAiAssistantCommand.Execute(null);
@@ -202,7 +207,8 @@ public partial class EditorPageMobileUI : ContentPage
         if (BindingContext is NotesViewModel viewModel &&
             sender is CustomRichTextEditor.CustomRichTextEditor editor)
         {
-            viewModel.TrackEditorFocus(editor, true);
+            editorAdapter.Attach(editor);
+            viewModel.TrackEditorFocus(true);
         }
     }
 
@@ -211,7 +217,7 @@ public partial class EditorPageMobileUI : ContentPage
         if (BindingContext is NotesViewModel viewModel &&
             sender is CustomRichTextEditor.CustomRichTextEditor editor)
         {
-            viewModel.TrackEditorFocus(editor, false);
+            viewModel.TrackEditorFocus(false);
         }
     }
 

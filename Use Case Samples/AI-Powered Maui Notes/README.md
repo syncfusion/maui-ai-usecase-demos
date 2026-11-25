@@ -52,7 +52,7 @@ Data flows from the editor to the view model and AI service, then back through a
 
 ## AI Configuration
 
-The sample uses a real Azure OpenAI service; it does not include mock AI or offline AI behavior. Set the following environment variables before launching the app. A Syncfusion license key is also read from the environment at startup.
+The sample uses a real Azure OpenAI service; it does not include mock AI or offline AI behavior. Replace the placeholders in `AzureOpenAiOptions` for a local demo, or set the desktop environment variables below. Android and iOS cannot read those environment variables. Do not ship an API key inside a device build — call a backend proxy that holds the key. A Syncfusion license key can be supplied with `SYNCFUSION_LICENSE_KEY` on desktop; otherwise replace the placeholder before registering the license. The `.gitignore` already excludes `bin/`, `obj/`, and local secret files.
 
 | Variable | Required | Description |
 |---|---|---|

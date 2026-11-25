@@ -1,20 +1,12 @@
-﻿using Syncfusion.Maui.RichTextEditor;
-using CustomRichTextEditor;
-// Pull the cross-project font constant into scope without forcing every
-// reference site to spell the parent namespace.
+using Syncfusion.Maui.RichTextEditor;
 using MauiNotesConstants = MauiNotes.MauiNotesConstants;
 
 namespace MauiNotes.ViewModels;
 
 public partial class NotesViewModel
 {
-    public void TrackEditorFocus(CustomRichTextEditor.CustomRichTextEditor editor, bool isFocused)
-    {
-        if (isFocused)
-            ActiveEditor = editor;
+    public void TrackEditorFocus(bool isFocused) => IsEditorFocused = isFocused;
 
-        IsEditorFocused = isFocused;
-    }
     public void UpdateFormatState(RichTextEditorFormatChangedEventArgs args)
     {
         IsBoldActive = args.NewFormat.IsBold;
@@ -22,29 +14,28 @@ public partial class NotesViewModel
         IsUnderlineActive = args.NewFormat.IsUnderline;
         IsStrikethroughActive = args.NewFormat.IsStrikethrough;
         Color? highlightColor = args.NewFormat.HighlightedColor;
-        Color? editorBackgroundColor = ActiveEditor?.EditorBackgroundColor;
+        Color? editorBackgroundColor = editorAdapter.IsAttached
+            ? editorAdapter.EditorBackgroundColor
+            : null;
         IsHighlightActive = highlightColor is { Alpha: > 0 } &&
             (editorBackgroundColor is null || !highlightColor.Equals(editorBackgroundColor));
-        IsMonostyledActive = string.Equals(args.NewFormat.FontFamily, MauiNotesConstants.MonospaceFontFamilyMatcher, StringComparison.OrdinalIgnoreCase);
+        IsMonostyledActive = string.Equals(
+            args.NewFormat.FontFamily,
+            MauiNotesConstants.MonospaceFontFamilyMatcher,
+            StringComparison.OrdinalIgnoreCase);
         IsBulletListActive = args.NewFormat.IsBulletList;
         IsNumberedListActive = args.NewFormat.IsNumberedList;
         CurrentParagraphFormat = args.NewFormat.ParagraphFormat.ToString();
     }
 
-    /// <summary>
-    /// Defers clearing <see cref="isApplyingProgrammaticContent"/> until after
-    /// the current UI dispatch cycle. Setting Value via binding does not
-    /// update the native editor synchronously, so the RTE's own Value
-    /// notification for a programmatic content swap arrives on a later dispatcher
-    /// callback - the guard must still be set when that callback runs.
-    /// </summary>
     private void ClearProgrammaticContentFlagAfterDispatch()
     {
         MainThread.BeginInvokeOnMainThread(() => isApplyingProgrammaticContent = false);
     }
+
     private void ExecuteToolbarAction(string? action)
     {
-        if (action is null || IsEditorReadOnly)
+        if (action is null || IsEditorReadOnly || !editorAdapter.IsAttached)
             return;
 
         if (action == "Format")
@@ -72,68 +63,62 @@ public partial class NotesViewModel
         if (action.StartsWith("TextColor:", StringComparison.Ordinal))
         {
             SelectedTextColor = action[(action.IndexOf(':') + 1)..];
-            ActiveEditor?.ApplyTextColor(Color.FromArgb(SelectedTextColor));
+            editorAdapter.ApplyTextColor(Color.FromArgb(SelectedTextColor));
             IsTextPaletteOpen = false;
             return;
         }
 
         if (action.StartsWith("HighlightColor:", StringComparison.Ordinal))
         {
-            CustomRichTextEditor.CustomRichTextEditor? activeEditorForHighlight = ActiveEditor;
-            if (activeEditorForHighlight is null)
-                return;
-
             string highlightColor = action[(action.IndexOf(':') + 1)..];
             bool removeHighlight = IsHighlightActive && string.Equals(
                 SelectedHighlightColor, highlightColor, StringComparison.OrdinalIgnoreCase);
             SelectedHighlightColor = highlightColor;
-            activeEditorForHighlight.ApplyHighlightColor(removeHighlight
-                ? activeEditorForHighlight.EditorBackgroundColor
+            editorAdapter.ApplyHighlightColor(removeHighlight
+                ? editorAdapter.EditorBackgroundColor
                 : Color.FromArgb(SelectedHighlightColor));
             IsHighlightActive = !removeHighlight;
             IsHighlightPaletteOpen = false;
             return;
         }
 
-        CustomRichTextEditor.CustomRichTextEditor? editor = ActiveEditor;
-        if (editor is null)
-            return;
-
         switch (action)
         {
-            case "Undo": editor.Undo(); break;
-            case "Redo": editor.Redo(); break;
+            case "Undo": editorAdapter.Undo(); break;
+            case "Redo": editorAdapter.Redo(); break;
             case "Bold":
                 IsBoldActive = !IsBoldActive;
-                editor.ToggleBold();
+                editorAdapter.ToggleBold();
                 break;
             case "Italic":
                 IsItalicActive = !IsItalicActive;
-                editor.ToggleItalic();
+                editorAdapter.ToggleItalic();
                 break;
             case "Underline":
                 IsUnderlineActive = !IsUnderlineActive;
-                editor.ToggleUnderline();
+                editorAdapter.ToggleUnderline();
                 break;
             case "Strikethrough":
                 IsStrikethroughActive = !IsStrikethroughActive;
-                editor.ToggleStrikethrough();
+                editorAdapter.ToggleStrikethrough();
                 break;
-            case "Title": editor.ApplyParagraphFormat(RichTextEditorParagraphFormat.Heading1); break;
-            case "Heading": editor.ApplyParagraphFormat(RichTextEditorParagraphFormat.Heading2); break;
-            case "Subheading": editor.ApplyParagraphFormat(RichTextEditorParagraphFormat.Heading3); break;
-            case "Body": editor.ApplyParagraphFormat(RichTextEditorParagraphFormat.Paragraph); break;
+            case "Title": editorAdapter.ApplyParagraphFormat(RichTextEditorParagraphFormat.Heading1); break;
+            case "Heading": editorAdapter.ApplyParagraphFormat(RichTextEditorParagraphFormat.Heading2); break;
+            case "Subheading": editorAdapter.ApplyParagraphFormat(RichTextEditorParagraphFormat.Heading3); break;
+            case "Body": editorAdapter.ApplyParagraphFormat(RichTextEditorParagraphFormat.Paragraph); break;
             case "Monostyled":
-                editor.ApplyFontFamily(IsMonostyledActive ? editor.DefaultFontFamily : MauiNotesConstants.MonospaceFontFamily);
+                editorAdapter.ApplyFontFamily(IsMonostyledActive
+                    ? "OpenSans"
+                    : MauiNotesConstants.MonospaceFontFamily);
                 break;
-            case "BulletedList": editor.ToggleBulletList(); break;
-            case "NumberedList": editor.ToggleNumberedList(); break;
-            case "Table": editor.InsertTable(2, 3); break;
+            case "BulletedList": editorAdapter.ToggleBulletList(); break;
+            case "NumberedList": editorAdapter.ToggleNumberedList(); break;
+            case "Table": editorAdapter.InsertTable(2, 3); break;
             case "Highlight":
                 bool applyHighlight = !IsHighlightActive;
-                editor.ApplyHighlightColor(applyHighlight
+                editorAdapter.ApplyHighlightColor(applyHighlight
                     ? Color.FromArgb(SelectedHighlightColor)
-                    : editor.EditorBackgroundColor);
+                    : editorAdapter.EditorBackgroundColor);
                 IsHighlightActive = applyHighlight;
                 break;
         }

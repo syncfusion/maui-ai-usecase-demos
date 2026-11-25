@@ -438,7 +438,7 @@ public partial class NotesViewModel
 
         SelectedFolderNode = noteNode.Parent;
         SelectedNote = selectedNote;
-        NoteSelected?.Invoke(this, EventArgs.Empty);
+        _ = navigationService.GoToEditorAsync();
     }
     private void ToggleNodeMenu(object? parameter)
     {

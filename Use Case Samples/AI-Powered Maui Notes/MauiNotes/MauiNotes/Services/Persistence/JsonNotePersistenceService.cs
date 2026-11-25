@@ -14,13 +14,13 @@ public sealed class JsonNotePersistenceService : INotePersistenceService
     private readonly SemaphoreSlim saveLock = new(1, 1);
     private readonly string filePath = Path.Combine(FileSystem.AppDataDirectory, "maui-notes.json");
 
-    public NoteStoreDocument? Load()
+    public async Task<NoteStoreDocument?> LoadAsync(CancellationToken cancellationToken = default)
     {
         if (!File.Exists(filePath))
             return null;
 
-        string json = File.ReadAllText(filePath);
-        NoteStoreDocument document = JsonSerializer.Deserialize<NoteStoreDocument>(json, JsonOptions)
+        string json = await File.ReadAllTextAsync(filePath, cancellationToken);
+        NoteStoreDocument document = JsonSerializer.Deserialize(json, NoteStoreJsonContext.Default.NoteStoreDocument)
             ?? throw new InvalidDataException("The saved notes file is empty or invalid.");
         Validate(document);
         return document;
@@ -40,7 +40,7 @@ public sealed class JsonNotePersistenceService : INotePersistenceService
             string json = await Task.Run(() =>
             {
                 Validate(document);
-                return JsonSerializer.Serialize(document, JsonOptions);
+                return JsonSerializer.Serialize(document, NoteStoreJsonContext.Default.NoteStoreDocument);
             }, cancellationToken);
             await File.WriteAllTextAsync(temporaryPath, json, cancellationToken);
             File.Move(temporaryPath, filePath, overwrite: true);

@@ -7,7 +7,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <syncTheme:SyncfusionThemeResourceDictionary VisualTheme="CupertinoLight"/>
+                <syncTheme:SyncfusionThemeResourceDictionary x:Name="SyncfusionTheme" VisualTheme="CupertinoLight"/>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>

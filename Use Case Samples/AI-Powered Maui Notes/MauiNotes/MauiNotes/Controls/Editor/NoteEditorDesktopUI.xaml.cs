@@ -1,5 +1,6 @@
 using MauiNotes.Controls.Popups;
 using MauiNotes.Controls.Toolbars;
+using MauiNotes.Services.Editor;
 using MauiNotes.ViewModels;
 using CustomRichTextEditor;
 using Syncfusion.Maui.RichTextEditor;
@@ -63,12 +64,15 @@ public partial class NoteEditorDesktopUI : ContentView
         RichTextEditor.Focused += (_, _) =>
         {
             if (BindingContext is NotesViewModel viewModel)
-                viewModel.TrackEditorFocus(RichTextEditor, true);
+            {
+                AttachEditor(viewModel);
+                viewModel.TrackEditorFocus(true);
+            }
         };
         RichTextEditor.Unfocused += (_, _) =>
         {
             if (BindingContext is NotesViewModel viewModel)
-                viewModel.TrackEditorFocus(RichTextEditor, false);
+                viewModel.TrackEditorFocus(false);
         };
     }
 
@@ -242,7 +246,8 @@ public partial class NoteEditorDesktopUI : ContentView
 
         try
         {
-            await viewModel.BeginAiAssistantAsync(RichTextEditor);
+            AttachEditor(viewModel);
+            await viewModel.BeginAiAssistantAsync();
             if (!await PopupPlacement.WaitForAnchorLayoutAsync(EditorToolbar.AiButton))
             {
                 viewModel.CloseAiAssistantCommand.Execute(null);
@@ -286,5 +291,11 @@ public partial class NoteEditorDesktopUI : ContentView
     {
         if (BindingContext is NotesViewModel viewModel)
             viewModel.UpdateFormatState(e);
+    }
+
+    private void AttachEditor(NotesViewModel viewModel)
+    {
+        if (Application.Current?.Handler?.MauiContext?.Services.GetService<IRichTextEditorAdapter>() is { } adapter)
+            adapter.Attach(RichTextEditor);
     }
 }

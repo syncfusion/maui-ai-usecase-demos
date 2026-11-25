@@ -6,8 +6,10 @@ using MauiNotes.Models.AI;
 using MauiNotes.Models;
 using MauiNotes.Services.AI;
 using MauiNotes.Services.Persistence;
+using MauiNotes.Services.Editor;
+using MauiNotes.Services.Navigation;
 using CustomRichTextEditor;
-using Syncfusion.Maui.RichTextEditor;
+using Microsoft.Extensions.Logging;
 
 namespace MauiNotes.ViewModels;
 
@@ -29,7 +31,6 @@ public partial class NotesViewModel : ViewModelBase
     private object? moveTarget;
     private NoteTreeNode? moveCurrentDestination;
     private bool isMoveToPromptOpen;
-    private CustomRichTextEditor.CustomRichTextEditor? activeEditor;
     private bool isEditorFocused;
     private bool isBoldActive;
     private bool isItalicActive;
@@ -54,6 +55,9 @@ public partial class NotesViewModel : ViewModelBase
     private bool renamePopupIsOpen;
     private readonly IAiEditingService aiEditingService;
     private readonly INotePersistenceService notePersistenceService;
+    private readonly IRichTextEditorAdapter editorAdapter;
+    private readonly INavigationService navigationService;
+    private readonly ILogger<NotesViewModel> logger;
     private CancellationTokenSource? aiCancellation;
     private CancellationTokenSource? autosaveCancellation;
     private bool isPersistenceAvailable = true;
@@ -61,7 +65,6 @@ public partial class NotesViewModel : ViewModelBase
     private bool isPersistenceStatusError;
     private string persistenceStatus = string.Empty;
     private NoteModel? aiSourceNote;
-    private CustomRichTextEditor.CustomRichTextEditor? aiEditor;
     private string aiSourceHtml = string.Empty;
     private string aiSelectedText = string.Empty;
     private string aiSelectedHtml = string.Empty;
@@ -96,7 +99,6 @@ public partial class NotesViewModel : ViewModelBase
         new(AiEditingAction.ConvertToTable, "Table", "\uE7AF")
     ];
 
-    public event EventHandler? NoteSelected;
     public event Action<NoteTreeNode>? FolderRenameRequested;
 
     public NoteTreeNode? SelectedTreeNode
@@ -109,16 +111,10 @@ public partial class NotesViewModel : ViewModelBase
 
             if (value.Note is not null)
             {
-                var sw = System.Diagnostics.Stopwatch.StartNew();
-                Debug.WriteLine(
-                    $"[NoteNavigation] SelectedTreeNode->note; noteId={value.Note.Id}; " +
-                    $"title='{value.Note.Title}'; htmlLength={value.Note.Content?.Length ?? 0}.");
+                logger.LogDebug("Selected note {NoteId}.", value.Note.Id);
                 SelectedFolderNode = value.Parent;
                 SelectedNote = value.Note;
-                NoteSelected?.Invoke(this, EventArgs.Empty);
-                sw.Stop();
-                Debug.WriteLine(
-                    $"[NoteNavigation] SelectedTreeNode->note done; selectionDurationMs={sw.ElapsedMilliseconds}.");
+                _ = navigationService.GoToEditorAsync();
             }
             else
             {
@@ -375,12 +371,6 @@ public partial class NotesViewModel : ViewModelBase
                 });
             }
         }
-    }
-
-    public CustomRichTextEditor.CustomRichTextEditor? ActiveEditor
-    {
-        get => activeEditor;
-        private set => SetProperty(ref activeEditor, value);
     }
 
     public bool IsEditorFocused
@@ -647,10 +637,16 @@ public partial class NotesViewModel : ViewModelBase
 
     public NotesViewModel(
         IAiEditingService aiEditingService,
-        INotePersistenceService notePersistenceService)
+        INotePersistenceService notePersistenceService,
+        IRichTextEditorAdapter editorAdapter,
+        INavigationService navigationService,
+        ILogger<NotesViewModel> logger)
     {
         this.aiEditingService = aiEditingService;
         this.notePersistenceService = notePersistenceService;
+        this.editorAdapter = editorAdapter;
+        this.navigationService = navigationService;
+        this.logger = logger;
         ToolbarActionCommand = new Command<string>(ExecuteToolbarAction);
         NewNoteCommand = new Command(CreateNote);
         CreateNoteFromMenuCommand = new Command(CreateNoteFromMenuTarget);
@@ -686,7 +682,7 @@ public partial class NotesViewModel : ViewModelBase
         RedoAiCommand = new Command(async () => await ApplyEditorHistoryActionAsync(undo: false));
         DoneAiCommand = new Command(CloseAiAssistant);
         SaveNotesCommand = new Command(async () => await SaveNotesAsync());
-        LoadInitialData();
+        _ = LoadInitialDataAsync();
     }
 
 }

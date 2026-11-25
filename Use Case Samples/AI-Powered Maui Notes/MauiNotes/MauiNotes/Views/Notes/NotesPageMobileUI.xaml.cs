@@ -2,7 +2,6 @@ using System.Diagnostics;
 using MauiNotes.Models;
 using MauiNotes.Controls.Popups;
 using MauiNotes.ViewModels;
-using MauiNotes.Views.Editor;
 using Syncfusion.TreeView.Engine;
 using System.Collections.Specialized;
 
@@ -10,8 +9,6 @@ namespace MauiNotes.Views.Notes;
 
 public partial class NotesPageMobileUI : ContentPage
 {
-    private bool isNavigatingToEditor;
-
     public NotesPageMobileUI(NotesViewModel viewModel)
     {
         InitializeComponent();
@@ -25,7 +22,6 @@ public partial class NotesPageMobileUI : ContentPage
         if (BindingContext is not NotesViewModel viewModel)
             return;
 
-        viewModel.NoteSelected += OnNoteSelected;
         viewModel.TreeNodes.CollectionChanged += OnTreeNodesCollectionChanged;
     }
 
@@ -33,7 +29,6 @@ public partial class NotesPageMobileUI : ContentPage
     {
         if (BindingContext is NotesViewModel viewModel)
         {
-            viewModel.NoteSelected -= OnNoteSelected;
             viewModel.TreeNodes.CollectionChanged -= OnTreeNodesCollectionChanged;
         }
 
@@ -54,26 +49,6 @@ public partial class NotesPageMobileUI : ContentPage
                 disableAnimation: true,
                 canExpand: true,
                 scrollToPosition: ScrollToPosition.MakeVisible));
-    }
-
-    private async void OnNoteSelected(object? sender, EventArgs e)
-    {
-        if (isNavigatingToEditor || Shell.Current.CurrentPage != this)
-            return;
-
-        isNavigatingToEditor = true;
-        try
-        {
-            await Shell.Current.GoToAsync(nameof(EditorPageMobileUI));
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"[NotesPage] OnNoteSelected failed: {ex}");
-        }
-        finally
-        {
-            isNavigatingToEditor = false;
-        }
     }
 
     private void OnNodeMenuClicked(object? sender, EventArgs e)

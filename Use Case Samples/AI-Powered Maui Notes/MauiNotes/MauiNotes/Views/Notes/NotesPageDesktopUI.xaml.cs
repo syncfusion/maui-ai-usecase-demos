@@ -5,10 +5,10 @@ namespace MauiNotes.Views.Notes;
 public partial class NotesPageDesktopUI : ContentPage
 {
     // Page section - Attach the shared notes state.
-    public NotesPageDesktopUI()
+    public NotesPageDesktopUI(NotesViewModel viewModel)
     {
         InitializeComponent();
-        BindingContext = AppShell.SharedNotesViewModel;
+        BindingContext = viewModel;
     }
 
     // Lifecycle section - Close transient AI UI when leaving the page.

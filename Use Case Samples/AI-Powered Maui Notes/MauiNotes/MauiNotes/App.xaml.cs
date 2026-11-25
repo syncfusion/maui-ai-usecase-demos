@@ -1,20 +1,25 @@
-using MauiNotes.ViewModels;
+using MauiNotes.Services.Theming;
 
 namespace MauiNotes
 {
     public partial class App : Application
     {
-        private readonly NotesViewModel notesViewModel;
+        private readonly IThemeService themeService;
 
-        public App(NotesViewModel notesViewModel)
+        public App(IThemeService themeService)
         {
-            this.notesViewModel = notesViewModel;
+            this.themeService = themeService;
             InitializeComponent();
+            themeService.Apply(RequestedTheme);
+            RequestedThemeChanged += OnRequestedThemeChanged;
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            return new Window(new AppShell(notesViewModel));
+            return new Window(Handler!.MauiContext!.Services.GetRequiredService<AppShell>());
         }
+
+        private void OnRequestedThemeChanged(object? sender, AppThemeChangedEventArgs e) =>
+            themeService.Apply(e.RequestedTheme);
     }
 }

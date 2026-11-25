@@ -3,6 +3,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using CustomRichTextEditor;
+using Microsoft.Extensions.Logging;
 using MauiNotes.Models;
 using MauiNotes.Models.AI;
 
@@ -10,20 +11,23 @@ namespace MauiNotes.ViewModels;
 
 public partial class NotesViewModel
 {
-    public async Task BeginAiAssistantAsync(CustomRichTextEditor.CustomRichTextEditor editor)
+    public async Task BeginAiAssistantAsync()
     {
+        if (!editorAdapter.IsAttached)
+        {
+            AiError = "The editor is not ready yet.";
+            return;
+        }
+
         if (IsAiProcessing || IsAiPopupOpen)
         {
-            Debug.WriteLine(
-                $"[AI] Reusing active AI session; processing={IsAiProcessing}; " +
-                $"popupOpen={IsAiPopupOpen}; snapshotAvailable={aiSelectedSnapshot is not null}.");
+            logger.LogDebug("Reusing active AI session.");
             return;
         }
 
         AiError = string.Empty;
         AiStatus = string.Empty;
         AiCustomInstruction = string.Empty;
-        aiEditor = editor;
         aiSourceNote = SelectedNote;
         aiSourceHtml = string.Empty;
         SetAiSelectedSnapshot(null, "Starting a new AI session");
@@ -37,13 +41,13 @@ public partial class NotesViewModel
             // Prefer the immutable selection already cached by the editor,
             // then inspect the live selection before falling back to the
             // entire note. A missing user selection is not an AI launch error.
-            SetAiSelectedSnapshot(await editor.GetStoredSelectionAsync(), "Read editor's stored selection");
+            SetAiSelectedSnapshot(await editorAdapter.GetStoredSelectionAsync(), "Read editor's stored selection");
             if (aiSelectedSnapshot is not { HasSelection: true })
-                SetAiSelectedSnapshot(await editor.CaptureSelectionAsync(), "Captured live editor selection");
+                SetAiSelectedSnapshot(await editorAdapter.CaptureSelectionAsync(), "Captured live editor selection");
 
             aiReplaceWholeNote = aiSelectedSnapshot is not { HasSelection: true };
             if (aiReplaceWholeNote)
-                SetAiSelectedSnapshot(await editor.CaptureDocumentAsync(), "Captured whole-document target");
+                SetAiSelectedSnapshot(await editorAdapter.CaptureDocumentAsync(), "Captured whole-document target");
         }
         catch (InvalidOperationException ex)
         {
@@ -72,7 +76,7 @@ public partial class NotesViewModel
         {
             try
             {
-                string rawEditorHtml = await editor.GetCurrentHtmlAsync() ?? string.Empty;
+                string rawEditorHtml = await editorAdapter.GetCurrentHtmlAsync() ?? string.Empty;
                 LogHtmlBoundary("ai-popup.editor-html.raw", rawEditorHtml, aiSourceNote.Id);
                 LogHtmlBoundary("ai-popup.note-content.before-sync", aiSourceNote.Content, aiSourceNote.Id);
                 aiSourceHtml = NormalizeEscapedHtml(rawEditorHtml);
@@ -130,9 +134,9 @@ public partial class NotesViewModel
         {
             try
             {
-                aiSourceHtml = aiEditor is null
+                aiSourceHtml = !editorAdapter.IsAttached
                     ? aiSourceNote.Content
-                    : await aiEditor.GetCurrentHtmlAsync() ?? aiSourceNote.Content;
+                    : await editorAdapter.GetCurrentHtmlAsync() ?? aiSourceNote.Content;
             }
             catch (InvalidOperationException ex)
             {
@@ -157,7 +161,7 @@ public partial class NotesViewModel
             return;
         }
 
-        if (aiEditor is not { } editor || aiSourceNote is not { } sourceNote)
+        if (aiSourceNote is not { } sourceNote || !editorAdapter.IsAttached)
         {
             AiError = "The active editor or note is no longer available.";
             return;
@@ -188,7 +192,6 @@ public partial class NotesViewModel
             action,
             customInstruction,
             selectedSnapshot,
-            editor,
             sourceNote,
             sourceHtml,
             selectedText,
@@ -200,7 +203,6 @@ public partial class NotesViewModel
         AiEditingAction action,
         string customInstruction,
         RichTextSelectionSnapshot snapshot,
-        CustomRichTextEditor.CustomRichTextEditor editor,
         NoteModel sourceNote,
         string sourceHtml,
         string selectedText,
@@ -250,7 +252,7 @@ public partial class NotesViewModel
             }
 
             LogHtmlBoundary("editor-replacement.argument", result, sourceNote.Id);
-            RichTextReplaceResult replacement = await editor.ReplaceSelectionAsync(
+            RichTextReplaceResult replacement = await editorAdapter.ReplaceSelectionAsync(
                 snapshot,
                 result,
                 RichTextContentType.Html);
@@ -269,7 +271,7 @@ public partial class NotesViewModel
             }
             Debug.WriteLine("[AI] Editor replacement succeeded; reading updated HTML.");
 
-            string? updatedHtml = await editor.GetCurrentHtmlAsync();
+            string? updatedHtml = await editorAdapter.GetCurrentHtmlAsync();
             LogHtmlBoundary("editor.html.after-ai-replacement", updatedHtml, sourceNote.Id);
             if (updatedHtml is null)
             {
@@ -335,13 +337,13 @@ public partial class NotesViewModel
     private async Task RevertAiResultAsync()
     {
         if (!CanUseAiReviewActions || aiAppliedReceipt is null ||
-            aiAppliedNote is null || aiEditor is null)
+            aiAppliedNote is null || !editorAdapter.IsAttached)
             return;
 
         Debug.WriteLine(
             $"[AI] Explicit Revert action restoring AI replacement; noteContentLength={aiAppliedNote.Content?.Length ?? 0}.");
         RichTextReplaceResult restored =
-            await aiEditor.RestoreReplacementAsync(aiAppliedReceipt);
+            await editorAdapter.RestoreReplacementAsync(aiAppliedReceipt);
         if (!restored.Succeeded)
         {
             AiError = restored.IsStaleSelection
@@ -350,7 +352,7 @@ public partial class NotesViewModel
             return;
         }
 
-        string? html = await aiEditor.GetCurrentHtmlAsync();
+        string? html = await editorAdapter.GetCurrentHtmlAsync();
         if (html is null)
         {
             AiError = "The AI edit was reverted, but the updated note could not be confirmed.";
@@ -366,7 +368,7 @@ public partial class NotesViewModel
 
     private async Task RetryAiRequestAsync()
     {
-        if (!CanRetryAiRequest || aiEditor is null || aiSourceNote is null ||
+        if (!CanRetryAiRequest || !editorAdapter.IsAttached || aiSourceNote is null ||
             aiLastAction is null)
             return;
 
@@ -382,7 +384,7 @@ public partial class NotesViewModel
             return;
 
         RichTextReplaceResult restored =
-            await aiEditor.RestoreReplacementAsync(aiAppliedReceipt);
+            await editorAdapter.RestoreReplacementAsync(aiAppliedReceipt);
         if (!restored.Succeeded || restored.UndoReceipt is null)
         {
             AiError = restored.IsStaleSelection
@@ -391,7 +393,7 @@ public partial class NotesViewModel
             return;
         }
 
-        string? html = await aiEditor.GetCurrentHtmlAsync();
+        string? html = await editorAdapter.GetCurrentHtmlAsync();
         if (html is null)
         {
             AiError = "The original note could not be read to retry the AI request.";
@@ -408,15 +410,15 @@ public partial class NotesViewModel
 
     private async Task ApplyEditorHistoryActionAsync(bool undo)
     {
-        if (!CanUseAiReviewActions || aiEditor is null || aiAppliedNote is null)
+        if (!CanUseAiReviewActions || !editorAdapter.IsAttached || aiAppliedNote is null)
             return;
 
         if (undo)
-            aiEditor.Undo();
+            editorAdapter.Undo();
         else
-            aiEditor.Redo();
+            editorAdapter.Redo();
 
-        string? html = await aiEditor.GetCurrentHtmlAsync();
+        string? html = await editorAdapter.GetCurrentHtmlAsync();
         if (html is not null)
             UpdateNoteFromEditor(aiAppliedNote, html, DateTimeOffset.Now);
     }
@@ -531,7 +533,7 @@ public partial class NotesViewModel
             $"[AI] Clearing captured AI context: reason={reason}; " +
             $"snapshotAvailable={aiSelectedSnapshot is not null}.");
         aiSourceNote = null;
-        aiEditor = null;
+        
         aiSourceHtml = string.Empty;
         SetAiSelectedSnapshot(null, reason);
         aiReplaceWholeNote = false;

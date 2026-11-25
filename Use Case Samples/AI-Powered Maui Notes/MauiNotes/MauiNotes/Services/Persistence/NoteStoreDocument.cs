@@ -1,4 +1,10 @@
+using System.Text.Json.Serialization;
+
 namespace MauiNotes.Services.Persistence;
+
+[JsonSerializable(typeof(NoteStoreDocument))]
+[JsonSourceGenerationOptions(WriteIndented = true, PropertyNameCaseInsensitive = true)]
+public partial class NoteStoreJsonContext : JsonSerializerContext;
 
 public sealed class NoteStoreDocument
 {
