@@ -57,6 +57,15 @@ public partial class NotesPageMobileUI : ContentPage
             NodeActionPopups.ShowFor(anchor, node);
     }
 
+    private void OnNoteRowTapped(object? sender, TappedEventArgs e)
+    {
+        if (sender is Element { BindingContext: NoteTreeNode noteNode } &&
+            BindingContext is NotesViewModel viewModel)
+        {
+            viewModel.OpenNoteCommand.Execute(noteNode);
+        }
+    }
+
     private void OnFolderRowTapped(object? sender, TappedEventArgs e)
     {
         if (sender is not Element { BindingContext: NoteTreeNode { IsFolder: true } folder })

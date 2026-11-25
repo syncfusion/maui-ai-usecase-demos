@@ -264,7 +264,7 @@
                                                           VerticalTextAlignment="Center">
                                             <buttons:SfButton.ImageSource>
                                                 <FontImageSource Glyph="&#xe5d5;"
-                                                         FontFamily="MaterialIconRegular"
+                                                         FontFamily="MauiMaterialAssets"
                                                          Size="16" Color="#484950" />
                                             </buttons:SfButton.ImageSource>
                                         </buttons:SfButton>

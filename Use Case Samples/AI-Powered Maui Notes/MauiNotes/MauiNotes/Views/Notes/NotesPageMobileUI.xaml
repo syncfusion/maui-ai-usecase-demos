@@ -251,12 +251,7 @@
                                 </DataTrigger>
                             </Border.Triggers>
                             <Border.GestureRecognizers>
-                                <!-- No Source: the row's DataContext is a
-                                     NoteTreeNode (no OpenNoteCommand), so the
-                                     binding walks up to the page's
-                                     NotesViewModel, which owns the command. -->
-                                <TapGestureRecognizer Command="{Binding OpenNoteCommand}"
-                                                      CommandParameter="{Binding .}" />
+                                <TapGestureRecognizer Tapped="OnNoteRowTapped" />
                             </Border.GestureRecognizers>
                         </Border>
                     </Grid>

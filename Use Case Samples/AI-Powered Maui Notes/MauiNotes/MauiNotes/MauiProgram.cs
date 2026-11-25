@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Syncfusion.Maui.Core.Hosting;
 using MauiNotes.Services.AI;
 using MauiNotes.Services.Editor;
 using MauiNotes.Services.Navigation;
@@ -29,11 +30,15 @@ namespace MauiNotes
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .ConfigureSyncfusionCore()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                     fonts.AddFont("MauiMaterialAssets.ttf", "MauiMaterialAssets");
+                    fonts.AddFont("materialicon-regular.ttf", "MaterialIconRegular");
+                    fonts.AddFont("UIFontIcons.ttf", "UIFontIcons");
+                    fonts.AddFont("UIKitIcons.ttf", "UIKitIcons");
                 });
 
 #if MAUI_DEVFLOW
