@@ -1,5 +1,0 @@
-<Solution>
-  <Project Path="SmartColorPaletteGenerator/ColorPaletteGenerator.csproj">
-    <Deploy Solution="Debug|*" />
-  </Project>
-</Solution>
