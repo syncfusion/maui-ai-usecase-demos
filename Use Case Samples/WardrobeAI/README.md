@@ -1,166 +1,229 @@
 # WardrobeAI
 
-An AI-assisted .NET MAUI wardrobe app that plans outfits and recommends missing wardrobe essentials using Azure OpenAI when configured.
+![WardrobeAI demo](WardrobeDemo.gif)
+
+An AI-assisted .NET MAUI wardrobe application that manages clothing, plans outfits, checks weather, compares the closet with a wardrobe essentials catalog, and provides smart shopping recommendations.
 
 ## Overview
 
-WardrobeAI helps users organize clothing and choose outfits for an occasion and date, taking weather and style preferences into account. It also compares the wardrobe with an essentials catalog to suggest items to shop for. Azure OpenAI can generate outfit and shopping recommendations; deterministic local logic provides fallback recommendations when Azure is not configured or a request cannot be completed.
+The app uses EF Core SQLite for wardrobe data and supports Dashboard, Closet, Outfit Planner, Shopping, and Profile areas. Azure OpenAI outfit and shopping services provide live recommendations when configured; local deterministic logic remains available without usable Azure configuration.
 
-- **What it does:** Catalogs clothing, plans outfits, shows weather-aware outfit recommendations, and identifies wardrobe essentials to shop for.
-- **Who it is for:** People organizing a wardrobe and planning outfits, and developers exploring an AI-assisted wardrobe app built with .NET MAUI.
-- **AI capability:** Azure OpenAI structured-output outfit recommendations and smart shopping recommendations.
-- **Outcome:** A planned outfit with match details and alternatives, plus a list of missing essentials and related budget information.
+## AI Capabilities
+
+### Today's Outfit Suggestion
+- The Dashboard asks Azure OpenAI for one outfit from the user's own closet. The prompt contains today's occasion, the current weather (temperature, condition and humidity), gender, age group, style preference, budget level and the closet items.
+- The occasion is taken from the plan saved for today. If there is no plan for today, it uses "Casual".
+- Each closet item is sent as a short record: id, name, category, color, pattern, fabric, season, style, occasion, favorite flag and usage count. Photos, the user's name, the email and the location are not sent.
+- The system prompt tells the model to use only closet ids, to leave a slot empty instead of inventing an item, and to prefer outerwear when the weather is rainy, snowy or 15 °C or colder. The user sees the outfit title, the picked items and a short reason.
+- If Azure OpenAI is not configured, the card shows "AI suggestions aren't configured yet…". If a call fails, the Dashboard keeps the last good outfit.
+
+### Structured Output and Validation
+- Every outfit and shopping request uses JSON-schema structured output through the `Azure.AI.OpenAI` SDK, so the reply has a fixed shape. For outfits it is a title, occasion, reason, match score and a list of items with an `itemId` and a role (Top, Bottom, Footwear, Outerwear, Accessory or Dress).
+- The app checks every returned `itemId` against the closet that was sent and drops any id that is not there. Items are shown in a fixed order: Top, Dress, Bottom, Outerwear, Footwear, Accessory.
+- The match score is not taken from the model. `OutfitScorer` calculates it in code as 25% color harmony, 25% style match, 30% occasion match and 20% weather match, so the same closet and weather always give the same score.
+
+### Outfit Planner: One Plan per Occasion
+- The Plan tab sends one request for four occasions: Work, Meeting, Casual and Party. The model returns a main outfit, up to 2 alternative looks and a short "why this works" text for each occasion, and the first plan is cached for the four tabs. Tapping an occasion chip later requests a fresh plan.
+- The prompt gives style rules per occasion. Work and Meeting favor solid, dark colors and classic tailoring. Casual allows bolder colors, knits, denim and sneakers. Party allows richer textures and statement pieces.
+- For each look, the app calculates Match, Style, Comfort and Trend scores itself. Comfort rewards breathable fabrics and Trend rewards classic cuts. The planner shows these as gauges.
+- If the AI is not configured, the call fails, the reply cannot be parsed, or an occasion is missing from the reply, the planner builds a look locally. It scores combinations of up to 20 tops, bottoms, dresses and footwear items for that occasion and keeps the best 3. Footwear is found by words in the item name (shoe, sneaker, boot, loafer, heel, sandal). If the closet lacks the pieces, the planner shows a message asking for a top, a bottom and footwear.
+
+### Smart Shopping: Missing Essentials
+- The Shop tab sends the closet, the style preference, the budget level, the monthly budget and the 21-item essentials catalog from `wardrobe.json`. The prompt also lists the item count and one anchor item for each category.
+- The model must choose items only from the catalog, vary the picks across categories and return them in random order, and give each pick a priority (HIGH, MEDIUM or LOW), a one-sentence reason that names an item the user owns, and 1 to 3 owned items it pairs with. It can return up to 12 picks, and the app shows 6.
+- The app keeps only picks whose name matches the catalog, removes duplicates and removes items the user already owns. Each card shows the item, its category, the reason and "Pairs with N existing outfits".
+- If the AI is not configured, fails or returns no usable picks, the app picks locally. It skips owned items, ranks the rest by how many owned pieces they pair with and by how foundational the missing category is, then shuffles items with equal rank. It keeps one pick per category, except T-Shirts and Shirts. If that also gives nothing, the cards come from the catalog diff in `WardrobeEssentialsCatalog`.
+- The picks are refreshed only when the closet or the monthly budget changes, not on every visit to the tab.
 
 ## Key Features
 
-- Dashboard, Closet, Plan, Shop, and Profile areas.
-- Clothing catalog with category filters, clothing attributes, and camera/gallery image selection.
-- Occasion- and date-based outfit planning with weather context, match scores, alternatives, and explanations.
-- Essentials shopping recommendations, completion score, budget information, and retailer deep links.
+### Dashboard
+- The header shows a greeting that changes with the time of day, today's date, and a weather chip with the current temperature and icon. Weather comes from the Open-Meteo API using the device location.
+- The Today's Suggestion card shows the picked items in an auto-playing `SfRotator` with dot navigation, plus the title, the reason and a match percentage (with an `SfRadialGauge` ring on desktop and tablet). "Generate New" requests another outfit, and a busy indicator with "Curating your look…" shows while it runs.
+- Quick Actions open the Closet (Add Clothing), the Plan tab (Plan Outfit) or the Shop tab (Shop Similar).
+- The Upcoming Plans list shows the plans saved from the planner, from today onward, with a date badge and an occasion icon. A Wardrobe Insight card shows a short sentence built from the current outfit's title, occasion and item names.
 
-## AI Flow
+### Closet
+- The Closet lists clothing as cards with the photo, name, category and color, drawn from the SQLite database.
+- A search box and an `SfChipGroup` of single-select filter chips narrow the list. The chips are "All" plus the categories that exist in the closet.
+- The add button opens an `SfPopup` form with "From Gallery" and "Use Camera" photo buttons and seven `SfComboBox` fields: Category, Occasion, Style, Color, Material, Season and Pattern. Name, Category and Color are required, and the item appears at the top of the list after saving.
+- Photos are stored in the local database as base64 text and are not sent to Azure OpenAI.
 
-1. The user requests an outfit recommendation or opens the shopping recommendations.
-2. The app prepares context from the user's clothing, occasion/date, preferences, and related local wardrobe data.
-3. The Azure OpenAI recommendation service processes the request when valid Azure configuration is available.
-4. The app interprets structured recommendation data; outfit scoring and shopping logic also use local wardrobe data.
-5. ViewModels expose recommendation and scoring data to the relevant pages for display.
-6. When Azure is not configured or cannot provide a usable result, the services use deterministic local fallback recommendations.
+### Outfit Planner
+- Occasion chips (Work, Meeting, Casual, Party) switch the displayed look. Tapping another chip asks for a new plan, and a "Curating outfit" indicator shows while it loads.
+- A weather card shows the temperature, a condition label (for example "Sunny & Clear") and a short tip such as "Layer up with outerwear".
+- The main look is shown in an `SfRotator` with an "AI GENERATED" badge. Four `SfRadialGauge` rings show Match, Style, Comfort and Trend, followed by "Alternative Looks" cards and a "Why this works" text.
+- The floating button opens the "Plan an outfit" popup, where the user enters a plan name, picks a date with `SfDatePicker` (or "Today") and picks one of the occasions Work, Meeting, Casual, Party, Formal, Travel, Sport or Date. The plan is saved to the database and appears on the Dashboard.
 
-## Controls Used
+### Shopping
+- The Wardrobe Analysis card shows a completion score as a percentage with a progress bar, "Items Owned" and a "Target" line that counts the core categories. The score is calculated in code from how many core categories the closet covers.
+- The Budget card shows the monthly allowance and a short advice line based on the closet size.
+- Missing Essential cards show a product image, the name, a display price, the "pairs with" count and the reason. "Shop Now" opens the Amazon search link stored for that item in `wardrobe.json`. The price is an estimate the app calculates from the item's category and is not a live store price.
+- An `SfAccordion` item, "How we picked these", explains the method in plain words.
 
-- `SfTabView` - provides the main mobile tab navigation.
-- `SfChipGroup` - selects clothing filters, clothing attributes, occasions, and style preferences.
-- `SfComboBox` - selects clothing attributes in the Add Clothing popup.
-- `SfDatePicker` - selects the date for outfit planning.
-- `SfRadialGauge` - visualizes outfit match and planner scores.
-- `SfRotator` - presents outfit and shopping product cards.
-- `SfPopup` - presents Add Clothing, Plan an Outfit, and Add Style dialogs.
-- `SfAccordion` - expands the shopping recommendation methodology.
-- `SfAvatarView` - displays user/avatar visuals on the dashboard, side rail, and profile.
+### Profile
+- The Profile tab shows the user's avatar in an `SfAvatarView` (photo or initials) and a style badge made from the first style and the budget level (for example "Smart Saver").
+- Style preferences are shown as input chips in an `SfChipGroup`. Tapping the X on a chip removes the style. The add button opens a popup where the user picks a preset style or types their own, with checks for duplicates and length.
+- A slider sets the monthly budget from $0 to $1,000 in steps of $25, with a Save button. The value is stored in `Preferences` and used by the Shop tab.
 
-## Architecture
+### Adaptive Layout and Storage
+- The five tabs (Dashboard, Closet, Plan, Shop, Profile) are shown with an `SfTabView` on phones and tablets.
+- On desktop, a side rail opens two split views: "Dashboard & Shopping" and "Closet & Planner". A profile popup (`SfPopup` with an `SfBadgeView` avatar) shows the outfit count, item count, color palette and style preferences.
+- The app seeds a default user named "Alex Rivera" and keeps all wardrobe data in a local SQLite database through EF Core. The database is created on first launch.
+- Layout sizes change by device type (Phone, Tablet, Desktop) through `OnIdiom` in the pages.
 
-- **Views:** Dashboard, Closet, Outfit Planner, Shopping, Profile, and host pages in `WardrobeAI/Views/`.
-- **ViewModels:** MVVM presentation and command logic in `WardrobeAI/ViewModels/`.
-- **AI services:** Azure OpenAI outfit and smart shopping implementations, options, and prompt builders in `WardrobeAI/AI/`.
-- **Models and contracts:** User, clothing, outfit, shopping, and weather data structures in `WardrobeAI/Models/` and `WardrobeAI/Contracts/`.
-- **Persistence:** EF Core SQLite context in `Data/` and data access in `Repositories/`.
-- **Supporting services:** Weather, user context, wardrobe analysis, budget, deep-link, and navigation services in `Services/`.
-- **Startup:** `MauiProgram.cs` configures DI, SQLite, Syncfusion, and services; the application stores its database at `FileSystem.AppDataDirectory/wardrobe.db`.
+## Application Workflow
+
+1. `UserContext` resolves the seeded default user.
+2. Repository services load clothing, planned outfits, and shopping data from SQLite.
+3. The Closet page adds or updates clothing records.
+4. The Outfit Planner builds occasion/date preferences and wardrobe context.
+5. `IAIOutfitRecommendationService` requests Azure OpenAI or uses local outfit logic.
+6. The Shopping page compares the closet with the essentials catalog.
+7. `IAISmartShoppingService` requests AI shopping recommendations or deterministic fallback picks.
+
+## AI Workflow
+
+```text
+Wardrobe, Occasion, Date, and Preferences
+    ↓
+Outfit or Shopping Service
+    ↓
+Azure OpenAI (when configured)
+    ↓
+Structured Outfit or Shopping Result
+    ↓
+ViewModels and UI
+```
+
+Without usable endpoint/key/deployment configuration, the services use local fallback logic.
+
+## AI Architecture
+
+- **Views:** Dashboard, Closet, Outfit Planner, Shopping, Profile, and desktop/mobile host pages.
+- **ViewModels:** Dashboard, Closet, Planner, Shopping, Profile, host, and split-host view models.
+- **AI:** `AI/` contains Azure services, options, prompt builders, contracts, and outfit scoring.
+- **Data:** EF Core `WardrobeDbContext` and repository interfaces/classes.
+- **Services:** Weather, geolocation, wardrobe analysis, budget, deep-link, navigation, and user context.
+
+The SQLite database is stored at `FileSystem.AppDataDirectory/wardrobe.db`.
+
+## Syncfusion Controls Used
+
+- `SfTabView`
+- `SfChipGroup` and `SfChip`
+- `SfButton`
+- `SfComboBox`
+- `SfDatePicker`
+- `SfRadialGauge`
+- `SfRotator`
+- `SfPopup`
+- `SfAccordion`
+- `SfAvatarView`
 
 ## Prerequisites
 
 - .NET 10 SDK.
-- .NET MAUI workload for the target platform. The project README specifies `dotnet workload install maui` and `dotnet workload restore`.
-- Visual Studio version is not specified in the project.
-- Syncfusion MAUI packages are referenced in `WardrobeAI.csproj` (version 34.2.5). `SYNCFUSION_LICENSE_KEY` is optional for trial use; without a key, Syncfusion controls may show a trial watermark.
-- An Azure OpenAI resource is optional. Live recommendations require a valid endpoint, API key, deployment, and API version.
+- .NET MAUI workloads for target platforms (iOS and Mac Catalyst targets are skipped on Linux; the Windows target is built only on Windows).
+- Syncfusion MAUI packages referenced by `WardrobeAI.csproj` (Core, Buttons, Rotator, Gauges, Inputs, Popup, Picker, TabView, Expander).
+- `Azure.AI.OpenAI`, EF Core SQLite, and CommunityToolkit.Mvvm are restored from NuGet.
+- Azure OpenAI configuration only for live AI recommendations.
 
-## AI Configuration
+## Configuration
 
-`AzureOpenAiOptions` obtains `Endpoint` and `ApiKey` from `AZURE_API_BASE` and `AZURE_API_KEY`. Deployment defaults to `gpt-4.1-mini`; the API version default in source is the placeholder `API_VERSION`. `MauiProgram.cs` registers the options defaults and does not bind them to a configuration file. To use live Azure recommendations, configure the options for local testing or add a secure configuration source in startup. The AI services use local fallback behavior when configuration is incomplete.
+### AI Configuration
 
-Weather and geolocation are provided through Open-Meteo and do not require an API key.
+`AzureOpenAiOptions` reads `AZURE_API_BASE` and `AZURE_API_KEY`. Deployment and API version defaults are source values:
 
-## Default Behavior
-
-- **Real cloud AI:** Azure OpenAI outfit and shopping recommendations are used when configured.
-- **Local logic:** Outfit scoring, local wardrobe data, SQLite persistence, weather display, and curated wardrobe-essentials comparison are part of the app.
-- **Fallback:** Deterministic outfit recommendations and deterministic randomized smart-shopping picks are used when Azure OpenAI is not configured or the cloud request cannot supply recommendations.
-- **Mock AI:** No separate mock AI service is configured; the fallback is local recommendation logic.
-
-## Environment Variables / Secrets
-
-| Variable | Purpose |
+| Setting | Source |
 | --- | --- |
-| `AZURE_API_BASE` | Azure OpenAI endpoint (read by `AzureOpenAiOptions`). |
-| `AZURE_API_KEY` | Azure OpenAI API key (read by `AzureOpenAiOptions`). |
-| `SYNCFUSION_LICENSE_KEY` | Optional Syncfusion license registration. |
+| Endpoint | `AZURE_API_BASE` |
+| API key | `AZURE_API_KEY` |
+| Deployment | `gpt-4.1-mini` (source default in `AzureOpenAiOptions`) |
+| API version | `ApiVersion` property holds the placeholder `API_VERSION`; it is not read by the services, which use the `Azure.AI.OpenAI` SDK defaults |
 
-The project does not currently read the deployment or API version from environment variables; those values are defined by `AzureOpenAiOptions` defaults.
+The endpoint must be an absolute HTTP/HTTPS URL (for example `https://your-resource.openai.azure.com/`). The app does not bind these values from `appsettings.json`, and live AI stays disabled (the services use their fallback logic) until both the endpoint and key are set. To change the deployment name, edit `AzureOpenAiOptions.Deployment` or configure the options in `MauiProgram.cs`.
 
-### Notes
+Set the environment variables in the environment that launches the app (for example, before starting the IDE) so the process can see them.
 
-- Do not commit API keys or Syncfusion license keys to source control.
-- Use an appropriate secure configuration source for credentials. The current project reads the endpoint and key environment variables at startup; user secrets or secure storage are not wired up by default.
-- If endpoint, key, or deployment configuration is not usable, the AI services fall back to local recommendation behavior.
+### Syncfusion License
 
-## Run
+The license is read from the `SYNCFUSION_LICENSE_KEY` environment variable in `MauiProgram.cs`. If it is not set, no key is registered.
 
-Run from the `Use Case Samples/WardrobeAI` directory. Restore workloads and packages first:
+Weather and reverse-geocoding use the Open-Meteo forecast and reverse-geocoding APIs with platform geolocation; no weather API key is defined by the sample.
+
+## Getting Started
+
+Run from `Use Case Samples/WardrobeAI`:
 
 ```sh
-dotnet workload restore
 dotnet restore WardrobeAI/WardrobeAI.csproj
+
+dotnet build WardrobeAI/WardrobeAI.csproj -t:Run -f net10.0-android
+dotnet build WardrobeAI/WardrobeAI.csproj -t:Run -f net10.0-ios
+dotnet build WardrobeAI/WardrobeAI.csproj -t:Run -f net10.0-maccatalyst
+dotnet build WardrobeAI/WardrobeAI.csproj -t:Run -f net10.0-windows10.0.19041.0
 ```
-
-Use a platform supported by the host and installed workloads. iOS and Mac Catalyst require macOS.
-
-```sh
-# Android
-dotnet build WardrobeAI/WardrobeAI.csproj -f net10.0-android
-dotnet run --project WardrobeAI/WardrobeAI.csproj -f net10.0-android
-
-# iOS (macOS host)
-dotnet build WardrobeAI/WardrobeAI.csproj -f net10.0-ios
-dotnet run --project WardrobeAI/WardrobeAI.csproj -f net10.0-ios
-
-# Mac Catalyst (macOS host)
-dotnet build WardrobeAI/WardrobeAI.csproj -f net10.0-maccatalyst
-dotnet run --project WardrobeAI/WardrobeAI.csproj -f net10.0-maccatalyst
-
-# Windows
-dotnet build WardrobeAI/WardrobeAI.csproj -f net10.0-windows10.0.19041.0
-dotnet run --project WardrobeAI/WardrobeAI.csproj -f net10.0-windows10.0.19041.0
-```
-
-## Output
-
-The UI includes a dashboard with a daily outfit and weather, a closet gallery, an outfit planner with recommendation scores and alternatives, and a shopping view with wardrobe essentials.
-
-![WardrobeAI UI](WardrobeAI/Resources/Images/Wardrobe-AI.gif)
 
 ## Project Structure
 
-- `WardrobeAI/Views/` - Dashboard, Closet, Outfit Planner, Shopping, Profile, and host UI pages.
-- `WardrobeAI/ViewModels/` - presentation logic for pages and hosts.
-- `WardrobeAI/Models/` and `WardrobeAI/Contracts/` - data structures.
-- `WardrobeAI/AI/` - Azure OpenAI services, options, prompts, and recommendation logic.
-- `WardrobeAI/Services/` - weather, user, wardrobe, budget, navigation, and related services.
-- `WardrobeAI/Data/` and `WardrobeAI/Repositories/` - SQLite/EF Core persistence.
-- `WardrobeAI/Resources/` - images, fonts, styles, and bundled assets.
-- `WardrobeAI/Platforms/` - platform-specific implementation.
+```text
+WardrobeAI/
+├── WardrobeAI.slnx
+└── WardrobeAI/
+    ├── AI/
+    ├── Constants/
+    ├── Contracts/
+    ├── Converters/
+    ├── Data/
+    ├── Helpers/
+    ├── Models/
+    ├── Platforms/
+    ├── Properties/
+    ├── Repositories/
+    ├── Resources/
+    ├── Services/
+    ├── ViewModels/
+    ├── Views/
+    ├── App.xaml
+    ├── AppShell.xaml
+    ├── MauiProgram.cs
+    └── WardrobeAI.csproj
+```
 
 ## Troubleshooting
 
-**Issue: Azure OpenAI recommendations use local fallback results**
-**Cause:** Endpoint, key, or deployment configuration is missing or invalid, or the cloud request could not provide recommendations.
-**Fix:** Verify `AZURE_API_BASE` and `AZURE_API_KEY`, confirm the deployment and API version configured in `AzureOpenAiOptions`, and restart the app.
+- **AI recommendations use fallback data:** Verify that `AZURE_API_BASE` (an absolute URL) and `AZURE_API_KEY` are set and visible to the app process, and that the deployment name exists.
+- **Weather is unavailable:** Verify network access and location permission.
+- **Database issue:** Confirm the app can write under `FileSystem.AppDataDirectory`.
+- **License watermark:** Set `SYNCFUSION_LICENSE_KEY` before launching the app.
 
-**Issue: Build or workload errors**
-**Cause:** .NET 10 SDK or the required MAUI target workload is missing, or the target is unavailable on the current host.
-**Fix:** Verify the .NET 10 SDK and install/restore the required MAUI workload for the platform; build iOS and Mac Catalyst on macOS.
+## Responsible AI Considerations
 
-**Issue: Syncfusion controls show a trial watermark**
-**Cause:** A valid Syncfusion license key has not been registered.
-**Fix:** Set `SYNCFUSION_LICENSE_KEY` before launching and verify that the key matches the installed Syncfusion packages.
+- Outfit and shopping recommendations are advisory.
+- Prompt context includes wardrobe and planning preferences.
+- Do not enter unnecessary personal or confidential information.
+- Azure credentials must not be committed to source control.
 
-**Issue: Weather or location is unavailable**
-**Cause:** Network access, platform permission, or device location availability may be missing.
-**Fix:** Check connectivity, grant location permission, and verify the device or emulator provides location data.
+## Related Documentation
 
-## Security and Privacy Notes
-
-- Do not hard-code API keys or commit secrets.
-- Outfit recommendation requests use wardrobe and planning context; avoid adding unnecessary sensitive information.
-- Keep prompts limited to the information required for recommendations.
-- Use a secure configuration source for credentials; the current sample reads Azure credentials from environment variables.
-- The app calls Azure OpenAI and Open-Meteo; review the data sent to those external services for your deployment and use case.
+- [Syncfusion .NET MAUI Controls](https://help.syncfusion.com/maui/introduction/overview)
+- [Azure OpenAI Documentation](https://learn.microsoft.com/azure/ai-services/openai/)
+- [.NET MAUI Documentation](https://learn.microsoft.com/dotnet/maui/)
 
 ## Supported Platforms
 
 - Android
 - iOS
-- Windows (when building on Windows)
-- Mac Catalyst (when building on macOS)
+- macOS (Mac Catalyst)
+- Windows
+
+## Limitations
+
+- AI fallback is deterministic or randomized local logic, not live Azure generation.
+- Weather/location availability depends on device permissions and network access.
+- Store links depend on platform/application support.
+
+## License
+
+Syncfusion controls require a valid Syncfusion license for production use.
