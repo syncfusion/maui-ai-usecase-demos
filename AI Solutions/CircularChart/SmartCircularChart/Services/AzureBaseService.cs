@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -12,18 +13,33 @@ namespace SmartCircularChart
 		protected const string key = "key";
 
         protected const string SystemPrompt =
-            "You convert natural language chart grouping instructions into a single JSON object for a doughnut chart that merges small slices into 'Others'. " +
-            "Return only the JSON object {\"Kind\": <kind>, \"Amount\": <number>}. No markdown, no explanation.";
+            "You configure the grouping of a doughnut chart. Small slices are merged into a single 'Others' slice " +
+            "by the chart's GroupMode and GroupTo properties. Return only a JSON object {\"GroupMode\": <mode>, \"GroupTo\": <number or null>}. " +
+            "No markdown, no explanation.";
 
-        protected static string BuildPrompt(string userAIPrompt)
+        protected static string BuildPrompt(string userAIPrompt, IEnumerable<CircularChartData> chartData)
         {
-            return "Pick Kind and Amount for the request.\n" +
-                   "Kind values:\n" +
-                   "- \"Value\": merge slices whose absolute value is at or below Amount (e.g. 'group by value under 25' -> Amount 25).\n" +
-                   "- \"Percentage\": merge slices whose share of the total, in percent, is at or below Amount (e.g. 'percentage under 5' -> Amount 5).\n" +
-                   "- \"Angle\": merge slices whose angle, in degrees, is at or below Amount (e.g. 'smaller than 10 degrees' -> Amount 10).\n" +
-                   "- \"Top\": keep only the Amount largest slices and merge the rest (e.g. 'show only the top 4 products' -> Amount 4).\n" +
-                   "- \"Smallest\": merge the Amount smallest slices (e.g. 'merge the smallest 3 slices' -> Amount 3).\n" +
+            var items = chartData.ToList();
+            var total = items.Sum(item => item.Value);
+            var table = new StringBuilder();
+            foreach (var item in items.OrderByDescending(item => item.Value))
+            {
+                var percentage = total > 0 ? Math.Round(item.Value / total * 100, 2) : 0;
+                var angle = total > 0 ? Math.Round(item.Value / total * 360, 2) : 0;
+                table.AppendLine(string.Create(CultureInfo.InvariantCulture, $"- {item.Category}: value {item.Value}, percentage {percentage}, angle {angle}"));
+            }
+
+            return "Chart data (sorted from largest to smallest, total value " + total.ToString(CultureInfo.InvariantCulture) + "):\n" +
+                   table +
+                   "\nThe chart merges every slice whose measure is LESS THAN OR EQUAL TO GroupTo into 'Others'. " +
+                   "Choose GroupMode and GroupTo so that exactly the slices the user wants merged fall at or below GroupTo and all other slices stay above it.\n" +
+                   "GroupMode values:\n" +
+                   "- \"Value\": compare the slice value with GroupTo.\n" +
+                   "- \"Percentage\": compare the slice percentage (0-100) with GroupTo.\n" +
+                   "- \"Angle\": compare the slice angle in degrees (0-360) with GroupTo.\n" +
+                   "Use the measure that matches the user's wording. For ranking requests such as 'keep the top N' or 'merge the smallest N', " +
+                   "use \"Value\" and set GroupTo to the value of the largest slice that must be merged (for 'top N' that is the (N+1)th largest value; for 'smallest N' it is the Nth smallest value). " +
+                   "If the user wants no grouping or wants to reset the chart, return GroupTo null.\n" +
                    $"The user prompt is: {userAIPrompt}";
         }
     }
@@ -32,7 +48,7 @@ namespace SmartCircularChart
     {
         private static readonly HttpClient httpClient = new();
 
-        public async Task<string> GetResultsFromAI(string userAIPrompt)
+        public async Task<string> GetResultsFromAI(string userAIPrompt, IEnumerable<CircularChartData> chartData)
         {
             if (string.IsNullOrWhiteSpace(userAIPrompt))
             {
@@ -44,10 +60,10 @@ namespace SmartCircularChart
                 messages = new[]
                 {
                     new { role = "system", content = SystemPrompt },
-                    new { role = "user", content = BuildPrompt(userAIPrompt) }
+                    new { role = "user", content = BuildPrompt(userAIPrompt, chartData) }
                 },
                 temperature = 0.1,
-                max_tokens = 100,
+                max_tokens = 200,
                 response_format = new { type = "json_object" }
             };
 

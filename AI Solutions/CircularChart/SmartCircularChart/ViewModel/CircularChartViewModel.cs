@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Globalization;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using Syncfusion.Maui.Toolkit.Charts;
 
 namespace SmartCircularChart
@@ -28,15 +27,13 @@ namespace SmartCircularChart
             ("Router", 9)
         ];
 
-        private const double DefaultGroupTo = 15d;
-
         private readonly IAzureAIService aiService;
         private ObservableCollection<CircularChartData> chartData = new();
         private string userPrompt = string.Empty;
         private bool isBusy;
         private string statusMessage = "Enter a prompt to regroup the chart.";
         private PieGroupMode groupMode = PieGroupMode.Value;
-        private double groupTo = DefaultGroupTo;
+        private double groupTo = double.NaN;
 
         public CircularChartViewModel(IAzureAIService aiService)
         {
@@ -135,7 +132,7 @@ namespace SmartCircularChart
             get => groupTo;
             set
             {
-                if (Math.Abs(groupTo - value) > double.Epsilon)
+                if (!groupTo.Equals(value))
                 {
                     groupTo = value;
                     OnPropertyChanged();
@@ -156,37 +153,21 @@ namespace SmartCircularChart
 
             try
             {
-                GroupingRule? rule = null;
-                var fromAI = false;
+                var response = await aiService.GetResultsFromAI(UserPrompt, ChartData);
 
-                try
+                if (!TryParseAIGrouping(response, out var mode, out var threshold))
                 {
-                    rule = ParseAIRule(await aiService.GetResultsFromAI(UserPrompt));
-                    fromAI = rule != null;
-                }
-                catch
-                {
-                    // Fall back to the local prompt rules below.
-                }
-
-                rule ??= ParsePromptRule(UserPrompt);
-                if (rule == null)
-                {
-                    StatusMessage = "Please enter a valid grouping prompt, e.g. 'Group by value under 25'.";
+                    StatusMessage = "The AI did not return a valid grouping. Check the endpoint, key and deployment, or rephrase the prompt.";
                     return;
                 }
 
-                if (!TryResolveGrouping(rule, out var mode, out var threshold))
-                {
-                    StatusMessage = "The requested amount is not valid for the current data.";
-                    return;
-                }
-
-                // GroupMode and GroupTo are applied to the series; the chart merges the small slices into "Others".
+                // The series merges the small slices into "Others" based on these two values.
                 GroupMode = mode;
                 GroupTo = threshold;
 
-                StatusMessage = $"{(fromAI ? "Chart updated from AI response" : "Chart updated using prompt rules")}: {mode} grouping, GroupTo = {threshold.ToString("0.##", CultureInfo.InvariantCulture)}.";
+                StatusMessage = double.IsNaN(threshold)
+                    ? "Chart updated from AI response: grouping removed."
+                    : $"Chart updated from AI response: {mode} grouping, GroupTo = {threshold.ToString("0.##", CultureInfo.InvariantCulture)}.";
             }
             finally
             {
@@ -204,71 +185,22 @@ namespace SmartCircularChart
                 }));
         }
 
-        // Converts an intent (threshold or ranking) into the GroupMode / GroupTo pair understood by the series.
-        private bool TryResolveGrouping(GroupingRule rule, out PieGroupMode mode, out double threshold)
+        // Expected AI reply: {"GroupMode":"Value|Percentage|Angle","GroupTo":25} (GroupTo null removes the grouping).
+        private static bool TryParseAIGrouping(string response, out PieGroupMode mode, out double threshold)
         {
             mode = PieGroupMode.Value;
-            threshold = rule.Amount;
+            threshold = double.NaN;
 
-            switch (rule.Kind)
-            {
-                case RuleKind.Percentage:
-                    mode = PieGroupMode.Percentage;
-                    return threshold >= 0;
-
-                case RuleKind.Angle:
-                    mode = PieGroupMode.Angle;
-                    return threshold >= 0;
-
-                case RuleKind.Value:
-                    return threshold >= 0;
-
-                case RuleKind.Top:
-                {
-                    // Keep the N largest slices: merge everything not larger than the (N + 1)th largest value.
-                    var count = (int)rule.Amount;
-                    var descending = ChartData.Select(item => item.Value).OrderByDescending(v => v).ToList();
-                    if (count < 1)
-                    {
-                        return false;
-                    }
-
-                    threshold = count >= descending.Count ? 0 : descending[count];
-                    return true;
-                }
-
-                case RuleKind.Smallest:
-                {
-                    // Merge the N smallest slices: merge everything not larger than the Nth smallest value.
-                    var count = (int)rule.Amount;
-                    var ascending = ChartData.Select(item => item.Value).OrderBy(v => v).ToList();
-                    if (count < 1)
-                    {
-                        return false;
-                    }
-
-                    threshold = ascending[Math.Min(count, ascending.Count) - 1];
-                    return true;
-                }
-
-                default:
-                    return false;
-            }
-        }
-
-        // Expected AI reply: {"Kind":"Value|Percentage|Angle|Top|Smallest","Amount":25}
-        private static GroupingRule? ParseAIRule(string response)
-        {
             if (string.IsNullOrWhiteSpace(response))
             {
-                return null;
+                return false;
             }
 
             var start = response.IndexOf('{');
             var end = response.LastIndexOf('}');
             if (start < 0 || end <= start)
             {
-                return null;
+                return false;
             }
 
             try
@@ -276,73 +208,36 @@ namespace SmartCircularChart
                 using var document = JsonDocument.Parse(response[start..(end + 1)]);
                 var root = document.RootElement;
 
-                if (!root.TryGetProperty("Kind", out var kindElement) ||
-                    !Enum.TryParse<RuleKind>(kindElement.GetString(), true, out var kind) ||
-                    !root.TryGetProperty("Amount", out var amountElement) ||
-                    !amountElement.TryGetDouble(out var amount))
+                if (!root.TryGetProperty("GroupMode", out var modeElement) ||
+                    !Enum.TryParse(modeElement.GetString(), true, out mode) ||
+                    !Enum.IsDefined(mode) ||
+                    !root.TryGetProperty("GroupTo", out var toElement))
                 {
-                    return null;
+                    return false;
                 }
 
-                return new GroupingRule(kind, amount);
+                if (toElement.ValueKind == JsonValueKind.Null)
+                {
+                    return true;
+                }
+
+                if (toElement.ValueKind == JsonValueKind.Number && toElement.TryGetDouble(out threshold) && threshold >= 0)
+                {
+                    return true;
+                }
+
+                threshold = double.NaN;
+                return false;
             }
             catch (JsonException)
             {
-                return null;
+                return false;
             }
-        }
-
-        private static GroupingRule? ParsePromptRule(string prompt)
-        {
-            var text = prompt.ToLowerInvariant();
-
-            var top = Regex.Match(text, @"\b(?:top|largest|biggest|highest)\s+(\d+)");
-            if (top.Success)
-            {
-                return new GroupingRule(RuleKind.Top, double.Parse(top.Groups[1].Value, CultureInfo.InvariantCulture));
-            }
-
-            var smallest = Regex.Match(text, @"\b(?:smallest|lowest|bottom|least)\s+(\d+)");
-            if (smallest.Success)
-            {
-                return new GroupingRule(RuleKind.Smallest, double.Parse(smallest.Groups[1].Value, CultureInfo.InvariantCulture));
-            }
-
-            var number = Regex.Match(text, @"\d+(?:\.\d+)?");
-            double? amount = number.Success ? double.Parse(number.Value, CultureInfo.InvariantCulture) : null;
-
-            if (text.Contains("degree") || text.Contains("angle"))
-            {
-                return new GroupingRule(RuleKind.Angle, amount ?? 20d);
-            }
-
-            if (text.Contains("percent") || text.Contains('%'))
-            {
-                return new GroupingRule(RuleKind.Percentage, amount ?? 8d);
-            }
-
-            if (text.Contains("value") || text.Contains("category") || text.Contains("product") || text.Contains("group") || text.Contains("merge"))
-            {
-                return new GroupingRule(RuleKind.Value, amount ?? DefaultGroupTo);
-            }
-
-            return null;
         }
 
         private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
-        private enum RuleKind
-        {
-            Value,
-            Percentage,
-            Angle,
-            Top,
-            Smallest
-        }
-
-        private sealed record GroupingRule(RuleKind Kind, double Amount);
     }
 }
