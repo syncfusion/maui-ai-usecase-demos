@@ -1,7 +1,8 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
+using System.Globalization;
+using Syncfusion.Maui.Toolkit.Charts;
 
 namespace SmartCircularChart
 {
@@ -11,31 +12,34 @@ namespace SmartCircularChart
 
         private static readonly (string Category, double Value)[] DefaultProducts =
         [
-            ("Laptop", 102),
-            ("Smartphone", 106),
-            ("Tablet", 98),
-            ("Smartwatch", 84),
-            ("Headphones", 76),
-            ("Camera", 68),
-            ("Speaker", 62),
-            ("Monitor", 90),
-            ("Keyboard", 54),
-            ("Mouse", 48),
-            ("Printer", 58),
-            ("Router", 46)
+            ("Laptop", 240),
+            ("Smartphone", 260),
+            ("Tablet", 210),
+            ("Smartwatch", 85),
+            ("Headphones", 75),
+            ("Camera", 45),
+            ("Speaker", 30),
+            ("Monitor", 198),
+            ("Keyboard", 15),
+            ("Mouse", 11),
+            ("Printer", 22),
+            ("Router", 9)
         ];
 
-        private readonly IAzureAIService aiService;
+        private readonly IGroupingExtractionService extractionService;
+        private readonly GroupingResponseValidator validator;
+        private CancellationTokenSource? generationCts;
         private ObservableCollection<CircularChartData> chartData = new();
         private string userPrompt = string.Empty;
         private bool isBusy;
         private string statusMessage = "Enter a prompt to regroup the chart.";
-        private string groupMode = "Value";
-        private double groupTo = 15d;
+        private PieGroupMode groupMode = PieGroupMode.Value;
+        private double groupTo = double.NaN;
 
-        public CircularChartViewModel(IAzureAIService aiService)
+        public CircularChartViewModel(IGroupingExtractionService extractionService, GroupingResponseValidator validator)
         {
-            this.aiService = aiService;
+            this.extractionService = extractionService;
+            this.validator = validator;
             CustomBrushes =
             [
                 new SolidColorBrush(Color.FromArgb("#EF3E23")),
@@ -112,7 +116,7 @@ namespace SmartCircularChart
             }
         }
 
-        public string GroupMode
+        public PieGroupMode GroupMode
         {
             get => groupMode;
             set
@@ -130,7 +134,7 @@ namespace SmartCircularChart
             get => groupTo;
             set
             {
-                if (Math.Abs(groupTo - value) > double.Epsilon)
+                if (!groupTo.Equals(value))
                 {
                     groupTo = value;
                     OnPropertyChanged();
@@ -140,235 +144,79 @@ namespace SmartCircularChart
 
         public async Task GroupDataAsync()
         {
-            if (string.IsNullOrWhiteSpace(UserPrompt))
+            var prompt = UserPrompt.Trim();
+            if (string.IsNullOrWhiteSpace(prompt))
             {
                 StatusMessage = "Please enter a prompt to update the chart.";
                 return;
             }
+
+            generationCts?.Cancel();
+            generationCts?.Dispose();
+            var cts = generationCts = new CancellationTokenSource();
 
             IsBusy = true;
             StatusMessage = "Processing prompt...";
 
             try
             {
-                var response = await aiService.GetResultsFromAI(UserPrompt);
-                var groupedData = ParseGroupingResponse(response);
+                var grouping = await extractionService.ExtractAsync(prompt, ChartData, cts.Token);
+                cts.Token.ThrowIfCancellationRequested();
 
-                if (groupedData.Count == 0)
+                if (!validator.Validate(grouping, out var errorMessage))
                 {
-                    groupedData = BuildFallbackGrouping(UserPrompt);
-                    if (groupedData.Count == 0)
-                    {
-                        StatusMessage = "Please enter a valid chart prompt.";
-                        return;
-                    }
-
-                    StatusMessage = "AI response was unavailable, so default grouping rules were used.";
-                }
-
-                ApplyChartControlsFromPrompt(UserPrompt, groupedData);
-                ChartData = new ObservableCollection<CircularChartData>(groupedData);
-                StatusMessage = string.IsNullOrWhiteSpace(response)
-                    ? "Chart updated using prompt rules."
-                    : "Chart updated from AI response.";
-            }
-            catch
-            {
-                var fallbackData = BuildFallbackGrouping(UserPrompt);
-                if (fallbackData.Count == 0)
-                {
-                    StatusMessage = "Please enter a valid chart prompt.";
+                    StatusMessage = errorMessage;
                     return;
                 }
 
-                ApplyChartControlsFromPrompt(UserPrompt, fallbackData);
-                ChartData = new ObservableCollection<CircularChartData>(fallbackData);
-                StatusMessage = "AI request failed, so default grouping rules were used.";
+                // The series merges the small slices into "Others" based on these two values.
+                GroupMode = grouping.GroupMode;
+                GroupTo = grouping.GroupTo ?? double.NaN;
+
+                StatusMessage = grouping.GroupTo is null
+                    ? "Grouping removed."
+                    : $"Chart updated: {grouping.GroupMode} grouping, GroupTo = {grouping.GroupTo.Value.ToString("0.##", CultureInfo.InvariantCulture)}.";
+            }
+            catch (OperationCanceledException)
+            {
+                StatusMessage = "Update canceled.";
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("Azure OpenAI credentials are not configured.", StringComparison.OrdinalIgnoreCase))
+            {
+                StatusMessage = "Azure OpenAI credentials are required to update the chart.";
+            }
+            catch (InvalidOperationException ex) when (ex.Message.StartsWith("Azure OpenAI request failed:", StringComparison.OrdinalIgnoreCase))
+            {
+                StatusMessage = ex.Message;
+            }
+            catch (InvalidOperationException ex) when (ex.Message.StartsWith("Azure OpenAI returned", StringComparison.OrdinalIgnoreCase))
+            {
+                StatusMessage = "Azure OpenAI returned a response that the app could not parse.";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Unable to update the chart right now: {ex.Message}";
             }
             finally
             {
-                IsBusy = false;
-            }
-        }
-
-        private static List<CircularChartData> BuildFallbackGrouping(string prompt)
-        {
-            var normalizedPrompt = prompt.ToLowerInvariant();
-            var threshold = ExtractThreshold(prompt);
-
-            if (normalizedPrompt.Contains("percentage"))
-            {
-                return BuildGroupedData("Percentage", threshold ?? 8d);
-            }
-
-            if (normalizedPrompt.Contains("angle"))
-            {
-                return BuildGroupedData("Angle", threshold ?? 20d);
-            }
-
-            if (normalizedPrompt.Contains("value"))
-            {
-                return BuildGroupedData("Value", threshold ?? 15d);
-            }
-
-            return BuildGroupedData("Value", 15d);
-        }
-
-        private static List<CircularChartData> BuildGroupedData(string groupMode, double groupTo)
-        {
-            var data = DefaultProducts
-                .Select((item, index) => new CircularChartData
+                if (ReferenceEquals(generationCts, cts))
                 {
-                    Category = item.Category,
-                    Value = item.Value,
-                    Group = index % 4 == 0 ? "Others" : $"Segment {index + 1}"
-                })
-                .ToList();
-
-            foreach (var item in data)
-            {
-                var shouldGroup = groupMode switch
-                {
-                    "Percentage" => item.Value <= groupTo,
-                    "Angle" => item.Value <= groupTo,
-                    _ => item.Value <= groupTo
-                };
-
-                if (shouldGroup)
-                {
-                    item.Group = "Others";
+                    IsBusy = false;
+                    generationCts = null;
                 }
-            }
 
-            return data;
+                cts.Dispose();
+            }
         }
 
         private void LoadDefaultData()
         {
             ChartData = new ObservableCollection<CircularChartData>(
-                DefaultProducts.Select((item, index) => new CircularChartData
+                DefaultProducts.Select(item => new CircularChartData
                 {
                     Category = item.Category,
-                    Value = item.Value,
-                    Group = index % 4 == 0 ? "Others" : $"Segment {index + 1}"
+                    Value = item.Value
                 }));
-        }
-
-        private static List<CircularChartData> ParseGroupingResponse(string response)
-        {
-            if (string.IsNullOrWhiteSpace(response))
-            {
-                return [];
-            }
-
-            try
-            {
-                var json = ExtractJsonArray(response);
-                if (string.IsNullOrWhiteSpace(json))
-                {
-                    return [];
-                }
-
-                var items = JsonSerializer.Deserialize<List<CircularChartData>>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-
-                return items ?? [];
-            }
-            catch
-            {
-                return [];
-            }
-        }
-
-        private static string ExtractJsonArray(string response)
-        {
-            var start = response.IndexOf('[');
-            if (start < 0)
-            {
-                return string.Empty;
-            }
-
-            var end = response.LastIndexOf(']');
-            if (end <= start)
-            {
-                return string.Empty;
-            }
-
-            return response[start..(end + 1)];
-        }
-
-        private void ApplyChartControlsFromPrompt(string prompt, List<CircularChartData> groupedData)
-        {
-            var normalizedPrompt = prompt.ToLowerInvariant();
-
-            if (normalizedPrompt.Contains("percentage"))
-            {
-                GroupMode = "Percentage";
-                GroupTo = ExtractThreshold(prompt) ?? 8d;
-                return;
-            }
-
-            if (normalizedPrompt.Contains("angle"))
-            {
-                GroupMode = "Angle";
-                GroupTo = ExtractThreshold(prompt) ?? 20d;
-                return;
-            }
-
-            if (normalizedPrompt.Contains("value"))
-            {
-                GroupMode = "Value";
-                GroupTo = ExtractThreshold(prompt) ?? 15d;
-                return;
-            }
-
-            if (normalizedPrompt.Contains("category") || normalizedPrompt.Contains("product") || normalizedPrompt.Contains("group"))
-            {
-                GroupMode = "Value";
-                GroupTo = ExtractThreshold(prompt) ?? 15d;
-                return;
-            }
-
-            if (groupedData.Any(item => string.Equals(item.Group, "Others", StringComparison.OrdinalIgnoreCase)))
-            {
-                GroupMode = "Value";
-                GroupTo = ExtractThreshold(prompt) ?? 15d;
-            }
-        }
-
-        private static double? ExtractThreshold(string prompt)
-        {
-            var match = System.Text.RegularExpressions.Regex.Match(prompt, @"(\d+(?:\.\d+)?)");
-            return match.Success && double.TryParse(match.Value, out var value) ? value : null;
-        }
-
-        private static string BuildPromptSummary(string prompt)
-        {
-            var normalizedPrompt = prompt.ToLowerInvariant();
-
-            if (normalizedPrompt.Contains("percentage"))
-            {
-                return $"Percentage grouping under {ExtractThreshold(prompt) ?? 8d}";
-            }
-
-            if (normalizedPrompt.Contains("angle"))
-            {
-                return $"Angle grouping under {ExtractThreshold(prompt) ?? 20d}";
-            }
-
-            if (normalizedPrompt.Contains("value"))
-            {
-                return $"Value grouping under {ExtractThreshold(prompt) ?? 15d}";
-            }
-
-            if (normalizedPrompt.Contains("category") || normalizedPrompt.Contains("product") || normalizedPrompt.Contains("group"))
-            {
-                return "Category-based grouping";
-            }
-
-            return "Default grouping";
         }
 
         private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
