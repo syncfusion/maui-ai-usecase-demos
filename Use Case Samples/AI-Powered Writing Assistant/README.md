@@ -10,18 +10,61 @@ The app provides paraphrasing, grammar checking, elaboration, and shortening act
 
 ## AI Capabilities
 
-- Humanize, Professional, Simple, and Academic paraphrasing.
-- Grammar and spelling correction.
-- Text elaboration and shortening.
-- Applying generated text back to the rich-text editor.
+### Paraphraser with Four Tones
+- Choosing **Paraphraser** does not call the AI at once. The assistant first replies "Do you want to improve the text?" and shows four suggestions: **Humanize**, **Professional**, **Simple**, and **Academic**.
+- Tapping a tone sends the editor text with the prompt "Please rephrase while preserving meaning". The prompt lists the four tones and asks for the tone named in the user command.
+- The prompt asks the model to keep the length close to the original and to return only the changed text, with no comments.
+- This lets the user restyle a draft for a different reader without retyping it.
+
+### Grammar Checker
+- The **Grammar Checker** prompt tells the model to act as a strict grammar and copy editor.
+- It allows fixes only for grammar, spelling, subject–verb agreement, punctuation, pronouns, capitalization, and spacing. It does not allow rewording, tone changes, or changes to sentence order.
+- The prompt asks the model to keep line breaks and paragraph breaks.
+- If the text is already correct, the model must return it unchanged. A single misspelled word is corrected, and a correct single word is returned as it is.
+- The model must return only the corrected text, with no notes.
+
+### Elaborate
+- The **Elaborate** prompt asks the model to expand the ideas and add clarifying detail while keeping the meaning, intent, and facts.
+- It also corrects grammar and punctuation in the source.
+- The prompt does not allow new facts, examples, opinions, or entities. It limits the growth to about 30% and asks the model to keep the tone and paragraph breaks.
+
+### Shorten
+- The **Shorten** prompt asks the model to remove repeated words and tighten the wording while keeping the meaning, intent, and facts.
+- It aims for a length about 20% to 40% shorter, keeps the tone and paragraph breaks, and corrects grammar in the result.
+- The prompt does not allow the model to drop essential details or add information.
+
+### How Requests Are Built and Handled
+- Every request uses the full editor content. The app removes the HTML tags and sends the plain text with the action name.
+- Each request is sent as a single prompt without earlier messages. The assistant has no conversation memory, and Retry sends a new request with the editor's current content.
+- The reply is shown as text in the assistant, and line breaks become `<br>` tags.
+- **Copy** removes HTML tags and `&nbsp;` and puts the plain text on the clipboard. **Retry** repeats the request. **Apply** sets the editor content to the reply, wrapped in a paragraph if it is plain text.
+- Requests go through `IChatClient`, which is created from `AzureOpenAIClient` with the endpoint, key, and deployment name in `AzureBaseService`.
+- If a request fails, or the credentials have not been validated, the service returns an empty string. The app shows no error message for this case.
 
 ## Key Features
 
-- Select a writing action from `SfComboBox`.
-- Pick Paraphraser, Grammar Checker, Elaborate, or Shorten from the combo box or suggestion chips; Paraphraser then offers Humanize, Professional, Simple, and Academic.
-- Review suggestions in `SfAIAssistView`.
-- Copy, retry, or apply generated text from each response.
-- Apply the chosen response to `SfRichTextEditor`.
+### Rich Text Editor
+- The main page is an `SfRichTextEditor` with its toolbar turned on, for formatting text before or after it goes to the AI.
+- The editor content is bound two-way to the view model as HTML. The AI reads from it, and **Apply** writes back to it.
+
+### AI Assistant Panel
+- An AI button opens the assistant. It sits at the top right on Windows and Mac Catalyst. On Android and iOS it sits at the bottom right.
+- On Windows and Mac Catalyst, the assistant opens as a side panel next to the editor. The editor uses about 70% of the width and the panel about 30%. The panel has a title, a close button, and the chat area.
+- On Android and iOS, the button opens `AssistViewPage` as a full page. The page uses the same view model, so the chat history is kept.
+- The close button hides the panel and clears the chat.
+- The chat uses `SfAIAssistView` with a "How can I help you?" header.
+
+### Choosing an Action
+- Four suggestion chips are shown in the chat: **Paraphraser**, **Grammar Checker**, **Elaborate**, and **Shorten**.
+- An `SfComboBox` in the panel title bar (and in the page title bar on Android and iOS) lists the same four actions. It shows only a dropdown icon.
+- Choosing an action from the combo box adds it to the chat as a request, then adds the response.
+
+### Response Actions
+- Each response has three buttons: copy, retry, and **Apply**. The buttons use a custom response template that is set on `ResponseActionsView`.
+- **Apply** puts the new text into the editor in one step, so the user can see the result in place and keep editing.
+
+### Startup Check
+- The first time the AI service is created, it sends a short test request to check the credentials. Until a check succeeds, AI requests return no text.
 
 ## Application Workflow
 
