@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Globalization;
-using System.Text.Json;
 using Syncfusion.Maui.Toolkit.Charts;
 
 namespace SmartCircularChart
@@ -27,7 +26,9 @@ namespace SmartCircularChart
             ("Router", 9)
         ];
 
-        private readonly IAzureAIService aiService;
+        private readonly IGroupingExtractionService extractionService;
+        private readonly GroupingResponseValidator validator;
+        private CancellationTokenSource? generationCts;
         private ObservableCollection<CircularChartData> chartData = new();
         private string userPrompt = string.Empty;
         private bool isBusy;
@@ -35,9 +36,10 @@ namespace SmartCircularChart
         private PieGroupMode groupMode = PieGroupMode.Value;
         private double groupTo = double.NaN;
 
-        public CircularChartViewModel(IAzureAIService aiService)
+        public CircularChartViewModel(IGroupingExtractionService extractionService, GroupingResponseValidator validator)
         {
-            this.aiService = aiService;
+            this.extractionService = extractionService;
+            this.validator = validator;
             CustomBrushes =
             [
                 new SolidColorBrush(Color.FromArgb("#EF3E23")),
@@ -142,45 +144,68 @@ namespace SmartCircularChart
 
         public async Task GroupDataAsync()
         {
-            if (string.IsNullOrWhiteSpace(UserPrompt))
+            var prompt = UserPrompt.Trim();
+            if (string.IsNullOrWhiteSpace(prompt))
             {
                 StatusMessage = "Please enter a prompt to update the chart.";
                 return;
             }
+
+            generationCts?.Cancel();
+            generationCts?.Dispose();
+            var cts = generationCts = new CancellationTokenSource();
 
             IsBusy = true;
             StatusMessage = "Processing prompt...";
 
             try
             {
-                string response;
-                try
-                {
-                    response = await aiService.GetResultsFromAI(UserPrompt, ChartData);
-                }
-                catch (Exception ex)
-                {
-                    StatusMessage = $"AI request failed: {ex.Message}";
-                    return;
-                }
+                var grouping = await extractionService.ExtractAsync(prompt, ChartData, cts.Token);
+                cts.Token.ThrowIfCancellationRequested();
 
-                if (!TryParseAIGrouping(response, out var mode, out var threshold))
+                if (!validator.Validate(grouping, out var errorMessage))
                 {
-                    StatusMessage = $"The AI reply could not be used as a grouping: {response}";
+                    StatusMessage = errorMessage;
                     return;
                 }
 
                 // The series merges the small slices into "Others" based on these two values.
-                GroupMode = mode;
-                GroupTo = threshold;
+                GroupMode = grouping.GroupMode;
+                GroupTo = grouping.GroupTo ?? double.NaN;
 
-                StatusMessage = double.IsNaN(threshold)
-                    ? "Chart updated from AI response: grouping removed."
-                    : $"Chart updated from AI response: {mode} grouping, GroupTo = {threshold.ToString("0.##", CultureInfo.InvariantCulture)}.";
+                StatusMessage = grouping.GroupTo is null
+                    ? "Grouping removed."
+                    : $"Chart updated: {grouping.GroupMode} grouping, GroupTo = {grouping.GroupTo.Value.ToString("0.##", CultureInfo.InvariantCulture)}.";
+            }
+            catch (OperationCanceledException)
+            {
+                StatusMessage = "Update canceled.";
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("Azure OpenAI credentials are not configured.", StringComparison.OrdinalIgnoreCase))
+            {
+                StatusMessage = "Azure OpenAI credentials are required to update the chart.";
+            }
+            catch (InvalidOperationException ex) when (ex.Message.StartsWith("Azure OpenAI request failed:", StringComparison.OrdinalIgnoreCase))
+            {
+                StatusMessage = ex.Message;
+            }
+            catch (InvalidOperationException ex) when (ex.Message.StartsWith("Azure OpenAI returned", StringComparison.OrdinalIgnoreCase))
+            {
+                StatusMessage = "Azure OpenAI returned a response that the app could not parse.";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Unable to update the chart right now: {ex.Message}";
             }
             finally
             {
-                IsBusy = false;
+                if (ReferenceEquals(generationCts, cts))
+                {
+                    IsBusy = false;
+                    generationCts = null;
+                }
+
+                cts.Dispose();
             }
         }
 
@@ -192,80 +217,6 @@ namespace SmartCircularChart
                     Category = item.Category,
                     Value = item.Value
                 }));
-        }
-
-        // Expected AI reply: {"GroupMode":"Value|Percentage|Angle","GroupTo":25} (GroupTo null removes the grouping).
-        private static bool TryParseAIGrouping(string response, out PieGroupMode mode, out double threshold)
-        {
-            mode = PieGroupMode.Value;
-            threshold = double.NaN;
-
-            if (string.IsNullOrWhiteSpace(response))
-            {
-                return false;
-            }
-
-            var start = response.IndexOf('{');
-            var end = response.LastIndexOf('}');
-            if (start < 0 || end <= start)
-            {
-                return false;
-            }
-
-            try
-            {
-                using var document = JsonDocument.Parse(response[start..(end + 1)]);
-                var root = document.RootElement;
-
-                JsonElement modeElement = default, toElement = default;
-                var hasMode = false;
-                var hasTo = false;
-                foreach (var property in root.EnumerateObject())
-                {
-                    if (property.Name.Equals("GroupMode", StringComparison.OrdinalIgnoreCase))
-                    {
-                        modeElement = property.Value;
-                        hasMode = true;
-                    }
-                    else if (property.Name.Equals("GroupTo", StringComparison.OrdinalIgnoreCase))
-                    {
-                        toElement = property.Value;
-                        hasTo = true;
-                    }
-                }
-
-                if (!hasMode || !hasTo ||
-                    modeElement.ValueKind != JsonValueKind.String ||
-                    !Enum.TryParse(modeElement.GetString(), true, out mode) ||
-                    !Enum.IsDefined(mode))
-                {
-                    return false;
-                }
-
-                if (toElement.ValueKind == JsonValueKind.Null)
-                {
-                    return true;
-                }
-
-                var parsed = toElement.ValueKind switch
-                {
-                    JsonValueKind.Number => toElement.TryGetDouble(out threshold),
-                    JsonValueKind.String => double.TryParse(toElement.GetString(), NumberStyles.Float, CultureInfo.InvariantCulture, out threshold),
-                    _ => false
-                };
-
-                if (parsed && threshold >= 0)
-                {
-                    return true;
-                }
-
-                threshold = double.NaN;
-                return false;
-            }
-            catch (JsonException)
-            {
-                return false;
-            }
         }
 
         private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
