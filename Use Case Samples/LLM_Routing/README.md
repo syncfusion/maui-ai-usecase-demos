@@ -10,19 +10,57 @@ The chat adds the selected model, input/output token counts, estimated cost, and
 
 ## AI Capabilities
 
-- Complexity classification with the low-tier model.
-- Low, standard, and high-tier model routing.
-- Text and image-assisted answer generation.
-- Token and estimated-cost telemetry.
+### Query Complexity Routing
+- Every message is first sent to `gpt-4.1-nano`, which acts as a router. The system prompt asks it to put the query into one of three tiers, LOW, STANDARD, or HIGH, and to reply with only the label.
+- The query is wrapped in `<query>` tags in the user message. The prompt gives no other rules for choosing a tier, so the choice is left to the model.
+- LOW maps to `gpt-4.1-nano`, STANDARD maps to `gpt-4.1-mini`, and HIGH maps to `gpt-5.6-luna`. Any other reply goes to `gpt-4.1-nano`.
+- Simple questions stay on the smallest model and only hard questions use the most expensive one. This keeps the cost of a chat low.
+- The router sees only the text of the message. It does not see an attached image.
+- Each message is classified on its own. Earlier messages in the chat are not sent.
+
+### Answer Generation
+- The routed model answers with the system message "You are a helpful AI assistant. Answer accurately and concisely."
+- Only the current message is sent, so the chat has no memory of earlier turns.
+- Each model uses its own `ChatClient`. A model can use its own Azure resource, or share one endpoint and key with the others.
+- Replies longer than 8,500 characters are cut at that length and end with "(more)…".
+
+### Image Questions
+- When the user attaches a PNG, JPG, JPEG, GIF, WEBP, or BMP file, the text and the image are sent together to the routed model with image detail set to `Auto`.
+- The system message then asks the model to analyze the attached image and answer the question about it.
+- Only the first supported attachment is used. Files over 10 MB, empty files, and other file types are skipped, and the message is then sent as text only.
+
+### Token Usage and Cost Estimate
+- Each answer reports the number of input and output tokens returned by Azure OpenAI.
+- The estimated cost is `input tokens / 1,000 × input price + output tokens / 1,000 × output price`, shown in US dollars with four decimals when under $0.01, and three decimals above that.
+- Built-in prices per 1K tokens are $0.0001 in and $0.0004 out for `gpt-4.1-nano`, $0.0004 and $0.0016 for `gpt-4.1-mini`, and $0.003 and $0.012 for `gpt-5.6-luna`. The `AZURE_PRICE_INPUT_<MODEL>` and `AZURE_PRICE_OUTPUT_<MODEL>` variables replace them.
+- The cost covers only the answer call. The classifier call is not counted.
+
+### Errors
+- If routing or answer generation fails, the chat shows "Unable to generate a response" with the error details, so the user can fix the Azure configuration.
+- If no credentials are set, the service uses a placeholder endpoint and key, and requests fail with this message.
 
 ## Key Features
 
-- Chat composer with attachment support.
-- Routing status and typing state.
-- Markdown response rendering.
-- Responses longer than 8,500 characters are truncated.
-- Voice input enabled in the composer.
-- Per-model Azure credentials and optional pricing variables.
+### Chat Interface
+- The page is a single `SfAIAssistView` chat. The built-in header and toolbar are turned off. Conversation history is off.
+- The composer has an attachment button, and voice input is turned on with `EnableVoiceInput`.
+- Chosen files appear as chips above the editor. They stay there until the user sends a message with text, and are cleared after sending.
+- Picking a file alone does not send anything.
+- The chat scrolls to the last response and shows a scroll-to-bottom button.
+- The page has a header ("AI Model Router"), a status line ("Auto-Routing: Active"), and a custom light color theme for the chat.
+- On a phone, some header labels are hidden.
+
+### Live Routing Status
+- Right after sending, an answer card appears. It first shows "Validating query with low-end model...".
+- When the router chooses, the card shows the chosen model name in a pill, and the text changes to "Routed to <model>. Generating response..." or "Routed to <model>. Analyzing attached image...".
+- While the model works, the status text is shown with a spinning `ActivityIndicator`. The answer replaces it when it arrives.
+- The user can see which model handled each question.
+
+### Answer Cards
+- Each answer is shown in a card with a "Copilot Assistant" label and the model pill.
+- The answer text is rendered with `SfMarkdownViewer`, so headings, lists, tables, and code blocks display as formatted text. The viewer grows to fit the text, and code uses a light background.
+- A readout below the answer shows input tokens, output tokens, and the estimated cost.
+- A custom template selector (`AIAssistTemplateSelector`) applies this card to routed answers only.
 
 ## Application Workflow
 
