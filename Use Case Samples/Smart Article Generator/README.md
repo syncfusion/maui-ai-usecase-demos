@@ -13,7 +13,6 @@ The app accepts a topic, generates article content, renders the response, extrac
 - Azure OpenAI article generation.
 - Markdown and HTML response rendering.
 - Automatic resource-link extraction.
-- Regeneration of article responses.
 - Seeded offline responses for known prompts.
 
 ## Key Features
@@ -21,8 +20,8 @@ The app accepts a topic, generates article content, renders the response, extrac
 - Submit a custom topic or select a suggested topic.
 - Render articles in `SfMarkdownViewer`.
 - Extract `[Title](URL)` and HTML links.
-- Add, delete, search, and open resources.
-- Switch the mobile assist surface.
+- Add, delete, and open resources (`ResourcesService` also exposes `SearchResources`, which the UI does not currently call).
+- Toggle the assist surface on small screens.
 
 ## Application Workflow
 
@@ -30,7 +29,7 @@ The app accepts a topic, generates article content, renders the response, extrac
 2. The user submits a topic.
 3. `AzureAIService` sends the structured prompt through Semantic Kernel.
 4. The response is displayed in the article workspace.
-5. `ResponseParserService` extracts resources.
+5. `ResponseParserService` extracts resources and splits the response into sections.
 6. `ResourcesService` updates the in-memory resource collection.
 
 ## AI Workflow
@@ -51,26 +50,27 @@ ResponseParserService
 Article + Resources
 ```
 
-If credentials are placeholders or the live request fails, known prompts return seeded HTML; unknown prompts return a connection message.
+If credentials are placeholders or the live request fails, one of four seeded HTML responses is returned when the prompt matches exactly (case-insensitive): team collaboration, time management, engaging blog posts, and Syncfusion MAUI ListView. Other prompts return a connection message. The same fallback is used when the Azure call throws.
 
 ## AI Architecture
 
-- **View:** `MainPage`, `ChatView`, `ResourcePanel`, and `AddResourceDialog`.
+- **View:** `MainPage`, `ChatView`, `ResourcePanel`, and `AddResourceDialog` (a `ContentPage` used as a dialog).
 - **ViewModel:** `ArticleViewModel`.
-- **Services:** `AzureAIService`, `ResourcesService`, and `ResponseParserService`.
+- **Services:** `AzureBaseService` (credentials and Semantic Kernel setup), `AzureAIService`, `ResourcesService`, and `ResponseParserService`.
 - **Models:** `ResourceItem` and `ResponseSection`.
 
 ## Syncfusion Controls Used
 
 - `SfAIAssistView`
 - `SfMarkdownViewer`
-- `SfPopup`
+- `SfChipGroup`
+- `SfShimmer`
 
 ## Prerequisites
 
 - .NET 10 SDK.
 - .NET MAUI workloads for target platforms.
-- Syncfusion AIAssistView and MarkdownViewer packages.
+- Syncfusion AIAssistView, MarkdownViewer, and Core packages (shimmer and chips ship in Core).
 - Microsoft Semantic Kernel.
 - Azure OpenAI credentials for live generation.
 
@@ -87,11 +87,11 @@ internal const string imageDeploymentName = "IMAGE_MODEL_NAME";
 private const string key = "KEY";
 ```
 
-Replace the placeholders with valid Azure OpenAI values before live use. The sample has no environment-variable or secure-storage Azure configuration.
+Replace the placeholders with valid Azure OpenAI values before live use. Chat generation uses `deploymentName`; `imageDeploymentName` is only checked for being non-empty. On Android, the certificate callback in `CreateHttpClientHandler` compares the request host with the `END_POINT` placeholder, so update it to your endpoint host. The sample has no environment-variable or secure-storage Azure configuration.
 
 ## Getting Started
 
-Run from `Use Case Samples/Smart Article Generator/Sample/SmartArticleGenerator`:
+Run from `Use Case Samples/Smart Article Generator/Sample/SmartArticleGenerator`. The iOS and Mac Catalyst targets build only on macOS, and the Windows target only on Windows:
 
 ```sh
 dotnet restore SmartArticleGenerator.csproj

@@ -54,24 +54,24 @@ Cards and Map
 - **View:** `MainPage.xaml` and `MainPage.xaml.cs`.
 - **ViewModel:** `TravelPlannerViewModel`.
 - **AI service:** `OpenAIServices`.
-- **Models:** `TripInput`, `PlaceCard`, `TripRecommendation`, and `MapMarkerLabel`.
+- **Models:** `TripInput`, `PlaceCard`, and `TripRecommendation` (in `Models/TripItem.cs`), and `MapMarkerLabel`.
 - **UI support:** XAML converters and `DotAnimationBehavior`.
 
 ## Syncfusion Controls Used
 
-- `SfAIAssistView`
-- `SfBottomSheet`
-- `SfChip`/`SfChipGroup`
-- `SfCalendar`
-- `SfListView`
-- `SfRating`
-- `SfMaps` with `MapTileLayer`
+- `SfAIAssistView` (`Syncfusion.Maui.AIAssistView`)
+- `SfBottomSheet` (`Syncfusion.Maui.Toolkit`)
+- `SfChip`/`SfChipGroup` (`Syncfusion.Maui.Toolkit`)
+- `SfCalendar` (`Syncfusion.Maui.Calendar`)
+- `SfListView` (`Syncfusion.Maui.ListView`)
+- `SfRating` (`Syncfusion.Maui.Inputs`)
+- `SfMaps` with `MapTileLayer` (`Syncfusion.Maui.Maps`)
 
 ## Prerequisites
 
 - .NET 10 SDK.
-- .NET MAUI workloads for target platforms.
-- Syncfusion MAUI packages referenced by `TravelPlanner.csproj`.
+- .NET MAUI workloads for target platforms (the Windows target is built only on Windows).
+- Syncfusion MAUI packages referenced by `TravelPlanner.csproj` (Core, AIAssistView, Toolkit, ListView, Inputs, Calendar, Maps).
 - Azure OpenAI endpoint, key, and deployment for live recommendations.
 
 ## Configuration
@@ -86,7 +86,9 @@ Cards and Map
 | `AZURE_OPENAI_KEY` | Live AI | None |
 | `AZURE_OPENAI_CHAT_DEPLOYMENT` | No | `gpt-4o-mini` |
 | `AZURE_OPENAI_API_VERSION` | No | `2024-08-01-preview` |
-| `SYNCFUSION_LICENSE_KEY` | Licensing | Falls back to the placeholder key in `App.xaml.cs` |
+| `SYNCFUSION_LICENSE_KEY` | Licensing | Falls back to the placeholder `ENTER_YOUR_LICENSE_KEY` in `App.xaml.cs` |
+
+Requests are sent to `{AZURE_OPENAI_ENDPOINT}/openai/deployments/{deployment}/chat/completions`. Set the variables in the environment that launches the app (for example, before starting the IDE) so they are visible to the process. Without an endpoint and key, the app shows a labeled sample itinerary.
 
 ## Getting Started
 
@@ -104,17 +106,22 @@ dotnet build TravelPlanner/TravelPlanner.csproj -t:Run -f net10.0-windows10.0.19
 ## Project Structure
 
 ```text
-TravelPlanner/
-├── Converters/
-├── Models/
-├── Platforms/
-├── Resources/
-├── Services/
-├── ViewModels/
-├── App.xaml
-├── AppShell.xaml
-├── MainPage.xaml
-└── MauiProgram.cs
+Travel Planner/
+├── TravelPlanner.slnx
+└── TravelPlanner/
+    ├── Converters/
+    ├── Models/
+    ├── Platforms/
+    ├── Properties/
+    ├── Resources/
+    ├── Services/
+    ├── ViewModels/
+    ├── App.xaml
+    ├── AppShell.xaml
+    ├── DotAnimationBehavior.cs
+    ├── MainPage.xaml
+    ├── MauiProgram.cs
+    └── TravelPlanner.csproj
 ```
 
 ## Troubleshooting

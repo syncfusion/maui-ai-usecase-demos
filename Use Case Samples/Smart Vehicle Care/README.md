@@ -87,10 +87,11 @@ Curated Static Sample Data
 ## Prerequisites
 
 - .NET 10 SDK.
-- .NET MAUI workload for the target platform.
-- Syncfusion packages referenced by `SmartVehicleCare.csproj`.
+- .NET MAUI workload for the target platform (iOS and Mac Catalyst targets are skipped on Linux; the Windows target is built only on Windows).
+- Syncfusion packages referenced by `SmartVehicleCare.csproj` (AIAssistView, Core, Inputs, Buttons, Maps, Picker, Charts, Scheduler, TabView, ProgressBar, DataGrid, Popup).
 - Location services for nearby-place discovery.
 - Azure OpenAI configuration only for live AI features.
+- Internet access for the Overpass/OpenStreetMap nearby-place lookup.
 
 ## Configuration
 
@@ -101,10 +102,14 @@ AI settings are entered in the app Settings page:
 | Setting | Storage | Purpose |
 | --- | --- | --- |
 | API key | `SecureStorage` | Azure OpenAI API key |
-| Base endpoint | `Preferences` | Azure AI Foundry `/openai/v1` endpoint |
+| Base endpoint | `Preferences` | Azure AI Foundry `/openai/v1` endpoint (requests go to `{endpoint}/chat/completions`) |
 | Deployment name | `Preferences` | Defaults to `gpt-5-mini` |
 
-The Syncfusion license is read from `SYNCFUSION_LICENSE_KEY`.
+No credentials are stored in source code.
+
+### Syncfusion License
+
+The license is read from the `SYNCFUSION_LICENSE_KEY` environment variable at startup in `MauiProgram.cs`. Set it before launching the app.
 
 ## Getting Started
 
@@ -122,26 +127,31 @@ dotnet build SmartVehicleCare/SmartVehicleCare.csproj -t:Run -f net10.0-windows1
 ## Project Structure
 
 ```text
-SmartVehicleCare/
-├── Behaviors/
-├── Converters/
-├── Helpers/
-├── Models/
-├── Platforms/
-├── Resources/
-├── Services/
-├── ViewModels/
-├── Views/
-├── App.xaml
-├── AppShell.xaml
-└── MauiProgram.cs
+Smart Vehicle Care/
+├── SmartVehicleCare.slnx
+├── vehicle-care-demo.gif
+└── SmartVehicleCare/
+    ├── Behaviors/
+    ├── Converters/
+    ├── Helpers/
+    ├── Models/
+    ├── Platforms/
+    ├── Properties/
+    ├── Resources/
+    ├── Services/
+    ├── ViewModels/
+    ├── Views/
+    ├── App.xaml
+    ├── AppShell.xaml
+    ├── MauiProgram.cs
+    └── SmartVehicleCare.csproj
 ```
 
 ## Troubleshooting
 
 - **AI is unavailable:** Open Settings and enter the key, endpoint, and deployment.
-- **Nearby map shows sample data:** Grant location permission and check network access.
-- **Vehicle data resets:** The current sample stores data as JSON in `Preferences`.
+- **Nearby map shows sample data:** Grant location permission and check network access. Static results are labeled as fallback data.
+- **Vehicle data missing after reinstall or clearing app data:** Vehicle data is stored as JSON in `Preferences`, which is removed with app data.
 - **License watermark:** Set `SYNCFUSION_LICENSE_KEY`.
 
 ## Responsible AI Considerations
@@ -167,7 +177,7 @@ SmartVehicleCare/
 ## Limitations
 
 - Live AI features require Azure configuration.
-- Vehicle records are demonstration data stored on-device.
+- Vehicle records are demonstration data stored on-device in `Preferences` (no cloud sync or database).
 - Nearby static fallbacks are not live inventory.
 
 ## License

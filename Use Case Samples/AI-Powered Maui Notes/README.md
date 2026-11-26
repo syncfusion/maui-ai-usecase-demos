@@ -11,9 +11,10 @@ Users organize folders and notes, edit rich text, and request AI transformations
 ## AI Capabilities
 
 - Grammar checking and proofreading.
-- Rewriting and tone changes.
-- Summarization and restructuring.
-- Elaboration and shortening.
+- Rewriting and tone changes (friendly, professional).
+- Making text more concise.
+- Summarization and key points.
+- Converting text to a list or table.
 - Custom editing instructions.
 
 ## Key Features
@@ -22,7 +23,7 @@ Users organize folders and notes, edit rich text, and request AI transformations
 - Organize notes in folders.
 - Edit rich text, highlights, tables, links, and images.
 - Apply built-in or custom AI actions.
-- Persist notes locally as JSON.
+- Persist notes locally as JSON (`maui-notes.json` in the app data directory).
 
 ## Application Workflow
 
@@ -62,7 +63,6 @@ Editor Update or Revert
 
 - `SfRichTextEditor`
 - `SfTreeView`
-- `SfListView`
 - `SfPopup`
 - `SfToolbar`
 - `SfButton`
@@ -85,23 +85,23 @@ Set these environment variables before launch:
 | `MAUINOTES_AZURE_OPENAI_ENDPOINT` | Live AI | HTTPS Azure OpenAI endpoint |
 | `MAUINOTES_AZURE_OPENAI_API_KEY` | Live AI | Azure OpenAI API key |
 | `MAUINOTES_AZURE_OPENAI_DEPLOYMENT` | Live AI | Deployed chat model |
-| `SYNCFUSION_LICENSE_KEY` | Production licensing | Syncfusion license key |
+| `SYNCFUSION_LICENSE_KEY` | Production licensing | Syncfusion license key, read at startup in `MauiProgram.cs` |
 
 The current `HttpClient` timeout is 60 seconds in `MauiProgram.cs`.
 
-Notes remain usable when AI configuration is missing, but AI actions return configuration errors.
+Notes remain usable when AI configuration is missing, but AI actions return configuration errors. The service calls the `openai/v1/chat/completions` route under the configured endpoint.
 
 ## Getting Started
 
-Run from `Use Case Samples/AI-Powered Maui Notes/MauiNotes`:
+Run from `Use Case Samples/AI-Powered Maui Notes/MauiNotes` (the folder containing `MauiNotes.slnx`):
 
 ```sh
 dotnet restore MauiNotes.slnx
 
-dotnet build MauiNotes/MauiNotes/MauiNotes.csproj -t:Run -f net10.0-android
-dotnet build MauiNotes/MauiNotes/MauiNotes.csproj -t:Run -f net10.0-ios
-dotnet build MauiNotes/MauiNotes/MauiNotes.csproj -t:Run -f net10.0-maccatalyst
-dotnet build MauiNotes/MauiNotes/MauiNotes.csproj -t:Run -f net10.0-windows10.0.19041.0
+dotnet build MauiNotes/MauiNotes.csproj -t:Run -f net10.0-android
+dotnet build MauiNotes/MauiNotes.csproj -t:Run -f net10.0-ios
+dotnet build MauiNotes/MauiNotes.csproj -t:Run -f net10.0-maccatalyst
+dotnet build MauiNotes/MauiNotes.csproj -t:Run -f net10.0-windows10.0.19041.0
 ```
 
 ## Project Structure

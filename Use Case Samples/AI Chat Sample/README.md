@@ -2,7 +2,7 @@
 
 ![AI Chat Sample demo](AIChatSample.gif)
 
-A .NET MAUI multi-agent chat sample built with Syncfusion controls. It demonstrates agent creation and configuration, chat navigation, follow-up suggestions, voice input, and switching between a local mock AI service and Azure OpenAI.
+A .NET MAUI multi-agent chat sample built with Syncfusion controls. It demonstrates agent creation and configuration, chat navigation, follow-up suggestions, voice input (native on Windows only), and switching between a local mock AI service and Azure OpenAI.
 
 ## Overview
 
@@ -22,7 +22,7 @@ The sample presents a chat workspace with recent conversations, search, library,
 - Start and switch between chat sessions.
 - Search conversations and browse the library.
 - Customize agent avatars and profile data.
-- Use voice input on supported platforms.
+- Use voice input: native speech recognition on Windows; other platforms show a text prompt fallback instead of a microphone.
 
 ## Application Workflow
 
@@ -69,6 +69,7 @@ Data is kept in memory. Restarting the app resets agents, profiles, and chat ses
 - `SfChipGroup` for configuration selections.
 - `SfAvatarView` for agent avatars.
 - `SfButton` for actions.
+- `SfTextInputLayout` for search and agent form fields.
 
 ## Prerequisites
 
@@ -95,13 +96,12 @@ Do not commit API keys to source control.
 ### Supported Target Frameworks
 
 - `net10.0-android`
-- `net10.0-ios`
-- `net10.0-maccatalyst`
-- `net10.0-windows10.0.19041.0` on Windows
+- `net10.0-ios` and `net10.0-maccatalyst` (not available when building on Linux)
+- `net10.0-windows10.0.19041.0` (Windows hosts only)
 
 ## Getting Started
 
-Run from `Use Case Samples/AI Chat Sample/AIChatSample`:
+Run from `Use Case Samples/AI Chat Sample/AIChatSample` (the folder containing `AIChatSample.slnx`):
 
 ```sh
 dotnet restore AIChatSample/AIChatSample.csproj

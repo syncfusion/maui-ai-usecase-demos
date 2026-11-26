@@ -65,7 +65,8 @@ The SQLite database is stored at `FileSystem.AppDataDirectory/wardrobe.db`.
 ## Syncfusion Controls Used
 
 - `SfTabView`
-- `SfChipGroup`
+- `SfChipGroup` and `SfChip`
+- `SfButton`
 - `SfComboBox`
 - `SfDatePicker`
 - `SfRadialGauge`
@@ -77,8 +78,9 @@ The SQLite database is stored at `FileSystem.AppDataDirectory/wardrobe.db`.
 ## Prerequisites
 
 - .NET 10 SDK.
-- .NET MAUI workloads for target platforms.
-- Syncfusion MAUI packages referenced by `WardrobeAI.csproj`.
+- .NET MAUI workloads for target platforms (iOS and Mac Catalyst targets are skipped on Linux; the Windows target is built only on Windows).
+- Syncfusion MAUI packages referenced by `WardrobeAI.csproj` (Core, Buttons, Rotator, Gauges, Inputs, Popup, Picker, TabView, Expander).
+- `Azure.AI.OpenAI`, EF Core SQLite, and CommunityToolkit.Mvvm are restored from NuGet.
 - Azure OpenAI configuration only for live AI recommendations.
 
 ## Configuration
@@ -91,12 +93,16 @@ The SQLite database is stored at `FileSystem.AppDataDirectory/wardrobe.db`.
 | --- | --- |
 | Endpoint | `AZURE_API_BASE` |
 | API key | `AZURE_API_KEY` |
-| Deployment | `gpt-4.1-mini` |
-| API version | `API_VERSION` placeholder in `AzureOpenAiOptions` |
+| Deployment | `gpt-4.1-mini` (source default in `AzureOpenAiOptions`) |
+| API version | `ApiVersion` property holds the placeholder `API_VERSION`; it is not read by the services, which use the `Azure.AI.OpenAI` SDK defaults |
 
-The app does not bind these values from `appsettings.json`, and live AI remains disabled until usable endpoint/key/deployment values are supplied.
+The endpoint must be an absolute HTTP/HTTPS URL (for example `https://your-resource.openai.azure.com/`). The app does not bind these values from `appsettings.json`, and live AI stays disabled (the services use their fallback logic) until both the endpoint and key are set. To change the deployment name, edit `AzureOpenAiOptions.Deployment` or configure the options in `MauiProgram.cs`.
 
-The Syncfusion license is read from `SYNCFUSION_LICENSE_KEY`.
+Set the environment variables in the environment that launches the app (for example, before starting the IDE) so the process can see them.
+
+### Syncfusion License
+
+The license is read from the `SYNCFUSION_LICENSE_KEY` environment variable in `MauiProgram.cs`. If it is not set, no key is registered.
 
 Weather and reverse-geocoding use the Open-Meteo forecast and reverse-geocoding APIs with platform geolocation; no weather API key is defined by the sample.
 
@@ -117,30 +123,34 @@ dotnet build WardrobeAI/WardrobeAI.csproj -t:Run -f net10.0-windows10.0.19041.0
 
 ```text
 WardrobeAI/
-├── AI/
-├── Constants/
-├── Contracts/
-├── Converters/
-├── Data/
-├── Helpers/
-├── Models/
-├── Platforms/
-├── Repositories/
-├── Resources/
-├── Services/
-├── ViewModels/
-├── Views/
-├── App.xaml
-├── AppShell.xaml
-└── MauiProgram.cs
+├── WardrobeAI.slnx
+└── WardrobeAI/
+    ├── AI/
+    ├── Constants/
+    ├── Contracts/
+    ├── Converters/
+    ├── Data/
+    ├── Helpers/
+    ├── Models/
+    ├── Platforms/
+    ├── Properties/
+    ├── Repositories/
+    ├── Resources/
+    ├── Services/
+    ├── ViewModels/
+    ├── Views/
+    ├── App.xaml
+    ├── AppShell.xaml
+    ├── MauiProgram.cs
+    └── WardrobeAI.csproj
 ```
 
 ## Troubleshooting
 
-- **AI recommendations use fallback data:** Verify endpoint, key, deployment, and API version configuration.
+- **AI recommendations use fallback data:** Verify that `AZURE_API_BASE` (an absolute URL) and `AZURE_API_KEY` are set and visible to the app process, and that the deployment name exists.
 - **Weather is unavailable:** Verify network access and location permission.
 - **Database issue:** Confirm the app can write under `FileSystem.AppDataDirectory`.
-- **License watermark:** Set `SYNCFUSION_LICENSE_KEY`.
+- **License watermark:** Set `SYNCFUSION_LICENSE_KEY` before launching the app.
 
 ## Responsible AI Considerations
 

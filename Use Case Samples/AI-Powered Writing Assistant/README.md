@@ -18,9 +18,10 @@ The app provides paraphrasing, grammar checking, elaboration, and shortening act
 ## Key Features
 
 - Select a writing action from `SfComboBox`.
+- Pick Paraphraser, Grammar Checker, Elaborate, or Shorten from the combo box or suggestion chips; Paraphraser then offers Humanize, Professional, Simple, and Academic.
 - Review suggestions in `SfAIAssistView`.
-- Accept or ignore generated text.
-- Apply accepted text to `SfRichTextEditor`.
+- Copy, retry, or apply generated text from each response.
+- Apply the chosen response to `SfRichTextEditor`.
 
 ## Application Workflow
 
@@ -29,7 +30,7 @@ The app provides paraphrasing, grammar checking, elaboration, and shortening act
 3. `AssistViewViewModel` strips HTML and creates an action-specific prompt.
 4. `AzureBaseService` sends the prompt through `IChatClient`.
 5. The response is displayed in `AIAssistView`.
-6. The user accepts the response and it is formatted and applied to the editor.
+6. The user can copy or retry the response, or apply it; applied text is converted to HTML and set on the editor.
 
 ## AI Workflow
 
@@ -58,13 +59,14 @@ RichTextEditor
 
 - `SfRichTextEditor`
 - `SfAIAssistView`
-- `SfComboBox`
+- `SfComboBox` (from `Syncfusion.Maui.Inputs`)
 
 ## Prerequisites
 
 - .NET 10 SDK.
 - .NET MAUI workloads for target platforms.
-- Syncfusion packages referenced by `AIPoweredWritingAssistant.csproj`.
+- Syncfusion packages referenced by `AIPoweredWritingAssistant.csproj` (AIAssistView, Core, Inputs, RichTextEditor) and `Microsoft.Extensions.AI.OpenAI`.
+- Target frameworks: `net10.0-android`, `net10.0-ios`, `net10.0-maccatalyst`, plus `net10.0-windows10.0.19041.0` on Windows hosts.
 - Valid Azure OpenAI configuration.
 
 ## Configuration
@@ -80,7 +82,7 @@ internal const string imageDeploymentName = "IMAGE_MODEL_NAME";
 private const string key = "KEY";
 ```
 
-Replace the constants with a valid endpoint, deployment name, and API key before live use. The sample does not read Azure credentials from environment variables or secure storage.
+Replace `endpoint`, `deploymentName`, and `key` with valid values before live use (`imageDeploymentName` is declared but not used by this sample's text features). Credentials are validated with a test request at startup; if the client cannot be created, an alert is shown. Failed AI requests return empty text rather than an error message. The sample does not read Azure credentials from environment variables or secure storage.
 
 ## Getting Started
 
@@ -112,7 +114,7 @@ AIPoweredWritingAssistant/
 
 ## Troubleshooting
 
-- **No AI response:** Replace placeholder credentials and verify Azure connectivity.
+- **No AI response:** Replace placeholder credentials and verify Azure connectivity. Errors are swallowed, so an empty response usually means a credential or network problem.
 - **Suggestions do not appear:** Verify the suggestion command bindings in `AssistViewViewModel`.
 - **Wrong platform layout:** Android/iOS use `AssistViewPage`; Windows/Mac Catalyst use inline UI.
 

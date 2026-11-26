@@ -18,7 +18,7 @@ Users capture or select a product image, review extracted ingredients, and recei
 - Capture or select a label image.
 - Review extracted text and ingredient items.
 - View score, category, confidence, allergens, additives, and nutrition.
-- Save scan history locally.
+- Save scan history locally (`scan_history.json` in the app data directory).
 - View trends and profile-driven insights.
 - Open predefined sample-product analyses.
 
@@ -51,8 +51,8 @@ Result, History, and Trends
 ## AI Architecture
 
 - **Views:** Dashboard, scan, review, result, history, trends, and profile.
-- **ViewModels:** Five page view models plus the dashboard view model.
-- **Services:** Image extraction, ingredient analysis, chat insights, and persistence.
+- **ViewModels:** Dashboard, scan, review, history, trends, and profile view models. The result page is code-behind driven.
+- **Services:** `AIService/` holds image extraction, ingredient analysis, and chat completion; `Services/` holds the daily-insight generator and cache, image picker, scan history, user preferences, and sample data.
 - **Models:** Ingredient, nutrition, profile, history, trend, and cache data.
 - **Sample data:** `SampleIngredientAnalysisService` provides static demo products.
 
@@ -61,16 +61,21 @@ Result, History, and Trends
 - `SfListView`
 - `SfCartesianChart`
 - `SfRadialGauge`
-- `SfProgressBar`
+- `SfCircularProgressBar` and `SfLinearProgressBar`
 - `SfButton`
+- `SfChipGroup`
+- `SfSwitch`
 - `SfPopup`
+- `SfTextInputLayout`
+- `SfAvatarView`
+- `SfBusyIndicator`
 
 ## Prerequisites
 
 - .NET 10 SDK.
 - .NET MAUI workloads for target platforms.
 - Syncfusion MAUI packages referenced by `NutriLens.csproj`.
-- Camera or file-picker support.
+- Camera or file-picker support (on Windows, the image picker uses a file/gallery picker instead of the camera).
 - Azure OpenAI credentials for live extraction and analysis.
 
 ## Configuration
@@ -85,11 +90,11 @@ Result, History, and Trends
 | `NUTRILENS_AZURE_OPENAI_DEPLOYMENT` | Live AI | Deployment name |
 | `NUTRILENS_AZURE_OPENAI_API_KEY` | Live AI | API key |
 
-The class requires an absolute HTTPS endpoint. Placeholder constants in source are not live credentials.
+The endpoint must be an absolute HTTPS URL, and the deployment must support image input. If a variable is not set, the placeholder constant in `AzureOpenAIConfig.cs` is used, which fails validation until replaced. A Syncfusion license key can be registered in `MauiProgram.cs` (commented line).
 
 ## Getting Started
 
-Run from `Use Case Samples/NutriLens`:
+Run from `Use Case Samples/NutriLens`. The iOS and Mac Catalyst targets build only on macOS, and the Windows target only on Windows:
 
 ```sh
 dotnet restore NutriLens/NutriLens.csproj
