@@ -153,7 +153,16 @@ namespace SmartCircularChart
 
             try
             {
-                var response = await aiService.GetResultsFromAI(UserPrompt, ChartData);
+                string response;
+                try
+                {
+                    response = await aiService.GetResultsFromAI(UserPrompt, ChartData);
+                }
+                catch (Exception ex) when (ex is InvalidOperationException or JsonException)
+                {
+                    StatusMessage = ex.Message;
+                    return;
+                }
 
                 if (!TryParseAIGrouping(response, out var mode, out var threshold))
                 {

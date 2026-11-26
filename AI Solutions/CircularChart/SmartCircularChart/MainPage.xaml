@@ -19,6 +19,7 @@
                     <Entry x:Name="PromptEntry" Grid.Column="0" Placeholder="Try: Group by value under 25" ClearButtonVisibility="WhileEditing" Text="Group by value under 25" />
                     <buttons:SfButton Grid.Column="1" Text="Update Chart" ImageSource="aibutton.png" ShowIcon="True" Clicked="OnGroupChartClicked" BackgroundColor="#2563EB" TextColor="White" Padding="0" />
                 </Grid>
+                <Label Text="{Binding StatusMessage}" FontSize="13" TextColor="#4B5563" LineBreakMode="WordWrap" />
             </VerticalStackLayout>
         </Border>
 

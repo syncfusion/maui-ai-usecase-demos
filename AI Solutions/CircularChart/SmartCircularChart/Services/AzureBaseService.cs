@@ -8,9 +8,26 @@ namespace SmartCircularChart
     public abstract class AzureBaseService
     {
 
-		protected const string endpoint = "endpoint";
-		protected const string deploymentName = "deploymentName";
-		protected const string key = "key";
+		protected static readonly string Endpoint = "AZURE_OPENAI_ENDPOINT";
+		protected static readonly string DeploymentName = "AZURE_OPENAI_DEPLOYMENT";
+		protected static readonly string ApiKey = "AZURE_OPENAI_KEY";
+		protected static readonly string ApiVersion = "2024-08-01-preview";
+
+        protected static Uri GetChatCompletionsUri()
+        {
+            if (string.IsNullOrWhiteSpace(Endpoint) || string.IsNullOrWhiteSpace(DeploymentName) || string.IsNullOrWhiteSpace(ApiKey) ||
+                Endpoint == "AZURE_OPENAI_ENDPOINT" || DeploymentName == "AZURE_OPENAI_DEPLOYMENT" || ApiKey == "AZURE_OPENAI_KEY")
+            {
+                throw new InvalidOperationException("Azure OpenAI credentials are not configured. Set Endpoint, DeploymentName and ApiKey in AzureBaseService.");
+            }
+
+            if (!Uri.TryCreate(Endpoint, UriKind.Absolute, out var endpointUri))
+            {
+                throw new InvalidOperationException("Azure OpenAI endpoint is not a valid absolute URL, e.g. https://<resource-name>.openai.azure.com/");
+            }
+
+            return new Uri($"{endpointUri.GetLeftPart(UriPartial.Authority)}/openai/deployments/{DeploymentName}/chat/completions?api-version={ApiVersion}");
+        }
 
         protected const string SystemPrompt =
             "You configure the grouping of a doughnut chart. Small slices are merged into a single 'Others' slice " +
@@ -57,43 +74,47 @@ namespace SmartCircularChart
 
             var requestBody = new
             {
-                messages = new[]
+                model = DeploymentName,
+                messages = new object[]
                 {
                     new { role = "system", content = SystemPrompt },
                     new { role = "user", content = BuildPrompt(userAIPrompt, chartData) }
                 },
-                temperature = 0.1,
-                max_tokens = 200,
+                temperature = 0f,
+                max_completion_tokens = 2048,
                 response_format = new { type = "json_object" }
             };
 
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{endpoint}openai/deployments/{deploymentName}/chat/completions?api-version=2024-06-01")
+            using var request = new HttpRequestMessage(HttpMethod.Post, GetChatCompletionsUri())
             {
                 Content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json")
             };
-            request.Headers.Add("api-key", key);
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Headers.TryAddWithoutValidation("api-key", ApiKey);
 
+            HttpResponseMessage response;
             try
             {
-                using var response = await httpClient.SendAsync(request);
+                response = await httpClient.SendAsync(request);
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new InvalidOperationException($"Azure OpenAI request failed: {ex.Message}", ex);
+            }
+
+            using (response)
+            {
+                var body = await response.Content.ReadAsStringAsync();
                 if (!response.IsSuccessStatusCode)
                 {
-                    return string.Empty;
+                    throw new InvalidOperationException($"Azure OpenAI request failed: HTTP {(int)response.StatusCode} ({response.ReasonPhrase}): {body}");
                 }
 
-                var json = await response.Content.ReadAsStringAsync();
-                using var document = JsonDocument.Parse(json);
-                var content = document.RootElement
+                using var document = JsonDocument.Parse(body);
+                return document.RootElement
                     .GetProperty("choices")[0]
                     .GetProperty("message")
-                    .GetProperty("content");
-
-                return content.GetString() ?? string.Empty;
-            }
-            catch
-            {
-                return string.Empty;
+                    .GetProperty("content")
+                    .GetString() ?? string.Empty;
             }
         }
     }
