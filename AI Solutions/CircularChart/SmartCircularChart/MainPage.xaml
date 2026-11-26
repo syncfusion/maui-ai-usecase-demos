@@ -16,7 +16,7 @@
             <VerticalStackLayout Spacing="10">
                 <Label Text="AI-Powered Circular Chart" FontSize="26" FontAttributes="Bold" TextColor="#111827" />
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                    <Entry x:Name="PromptEntry" Grid.Column="0" Placeholder="Try: Group products by category, merge low values, or split by priority" ClearButtonVisibility="WhileEditing" Text="Group products by category" />
+                    <Entry x:Name="PromptEntry" Grid.Column="0" Placeholder="Try: Group by value under 25" ClearButtonVisibility="WhileEditing" Text="Group by value under 25" />
                     <buttons:SfButton Grid.Column="1" Text="Update Chart" ImageSource="aibutton.png" ShowIcon="True" Clicked="OnGroupChartClicked" BackgroundColor="#2563EB" TextColor="White" Padding="0" />
                 </Grid>
             </VerticalStackLayout>

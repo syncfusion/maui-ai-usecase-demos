@@ -11,11 +11,19 @@ namespace SmartCircularChart
 		protected const string deploymentName = "deploymentName";
 		protected const string key = "key";
 
+        protected const string SystemPrompt =
+            "You convert natural language chart grouping instructions into a single JSON object for a doughnut chart that merges small slices into 'Others'. " +
+            "Return only the JSON object {\"Kind\": <kind>, \"Amount\": <number>}. No markdown, no explanation.";
+
         protected static string BuildPrompt(string userAIPrompt)
         {
-            return $"You are a chart grouping assistant. Convert the user request into JSON only. " +
-                   $"Return a JSON array of objects with Category, Value, Group, GroupMode, and GroupTo fields. " +
-                   $"Use these rules when possible: 'Group by value under 15', 'Group products by category', 'Merge small values into Others'. " +
+            return "Pick Kind and Amount for the request.\n" +
+                   "Kind values:\n" +
+                   "- \"Value\": merge slices whose absolute value is at or below Amount (e.g. 'group by value under 25' -> Amount 25).\n" +
+                   "- \"Percentage\": merge slices whose share of the total, in percent, is at or below Amount (e.g. 'percentage under 5' -> Amount 5).\n" +
+                   "- \"Angle\": merge slices whose angle, in degrees, is at or below Amount (e.g. 'smaller than 10 degrees' -> Amount 10).\n" +
+                   "- \"Top\": keep only the Amount largest slices and merge the rest (e.g. 'show only the top 4 products' -> Amount 4).\n" +
+                   "- \"Smallest\": merge the Amount smallest slices (e.g. 'merge the smallest 3 slices' -> Amount 3).\n" +
                    $"The user prompt is: {userAIPrompt}";
         }
     }
@@ -35,11 +43,11 @@ namespace SmartCircularChart
             {
                 messages = new[]
                 {
-                    new { role = "system", content = "You convert natural language chart grouping instructions into strictly valid JSON for a Syncfusion circular chart sample. Return only the JSON array with Category, Value, Group, GroupMode, and GroupTo fields. No markdown, no explanation, no prose." },
+                    new { role = "system", content = SystemPrompt },
                     new { role = "user", content = BuildPrompt(userAIPrompt) }
                 },
                 temperature = 0.1,
-                max_tokens = 500,
+                max_tokens = 100,
                 response_format = new { type = "json_object" }
             };
 
