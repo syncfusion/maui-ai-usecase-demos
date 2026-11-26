@@ -20,7 +20,8 @@ The chat adds the selected model, input/output token counts, estimated cost, and
 - Chat composer with attachment support.
 - Routing status and typing state.
 - Markdown response rendering.
-- Response limits for large model output.
+- Responses longer than 8,500 characters are truncated.
+- Voice input enabled in the composer.
 - Per-model Azure credentials and optional pricing variables.
 
 ## Application Workflow
@@ -53,7 +54,7 @@ Text + Token Usage + Estimated Cost
 - **View:** `MainPage.xaml` and `MainPage.xaml.cs`.
 - **ViewModel:** `MainPageViewModel`.
 - **Service:** `AzureOpenAIService`.
-- **Models:** `AIAssistResponseItem` and `ChatItems`.
+- **Models:** `AIAssistResponseItem` (in `Models/ChatItems.cs`).
 - **Support:** `CostCalculator` and `AIAssistTemplateSelector`.
 
 ## Syncfusion Controls Used
@@ -67,7 +68,7 @@ Text + Token Usage + Estimated Cost
 - .NET 10 SDK.
 - A .NET MAUI workload for the target platform.
 - Azure OpenAI deployments for the configured model identifiers.
-- Syncfusion AIAssistView, Core, and MarkdownViewer packages.
+- NuGet packages: `Azure.AI.OpenAI`, `CommunityToolkit.Mvvm`, and Syncfusion AIAssistView, Core, and MarkdownViewer.
 
 ## Configuration
 
@@ -84,13 +85,13 @@ The service reads shared and per-model environment variables.
 | `AZURE_PRICE_INPUT_<MODEL>` | Optional input price per 1K tokens |
 | `AZURE_PRICE_OUTPUT_<MODEL>` | Optional output price per 1K tokens |
 
-The model suffix replaces `.`, `-`, and spaces with `_`. Examples include `GPT_4_1_NANO`, `GPT_4_1_MINI`, and `GPT_5_6_LUNA`.
+The model suffix is the model name uppercased, with every non-alphanumeric character (such as `.`, `-`, or a space) replaced by `_`. Examples include `GPT_4_1_NANO`, `GPT_4_1_MINI`, and `GPT_5_6_LUNA`.
 
-Without credentials, the service uses placeholder endpoint/key values and live requests fail.
+Per-model variables take precedence over the shared ones. Without credentials, the service uses placeholder endpoint/key values and live requests fail. If a price variable is not set, built-in default prices in `CostCalculator` are used.
 
 ## Getting Started
 
-Run from `Use Case Samples/LLM_Routing`:
+Run from `Use Case Samples/LLM_Routing`. The iOS and Mac Catalyst targets build only on macOS, and the Windows target only on Windows:
 
 ```sh
 dotnet restore LLM_Routing/LLM_Routing.csproj

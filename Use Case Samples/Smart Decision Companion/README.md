@@ -15,8 +15,8 @@ A responsive .NET MAUI task-prioritization sample that sends task context to Azu
 
 ## Key Features
 
-- Add tasks with topic, description, deadline, project type, complexity, and priority.
-- Categorize tasks across Do Today, Postpone, and Watch.
+- Add tasks with topic, description, deadline, project type, and priority (blank priority defaults to Medium). Complexity is not entered by the user; it is estimated by the AI during the daily analysis.
+- Tasks are categorized by deadline: due today or overdue go to Do Today, within the next 7 days to Postpone, and later (or with no deadline) to Watch.
 - Analyze the selected task or the full list.
 - Apply accept/postpone recommendation actions.
 - Use shared task templates across mobile and desktop layouts.
@@ -50,19 +50,20 @@ Insight Cards and Actions
 
 - **View:** `MainPage.xaml`.
 - **ViewModel:** `MainViewModel`.
+- **Code-behind:** `MainPage.xaml.cs` triggers startup credential validation and shows the credential alert.
 - **Model:** `TaskItem`.
 - **Services:** `IAzureAIService`, `AzureBaseService`, and `AzureAIService`.
-- **Startup:** `MauiProgram.cs` registers the AI service and page.
+- **Startup:** `MauiProgram.cs` registers the AI service, `MainViewModel`, and the page.
 
 ## Syncfusion Controls Used
 
-- Syncfusion packages referenced by the project for `SfCore`, `SfListView`, and `SfTabView`.
+- `SfListView` (Do Today, Postpone, and Watch lists) and `SfTabView` (Today and Insights tabs), plus `Syncfusion.Maui.Core` registered with `ConfigureSyncfusionCore()`.
 
 ## Prerequisites
 
 - .NET 10 SDK.
-- .NET MAUI workloads for target platforms.
-- The Syncfusion packages referenced by `SmartDailyDecisionCompanion.csproj`.
+- .NET MAUI workloads for target platforms (the Windows target is built only on Windows).
+- The Syncfusion packages referenced by `SmartDailyDecisionCompanion.csproj` (`Syncfusion.Maui.Core`, `ListView`, `TabView`).
 - Azure OpenAI endpoint, deployment, and API key.
 
 ## Configuration
@@ -78,11 +79,11 @@ private const string key = "Enter your Azure OpenAI API key here";
 private const string apiVersion = "2024-02-15-preview";
 ```
 
-Replace them before use. `ValidateCredentialAsync` sends a lightweight Azure chat request and caches the result.
+The endpoint must be an absolute URL that includes the trailing slash. Replace the placeholders before use. `ValidateCredentialAsync` sends a lightweight Azure chat request and caches the result.
 
 ## Getting Started
 
-Run from `Use Case Samples/Smart Decision Companion/SmartDailyDecisionCompanion`:
+Run from `Use Case Samples/Smart Decision Companion/SmartDailyDecisionCompanion` (the folder containing `SmartDailyDecisionCompanion.slnx`):
 
 ```sh
 dotnet restore SmartDailyDecisionCompanion/SmartDailyDecisionCompanion.csproj
@@ -97,15 +98,20 @@ dotnet build SmartDailyDecisionCompanion/SmartDailyDecisionCompanion.csproj -t:R
 
 ```text
 SmartDailyDecisionCompanion/
-├── Models/
-├── Platforms/
-├── Resources/
-├── Services/
-├── ViewModels/
-├── App.xaml
-├── AppShell.xaml
-├── MainPage.xaml
-└── MauiProgram.cs
+├── SmartDailyDecisionCompanion.slnx
+└── SmartDailyDecisionCompanion/
+    ├── Models/
+    ├── Platforms/
+    ├── Properties/
+    ├── Resources/
+    ├── Services/
+    ├── ViewModels/
+    ├── App.xaml
+    ├── AppShell.xaml
+    ├── MainPage.xaml
+    ├── MainPage.xaml.cs
+    ├── MauiProgram.cs
+    └── SmartDailyDecisionCompanion.csproj
 ```
 
 ## Troubleshooting
@@ -113,7 +119,7 @@ SmartDailyDecisionCompanion/
 - **Credential alert appears:** Replace all placeholder constants.
 - **Insights remain loading:** Verify network access and Azure configuration.
 - **Stale insight is ignored:** The app intentionally protects the current task selection.
-- **License watermark:** Register a valid Syncfusion license.
+- **License watermark:** Register a valid Syncfusion license in `MauiProgram.cs` (uncomment the `RegisterLicense` line).
 
 ## Responsible AI Considerations
 
@@ -136,7 +142,7 @@ SmartDailyDecisionCompanion/
 
 ## Limitations
 
-- Tasks are not persisted by a database in the current sample.
+- Tasks are seeded in `MainViewModel` and are not persisted; added tasks are lost on restart.
 - Live AI requires valid credential constants.
 
 ## License
