@@ -80,8 +80,7 @@ namespace SmartCircularChart
                     new { role = "system", content = SystemPrompt },
                     new { role = "user", content = BuildPrompt(userAIPrompt, chartData) }
                 },
-                temperature = 0f,
-                max_completion_tokens = 2048,
+                max_completion_tokens = 4096,
                 response_format = new { type = "json_object" }
             };
 
@@ -96,7 +95,7 @@ namespace SmartCircularChart
             {
                 response = await httpClient.SendAsync(request);
             }
-            catch (HttpRequestException ex)
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
             {
                 throw new InvalidOperationException($"Azure OpenAI request failed: {ex.Message}", ex);
             }
@@ -110,11 +109,15 @@ namespace SmartCircularChart
                 }
 
                 using var document = JsonDocument.Parse(body);
-                return document.RootElement
-                    .GetProperty("choices")[0]
-                    .GetProperty("message")
-                    .GetProperty("content")
-                    .GetString() ?? string.Empty;
+                var choice = document.RootElement.GetProperty("choices")[0];
+                var content = choice.GetProperty("message").GetProperty("content").GetString();
+                if (string.IsNullOrWhiteSpace(content))
+                {
+                    var reason = choice.TryGetProperty("finish_reason", out var finish) ? finish.GetString() : "unknown";
+                    throw new InvalidOperationException($"Azure OpenAI returned an empty reply (finish_reason: {reason}).");
+                }
+
+                return content;
             }
         }
     }

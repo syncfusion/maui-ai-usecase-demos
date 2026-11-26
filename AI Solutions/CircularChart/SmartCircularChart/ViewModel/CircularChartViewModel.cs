@@ -158,15 +158,15 @@ namespace SmartCircularChart
                 {
                     response = await aiService.GetResultsFromAI(UserPrompt, ChartData);
                 }
-                catch (Exception ex) when (ex is InvalidOperationException or JsonException)
+                catch (Exception ex)
                 {
-                    StatusMessage = ex.Message;
+                    StatusMessage = $"AI request failed: {ex.Message}";
                     return;
                 }
 
                 if (!TryParseAIGrouping(response, out var mode, out var threshold))
                 {
-                    StatusMessage = "The AI did not return a valid grouping. Check the endpoint, key and deployment, or rephrase the prompt.";
+                    StatusMessage = $"The AI reply could not be used as a grouping: {response}";
                     return;
                 }
 
@@ -217,10 +217,27 @@ namespace SmartCircularChart
                 using var document = JsonDocument.Parse(response[start..(end + 1)]);
                 var root = document.RootElement;
 
-                if (!root.TryGetProperty("GroupMode", out var modeElement) ||
+                JsonElement modeElement = default, toElement = default;
+                var hasMode = false;
+                var hasTo = false;
+                foreach (var property in root.EnumerateObject())
+                {
+                    if (property.Name.Equals("GroupMode", StringComparison.OrdinalIgnoreCase))
+                    {
+                        modeElement = property.Value;
+                        hasMode = true;
+                    }
+                    else if (property.Name.Equals("GroupTo", StringComparison.OrdinalIgnoreCase))
+                    {
+                        toElement = property.Value;
+                        hasTo = true;
+                    }
+                }
+
+                if (!hasMode || !hasTo ||
+                    modeElement.ValueKind != JsonValueKind.String ||
                     !Enum.TryParse(modeElement.GetString(), true, out mode) ||
-                    !Enum.IsDefined(mode) ||
-                    !root.TryGetProperty("GroupTo", out var toElement))
+                    !Enum.IsDefined(mode))
                 {
                     return false;
                 }
@@ -230,7 +247,14 @@ namespace SmartCircularChart
                     return true;
                 }
 
-                if (toElement.ValueKind == JsonValueKind.Number && toElement.TryGetDouble(out threshold) && threshold >= 0)
+                var parsed = toElement.ValueKind switch
+                {
+                    JsonValueKind.Number => toElement.TryGetDouble(out threshold),
+                    JsonValueKind.String => double.TryParse(toElement.GetString(), NumberStyles.Float, CultureInfo.InvariantCulture, out threshold),
+                    _ => false
+                };
+
+                if (parsed && threshold >= 0)
                 {
                     return true;
                 }
