@@ -1,130 +1,149 @@
 # NutriLens
 
-Smart food-label scanning for personalized ingredient analysis with .NET MAUI and Azure OpenAI.
+An AI-assisted .NET MAUI food-label analysis sample that extracts label text, analyzes ingredients, stores scan history, and presents trends.
 
 ## Overview
 
-NutriLens helps people quickly understand what is in a packaged food product by scanning a label image and turning the extracted ingredients into an AI-generated nutrition assessment.
+Users capture or select a product image, review extracted ingredients, and receive a structured Azure OpenAI assessment personalized with saved dietary preferences.
 
-- **What the sample does:** lets the user capture or attach a product label, extract the text, analyze ingredients, and review a score, warnings, and nutrition guidance.
-- **Who it is for:** health-conscious shoppers, people managing dietary restrictions, and anyone who wants a faster way to review packaged food labels.
-- **What AI capability it uses:** Azure OpenAI for ingredient analysis and personalized insight generation.
-- **What outcome the user gets:** a clear, actionable summary of product risk, ingredient concerns, and practical recommendations based on the user's profile and saved scan history.
+## AI Capabilities
+
+- Food-label image text extraction.
+- Structured ingredient and nutrition analysis.
+- Profile-aware recommendation generation.
+- Uncached fallback text for transient daily-insight failures.
 
 ## Key Features
 
-- Image-based food-label capture and ingredient extraction
-- AI-generated ingredient risk summary with product score
-- Personalized insights based on allergies, dietary goals, and health flags
-- Scan history, trends, and recent results for comparison over time
+- Capture or select a label image.
+- Review extracted text and ingredient items.
+- View score, category, confidence, allergens, additives, and nutrition.
+- Save scan history locally.
+- View trends and profile-driven insights.
+- Open predefined sample-product analyses.
 
-## AI Flow
+## Application Workflow
 
-1. User captures a food-label image or selects an existing image.
-2. The app extracts text from the label and prepares the user's dietary profile and scan context.
-3. Azure OpenAI processes the prompt and returns an ingredient analysis response.
-4. The app interprets the response into score, warnings, and nutrition details.
-5. The result is rendered in the review and analysis UI.
-6. If the AI response is unavailable, the app falls back to local sample behavior or cached history where applicable.
+1. `ScanIngredientsViewModel` captures or selects an image.
+2. `IngredientImageExtractionService` requests text extraction from Azure OpenAI.
+3. `ReviewIngredientsViewModel` presents extracted text and ingredient items.
+4. `AzureOpenAIIngredientService` combines reviewed text with `UserDietaryPreference`.
+5. The result is rendered by `AnalyzeIngredientsResultPage`.
+6. `JsonScanHistoryStore` stores the scan.
+7. History and trends read combined saved and sample scans.
 
-## Controls Used
+## AI Workflow
 
-- **SfListView** : displays recent scans, history, and frequent ingredients.
-- **SfCharts** : visualizes health-score trends and summary data.
-- **SfGauges** / **SfProgressBar** : shows score and progress-style status indicators.
-- **SfButtons** : supports scan, save, and navigation actions.
-- **SfPopup** : provides in-app dialogs for editing or reviewing ingredient content.
+```text
+Label Image
+    ↓
+Azure OpenAI Image Extraction
+    ↓
+Reviewed Ingredients and Profile
+    ↓
+Azure OpenAI Structured Analysis
+    ↓
+IngredientAnalysisResult
+    ↓
+Result, History, and Trends
+```
 
-## Architecture
+## AI Architecture
 
-NutriLens follows an MVVM-based structure with separate pages, view models, services, and models.
+- **Views:** Dashboard, scan, review, result, history, trends, and profile.
+- **ViewModels:** Five page view models plus the dashboard view model.
+- **Services:** Image extraction, ingredient analysis, chat insights, and persistence.
+- **Models:** Ingredient, nutrition, profile, history, trend, and cache data.
+- **Sample data:** `SampleIngredientAnalysisService` provides static demo products.
 
-- **View / Page** : presents the dashboard, scan flow, review screen, result view, profile, and trends pages.
-- **ViewModel** : coordinates UI state, user actions, and AI requests.
-- **AI service** : sends prompts to Azure OpenAI and returns structured analysis responses.
-- **Models** : represent ingredient analysis, user preferences, and scan history data.
-- **Supporting UI components** : Syncfusion controls render lists, charts, progress, popups, and navigation elements.
+## Syncfusion Controls Used
+
+- `SfListView`
+- `SfCartesianChart`
+- `SfRadialGauge`
+- `SfProgressBar`
+- `SfButton`
+- `SfPopup`
 
 ## Prerequisites
 
-- .NET SDK 10.0
-- .NET MAUI workload
-- Visual Studio 2022 17.12+ or a compatible .NET MAUI development environment
-- Syncfusion .NET MAUI packages and a valid Syncfusion license
-- Azure OpenAI resource, deployment, and API credentials
+- .NET 10 SDK.
+- .NET MAUI workloads for target platforms.
+- Syncfusion MAUI packages referenced by `NutriLens.csproj`.
+- Camera or file-picker support.
+- Azure OpenAI credentials for live extraction and analysis.
 
-## AI Configuration
+## Configuration
 
-NutriLens is configured to use Azure OpenAI for label analysis and daily insights. The app expects an Azure OpenAI endpoint, deployment name, and API key to be supplied through the sample configuration or environment variables.
+### AI Configuration
 
-### Default Behavior
+`AzureOpenAIConfig` reads:
 
-- **Primary mode:** real cloud AI service
-- **Fallback behavior:** if AI configuration is missing or unavailable, the sample can continue with local cached content or sample data where applicable
-
-### Environment Variables / Secrets
-
-| Variable | Required | Description |
+| Variable | Required | Purpose |
 | --- | --- | --- |
-| `NUTRILENS_AZURE_OPENAI_ENDPOINT` | yes | Azure OpenAI resource endpoint |
-| `NUTRILENS_AZURE_OPENAI_DEPLOYMENT` | yes | Deployed chat model name |
-| `NUTRILENS_AZURE_OPENAI_API_KEY` | yes | Azure OpenAI API key |
-| `NUTRILENS_AZURE_OPENAI_TIMEOUT_SECONDS` | no | Optional request timeout |
+| `NUTRILENS_AZURE_OPENAI_ENDPOINT` | Live AI | Azure OpenAI endpoint |
+| `NUTRILENS_AZURE_OPENAI_DEPLOYMENT` | Live AI | Deployment name |
+| `NUTRILENS_AZURE_OPENAI_API_KEY` | Live AI | API key |
 
-**Notes**
+The class requires an absolute HTTPS endpoint. Placeholder constants in source are not live credentials.
 
-- Do not commit keys to source control.
-- Use environment variables, user secrets, or secure storage.
-- If configuration is missing, the app should fall back to local sample behavior or cached data when possible.
+## Getting Started
 
-## Run
+Run from `Use Case Samples/NutriLens`:
 
-```bash
-dotnet build -t:Run -f net10.0-windows10.0.19041.0
+```sh
+dotnet restore NutriLens/NutriLens.csproj
+
+dotnet build NutriLens/NutriLens.csproj -t:Run -f net10.0-android
+dotnet build NutriLens/NutriLens.csproj -t:Run -f net10.0-ios
+dotnet build NutriLens/NutriLens.csproj -t:Run -f net10.0-maccatalyst
+dotnet build NutriLens/NutriLens.csproj -t:Run -f net10.0-windows10.0.19041.0
 ```
-
-If you want to target another supported platform, use the matching framework name for that platform in the same command.
-
-## Output
-<img width="424" height="836" alt="NutriLens" src="https://github.com/user-attachments/assets/4ad199c0-dab4-4d01-b4f2-d7b57f962002" />
 
 ## Project Structure
 
-- `Views/` : UI pages and layouts
-- `ViewModels/` : presentation logic
-- `Models/` : data structures
-- `Services/` : AI and helper services
-- `Resources/` : styles, images, and assets
+```text
+NutriLens/
+├── AIService/
+├── Helpers/
+├── Models/
+├── Platforms/
+├── Resources/
+├── Services/
+├── ViewModels/
+├── Views/
+├── App.xaml
+├── MainPage.xaml
+└── MauiProgram.cs
+```
 
 ## Troubleshooting
 
-### Issue 1: Missing AI configuration
-Cause: Required environment variables or secrets are not set.
-Fix: Add the required configuration values and restart the app.
+- **Configuration exception:** Set endpoint, deployment, and API-key variables.
+- **Extraction fails:** Verify image quality and vision-capable deployment.
+- **Build fails:** Verify .NET 10 SDK and target workloads.
+- **Fallback insight appears:** The live daily-insight request failed; the app retries later.
 
-### Issue 2: Build or workload errors
-Cause: Missing SDK, workload, or incompatible package version.
-Fix: Verify the required .NET version and install the needed MAUI workload.
+## Responsible AI Considerations
 
-### Issue 3: AI response is unexpected
-Cause: Prompt, input, or service configuration may be incomplete.
-Fix: Check the prompt/context being sent and confirm the AI settings.
+- AI results may be incomplete or inaccurate.
+- Do not use results as medical or allergy guidance.
+- Images and extracted text are sent to Azure OpenAI in live mode.
+- Verify ingredient findings against the physical package.
 
-## Security and Privacy Notes
+## Related Documentation
 
-- Do not hard-code API keys.
-- Avoid sending unnecessary sensitive data to the AI service.
-- Minimize prompt content to only what is needed.
-- Prefer secure storage for credentials.
-- Review any external API calls for data exposure.
+- [.NET MAUI Documentation](https://learn.microsoft.com/dotnet/maui/)
+- [Azure OpenAI Documentation](https://learn.microsoft.com/azure/ai-services/openai/)
+- [Syncfusion .NET MAUI Controls](https://help.syncfusion.com/maui/introduction/overview)
 
 ## Supported Platforms
 
 - Android
 - iOS
+- macOS (Mac Catalyst)
 - Windows
-- macOS
 
 ## License
 
-Add the repository license or vendor disclaimer here.
+Syncfusion controls require a valid Syncfusion license for production use.

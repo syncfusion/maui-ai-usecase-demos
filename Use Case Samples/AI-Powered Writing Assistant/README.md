@@ -1,110 +1,140 @@
-# Build an AI Powered RichTextEditor in .NET MAUI with Syncfusion AI AssistView
+# AI-Powered Writing Assistant
 
-This repository demonstrates how to build an AI‑assisted writing experience in .NET MAUI by integrating Syncfusion’s RichTextEditor with the AI AssistView component. It showcases paraphrasing, tone adjustments, grammar checks, elaboration, and shortening powered by an Azure OpenAI backend.
+![AI-Powered Writing Assistant demo](AIPoweredWritingAssistant.gif)
 
-## Key highlights
+A .NET MAUI rich-text writing sample that combines Syncfusion `RichTextEditor` and `AIAssistView` with Azure OpenAI.
 
-* Seamless RichTextEditor + AI AssistView integration
-* Interactive suggestions with custom header template
-* Platform‑aware UX: inline on Windows, dedicated page on Android/iOS
-* Extensible, MVVM‑friendly architecture
+## Overview
 
-## Features
+The app provides paraphrasing, grammar checking, elaboration, and shortening actions for rich-text editor content. On Android and iOS it opens the assistant on a dedicated page; Windows and Mac Catalyst use an inline assistant surface.
 
-This sample application showcases an AI-powered writing assistant with the following capabilities:
+## AI Capabilities
 
-* Paraphraser – Rewrite content while preserving meaning with tone options:
-    * Humanize (conversational)
-    * Professional (business tone)
-    * Simple (easy to understand)
-    * Academic (scholarly style)
-* Grammar Checker – Detect and correct grammatical errors.
-* Elaborate – Expand content with additional details and context.
-* Shorten – Condense text for concise communication.
-* Accept Flow – Apply AI-generated suggestions back to the editor.
+- Humanize, Professional, Simple, and Academic paraphrasing.
+- Grammar and spelling correction.
+- Text elaboration and shortening.
+- Applying generated text back to the rich-text editor.
 
-## Technologies Used
+## Key Features
 
-* .NET MAUI (net10.0) – Cross-platform framework for Android, iOS, macOS, and Windows.
-* Syncfusion RichTextEditor – Rich text editing control.
-* Syncfusion AI AssistView – AI-powered suggestion and interaction component.
-* Azure OpenAI Services – Backend AI processing.
+- Select a writing action from `SfComboBox`.
+- Review suggestions in `SfAIAssistView`.
+- Accept or ignore generated text.
+- Apply accepted text to `SfRichTextEditor`.
+
+## Application Workflow
+
+1. The user enters text in `SfRichTextEditor`.
+2. The user opens the assistant and selects a feature or tone.
+3. `AssistViewViewModel` strips HTML and creates an action-specific prompt.
+4. `AzureBaseService` sends the prompt through `IChatClient`.
+5. The response is displayed in `AIAssistView`.
+6. The user accepts the response and it is formatted and applied to the editor.
+
+## AI Workflow
+
+```text
+RichTextEditor Content
+    ↓
+AssistViewViewModel
+    ↓
+Action-Specific Prompt
+    ↓
+Azure OpenAI IChatClient
+    ↓
+AIAssistView
+    ↓
+RichTextEditor
+```
+
+## AI Architecture
+
+- **Views:** `MainPage` and `AssistViewPage`.
+- **ViewModels:** `AssistViewViewModel` and `ComboBoxViewModel`.
+- **Services:** `IAzureAIService` and `AzureBaseService`.
+- **Helper:** `ServiceHelper` resolves the registered AI service for XAML-created pages.
+
+## Syncfusion Controls Used
+
+- `SfRichTextEditor`
+- `SfAIAssistView`
+- `SfComboBox`
 
 ## Prerequisites
 
-* .NET SDK compatible with .NET MAUI (net10.0 or later)
-* Visual Studio 2022 with .NET MAUI workload installed.
-* Azure OpenAI account with:
-    * API endpoint
-    * API key
-    * Deployment/model name
-Note: Syncfusion components may require a license key. 
+- .NET 10 SDK.
+- .NET MAUI workloads for target platforms.
+- Syncfusion packages referenced by `AIPoweredWritingAssistant.csproj`.
+- Valid Azure OpenAI configuration.
 
-## Quick Install
+## Configuration
 
-**Clone:**
-```bash
-git clone https://github.com/syncfusion/maui-ai-usecase-demos
-cd AIPoweredWritingAssistant
-```
+### AI Configuration
 
-**Configure Azure OpenAI credentials** in `Services/AzureBaseService.cs`:
+Live credentials are constants in `Services/AzureBaseService.cs`:
+
 ```csharp
-private const string endpoint      = "YOUR_AZURE_OPENAI_ENDPOINT";
-private const string deploymentName = "YOUR_DEPLOYMENT_NAME";
-private const string key           = "YOUR_API_KEY";
+private const string endpoint = "END_POINT";
+internal const string deploymentName = "DEPLOYMENT_NAME";
+internal const string imageDeploymentName = "IMAGE_MODEL_NAME";
+private const string key = "KEY";
 ```
 
-**Register Syncfusion license** in `MauiProgram.cs`:
-```csharp
-Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("YOUR_LICENSE_KEY");
+Replace the constants with a valid endpoint, deployment name, and API key before live use. The sample does not read Azure credentials from environment variables or secure storage.
+
+## Getting Started
+
+Run from `Use Case Samples/AI-Powered Writing Assistant/Sample/AIPoweredWritingAssistant`:
+
+```sh
+dotnet restore AIPoweredWritingAssistant.csproj
+
+dotnet build AIPoweredWritingAssistant.csproj -t:Run -f net10.0-android
+dotnet build AIPoweredWritingAssistant.csproj -t:Run -f net10.0-ios
+dotnet build AIPoweredWritingAssistant.csproj -t:Run -f net10.0-maccatalyst
+dotnet build AIPoweredWritingAssistant.csproj -t:Run -f net10.0-windows10.0.19041.0
 ```
 
-##  How It Works
+## Project Structure
 
-### Navigation Flow
-
-* Windows: AI AssistView appears inline when the "AI Assistant" button is clicked
-* Android/iOS: Navigates to a dedicated 
-AssistViewPage
- using Shell routing
-
-### Suggestion Processing
-
-* User selects a suggestion (e.g., "Paraphraser", "Grammar Checker").
-* OnSuggestionTapCommand in AssistViewViewModel
-handles the request.
-* For "Paraphraser", follow-up tone options are presented (Humanize, Professional, etc.).
-* AI service generates transformed content via Azure OpenAI.
-* Response is displayed with an "Accept" suggestion.
-* Accepting applies the content back to the RichTextEditor.
+```text
+AIPoweredWritingAssistant/
+├── Helper/
+├── Platforms/
+├── Resources/
+├── Services/
+├── ViewModel/
+├── Views/
+├── App.xaml
+├── AppShell.xaml
+└── MauiProgram.cs
+```
 
 ## Troubleshooting
 
-### No AI Response
+- **No AI response:** Replace placeholder credentials and verify Azure connectivity.
+- **Suggestions do not appear:** Verify the suggestion command bindings in `AssistViewViewModel`.
+- **Wrong platform layout:** Android/iOS use `AssistViewPage`; Windows/Mac Catalyst use inline UI.
 
-* Verify Azure OpenAI credentials (endpoint, key, deployment name).
-* Check network connectivity.
-* Ensure AzureAIService is properly instantiated and injected into AssistViewViewModel.
-* Review exception handling in GetResultsFromAI.
+## Responsible AI Considerations
 
-### Suggestions Not Appearing
+- Do not hard-code or commit production credentials.
+- Avoid sending confidential text to Azure OpenAI.
+- Review AI output before accepting it into published content.
 
-* Confirm Suggestions and AssistItems bindings in XAML
-* Verify SuggestionItemSelectedCommand is bound to 
-OnSuggestionTapCommand
-* Check that _suggestions collection is populated in the ViewModel constructor
+## Related Documentation
 
-### Path Too Long Exception
+- [Syncfusion RichTextEditor for .NET MAUI](https://help.syncfusion.com/maui/rich-text-editor/getting-started)
+- [Syncfusion AIAssistView for .NET MAUI](https://help.syncfusion.com/maui/aiassistview/getting-started)
+- [.NET MAUI Documentation](https://learn.microsoft.com/dotnet/maui/)
 
-* If you are facing a path too long exception when building this example project, close Visual Studio and rename the repository to a shorter name, then rebuild the project.
+## Supported Platforms
 
-## Screenshot
+- Android
+- iOS
+- macOS (Mac Catalyst)
+- Windows
 
-![AI Powered Writing Assistant in .NET MAUI](AIPoweredWritingAssistant.gif)
+## License
 
-## Documentation
-
-* [Syncfusion .NET MAUI RichTextEditor Documentation](https://help.syncfusion.com/maui/rich-text-editor/getting-started)
-* [Syncfusion .NET MAUI AI AssistView Documentation](https://help.syncfusion.com/maui/aiassistview/getting-started)
-* [Azure OpenAI Service Documentation](https://learn.microsoft.com/en-us/azure/ai-foundry/?view=foundry-classic)
+Syncfusion controls require a valid Syncfusion license for production use.

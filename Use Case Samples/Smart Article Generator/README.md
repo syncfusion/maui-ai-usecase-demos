@@ -1,84 +1,147 @@
-# Build a Source-Backed Article Workspace with .NET MAUI AI AssistView and Azure OpenAI 
+# Smart Article Generator
 
-A cross-platform .NET MAUI application that uses **Azure OpenAI** and the **Syncfusion AIAssistView** to generate structured, Markdown-formatted articles on any topic complete with auto-extracted resource links and a built-in Markdown viewer.
+![Smart Article Generator demo](SmartArticleGenerator.gif)
 
-## Highlights
+A .NET MAUI article workspace that combines Syncfusion `AIAssistView` and `MarkdownViewer`, Microsoft Semantic Kernel, and Azure OpenAI.
 
-- Generates full GitHub-flavored Markdown (GFM) articles via Azure OpenAI GPT-4.1
-- Renders Markdown content in-app using **Syncfusion MarkdownViewer**
-- Extracts and displays reference links automatically from AI responses
-- Manages a curated resource panel with add/delete/open-URL support
-- Resilient AI client with exponential-backoff retry and offline fallback content
-- MVVM architecture with dependency injection for clean, testable code
-- Works across **iOS, Android, Windows, and macOS**
+## Overview
+
+The app accepts a topic, generates article content, renders the response, extracts resource links, and maintains a resource collection for the workspace.
+
+## AI Capabilities
+
+- Azure OpenAI article generation.
+- Markdown and HTML response rendering.
+- Automatic resource-link extraction.
+- Regeneration of article responses.
+- Seeded offline responses for known prompts.
+
+## Key Features
+
+- Submit a custom topic or select a suggested topic.
+- Render articles in `SfMarkdownViewer`.
+- Extract `[Title](URL)` and HTML links.
+- Add, delete, search, and open resources.
+- Switch the mobile assist surface.
+
+## Application Workflow
+
+1. `ArticleViewModel` shows the greeting and suggested topics.
+2. The user submits a topic.
+3. `AzureAIService` sends the structured prompt through Semantic Kernel.
+4. The response is displayed in the article workspace.
+5. `ResponseParserService` extracts resources.
+6. `ResourcesService` updates the in-memory resource collection.
+
+## AI Workflow
+
+```text
+Topic
+    ↓
+ArticleViewModel
+    ↓
+AzureAIService
+    ↓
+Semantic Kernel / Azure OpenAI
+    ↓
+Article Content
+    ↓
+ResponseParserService
+    ↓
+Article + Resources
+```
+
+If credentials are placeholders or the live request fails, known prompts return seeded HTML; unknown prompts return a connection message.
+
+## AI Architecture
+
+- **View:** `MainPage`, `ChatView`, `ResourcePanel`, and `AddResourceDialog`.
+- **ViewModel:** `ArticleViewModel`.
+- **Services:** `AzureAIService`, `ResourcesService`, and `ResponseParserService`.
+- **Models:** `ResourceItem` and `ResponseSection`.
+
+## Syncfusion Controls Used
+
+- `SfAIAssistView`
+- `SfMarkdownViewer`
+- `SfPopup`
 
 ## Prerequisites
 
-- .NET 10.0+
-- Visual Studio 2022 (17.12+) or VS Code with .NET MAUI workload
-- Syncfusion .NET MAUI AIAssistView and MarkdownViewer (Community/Commercial)
-- Microsoft Semantic Kernel
-- An active **Azure OpenAI** resource with a deployed model (e.g., `gpt-4.1`)
+- .NET 10 SDK.
+- .NET MAUI workloads for target platforms.
+- Syncfusion AIAssistView and MarkdownViewer packages.
+- Microsoft Semantic Kernel.
+- Azure OpenAI credentials for live generation.
 
-## Quick Install
+## Configuration
 
-**Clone:**
-```bash
-git clone https://github.com/syncfusion/maui-ai-usecase-demos
-cd SmartArticleGenerator
-```
+### AI Configuration
 
-**Configure Azure OpenAI credentials** in `Services/AzureBaseService.cs`:
+Credential constants are in `Services/AzureBaseService.cs`:
+
 ```csharp
-private const string endpoint      = "YOUR_AZURE_OPENAI_ENDPOINT";
-private const string deploymentName = "YOUR_DEPLOYMENT_NAME";
-private const string key           = "YOUR_API_KEY";
+private const string endpoint = "END_POINT";
+internal const string deploymentName = "DEPLOYMENT_NAME";
+internal const string imageDeploymentName = "IMAGE_MODEL_NAME";
+private const string key = "KEY";
 ```
 
-**Register Syncfusion license** in `MauiProgram.cs`:
-```csharp
-Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("YOUR_LICENSE_KEY");
+Replace the placeholders with valid Azure OpenAI values before live use. The sample has no environment-variable or secure-storage Azure configuration.
+
+## Getting Started
+
+Run from `Use Case Samples/Smart Article Generator/Sample/SmartArticleGenerator`:
+
+```sh
+dotnet restore SmartArticleGenerator.csproj
+
+dotnet build SmartArticleGenerator.csproj -t:Run -f net10.0-android
+dotnet build SmartArticleGenerator.csproj -t:Run -f net10.0-ios
+dotnet build SmartArticleGenerator.csproj -t:Run -f net10.0-maccatalyst
+dotnet build SmartArticleGenerator.csproj -t:Run -f net10.0-windows10.0.19041.0
 ```
 
-## Key Components (API)
+## Project Structure
 
-| Member | Description |
-|---|---|
-| `ArticleViewModel.AssistViewRequestCommand` | Handles AIAssistView submission; triggers AI article generation |
-| `ArticleViewModel.GetResult(inputQuery)` | Orchestrates the AI call, parses the response, and updates `HtmlContent` and `Resources` |
-| `ArticleViewModel.GetUserAIPrompt(userPrompt)` | Builds a structured GFM prompt with word-count and references guidelines |
-| `AzureAIService.GetResultsFromAI(userPrompt, aiPrompt, ct)` | Sends prompt to Azure OpenAI with up to 3 exponential-backoff retries; falls back to offline data |
-| `ResponseParserService.ExtractResourcesFromResponse(content, query)` | Parses Markdown `[Title](URL)` and HTML `<a href>` links into `ResourceItem` list |
-| `AzureBaseService.ValidateCredential()` | Validates endpoint/key format and tests a live call on startup |
-
-## Why Use This
-
-- **Productivity:** Generate structured, 2000–4000-word articles on any topic in seconds
-- **Resilience:** Automatic retry with exponential backoff; graceful offline fallback prevents blank screens
-- **Clean Architecture:** Full MVVM with DI makes every layer independently testable
-- **Rich UI:** Native Markdown rendering on all platforms without a WebView dependency
-- **Extensibility:** Swap the AI backend or add new resource providers with minimal changes
-
-## Screenshot
-
-![Smart article generator in .NET MAUI ImageEditor](SmartArticleGenerator.gif)
-
-## Resources
-
-- Syncfusion AIAssistView docs: https://help.syncfusion.com/maui/aiassistview/getting-started
-- Syncfusion MarkdownViewer docs: https://help.syncfusion.com/maui/markdownviewer/getting-started
-- Microsoft Semantic Kernel: https://learn.microsoft.com/semantic-kernel/overview/
-- Azure OpenAI Service: https://learn.microsoft.com/azure/ai-services/openai/overview
-- .NET MAUI: https://dotnet.microsoft.com/apps/maui
-
-## Support
-
-For current Syncfusion customers, the newest version of Essential Studio is available from the [license and downloads page](https://www.syncfusion.com/account/downloads). If you are not yet a customer, you can try our [30-day free trial](https://www.syncfusion.com/downloads/maui) to check out these new features.
-
-For questions, you can contact us through our [support forums](https://www.syncfusion.com/forums), [feedback portal](https://www.syncfusion.com/feedback/maui), or [support portal](https://support.syncfusion.com). We are always happy to assist you!
+```text
+SmartArticleGenerator/
+├── Converters/
+├── Models/
+├── Platforms/
+├── Resources/
+├── Services/
+├── ViewModels/
+├── Views/
+├── App.xaml
+└── MauiProgram.cs
+```
 
 ## Troubleshooting
 
-**Path Too Long Exception**
+- **Offline response appears:** Credential placeholders remain or Azure validation/live calls fail.
+- **No resources appear:** The response may not contain supported Markdown or HTML links.
+- **Build/package error:** Restore packages and verify target MAUI workloads.
 
-If you are facing a path too long exception when building this example project, close Visual Studio and rename the repository to a shorter name, then rebuild the project.
+## Responsible AI Considerations
+
+- Live prompts and topics are sent to Azure OpenAI.
+- Do not submit confidential research or user data.
+- Verify generated facts and extracted links before publication.
+
+## Related Documentation
+
+- [Syncfusion AIAssistView for .NET MAUI](https://help.syncfusion.com/maui/aiassistview/getting-started)
+- [Syncfusion MarkdownViewer for .NET MAUI](https://help.syncfusion.com/maui/markdownviewer/getting-started)
+- [Microsoft Semantic Kernel](https://learn.microsoft.com/semantic-kernel/overview/)
+
+## Supported Platforms
+
+- Android
+- iOS
+- macOS (Mac Catalyst)
+- Windows
+
+## License
+
+Syncfusion controls require a valid Syncfusion license for production use.

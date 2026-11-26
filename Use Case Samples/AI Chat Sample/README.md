@@ -1,180 +1,166 @@
 # AI Chat Sample
 
-## Sample Title
+![AI Chat Sample demo](AIChatSample.gif)
 
-**AI Chat Sample**  
-A customizable multi-agent AI chat experience that demonstrates agent creation, branding, and conversational AI interactions using .NET MAUI and Syncfusion controls.
-
----
+A .NET MAUI multi-agent chat sample built with Syncfusion controls. It demonstrates agent creation and configuration, chat navigation, follow-up suggestions, voice input, and switching between a local mock AI service and Azure OpenAI.
 
 ## Overview
 
-The AI Chat Sample showcases how to build a modern conversational AI application where users can configure and interact with multiple AI agents, each with its own identity, branding, and chat history.
+The sample presents a chat workspace with recent conversations, search, library, profile, and agent configuration areas. Agents have names, descriptions, instructions, colors, initials, and optional avatar images. Agent instructions are sent to Azure OpenAI as the system message for chat requests.
 
-The sample demonstrates how Syncfusion's AI-focused controls can be combined with Azure OpenAI or a mock AI service to deliver a rich cross-platform chat experience.
+## AI Capabilities
 
-### What the sample does
-
-- Provides a multi-agent AI chat interface.
-- Allows users to create, customize, and manage AI agents.
-- Supports agent avatars, branding, and chat sessions.
-- Displays AI responses using a modern chat experience.
-
-### Who it is for
-
-- .NET MAUI developers
-- Application architects
-- Developers evaluating Syncfusion AI UI components
-- Teams building conversational AI applications
-
-### What AI capability it uses
-
-- AI-powered conversational chat
-- Agent configuration and persona management
-- Context-aware response generation
-- Suggested follow-up interactions
-
-### What outcome the user gets
-
-- Interactive conversations with configurable AI agents
-- Consistent chat experience across platforms
-- Easy integration with Azure OpenAI
-- A reusable architecture for AI-powered assistant applications
-
----
+- Multi-agent conversational chat.
+- Per-agent system instructions.
+- Follow-up suggestions and contextual chat responses.
+- Agent creation and branding.
+- Local mock responses when Azure OpenAI is not configured.
 
 ## Key Features
 
-- Multi-agent chat experience with customizable personas
-- Agent branding, avatar, and logo customization
-- Follow-up suggestions and conversational workflows
-- Azure OpenAI integration with mock AI fallback support
+- Create and configure agents.
+- Start and switch between chat sessions.
+- Search conversations and browse the library.
+- Customize agent avatars and profile data.
+- Use voice input on supported platforms.
 
----
+## Application Workflow
 
-## AI Flow
+1. `MauiProgram` initializes in-memory agent, chat, and profile services.
+2. The user selects or creates an agent.
+3. The user enters a prompt or selects a suggested action.
+4. `AIMainLayoutViewModel`/chat view models add the request to the active session.
+5. `IAIService` sends the prompt through Azure OpenAI or `MockAIService`.
+6. The response is parsed into answer and follow-up suggestion data.
+7. The chat UI updates the active session and navigation state.
 
-1. User enters a prompt or selects a suggested action.
-2. The application gathers the active agent configuration and chat context.
-3. The AI service processes the request.
-4. The application receives and interprets the AI response.
-5. The response is displayed within the chat interface.
-6. If AI configuration is unavailable or invalid, the application falls back to the mock AI service.
-
----
-
-## Controls Used
-
-- `SfAIAssistView` - Provides the conversational AI chat experience.
-- `SfListView` - Displays agent lists and navigation content.
-- `SfExpander` - Organizes collapsible sections.
-- `SfPopup` - Hosts avatar and branding editors.
-- `SfChipGroup` - Switches configuration modes.
-- `SfAvatarView` - Displays agent avatars.
-- `SfButton` - Executes primary actions.
-
----
-
-## Architecture
-
-- View / Page
-- ViewModel
-- AI Service
-- Models
-- Supporting UI Components
-
-### Data Flow
+## AI Workflow
 
 ```text
-User Input
-     ↓
- ViewModel
-     ↓
-  AI Service
-     ↓
-AI Response
-     ↓
- Syncfusion UI
+User Prompt
+    ↓
+Active Agent Configuration
+    ↓
+IAIService
+    ↓
+AzureOpenAIService or MockAIService
+    ↓
+ContextSuggestionResponse
+    ↓
+Chat UI and Follow-up Suggestions
 ```
 
----
+## AI Architecture
+
+- **Views:** `Views/` contains chat, agent, library, profile, search, and navigation pages.
+- **ViewModels:** `ViewModel/` contains chat layout, agent configuration, suggestions, and library logic.
+- **Models:** `Models/` contains agent, chat session, navigation, profile, and library data.
+- **Services:** `Services/` contains in-memory agent, chat, and helper services.
+- **AI:** `AIService/` contains `IAIService`, Azure and mock implementations, and response data.
+
+Data is kept in memory. Restarting the app resets agents, profiles, and chat sessions.
+
+## Syncfusion Controls Used
+
+- `SfAIAssistView` for chat interactions.
+- `SfListView` for agent and navigation collections.
+- `SfExpander` for configuration sections.
+- `SfPopup` for branding and editor dialogs.
+- `SfChipGroup` for configuration selections.
+- `SfAvatarView` for agent avatars.
+- `SfButton` for actions.
 
 ## Prerequisites
 
-- .NET 10.0 SDK
-- MAUI workload
-- Visual Studio 2026 or later
-- Syncfusion MAUI packages
-- Optional Azure OpenAI account
+- .NET 10 SDK.
+- A .NET MAUI workload for the target platform.
+- The Syncfusion and Azure NuGet packages referenced by `AIChatSample.csproj`.
+- Azure OpenAI credentials only for live AI responses.
 
----
+## Configuration
 
-## AI Configuration
+### AI Configuration
 
-### Default Behavior
+Azure OpenAI is selected only when all required values are valid HTTPS environment variables. Otherwise `MockAIService` is registered.
 
-- Mock AI Service (default)
-- Azure OpenAI Service (optional)
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `AZURE_OPENAI_ENDPOINT` | Azure mode | HTTPS Azure OpenAI endpoint |
+| `AZURE_OPENAI_KEY` | Azure mode | Azure OpenAI API key |
+| `AZURE_OPENAI_DEPLOYMENT` | Azure mode | Chat deployment name |
+| `AZURE_OPENAI_TIMEOUT_SECONDS` | No | Request timeout; defaults to 100 seconds |
 
-### Environment Variables / Secrets
+Do not commit API keys to source control.
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| AZURE_OPENAI_ENDPOINT | Yes | Azure OpenAI endpoint URL |
-| AZURE_OPENAI_KEY | Yes | Azure OpenAI API key |
-| AZURE_OPENAI_DEPLOYMENT | Yes | Azure OpenAI deployment name |
-| AZURE_OPENAI_TIMEOUT_SECONDS | Optional | Optional timeout |
+### Supported Target Frameworks
 
-### Notes
+- `net10.0-android`
+- `net10.0-ios`
+- `net10.0-maccatalyst`
+- `net10.0-windows10.0.19041.0` on Windows
 
-- Do not commit API keys to source control.
-- Use environment variables or secure storage.
-- Missing configuration falls back to MockAIService.
+## Getting Started
 
----
+Run from `Use Case Samples/AI Chat Sample/AIChatSample`:
 
-## Run
+```sh
+dotnet restore AIChatSample/AIChatSample.csproj
 
-### Android
-
-```bash
-dotnet build AIChatSample.slnx -t:Run -f net10.0-android
+dotnet build AIChatSample/AIChatSample.csproj -t:Run -f net10.0-android
+dotnet build AIChatSample/AIChatSample.csproj -t:Run -f net10.0-ios
+dotnet build AIChatSample/AIChatSample.csproj -t:Run -f net10.0-maccatalyst
+dotnet build AIChatSample/AIChatSample.csproj -t:Run -f net10.0-windows10.0.19041.0
 ```
 
-### Windows
-
-```bash
-dotnet build AIChatSample.slnx -t:Run -f net10.0-windows10.0.19041.0
-```
-
----
-
-## Output
-
-![.NET MAUI AI Chat Sample demo.](AIChatSample.gif)
-
----
+Set the Azure environment variables before starting the app to use live Azure responses.
 
 ## Project Structure
 
 ```text
-Views/
-ViewModels/
-Models/
-Services/
-Resources/
+AIChatSample/
+└── AIChatSample/
+    ├── AIService/
+    ├── Controls/
+    ├── Converters/
+    ├── Models/
+    ├── Platforms/
+    ├── Resources/
+    ├── Services/
+    ├── Styles/
+    ├── Themes/
+    ├── ViewModel/
+    ├── Views/
+    ├── App.xaml
+    ├── AppShell.xaml
+    └── MauiProgram.cs
 ```
-
-- `Views/` - UI pages and layouts
-- `ViewModels/` - Presentation logic
-- `Models/` - Data structures
-- `Services/` - AI services
-- `Resources/` - Styles and assets
-
----
 
 ## Troubleshooting
 
-### Path too long exception
+- **Mock service is used:** Verify the endpoint, key, and deployment environment variables.
+- **Azure endpoint is rejected:** The endpoint must be an absolute HTTPS URL.
+- **Chat state resets:** Agent and chat state is intentionally in memory.
+- **Path Too Long on Windows:** Use a shorter repository path.
 
-If you encounter a "Path Too Long" exception while building the project, close Visual Studio, rename the repository folder to a shorter name, and rebuild the project.
+## Responsible AI Considerations
+
+- Agent instructions and user prompts are sent to Azure OpenAI in live mode.
+- Do not include sensitive or confidential information in prompts.
+- Review Azure OpenAI deployment and data-handling settings for production use.
+
+## Related Documentation
+
+- [Syncfusion AIAssistView for .NET MAUI](https://help.syncfusion.com/maui/aiassistview/getting-started)
+- [.NET MAUI Documentation](https://learn.microsoft.com/dotnet/maui/)
+- [Azure OpenAI Documentation](https://learn.microsoft.com/azure/ai-services/openai/)
+
+## Supported Platforms
+
+- Android
+- iOS
+- macOS (Mac Catalyst)
+- Windows
+
+## License
+
+This sample is provided for demonstration purposes. Syncfusion controls require a valid Syncfusion license for production use.
