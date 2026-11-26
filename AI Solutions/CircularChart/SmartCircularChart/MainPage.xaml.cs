@@ -7,10 +7,10 @@ namespace SmartCircularChart
     {
         private readonly CircularChartViewModel viewModel;
 
-        public MainPage()
+        public MainPage(CircularChartViewModel viewModel)
         {
             InitializeComponent();
-            viewModel = new CircularChartViewModel(new AzureAIService());
+            this.viewModel = viewModel;
             BindingContext = viewModel;
             BusyOverlay.IsVisible = false;
         }
