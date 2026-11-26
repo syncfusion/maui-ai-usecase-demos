@@ -14,12 +14,12 @@ namespace SmartArticleGenerator
         /// <summary>
         /// The EndPoint
         /// </summary>
-        private const string endpoint = "END_POINT";
+        private static readonly string endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? string.Empty;
 
         /// <summary>
         /// The Deployment name
         /// </summary>
-        internal const string deploymentName = "DEPLOYMENT_NAME";
+        internal static readonly string deploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") ?? string.Empty;
 
         /// <summary>
         /// The Image Deployment name
@@ -29,7 +29,7 @@ namespace SmartArticleGenerator
         /// <summary>
         /// The API key
         /// </summary>
-        private const string key = "KEY";
+        private static readonly string key = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY") ?? string.Empty;
 
         /// <summary>
         /// The chat completion service
