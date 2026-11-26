@@ -26,7 +26,7 @@ namespace SmartCircularChart
                 throw new InvalidOperationException("Azure OpenAI endpoint is not a valid absolute URL, e.g. https://<resource-name>.openai.azure.com/");
             }
 
-            return new Uri($"{endpointUri.GetLeftPart(UriPartial.Authority)}/openai/deployments/{DeploymentName}/chat/completions?api-version={ApiVersion}");
+            return new Uri($"{endpointUri.GetLeftPart(UriPartial.Authority)}/openai/deployments/{DeploymentName.Trim()}/chat/completions?api-version={ApiVersion}");
         }
 
         protected const string SystemPrompt =
@@ -88,7 +88,7 @@ namespace SmartCircularChart
             {
                 Content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json")
             };
-            request.Headers.TryAddWithoutValidation("api-key", ApiKey);
+            request.Headers.TryAddWithoutValidation("api-key", ApiKey.Trim());
 
             HttpResponseMessage response;
             try
@@ -105,7 +105,7 @@ namespace SmartCircularChart
                 var body = await response.Content.ReadAsStringAsync();
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new InvalidOperationException($"Azure OpenAI request failed: HTTP {(int)response.StatusCode} ({response.ReasonPhrase}): {body}");
+                    throw new InvalidOperationException($"Azure OpenAI request failed: HTTP {(int)response.StatusCode} ({response.ReasonPhrase}) from {request.RequestUri!.Host}, deployment '{DeploymentName}': {body}");
                 }
 
                 using var document = JsonDocument.Parse(body);
