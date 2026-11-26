@@ -1,6 +1,6 @@
 # LLM Routing
 
-![LLM Routing demo](LLM_Routing/Resources/Images/LLM-Routing.gif)
+![LLM Routing demo](LLMRoutingDemo.gif)
 
 A .NET MAUI chat sample that uses `gpt-4.1-nano` to classify query complexity, then routes the request to `gpt-4.1-nano`, `gpt-4.1-mini`, or `gpt-5.6-luna`.
 

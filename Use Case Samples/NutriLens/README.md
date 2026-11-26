@@ -1,5 +1,7 @@
 # NutriLens
 
+![NutriLens Demo](NutriLens.gif)
+
 An AI-assisted .NET MAUI food-label analysis sample that extracts label text, analyzes ingredients, stores scan history, and presents trends.
 
 ## Overview

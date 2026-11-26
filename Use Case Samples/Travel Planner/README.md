@@ -1,6 +1,6 @@
 # Travel Planner
 
-![Travel Planner demo](TravelPlanner/Resources/Images/Travel-Planner.gif)
+![Travel Planner demo](TravelPlannerDemo.gif)
 
 A .NET MAUI travel-planning sample that collects trip details in a conversational interface, requests structured Azure OpenAI recommendations, and displays cards and map pins.
 

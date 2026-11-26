@@ -1,5 +1,7 @@
 # Smart Daily Decision Companion
 
+![Smart Daily Decision Companion Demo](SmartDailyDecisionDemo.gif)
+
 A responsive .NET MAUI task-prioritization sample that sends task context to Azure OpenAI and separates tasks into Do Today, Postpone, and Watch groups.
 
 ## Overview

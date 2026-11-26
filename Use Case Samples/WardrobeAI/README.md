@@ -1,6 +1,6 @@
 # WardrobeAI
 
-![WardrobeAI demo](WardrobeAI/Resources/Images/Wardrobe-AI.gif)
+![WardrobeAI demo](WardrobeDemo.gif)
 
 An AI-assisted .NET MAUI wardrobe application that manages clothing, plans outfits, checks weather, compares the closet with a wardrobe essentials catalog, and provides smart shopping recommendations.
 
