@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:chart="clr-namespace:Syncfusion.Maui.Toolkit.Charts;assembly=Syncfusion.Maui.Toolkit"
+             xmlns:busy="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+             xmlns:views="clr-namespace:SmartCircularChart"
+             x:Class="SmartCircularChart.MainPage" Shell.NavBarIsVisible="False"
+             BackgroundColor="#F3F4F6">
+
+    <Grid RowDefinitions="Auto,*" Padding="20" RowSpacing="16">
+        <Border StrokeShape="RoundRectangle 20" WidthRequest="800" BackgroundColor="White" Stroke="Transparent" Padding="18">
+            <Border.Shadow>
+                <Shadow Brush="#15000000" Offset="0,4" Radius="12" Opacity="0.12" />
+            </Border.Shadow>
+            <VerticalStackLayout Spacing="10">
+                <Label Text="AI-Powered Circular Chart" FontSize="26" FontAttributes="Bold" TextColor="#111827" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <Entry x:Name="PromptEntry" Grid.Column="0" Placeholder="Try: Group by value under 25" ClearButtonVisibility="WhileEditing" Text="Group by value under 25" />
+                    <buttons:SfButton Grid.Column="1" Text="Update Chart" ImageSource="aibutton.png" ShowIcon="True" Clicked="OnGroupChartClicked" BackgroundColor="#2563EB" TextColor="White" Padding="0" />
+                </Grid>
+                <Label Text="{Binding StatusMessage}" FontSize="13" TextColor="#4B5563" LineBreakMode="WordWrap" />
+            </VerticalStackLayout>
+        </Border>
+
+        <Border Grid.Row="1" HorizontalOptions="Center" StrokeShape="RoundRectangle 20" BackgroundColor="White" Stroke="Transparent" Padding="22">
+            <Border.Shadow>
+                <Shadow Brush="#15000000" Offset="0,4" Radius="12" Opacity="0.12" />
+            </Border.Shadow>
+            <Grid Padding="0">
+                <chart:SfCircularChart x:Name="CircularChart" WidthRequest="750" BackgroundColor="Transparent">
+                    <chart:SfCircularChart.Title>
+                        <Label Text="Product Availability Overview by Category" HorizontalOptions="Center" FontSize="18" FontAttributes="Bold" TextColor="#111827" />
+                    </chart:SfCircularChart.Title>
+                    <chart:SfCircularChart.Legend>
+                        <views:LegendExt ToggleSeriesVisibility="True" Placement="{OnPlatform Default=Right, Android=Bottom, iOS=Bottom}">
+                            <views:LegendExt.ItemsLayout>
+                                <FlexLayout
+                                    WidthRequest="220"
+                                    HeightRequest="240"
+                                    Direction="Column"
+                                    Wrap="Wrap"
+                                    AlignItems="Start"
+                                    AlignContent="Start"
+                                    VerticalOptions="Start"
+                                    HorizontalOptions="Start" />
+                            </views:LegendExt.ItemsLayout>
+                        </views:LegendExt>
+                    </chart:SfCircularChart.Legend>
+                    <chart:SfCircularChart.Series>
+                        <chart:DoughnutSeries ItemsSource="{Binding ChartData}" XBindingPath="Category" YBindingPath="Value" ExplodeAll="True" PaletteBrushes="{Binding CustomBrushes}" Radius="0.82" InnerRadius="0.3" EnableTooltip="True" GroupMode="{Binding GroupMode}" GroupTo="{Binding GroupTo}">
+                            <chart:DoughnutSeries.DataLabelSettings>
+                                <chart:CircularDataLabelSettings LabelPosition="Outside" UseSeriesPalette="False" />
+                            </chart:DoughnutSeries.DataLabelSettings>
+                        </chart:DoughnutSeries>
+                    </chart:SfCircularChart.Series>
+                </chart:SfCircularChart>
+                <Grid x:Name="BusyOverlay" BackgroundColor="#66FFFFFF" IsVisible="False">
+                    <busy:SfBusyIndicator IsRunning="True" AnimationType="DoubleCircle" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</ContentPage>
