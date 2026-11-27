@@ -93,7 +93,7 @@
                             <Border BackgroundColor="White" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="10,8">
                                 <tabs:SfTabView IndicatorBackground="#1E5BFF" IndicatorPlacement="Bottom" IndicatorWidthMode="Fit" TabBarBackground="White" EnableRippleAnimation="False">
                                     <tabs:SfTabView.Items>
-                                        <tabs:SfTabItem Header="Active" BadgeText="1" FontSize="13" FontAttributes="Bold" TextColor="#1E5BFF">
+                                        <tabs:SfTabItem Header="Active" BadgeText="1" FontSize="13">
                                             <tabs:SfTabItem.BadgeSettings>
                                                 <core:BadgeSettings Type="None" Position="Right" Background="#E8F0FF" TextColor="#1E5BFF" FontSize="11" FontAttributes="Bold" CornerRadius="10"/>
                                             </tabs:SfTabItem.BadgeSettings>

@@ -235,7 +235,12 @@ public class DemoPage
         popupProfile = profile ?? ViewModel.SelectedProfile;
         qrContent = new QrPopupContent(popupProfile);
         qrContent.SetSheet(IsBottomSheetHost);
-        qrContent.ScannedRequested += (_, _) => qrPopup.Dismiss();
+        qrContent.ScannedRequested += (_, _) =>
+        {
+            if (popupProfile is { Status: ProfileStatus.ReadyToInstall } readyProfile)
+                ViewModel.Store.Activate(readyProfile);
+            qrPopup.Dismiss();
+        };
         qrContent.CloseRequested += (_, _) => qrPopup.Dismiss();
         qrPopup.ContentTemplate = new DataTemplate(() => qrContent!.Content);
         // On mobile the sheet always uses the stacked arrangement; the wide layout is
@@ -300,7 +305,7 @@ public class DemoPage
             "The sample top-up always uses the demo card ending in 4242. No real payment details are collected and no card is charged.",
             "OK");
     }
-    public void ActivateItemClicked(object? sender, EventArgs e) => ShowDemoPopup("Activate Profile · Demo", (sender as Element)?.BindingContext as EsimProfile);
+    public void ActivateItemClicked(object? sender, EventArgs e) => ShowDemoPopup("Install & Activate eSIM", (sender as Element)?.BindingContext as EsimProfile);
     public async void RenewItemClicked(object? sender, EventArgs e) => await ViewModel.RenewCommand.ExecuteAsync((sender as Element)?.BindingContext as EsimProfile);
     public void QrSelectedClicked(object? sender, EventArgs e) => ShowDemoPopup("Install & Activate eSIM", ViewModel.SelectedProfile);
     public void BuyPlanClicked(object? sender, EventArgs e)
