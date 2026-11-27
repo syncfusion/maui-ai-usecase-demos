@@ -34,7 +34,7 @@ public class AzureOpenAIIntentAnalyzer : AzureBaseService, IIntentAnalyzer
     public IntentAnalyzerMode Mode => IntentAnalyzerMode.AzureOpenAI;
 
     public string DisplayName =>
-        $"Azure OpenAI ({(_options.ModelName ?? _options.DeploymentName)})";
+        $"Azure OpenAI ({(_options.ModelName ?? AzureBaseService.DeploymentName)})";
 
     /// <summary>
     /// True when the credentials in <see cref="AzureBaseService"/>
@@ -102,7 +102,7 @@ public class AzureOpenAIIntentAnalyzer : AzureBaseService, IIntentAnalyzer
         ChatCompletion completion;
         try
         {
-            var chat = _client.GetChatClient(_options.DeploymentName);
+            var chat = _client.GetChatClient(AzureBaseService.DeploymentName);
             var messages = new List<ChatMessage>
             {
                 new SystemChatMessage(systemPrompt),
