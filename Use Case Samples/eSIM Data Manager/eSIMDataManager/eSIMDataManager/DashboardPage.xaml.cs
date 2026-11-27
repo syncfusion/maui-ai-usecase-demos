@@ -1,3 +1,4 @@
+using eSIMDataManager.Models;
 using eSIMDataManager.ViewModels;
 
 namespace eSIMDataManager;
@@ -11,11 +12,23 @@ public partial class DashboardPage : ContentPage
         InitializeComponent();
         popupActions = new DemoPage(viewModel);
         BindingContext = viewModel;
-        Content = new Grid { Children = { Content, popupActions.PopupView, popupActions.QrPopupView, popupActions.TopUpPopupView, popupActions.PurchasePopupView } };
-        SizeChanged += (_, _) =>
+        Content = new Grid
         {
-            popupActions.UpdateTopUpPopupWidth(Width, Height);
+            Children =
+            {
+                Content,
+                popupActions.PopupView,
+                popupActions.QrPopupView,
+                popupActions.TopUpPopupView,
+                popupActions.PurchasePopupView
+            }
         };
+        SizeChanged += OnPageSizeChanged;
+    }
+
+    private void OnPageSizeChanged(object? sender, EventArgs e)
+    {
+        popupActions.UpdateTopUpPopupWidth(Width, Height);
     }
 
     private void StoreClicked(object? sender, EventArgs e) => Shell.Current.GoToAsync("//store");

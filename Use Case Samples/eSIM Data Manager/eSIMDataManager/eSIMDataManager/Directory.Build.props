@@ -1,5 +1,0 @@
-<Project>
-  <PropertyGroup>
-    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\..\..\..\obj\eSIMDataManager\</BaseIntermediateOutputPath>
-  </PropertyGroup>
-</Project>

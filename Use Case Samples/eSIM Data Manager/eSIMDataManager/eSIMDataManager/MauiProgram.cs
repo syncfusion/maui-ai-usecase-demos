@@ -1,36 +1,44 @@
-using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Core.Hosting;
 using eSIMDataManager.Services;
 using eSIMDataManager.ViewModels;
 
-namespace eSIMDataManager
+namespace eSIMDataManager;
+
+public static class MauiProgram
 {
-    public static class MauiProgram
+    public static MauiApp CreateMauiApp()
     {
-        public static MauiApp CreateMauiApp()
-        {
-            var builder = MauiApp.CreateBuilder();
-            builder
-                .UseMauiApp<App>()
-                .ConfigureSyncfusionCore()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                    fonts.AddFont("Inter.ttf", "Inter");
-                    fonts.AddFont("MauiMaterialAssets.ttf", "MaterialAssets");
-                    fonts.AddFont("UiKitIcons.ttf", "UiKitIcons");
-                });
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>()
+            .ConfigureSyncfusionCore()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                fonts.AddFont("Inter.ttf", "Inter");
+                fonts.AddFont("MauiMaterialAssets.ttf", "MaterialAssets");
+                fonts.AddFont("UiKitIcons.ttf", "UiKitIcons");
+            });
 
-#if DEBUG
-    		builder.Logging.AddDebug();
-#endif
+        // Core singletons
+        builder.Services.AddSingleton<EsimStore>();
+        builder.Services.AddSingleton<IDialogService, DialogService>();
+        builder.Services.AddSingleton<INavigationService, NavigationService>();
 
-            builder.Services.AddSingleton<EsimStore>();
-            builder.Services.AddSingleton<MainViewModel>();
-            builder.Services.AddTransient<MainPage>();
+        // ViewModels
+        builder.Services.AddSingleton<TopUpViewModel>();
+        builder.Services.AddSingleton<DashboardViewModel>();
+        builder.Services.AddSingleton<ProfilesViewModel>();
+        builder.Services.AddSingleton<StoreViewModel>();
+        builder.Services.AddSingleton<MainViewModel>();
 
-            return builder.Build();
-        }
+        // Views and Shell
+        builder.Services.AddSingleton<AppShell>();
+        builder.Services.AddTransient<DashboardPage>();
+        builder.Services.AddTransient<ProfilesPage>();
+        builder.Services.AddTransient<StorePage>();
+
+        return builder.Build();
     }
 }

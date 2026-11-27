@@ -5,6 +5,8 @@ namespace eSIMDataManager.Services;
 
 public sealed class EsimStore
 {
+    private static int idCounter;
+
     public ObservableCollection<EsimProfile> Profiles { get; } = [];
     public IReadOnlyList<Plan> Plans { get; } =
     [
@@ -23,7 +25,7 @@ public sealed class EsimStore
     {
         var active = new EsimProfile
         {
-            Id = "demo-jp-active", ProfileName = "Japan 5G Explorer", Country = "Japan", Carrier = "SoftBank Crop", Network = NetworkType.FiveG,
+            Id = "demo-jp-active", ProfileName = "Japan 5G Explorer", Country = "Japan", Carrier = "SoftBank Corp.", Network = NetworkType.FiveG,
             Status = ProfileStatus.Active, Iccid = "DEMO-8931-0248", ActivationCode = "LPA:1$demo.carrier.example$SAMPLEJP001",
             AllocatedGb = 10, ConsumedGb = 6.8, ActivationDate = DateTime.Today.AddDays(-4), ExpiryDate = DateTime.Today.AddDays(6),
             DailyUsage = [new("Mon", .8), new("Tue", 1.1), new("Wed", .9), new("Thu", 1.4), new("Fri", 1.0), new("Sat", .9), new("Sun", .7)]
@@ -67,9 +69,10 @@ public sealed class EsimStore
 
     public EsimProfile Purchase(Plan plan)
     {
+        var nextId = Interlocked.Increment(ref idCounter);
         var profile = new EsimProfile
         {
-            Id = $"demo-{Profiles.Count + 1:D3}", ProfileName = $"{plan.Country} {plan.Network} Traveler", Country = plan.Country, Carrier = plan.Provider,
+            Id = $"demo-{nextId:D3}", ProfileName = $"{plan.Country} {plan.Network} Traveler", Country = plan.Country, Carrier = plan.Provider,
             Network = plan.Network, Status = ProfileStatus.ReadyToInstall, Iccid = $"DEMO-8931-{Profiles.Count + 250:D4}", ActivationCode = $"LPA:1$demo.carrier.example$SAMPLE{plan.Id.ToUpperInvariant().Replace('-', '0')}",
             AllocatedGb = plan.Type == PlanType.Unlimited ? 0 : plan.DataLimitGb, ConsumedGb = 0, ExpiryDate = DateTime.Today.AddDays(plan.ValidityDays)
         };
@@ -92,6 +95,19 @@ public sealed class EsimStore
     {
         if (profile.Status != ProfileStatus.Active) return false;
         profile.AllocatedGb += pack.DataGb;
+        Changed?.Invoke(this, EventArgs.Empty);
+        return true;
+    }
+
+    public bool Renew(EsimProfile profile)
+    {
+        profile.ConsumedGb = 0;
+        profile.ExpiryDate = DateTime.Today.AddDays(14);
+        if (profile.Status == ProfileStatus.Expired)
+        {
+            profile.Status = ProfileStatus.Active;
+            profile.ActivationDate = DateTime.Today;
+        }
         Changed?.Invoke(this, EventArgs.Empty);
         return true;
     }

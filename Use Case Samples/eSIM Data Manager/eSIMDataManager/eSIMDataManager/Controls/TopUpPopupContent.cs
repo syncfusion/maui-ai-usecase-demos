@@ -336,14 +336,6 @@ public sealed class TopUpPopupContent : IDisposable
     private View BuildHeader()
     {
         // The reference sheet shows a lightning bolt next to the title.
-        var boltIcon = new Label
-        {
-            Text = "\uE707",
-            FontFamily = "MaterialAssets",
-            FontSize = 20,
-            TextColor = Color.FromArgb(PrimaryColor),
-            VerticalOptions = LayoutOptions.Center
-        };
 
         var title = new Label
         {
@@ -356,7 +348,6 @@ public sealed class TopUpPopupContent : IDisposable
         };
 
         var heading = new HorizontalStackLayout { Spacing = 8, VerticalOptions = LayoutOptions.Center };
-        heading.Add(boltIcon);
         heading.Add(title);
 
         var left = new VerticalStackLayout { Spacing = 4 };

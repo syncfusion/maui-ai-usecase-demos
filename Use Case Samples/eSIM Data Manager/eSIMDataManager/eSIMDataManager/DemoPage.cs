@@ -224,7 +224,7 @@ public class DemoPage
             popupContent.Children.Add(new Label { Text = $"{plan.Country} · {plan.Provider} · {plan.DataLabel} · {plan.ValidityDays} days", TextColor = Color.FromArgb("#63748B") });
             popupContent.Children.Add(new Label { Text = $"Plan: ${plan.Price:0.00}  |  Illustrative tax: ${ViewModel.SelectedPlanTax:0.00}  |  Total: ${ViewModel.SelectedPlanTotal:0.00} USD", FontAttributes = FontAttributes.Bold });
             var confirm = new Syncfusion.Maui.Buttons.SfButton { Text = "Confirm demo purchase" };
-            confirm.Clicked += (_, _) => { ViewModel.Store.Purchase(plan); popup.Dismiss(); _ = AppNavigation.ToProfilesAsync(); };
+            confirm.Clicked += (_, _) => { ViewModel.Store.Purchase(plan); popup.Dismiss(); _ = Shell.Current?.GoToAsync("//profiles"); };
             popupContent.Children.Add(confirm);
             var cancel = new Syncfusion.Maui.Buttons.SfButton { Text = "Cancel" };
             cancel.Clicked += (_, _) => popup.Dismiss();
@@ -287,7 +287,7 @@ public class DemoPage
         var before = profile.RemainingGb;
         if (!ViewModel.ApplyTopUp()) return;
         CloseTopUp();
-        await Application.Current!.Windows[0].Page!.DisplayAlert(
+        await Application.Current!.Windows[0].Page!.DisplayAlertAsync(
             "Top-up added",
             $"{pack.DataLabel} was added to {profile.ProfileName}. Remaining data is now {profile.RemainingGb:0.#} GB (was {before:0.#} GB).\n\nDemo only — no payment was taken and no carrier was contacted.",
             "OK");
@@ -295,7 +295,7 @@ public class DemoPage
 
     private async void ChangePaymentRequested()
     {
-        await Application.Current!.Windows[0].Page!.DisplayAlert(
+        await Application.Current!.Windows[0].Page!.DisplayAlertAsync(
             "Demo payment method",
             "The sample top-up always uses the demo card ending in 4242. No real payment details are collected and no card is charged.",
             "OK");
@@ -336,17 +336,17 @@ public class DemoPage
         ViewModel.SelectedPlan = plan;
         var purchased = ViewModel.Store.Purchase(plan);
         ViewModel.SelectedProfile = purchased;
-        await Application.Current!.Windows[0].Page!.DisplayAlert(
+        await Application.Current!.Windows[0].Page!.DisplayAlertAsync(
             "Plan added",
             $"{plan.Country} · {plan.DataLabel} was added to your dashboard.\n\nDemo only — no payment was taken and no eSIM was provisioned.",
             "View profiles");
         if (ViewModel.ProfilesCount != before)
-            await AppNavigation.ToProfilesAsync();
+            if (Shell.Current != null) await Shell.Current.GoToAsync("//profiles");
     }
     public void DestinationClicked(object? sender, EventArgs e) { var text = sender switch { Syncfusion.Maui.Core.SfChip chip => chip.Text, Syncfusion.Maui.Buttons.SfButton button => button.Text, _ => null }; if (!string.IsNullOrWhiteSpace(text)) { var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries); ViewModel.SelectCountry(words.Length > 1 ? string.Join(' ', words.Skip(1)) : words[0]); } }
     public void FilterClicked(object? sender, EventArgs e) { if (sender is Syncfusion.Maui.Buttons.SfButton button && button.Text is not null) ViewModel.SelectCoverage(button.Text); }
-    public void NetworkFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) { if (e.AddedItems.FirstOrDefault() is string value) ViewModel.SetNetworkFilter(value); }
-    public void QuotaFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) { if (e.AddedItems.FirstOrDefault() is string value) ViewModel.SetQuotaFilter(value); }
-    public void DurationFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) { if (e.AddedItems.FirstOrDefault() is string value) ViewModel.SetDurationFilter(value); }
-    public void SortFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) { if (e.AddedItems.FirstOrDefault() is string value) ViewModel.SetSortFilter(value); }
+    public void NetworkFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) { if (e.AddedItems?.FirstOrDefault() is string value) ViewModel.SetNetworkFilter(value); }
+    public void QuotaFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) { if (e.AddedItems?.FirstOrDefault() is string value) ViewModel.SetQuotaFilter(value); }
+    public void DurationFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) { if (e.AddedItems?.FirstOrDefault() is string value) ViewModel.SetDurationFilter(value); }
+    public void SortFilterSelected(object? sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e) { if (e.AddedItems?.FirstOrDefault() is string value) ViewModel.SetSortFilter(value); }
 }

@@ -1,3 +1,5 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace eSIMDataManager.Models;
 
 public enum CoverageType { Local, Regional, Global }
@@ -39,21 +41,44 @@ public sealed record Plan(string Id, string Country, string Region, string Provi
     };
 }
 
-public sealed class EsimProfile
+public sealed partial class EsimProfile : ObservableObject
 {
     public required string Id { get; init; }
     public required string ProfileName { get; init; }
     public required string Country { get; init; }
     public required string Carrier { get; init; }
     public required NetworkType Network { get; init; }
-    public required ProfileStatus Status { get; set; }
+
+    [ObservableProperty]
+    private ProfileStatus status;
+
     public required string Iccid { get; init; }
     public required string ActivationCode { get; init; }
-    public required double AllocatedGb { get; set; }
-    public required double ConsumedGb { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(RemainingGb))]
+    [NotifyPropertyChangedFor(nameof(TotalGb))]
+    [NotifyPropertyChangedFor(nameof(UsagePercent))]
+    [NotifyPropertyChangedFor(nameof(UsageFraction))]
+    private double allocatedGb;
+
+    public double TotalGb => AllocatedGb;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(RemainingGb))]
+    [NotifyPropertyChangedFor(nameof(UsagePercent))]
+    [NotifyPropertyChangedFor(nameof(UsageFraction))]
+    private double consumedGb;
+
     public double RemainingGb => Math.Max(0, AllocatedGb - ConsumedGb);
-    public DateTime? ActivationDate { get; set; }
-    public DateTime ExpiryDate { get; set; }
+
+    [ObservableProperty]
+    private DateTime? activationDate;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DaysRemaining))]
+    private DateTime expiryDate;
+
     public int DaysRemaining => Math.Max(0, (ExpiryDate.Date - DateTime.Today).Days);
     public double UsagePercent => AllocatedGb <= 0 ? 0 : Math.Clamp(ConsumedGb / AllocatedGb * 100, 0, 100);
     public double UsageFraction => UsagePercent / 100;
@@ -67,5 +92,5 @@ public sealed record TopUpPack(double DataGb, decimal Price, int ExtensionDays, 
     public string DataLabel => $"{DataGb:0} GB";
     public string ExtensionLabel => $"+{ExtensionDays} Days extension";
     public string PriceText => $"${Price:0.00}";
-    public string PricePerGbText => $"${(decimal)Price / (decimal)DataGb:0.00}/GB";
+    public string PricePerGbText => $"${Price / (decimal)DataGb:0.00}/GB";
 }
