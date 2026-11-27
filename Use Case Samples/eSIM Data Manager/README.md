@@ -85,7 +85,9 @@ Other supported targets use the same flag with a different `-f` value:
 
 ## Output
 
-Add a screenshot or short GIF of each main surface so the README doubles as a visual index. Suggested shots:
+<Img src="eSIMDataManager\eSIMDataManager\Resources\Images\esimdatamanagement.gif"/>
+
+<br/>
 
 - Dashboard with the radial gauge and usage chart.
 - Profiles page with the Active tab populated.
