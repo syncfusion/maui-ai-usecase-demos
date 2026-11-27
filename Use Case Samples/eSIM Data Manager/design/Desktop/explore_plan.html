@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"secondary":"#00687a","surface-bright":"#f8f9ff","secondary-fixed-dim":"#4cd7f6","on-surface-variant":"#434656","on-error":"#ffffff","primary":"#0046cc","outline-variant":"#c3c5d9","tertiary":"#006141","surface-container":"#e5eeff","inverse-on-surface":"#eaf1ff","on-surface":"#0b1c30","surface":"#f8f9ff","tertiary-container":"#007c55","primary-fixed-dim":"#b6c4ff","on-secondary-fixed-variant":"#004e5c","on-tertiary-container":"#b4ffd7","on-secondary":"#ffffff","background":"#f8f9ff","error":"#ba1a1a","inverse-primary":"#b6c4ff","on-error-container":"#93000a","on-secondary-fixed":"#001f26","surface-container-low":"#eff4ff","on-background":"#0b1c30","surface-container-highest":"#d3e4fe","inverse-surface":"#213145","on-primary-container":"#ecedff","tertiary-fixed":"#6ffbbe","on-tertiary-fixed":"#002113","secondary-fixed":"#acedff","on-primary-fixed-variant":"#003baf","primary-container":"#0d5cff","on-tertiary-fixed-variant":"#005236","surface-tint":"#004fe4","on-primary":"#ffffff","surface-dim":"#cbdbf5","primary-fixed":"#dce1ff","tertiary-fixed-dim":"#4edea3","outline":"#737688","surface-container-high":"#dce9ff","secondary-container":"#57dffe","surface-container-lowest":"#ffffff","surface-variant":"#d3e4fe","on-secondary-container":"#006172","error-container":"#ffdad6","on-primary-fixed":"#00164e","on-tertiary":"#ffffff"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-xl":"2.5rem","gutter":"1.5rem","space-md":"1rem","margin":"2rem","space-xs":"0.25rem","space-lg":"1.5rem","gutter-mobile":"0.75rem","margin-mobile":"1rem","space-sm":"0.5rem"},fontFamily:{"body-lg":["Inter"],"headline-sm":["Plus Jakarta Sans"],"display-mobile":["Plus Jakarta Sans"],"telecom-mono":["JetBrains Mono"],"body-sm":["Inter"],"body-md":["Inter"],"label-sm":["Inter"],"data-metric":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-md":["Inter"],"headline-lg-mobile":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"display":["Plus Jakarta Sans"]},fontSize:{"body-lg":["16px",{lineHeight:"24px",letterSpacing:"-0.01em",fontWeight:"400"}],"headline-sm":["18px",{lineHeight:"24px",letterSpacing:"-0.01em",fontWeight:"600"}],"display-mobile":["32px",{lineHeight:"40px",letterSpacing:"-0.025em",fontWeight:"700"}],"telecom-mono":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"500"}],"body-sm":["12px",{lineHeight:"16px",letterSpacing:"0em",fontWeight:"400"}],"body-md":["14px",{lineHeight:"20px",letterSpacing:"-0.005em",fontWeight:"400"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.03em",fontWeight:"600"}],"data-metric":["28px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-lg":["32px",{lineHeight:"40px",letterSpacing:"-0.025em",fontWeight:"600"}],"label-md":["13px",{lineHeight:"16px",letterSpacing:"0.01em",fontWeight:"500"}],"headline-lg-mobile":["24px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"600"}],"headline-md":["22px",{lineHeight:"28px",letterSpacing:"-0.015em",fontWeight:"600"}],"display":["48px",{lineHeight:"56px",letterSpacing:"-0.03em",fontWeight:"700"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-margin flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><img alt="eSIM Data Manager Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WehuYywJ70KOzaLzq98K5dPfyEyU-UMQpEqTPYAXxc7j13V5FGIMlj15wLe9ps-H_MNOpp-g23OQfVQSikze5BsnyXKTWKf_zPnh2996MxlQRb2tJSjThpzvLAiCc_--JTb_aJg83s9v9UPdbSjTydQhFfbidfuop3f_oilOpQ6Owmi_IqWW5bRAW_ErHqpOH9ZYMIAjP9b55Os2KMmUmDKd1Tm1VCw6KGYc6umrgZFw"/><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">eSIM Data Manager</span></div><div class="h-5 w-px bg-surface-container-high hidden md:block"></div><nav class="hidden md:flex items-center gap-space-xs p-1 bg-surface-container-low rounded-xl" data-active-classes="bg-surface-container-high text-primary font-semibold"><a class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md" data-path="dashboard" href="#">Dashboard</a><a class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md" data-path="my-esims" href="#">My eSIMs</a><a class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md" data-path="store" href="#">Store</a><a class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md" data-path="orders" href="#">Orders</a></nav></div><div class="flex items-center gap-space-md"><div class="relative hidden lg:flex items-center"><span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px] pointer-events-none">search</span><input class="w-64 pl-9 pr-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface placeholder:text-on-surface-variant font-body-sm text-body-sm focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search countries, ICCID, orders..." type="text"/></div><button aria-label="Search" class="lg:hidden p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">search</span></button><button aria-label="Notifications" class="relative p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface-container-lowest"></span></button><div class="h-5 w-px bg-surface-container-high"></div><div class="flex items-center gap-space-sm pl-space-xs"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3I3exIbi1Oe_eN6KLYsc0XY6T9RIDU8ddEylCsp15d7VsbVJDTlSqDDvTBY9g6GQiQ-rtvBrMgM-Yx0sv3XB7Xg-1RwEsCytwC1bQ-J9kYLbEfhQB48v6ccJ0ic_njgQ2U15SGhMdohFd1IB-GeiK6jl7huCS5r5H1RbVdgHiLV_osHUhd_WBNfSdgkndoSDXHauz78HXfTQRwhsNx5CBNXaI24g5QQFpQDc5MYqk"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-tertiary-container ring-2 ring-surface-container-lowest" title="Active Telecom Signal"></span></div><div class="hidden xl:flex flex-col text-left"><span class="font-label-md text-label-md text-on-surface leading-tight">Global Traveler</span><span class="font-telecom-mono text-telecom-mono text-tertiary-container leading-tight">Roaming Online</span></div></div></div></div></header><main class="w-full pt-16 bg-surface min-h-[calc(100vh-80px)]"><div class="flex flex-col w-full">
+<div class="w-full max-w-7xl mx-auto px-margin py-space-lg flex flex-col gap-space-lg">
+<!-- Top Hero Discovery Area -->
+<div class="relative w-full rounded-2xl bg-surface-container-low p-space-lg sm:p-space-xl overflow-hidden shadow-sm">
+<div class="absolute -right-20 -top-24 w-96 h-96 rounded-full bg-primary-fixed/30 blur-3xl pointer-events-none"></div>
+<div class="absolute right-1/3 -bottom-20 w-80 h-80 rounded-full bg-secondary-fixed/40 blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col gap-space-md max-w-3xl">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-lowest text-primary text-label-sm font-label-sm shadow-sm w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container animate-pulse"></span>
+<span>190+ Global Destinations Live</span>
+</div>
+<div class="flex flex-col gap-1">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+            Explore Travel eSIM Plans
+          </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+            Instant connectivity in 190+ countries with zero physical SIM swaps and zero roaming fees.
+          </p>
+</div>
+<!-- Omnibox Search Field -->
+<div class="mt-2 relative flex items-center w-full shadow-sm rounded-xl bg-surface-container-lowest focus-within:ring-2 focus-within:ring-primary/30 transition-all">
+<span class="material-symbols-outlined absolute left-4 text-on-surface-variant text-[22px] pointer-events-none">travel_explore</span>
+<input class="w-full pl-12 pr-28 py-3.5 bg-transparent font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/70 focus:outline-none" id="planSearchInput" placeholder="Search country, region, or carrier (e.g. Japan, SoftBank, Europe)..." type="text"/>
+<div class="absolute right-3.5 hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-md bg-surface-container text-on-surface-variant font-telecom-mono text-[11px]">
+<span class="opacity-70">⌘</span>K
+          </div>
+</div>
+<!-- Quick Destination Badges -->
+<div class="flex flex-wrap items-center gap-space-xs pt-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant mr-1">Trending:</span>
+<button class="dest-chip group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm transition-all" data-country="Japan">
+<span class="text-sm">🇯🇵</span>
+<span>Japan</span>
+</button>
+<button class="dest-chip group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container hover:text-primary font-label-md text-label-md shadow-sm transition-all" data-country="USA">
+<span class="text-sm">🇺🇸</span>
+<span>USA</span>
+</button>
+<button class="dest-chip group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container hover:text-primary font-label-md text-label-md shadow-sm transition-all" data-country="France">
+<span class="text-sm">🇫🇷</span>
+<span>France</span>
+</button>
+<button class="dest-chip group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container hover:text-primary font-label-md text-label-md shadow-sm transition-all" data-country="Korea">
+<span class="text-sm">🇰🇷</span>
+<span>Korea</span>
+</button>
+<button class="dest-chip group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container hover:text-primary font-label-md text-label-md shadow-sm transition-all" data-country="Singapore">
+<span class="text-sm">🇸🇬</span>
+<span>Singapore</span>
+</button>
+<button class="dest-chip group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container hover:text-primary font-label-md text-label-md shadow-sm transition-all" data-country="Thailand">
+<span class="text-sm">🇹🇭</span>
+<span>Thailand</span>
+</button>
+<div class="h-4 w-px bg-outline-variant/30 hidden sm:block mx-1"></div>
+<button class="dest-chip group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md shadow-sm transition-all" data-country="Europe">
+<span class="text-sm">🇪🇺</span>
+<span>Europe (33)</span>
+</button>
+<button class="dest-chip group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md shadow-sm transition-all" data-country="Asia">
+<span class="text-sm">🌏</span>
+<span>Asia-Pacific</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Filter Control Bar -->
+<div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md p-3 rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="flex flex-wrap items-center gap-2">
+<!-- Coverage Type Group -->
+<div class="flex items-center p-1 bg-surface-container-low rounded-lg">
+<button class="coverage-pill px-3 py-1 rounded-md font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all">All</button>
+<button class="coverage-pill px-3 py-1 rounded-md font-label-md text-label-md bg-surface-container-lowest text-primary shadow-sm font-semibold transition-all">Local</button>
+<button class="coverage-pill px-3 py-1 rounded-md font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all">Regional</button>
+<button class="coverage-pill px-3 py-1 rounded-md font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all">Global</button>
+</div>
+<div class="h-5 w-px bg-surface-container-high hidden md:block"></div>
+<!-- Network Speed -->
+<div class="relative">
+<select class="appearance-none pl-3 pr-8 py-1.5 bg-surface-container-low hover:bg-surface-container text-on-surface rounded-lg font-body-sm text-body-sm focus:outline-none cursor-pointer">
+<option>All Networks</option>
+<option>5G Ultra Only</option>
+<option>4G / LTE &amp; 5G</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 pointer-events-none text-on-surface-variant text-[16px]">expand_more</span>
+</div>
+<!-- Plan Type -->
+<div class="relative">
+<select class="appearance-none pl-3 pr-8 py-1.5 bg-surface-container-low hover:bg-surface-container text-on-surface rounded-lg font-body-sm text-body-sm focus:outline-none cursor-pointer">
+<option>All Quotas</option>
+<option>Fixed Data (1-20 GB)</option>
+<option>Unlimited Data</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 pointer-events-none text-on-surface-variant text-[16px]">expand_more</span>
+</div>
+<!-- Duration Filter -->
+<div class="relative">
+<select class="appearance-none pl-3 pr-8 py-1.5 bg-surface-container-low hover:bg-surface-container text-on-surface rounded-lg font-body-sm text-body-sm focus:outline-none cursor-pointer">
+<option>Any Duration</option>
+<option>7 Days</option>
+<option>15 Days</option>
+<option>30 Days</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 pointer-events-none text-on-surface-variant text-[16px]">expand_more</span>
+</div>
+</div>
+<!-- Sorting -->
+<div class="flex items-center justify-between sm:justify-end gap-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-surface-container">
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">Sort by:</span>
+<div class="relative">
+<select class="appearance-none pl-3 pr-8 py-1.5 bg-surface-container-low hover:bg-surface-container text-on-surface rounded-lg font-label-md text-label-md font-medium focus:outline-none cursor-pointer">
+<option>Recommended</option>
+<option>Price: Low to High</option>
+<option>Data: High to Low</option>
+<option>Duration: Longest</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 pointer-events-none text-on-surface-variant text-[16px]">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Main Marketplace Content Grid -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+<!-- Left Column: Cards Grid (8 cols desktop) -->
+<div class="xl:col-span-8 flex flex-col gap-space-md">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface">Available eSIM Plans</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-telecom-mono text-[11px] font-semibold">6 Plans</span>
+</div>
+<div class="flex items-center gap-1 text-tertiary-container font-label-sm text-label-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+<span>Real-time Network Inventory</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- Card 1: Japan Moshi Moshi (Best Value) -->
+<div class="group relative flex flex-col justify-between rounded-2xl bg-surface-container-lowest p-5 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+<div class="absolute -top-3 right-5 px-2.5 py-0.5 rounded-full bg-tertiary-container text-on-tertiary text-label-sm font-label-sm shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+<span>Best Value</span>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Top Destination & Network Info -->
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<span class="text-3xl filter drop-shadow-sm">🇯🇵</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Japan</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Moshi Moshi 5G</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-secondary-container/30 text-on-secondary-container font-telecom-mono text-[11px] font-semibold">
+<span class="material-symbols-outlined text-[13px] text-primary">network_cell</span>
+                  5G mmWave
+                </div>
+</div>
+<!-- Carrier Info -->
+<div class="flex items-center gap-2 py-1 px-2.5 rounded-lg bg-surface-container-low w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></span>
+<span class="font-label-md text-label-md text-on-surface">Carrier: SoftBank Corp.</span>
+</div>
+<!-- Core Plan Data Specs -->
+<div class="grid grid-cols-2 gap-2 p-3 rounded-xl bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Allocation</span>
+<span class="font-data-metric text-data-metric text-primary mt-0.5">5 GB</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">High-Speed 5G</span>
+</div>
+<div class="flex flex-col border-l border-surface-container-highest/60 pl-3">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Validity</span>
+<span class="font-data-metric text-data-metric text-on-surface mt-0.5">15 <span class="text-headline-sm font-normal text-on-surface-variant">Days</span></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">From activation</span>
+</div>
+</div>
+<!-- Key Perks List -->
+<div class="flex flex-col gap-1.5 pt-1">
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">bolt</span>
+<span>Instant QR Code delivery via email &amp; app</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">wifi_tethering</span>
+<span>Personal Hotspot &amp; Tethering allowed</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">format_image_left</span>
+<span>Local Japanese IP routing (Low ping)</span>
+</div>
+</div>
+</div>
+<!-- Price & CTA -->
+<div class="mt-5 pt-4 border-t border-surface-container flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Total Price</span>
+<div class="flex items-baseline gap-1">
+<span class="font-data-metric text-data-metric text-on-surface">$8.50</span>
+<span class="font-telecom-mono text-[11px] text-on-surface-variant">USD</span>
+</div>
+</div>
+<button class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold transition-all flex items-center gap-1.5 shadow-sm group-hover:shadow">
+<span>Buy Plan</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 2: Japan Tokyo Unlimited -->
+<div class="group relative flex flex-col justify-between rounded-2xl bg-surface-container-lowest p-5 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+<div class="flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<span class="text-3xl filter drop-shadow-sm">🇯🇵</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Japan</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tokyo Unlimited Pass</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-secondary-container/30 text-on-secondary-container font-telecom-mono text-[11px] font-semibold">
+<span class="material-symbols-outlined text-[13px] text-primary">speed</span>
+                  5G Fast
+                </div>
+</div>
+<div class="flex items-center gap-2 py-1 px-2.5 rounded-lg bg-surface-container-low w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></span>
+<span class="font-label-md text-label-md text-on-surface">Carrier: NTT Docomo</span>
+</div>
+<div class="grid grid-cols-2 gap-2 p-3 rounded-xl bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Allocation</span>
+<span class="font-data-metric text-data-metric text-primary mt-0.5">Unlimited</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">3GB/day full-speed</span>
+</div>
+<div class="flex flex-col border-l border-surface-container-highest/60 pl-3">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Validity</span>
+<span class="font-data-metric text-data-metric text-on-surface mt-0.5">7 <span class="text-headline-sm font-normal text-on-surface-variant">Days</span></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">From scan</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5 pt-1">
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">all_inclusive</span>
+<span>Uncapped browsing after fair-use</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">hub</span>
+<span>Direct Docomo Tier-1 backbone</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">qr_code_2</span>
+<span>Instant 1-click activation</span>
+</div>
+</div>
+</div>
+<div class="mt-5 pt-4 border-t border-surface-container flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Total Price</span>
+<div class="flex items-baseline gap-1">
+<span class="font-data-metric text-data-metric text-on-surface">$14.00</span>
+<span class="font-telecom-mono text-[11px] text-on-surface-variant">USD</span>
+</div>
+</div>
+<button class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold transition-all flex items-center gap-1.5 shadow-sm group-hover:shadow">
+<span>Buy Plan</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 3: USA Coast-to-Coast -->
+<div class="group relative flex flex-col justify-between rounded-2xl bg-surface-container-lowest p-5 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+<div class="flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<span class="text-3xl filter drop-shadow-sm">🇺🇸</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">United States</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Coast-to-Coast 5G</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-secondary-container/30 text-on-secondary-container font-telecom-mono text-[11px] font-semibold">
+<span class="material-symbols-outlined text-[13px] text-primary">cell_tower</span>
+                  5G Ultra
+                </div>
+</div>
+<div class="flex items-center gap-2 py-1 px-2.5 rounded-lg bg-surface-container-low w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></span>
+<span class="font-label-md text-label-md text-on-surface">Carrier: T-Mobile / AT&amp;T Auto</span>
+</div>
+<div class="grid grid-cols-2 gap-2 p-3 rounded-xl bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Allocation</span>
+<span class="font-data-metric text-data-metric text-primary mt-0.5">10 GB</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Nationwide 5G</span>
+</div>
+<div class="flex flex-col border-l border-surface-container-highest/60 pl-3">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Validity</span>
+<span class="font-data-metric text-data-metric text-on-surface mt-0.5">30 <span class="text-headline-sm font-normal text-on-surface-variant">Days</span></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Monthly flexible</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5 pt-1">
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">swap_horiz</span>
+<span>Dual network auto-switching</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">wifi_tethering</span>
+<span>High-speed Hotspot enabled</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">security</span>
+<span>Encrypted enterprise APN</span>
+</div>
+</div>
+</div>
+<div class="mt-5 pt-4 border-t border-surface-container flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Total Price</span>
+<div class="flex items-baseline gap-1">
+<span class="font-data-metric text-data-metric text-on-surface">$18.00</span>
+<span class="font-telecom-mono text-[11px] text-on-surface-variant">USD</span>
+</div>
+</div>
+<button class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold transition-all flex items-center gap-1.5 shadow-sm group-hover:shadow">
+<span>Buy Plan</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 4: Europe EuroConnect 33 -->
+<div class="group relative flex flex-col justify-between rounded-2xl bg-surface-container-lowest p-5 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+<div class="flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<span class="text-3xl filter drop-shadow-sm">🇪🇺</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Europe Regional</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">EuroConnect 33 Nations</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-secondary-container/30 text-on-secondary-container font-telecom-mono text-[11px] font-semibold">
+<span class="material-symbols-outlined text-[13px] text-primary">public</span>
+                  33 Countries
+                </div>
+</div>
+<div class="flex items-center gap-2 py-1 px-2.5 rounded-lg bg-surface-container-low w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></span>
+<span class="font-label-md text-label-md text-on-surface">Carrier: Orange &amp; Vodafone</span>
+</div>
+<div class="grid grid-cols-2 gap-2 p-3 rounded-xl bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Allocation</span>
+<span class="font-data-metric text-data-metric text-primary mt-0.5">20 GB</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Regional Data</span>
+</div>
+<div class="flex flex-col border-l border-surface-container-highest/60 pl-3">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Validity</span>
+<span class="font-data-metric text-data-metric text-on-surface mt-0.5">30 <span class="text-headline-sm font-normal text-on-surface-variant">Days</span></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Seamless cross-border</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5 pt-1">
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">flight_takeoff</span>
+<span>Zero reconnection crossing borders</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">verified_user</span>
+<span>EU GDPR Compliant privacy routing</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">wifi_tethering</span>
+<span>Full tethering support in all 33 states</span>
+</div>
+</div>
+</div>
+<div class="mt-5 pt-4 border-t border-surface-container flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Total Price</span>
+<div class="flex items-baseline gap-1">
+<span class="font-data-metric text-data-metric text-on-surface">$26.50</span>
+<span class="font-telecom-mono text-[11px] text-on-surface-variant">USD</span>
+</div>
+</div>
+<button class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold transition-all flex items-center gap-1.5 shadow-sm group-hover:shadow">
+<span>Buy Plan</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 5: South Korea FastPass -->
+<div class="group relative flex flex-col justify-between rounded-2xl bg-surface-container-lowest p-5 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+<div class="flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<span class="text-3xl filter drop-shadow-sm">🇰🇷</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">South Korea</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Seoul FastPass 5G</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-secondary-container/30 text-on-secondary-container font-telecom-mono text-[11px] font-semibold">
+<span class="material-symbols-outlined text-[13px] text-primary">flash_on</span>
+                  Ultra Latency
+                </div>
+</div>
+<div class="flex items-center gap-2 py-1 px-2.5 rounded-lg bg-surface-container-low w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></span>
+<span class="font-label-md text-label-md text-on-surface">Carrier: SK Telecom</span>
+</div>
+<div class="grid grid-cols-2 gap-2 p-3 rounded-xl bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Allocation</span>
+<span class="font-data-metric text-data-metric text-primary mt-0.5">5 GB</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">High-Speed 5G</span>
+</div>
+<div class="flex flex-col border-l border-surface-container-highest/60 pl-3">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Validity</span>
+<span class="font-data-metric text-data-metric text-on-surface mt-0.5">10 <span class="text-headline-sm font-normal text-on-surface-variant">Days</span></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">City &amp; Provincial</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5 pt-1">
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">bolt</span>
+<span>Korean 5G Ultra-wideband</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">qr_code</span>
+<span>Instant e-delivery in &lt; 30 seconds</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">support_agent</span>
+<span>Bilingual live chat setup guidance</span>
+</div>
+</div>
+</div>
+<div class="mt-5 pt-4 border-t border-surface-container flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Total Price</span>
+<div class="flex items-baseline gap-1">
+<span class="font-data-metric text-data-metric text-on-surface">$9.20</span>
+<span class="font-telecom-mono text-[11px] text-on-surface-variant">USD</span>
+</div>
+</div>
+<button class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold transition-all flex items-center gap-1.5 shadow-sm group-hover:shadow">
+<span>Buy Plan</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 6: France Bonjour Data -->
+<div class="group relative flex flex-col justify-between rounded-2xl bg-surface-container-lowest p-5 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+<div class="flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<span class="text-3xl filter drop-shadow-sm">🇫🇷</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">France</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Bonjour High-Speed</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-secondary-container/30 text-on-secondary-container font-telecom-mono text-[11px] font-semibold">
+<span class="material-symbols-outlined text-[13px] text-primary">signal_cellular_alt</span>
+                  5G Ready
+                </div>
+</div>
+<div class="flex items-center gap-2 py-1 px-2.5 rounded-lg bg-surface-container-low w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></span>
+<span class="font-label-md text-label-md text-on-surface">Carrier: Bouygues Telecom</span>
+</div>
+<div class="grid grid-cols-2 gap-2 p-3 rounded-xl bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Allocation</span>
+<span class="font-data-metric text-data-metric text-primary mt-0.5">10 GB</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">High-Speed 5G</span>
+</div>
+<div class="flex flex-col border-l border-surface-container-highest/60 pl-3">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Validity</span>
+<span class="font-data-metric text-data-metric text-on-surface mt-0.5">15 <span class="text-headline-sm font-normal text-on-surface-variant">Days</span></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">France &amp; Monaco</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5 pt-1">
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">wifi_tethering</span>
+<span>Unrestricted hotspot for laptops</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">verified</span>
+<span>Zero ID or passport verification</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">tune</span>
+<span>Pre-configured APN profile</span>
+</div>
+</div>
+</div>
+<div class="mt-5 pt-4 border-t border-surface-container flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Total Price</span>
+<div class="flex items-baseline gap-1">
+<span class="font-data-metric text-data-metric text-on-surface">$12.00</span>
+<span class="font-telecom-mono text-[11px] text-on-surface-variant">USD</span>
+</div>
+</div>
+<button class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold transition-all flex items-center gap-1.5 shadow-sm group-hover:shadow">
+<span>Buy Plan</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Pagination / Load indicator -->
+<div class="flex items-center justify-center p-6 bg-surface-container-lowest rounded-2xl shadow-sm text-center">
+<div class="flex flex-col items-center gap-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Showing 6 of 148 verified eSIM packages for the selected filters</span>
+<button class="px-4 py-2 rounded-xl bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md font-semibold transition-all">
+              Load More Destinations
+            </button>
+</div>
+</div>
+</div>
+<!-- Right Column: Featured Destinations & Confidence Sidebar (4 cols desktop) -->
+<div class="xl:col-span-4 flex flex-col gap-space-md">
+<!-- Trending Destinations Card -->
+<div class="flex flex-col rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
+<div class="flex items-center justify-between pb-3 border-b border-surface-container">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">stars</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Trending Destinations</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Top Picks</span>
+</div>
+<div class="flex flex-col divide-y divide-surface-container/60 mt-1">
+<a class="py-3 flex items-center justify-between hover:bg-surface-container-low/50 px-2 rounded-xl transition-colors group" href="#">
+<div class="flex items-center gap-3">
+<span class="text-2xl">🇯🇵</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-on-surface group-hover:text-primary transition-colors">Japan</span>
+<div class="flex items-center gap-1 font-telecom-mono text-[11px] text-on-surface-variant">
+<span class="text-amber-500 font-semibold">★ 4.9</span>
+<span>• 12 Carriers</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-body-sm text-on-surface font-semibold">From $4.50</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+</div>
+</a>
+<a class="py-3 flex items-center justify-between hover:bg-surface-container-low/50 px-2 rounded-xl transition-colors group" href="#">
+<div class="flex items-center gap-3">
+<span class="text-2xl">🇰🇷</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-on-surface group-hover:text-primary transition-colors">South Korea</span>
+<div class="flex items-center gap-1 font-telecom-mono text-[11px] text-on-surface-variant">
+<span class="text-amber-500 font-semibold">★ 4.9</span>
+<span>• 6 Carriers</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-body-sm text-on-surface font-semibold">From $5.00</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+</div>
+</a>
+<a class="py-3 flex items-center justify-between hover:bg-surface-container-low/50 px-2 rounded-xl transition-colors group" href="#">
+<div class="flex items-center gap-3">
+<span class="text-2xl">🇸🇬</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-on-surface group-hover:text-primary transition-colors">Singapore</span>
+<div class="flex items-center gap-1 font-telecom-mono text-[11px] text-on-surface-variant">
+<span class="text-amber-500 font-semibold">★ 4.8</span>
+<span>• 4 Carriers</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-body-sm text-on-surface font-semibold">From $6.00</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+</div>
+</a>
+<a class="py-3 flex items-center justify-between hover:bg-surface-container-low/50 px-2 rounded-xl transition-colors group" href="#">
+<div class="flex items-center gap-3">
+<span class="text-2xl">🇫🇷</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-on-surface group-hover:text-primary transition-colors">France</span>
+<div class="flex items-center gap-1 font-telecom-mono text-[11px] text-on-surface-variant">
+<span class="text-amber-500 font-semibold">★ 4.9</span>
+<span>• 8 Carriers</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-body-sm text-on-surface font-semibold">From $7.50</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+</div>
+</a>
+<a class="py-3 flex items-center justify-between hover:bg-surface-container-low/50 px-2 rounded-xl transition-colors group" href="#">
+<div class="flex items-center gap-3">
+<span class="text-2xl">🇺🇸</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-on-surface group-hover:text-primary transition-colors">United States</span>
+<div class="flex items-center gap-1 font-telecom-mono text-[11px] text-on-surface-variant">
+<span class="text-amber-500 font-semibold">★ 4.8</span>
+<span>• 10 Carriers</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-body-sm text-on-surface font-semibold">From $8.00</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+</div>
+</a>
+</div>
+</div>
+<!-- Trust & Confidence Card -->
+<div class="flex flex-col rounded-2xl bg-surface-container-low p-5 shadow-sm">
+<div class="flex items-center gap-2 pb-3">
+<span class="material-symbols-outlined text-tertiary-container text-[22px]">verified_user</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Why eSIM Data Manager?</span>
+</div>
+<div class="flex flex-col gap-3.5 mt-2">
+<div class="flex items-start gap-3">
+<div class="p-2 rounded-xl bg-surface-container-lowest text-primary shadow-xs">
+<span class="material-symbols-outlined text-[20px]">qr_code_scanner</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-on-surface">100% Digital Delivery</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Install in seconds. No postage, no plastic, no kiosk queue.</span>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="p-2 rounded-xl bg-surface-container-lowest text-primary shadow-xs">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-on-surface">Keep WhatsApp &amp; SIM</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Receive home 2FA bank texts while roaming on local high-speed data.</span>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="p-2 rounded-xl bg-surface-container-lowest text-primary shadow-xs">
+<span class="material-symbols-outlined text-[20px]">price_check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-on-surface">Zero Bill Shock</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Prepaid transparency. Never return home to an accidental $500 bill.</span>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="p-2 rounded-xl bg-surface-container-lowest text-primary shadow-xs">
+<span class="material-symbols-outlined text-[20px]">support</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-on-surface">24/7 Global SLA Support</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Real telecoms network engineers ready to help whenever you land.</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Live Assistant Promo Banner -->
+<div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-primary-container p-5 text-on-primary shadow-sm flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-ping"></span>
+<span class="font-telecom-mono text-[11px] uppercase tracking-wider text-primary-fixed">Flight Concierge Active</span>
+</div>
+<span class="material-symbols-outlined text-primary-fixed text-[20px]">contact_support</span>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-sm text-headline-sm font-semibold text-white">Need help choosing a plan?</h3>
+<p class="font-body-sm text-body-sm text-primary-fixed">Tell us your trip schedule and handset model. We will pick the highest signal carrier for you.</p>
+</div>
+<button class="mt-2 w-full py-2.5 rounded-xl bg-surface-container-lowest text-primary font-label-md text-label-md font-semibold hover:bg-surface-bright transition-all shadow-sm flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">chat_bubble</span>
+<span>Chat with Roaming Advisor</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    // 1. Highlight Store navigation in the shell header
+    const navLinks = document.querySelectorAll('header nav a');
+    navLinks.forEach(link => {
+      const path = link.getAttribute('data-path') || '';
+      const text = link.textContent.trim().toLowerCase();
+      if (path === 'store' || text.includes('store') || text.includes('explore')) {
+        link.className = "px-space-md py-1.5 rounded-lg bg-surface-container-high text-primary font-semibold transition-all font-label-md text-label-md";
+      } else {
+        link.className = "px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md";
+      }
+    });
+
+    // 2. Destination Chips toggle behavior
+    const destChips = document.querySelectorAll('.dest-chip');
+    destChips.forEach(chip => {
+      chip.addEventListener('click', function(e) {
+        e.preventDefault();
+        destChips.forEach(c => {
+          c.className = "dest-chip group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container hover:text-primary font-label-md text-label-md shadow-sm transition-all";
+        });
+        this.className = "dest-chip group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm transition-all";
+        
+        const country = this.getAttribute('data-country');
+        const searchInput = document.getElementById('planSearchInput');
+        if (searchInput && country) {
+          searchInput.value = country;
+        }
+      });
+    });
+
+    // 3. Coverage pills toggle behavior
+    const coveragePills = document.querySelectorAll('.coverage-pill');
+    coveragePills.forEach(pill => {
+      pill.addEventListener('click', function() {
+        coveragePills.forEach(p => {
+          p.className = "coverage-pill px-3 py-1 rounded-md font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all";
+        });
+        this.className = "coverage-pill px-3 py-1 rounded-md font-label-md text-label-md bg-surface-container-lowest text-primary shadow-sm font-semibold transition-all";
+      });
+    });
+
+    // 4. Keyboard shortcut for search
+    document.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        const searchInput = document.getElementById('planSearchInput');
+        if (searchInput) {
+          searchInput.focus();
+          searchInput.select();
+        }
+      }
+    });
+  })();
+</script></main><footer class="w-full bg-surface-container-lowest shadow-[0_-1px_6px_rgba(0,0,0,0.02)] py-space-md"><div class="max-w-7xl mx-auto px-margin flex flex-col sm:flex-row items-center justify-between gap-space-sm text-on-surface-variant"><div class="flex items-center gap-space-sm"><span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span><span class="font-telecom-mono text-telecom-mono text-on-surface-variant">Core Signal: 5G Ultra-Low Latency Mesh</span></div><div class="font-body-sm text-body-sm">© 2024 eSIM Data Manager. Precision Connectivity Platform.</div></div></footer></body></html>

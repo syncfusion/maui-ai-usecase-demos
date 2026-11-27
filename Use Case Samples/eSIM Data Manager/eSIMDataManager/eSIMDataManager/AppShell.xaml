@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="eSIMDataManager.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:eSIMDataManager"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarIsVisible="False">
+
+    <ShellContent
+        Title="Dashboard"
+        Route="dashboard"
+        ContentTemplate="{DataTemplate local:DashboardPage}" />
+
+    <ShellContent
+        Title="Profiles"
+        Route="profiles"
+        ContentTemplate="{DataTemplate local:ProfilesPage}" />
+
+    <ShellContent
+        Title="Store"
+        Route="store"
+        ContentTemplate="{DataTemplate local:StorePage}" />
+
+</Shell>

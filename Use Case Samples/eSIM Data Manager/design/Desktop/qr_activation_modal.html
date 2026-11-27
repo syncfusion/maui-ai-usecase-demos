@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"secondary":"#00687a","surface-bright":"#f8f9ff","secondary-fixed-dim":"#4cd7f6","on-surface-variant":"#434656","on-error":"#ffffff","primary":"#0046cc","outline-variant":"#c3c5d9","tertiary":"#006141","surface-container":"#e5eeff","inverse-on-surface":"#eaf1ff","on-surface":"#0b1c30","surface":"#f8f9ff","tertiary-container":"#007c55","primary-fixed-dim":"#b6c4ff","on-secondary-fixed-variant":"#004e5c","on-tertiary-container":"#b4ffd7","on-secondary":"#ffffff","background":"#f8f9ff","error":"#ba1a1a","inverse-primary":"#b6c4ff","on-error-container":"#93000a","on-secondary-fixed":"#001f26","surface-container-low":"#eff4ff","on-background":"#0b1c30","surface-container-highest":"#d3e4fe","inverse-surface":"#213145","on-primary-container":"#ecedff","tertiary-fixed":"#6ffbbe","on-tertiary-fixed":"#002113","secondary-fixed":"#acedff","on-primary-fixed-variant":"#003baf","primary-container":"#0d5cff","on-tertiary-fixed-variant":"#005236","surface-tint":"#004fe4","on-primary":"#ffffff","surface-dim":"#cbdbf5","primary-fixed":"#dce1ff","tertiary-fixed-dim":"#4edea3","outline":"#737688","surface-container-high":"#dce9ff","secondary-container":"#57dffe","surface-container-lowest":"#ffffff","surface-variant":"#d3e4fe","on-secondary-container":"#006172","error-container":"#ffdad6","on-primary-fixed":"#00164e","on-tertiary":"#ffffff"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-xl":"2.5rem","gutter":"1.5rem","space-md":"1rem","margin":"2rem","space-xs":"0.25rem","space-lg":"1.5rem","gutter-mobile":"0.75rem","margin-mobile":"1rem","space-sm":"0.5rem"},fontFamily:{"body-lg":["Inter"],"headline-sm":["Plus Jakarta Sans"],"display-mobile":["Plus Jakarta Sans"],"telecom-mono":["JetBrains Mono"],"body-sm":["Inter"],"body-md":["Inter"],"label-sm":["Inter"],"data-metric":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-md":["Inter"],"headline-lg-mobile":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"display":["Plus Jakarta Sans"]},fontSize:{"body-lg":["16px",{lineHeight:"24px",letterSpacing:"-0.01em",fontWeight:"400"}],"headline-sm":["18px",{lineHeight:"24px",letterSpacing:"-0.01em",fontWeight:"600"}],"display-mobile":["32px",{lineHeight:"40px",letterSpacing:"-0.025em",fontWeight:"700"}],"telecom-mono":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"500"}],"body-sm":["12px",{lineHeight:"16px",letterSpacing:"0em",fontWeight:"400"}],"body-md":["14px",{lineHeight:"20px",letterSpacing:"-0.005em",fontWeight:"400"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.03em",fontWeight:"600"}],"data-metric":["28px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-lg":["32px",{lineHeight:"40px",letterSpacing:"-0.025em",fontWeight:"600"}],"label-md":["13px",{lineHeight:"16px",letterSpacing:"0.01em",fontWeight:"500"}],"headline-lg-mobile":["24px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"600"}],"headline-md":["22px",{lineHeight:"28px",letterSpacing:"-0.015em",fontWeight:"600"}],"display":["48px",{lineHeight:"56px",letterSpacing:"-0.03em",fontWeight:"700"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-margin flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><img alt="eSIM Data Manager Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WehuYywJ70KOzaLzq98K5dPfyEyU-UMQpEqTPYAXxc7j13V5FGIMlj15wLe9ps-H_MNOpp-g23OQfVQSikze5BsnyXKTWKf_zPnh2996MxlQRb2tJSjThpzvLAiCc_--JTb_aJg83s9v9UPdbSjTydQhFfbidfuop3f_oilOpQ6Owmi_IqWW5bRAW_ErHqpOH9ZYMIAjP9b55Os2KMmUmDKd1Tm1VCw6KGYc6umrgZFw"/><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">eSIM Data Manager</span></div><div class="h-5 w-px bg-surface-container-high hidden md:block"></div><nav class="hidden md:flex items-center gap-space-xs p-1 bg-surface-container-low rounded-xl" data-active-classes="bg-surface-container-high text-primary font-semibold"><a class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md" data-path="dashboard" href="#">Dashboard</a><a class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md" data-path="my-esims" href="#">My eSIMs</a><a class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md" data-path="store" href="#">Store</a><a class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md" data-path="orders" href="#">Orders</a></nav></div><div class="flex items-center gap-space-md"><div class="relative hidden lg:flex items-center"><span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px] pointer-events-none">search</span><input class="w-64 pl-9 pr-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface placeholder:text-on-surface-variant font-body-sm text-body-sm focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search countries, ICCID, orders..." type="text"/></div><button aria-label="Search" class="lg:hidden p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">search</span></button><button aria-label="Notifications" class="relative p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface-container-lowest"></span></button><div class="h-5 w-px bg-surface-container-high"></div><div class="flex items-center gap-space-sm pl-space-xs"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3I3exIbi1Oe_eN6KLYsc0XY6T9RIDU8ddEylCsp15d7VsbVJDTlSqDDvTBY9g6GQiQ-rtvBrMgM-Yx0sv3XB7Xg-1RwEsCytwC1bQ-J9kYLbEfhQB48v6ccJ0ic_njgQ2U15SGhMdohFd1IB-GeiK6jl7huCS5r5H1RbVdgHiLV_osHUhd_WBNfSdgkndoSDXHauz78HXfTQRwhsNx5CBNXaI24g5QQFpQDc5MYqk"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-tertiary-container ring-2 ring-surface-container-lowest" title="Active Telecom Signal"></span></div><div class="hidden xl:flex flex-col text-left"><span class="font-label-md text-label-md text-on-surface leading-tight">Global Traveler</span><span class="font-telecom-mono text-telecom-mono text-tertiary-container leading-tight">Roaming Online</span></div></div></div></div></header><main class="w-full pt-16 bg-surface min-h-[calc(100vh-80px)]"><div class="flex flex-col w-full relative">
+<!-- Backdrop Context: Dimmed & Blurred "My eSIMs" Dashboard View -->
+<div class="w-full max-w-7xl mx-auto px-margin py-space-lg filter blur-sm select-none opacity-40 pointer-events-none transition-all duration-300">
+<!-- Top Bar Mock -->
+<div class="flex items-center justify-between pb-space-lg">
+<div class="flex flex-col gap-space-xs">
+<span class="font-headline-lg text-headline-lg text-on-surface">Active Profiles</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Manage network roaming, ICCID assignments, and real-time bandwidth.</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="px-space-md py-2 bg-surface-container rounded-xl font-label-md text-label-md text-on-surface">4 Profiles Allocated</div>
+<div class="px-space-md py-2 bg-primary text-on-primary rounded-xl font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">add</span> Add eSIM
+        </div>
+</div>
+</div>
+<!-- Mock Grid of Cards in Backdrop -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Mock Card 1 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="text-2xl">🇯🇵</span>
+<div>
+<div class="font-headline-sm text-headline-sm text-on-surface">Japan 5G Explorer</div>
+<div class="font-telecom-mono text-telecom-mono text-on-surface-variant">SoftBank • 10 GB</div>
+</div>
+</div>
+<span class="px-2.5 py-1 bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm rounded-full">Ready</span>
+</div>
+<div class="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[0%]"></div>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant font-telecom-mono text-telecom-mono">
+<span>Unused: 10.00 GB</span>
+<span>Valid 30 Days</span>
+</div>
+</div>
+<!-- Mock Card 2 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="text-2xl">🇫🇷</span>
+<div>
+<div class="font-headline-sm text-headline-sm text-on-surface">Europe Unlimited</div>
+<div class="font-telecom-mono text-telecom-mono text-on-surface-variant">Orange F • 20 GB</div>
+</div>
+</div>
+<span class="px-2.5 py-1 bg-surface-container-highest text-primary font-label-sm text-label-sm rounded-full">Active</span>
+</div>
+<div class="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full w-[65%]"></div>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant font-telecom-mono text-telecom-mono">
+<span>Remaining: 7.14 GB</span>
+<span>14 Days Left</span>
+</div>
+</div>
+<!-- Mock Card 3 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="text-2xl">🇺🇸</span>
+<div>
+<div class="font-headline-sm text-headline-sm text-on-surface">North America Pro</div>
+<div class="font-telecom-mono text-telecom-mono text-on-surface-variant">T-Mobile • 50 GB</div>
+</div>
+</div>
+<span class="px-2.5 py-1 bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm rounded-full">Expired</span>
+</div>
+<div class="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden">
+<div class="bg-outline text-transparent h-full w-[100%]"></div>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant font-telecom-mono text-telecom-mono">
+<span>0.00 GB Remaining</span>
+<span>Renew Available</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Focused Modal Overlay Layer -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-space-md overflow-y-auto bg-on-surface/40 backdrop-blur-md">
+<!-- Modal Card Container -->
+<div class="relative w-full max-w-3xl bg-surface-container-lowest rounded-xl shadow-2xl flex flex-col overflow-hidden my-auto transform transition-all duration-300">
+<!-- Top Subtle Ambient Accent Header -->
+<div class="w-full h-1.5 bg-gradient-to-r from-primary via-secondary to-primary-container"></div>
+<!-- Modal Header Zone -->
+<div class="px-space-xl pt-space-lg pb-space-md flex items-center justify-between bg-surface-container-lowest">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">qr_code_scanner</span>
+</div>
+<div>
+<div class="flex items-center gap-space-sm">
+<h2 class="font-headline-lg text-headline-md text-on-surface tracking-tight">Install &amp; Activate eSIM</h2>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-semibold tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+                Ready to Install
+              </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Quick setup configuration for instant cross-border high-speed routing</p>
+</div>
+</div>
+<button aria-label="Close dialog" class="w-9 h-9 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Network / Plan Context Strip -->
+<div class="mx-space-xl px-space-md py-space-sm bg-surface-container-low rounded-lg flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="text-xl leading-none">🇯🇵</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Japan 5G Explorer</span>
+<span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
+<span class="font-telecom-mono text-telecom-mono text-on-surface-variant">SoftBank Corp. (5G / LTE Multi-IMSI)</span>
+</div>
+<div class="flex items-center gap-space-xs font-telecom-mono text-telecom-mono text-secondary bg-surface-container-lowest px-2.5 py-1 rounded-md shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-tertiary-container">verified</span>
+<span>10 GB • 30 Days Global Tier</span>
+</div>
+</div>
+<!-- Main Body: Two-Column Split Onboarding Layout -->
+<div class="px-space-xl py-space-lg grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- Left Column: Precision Vector QR Preview & Telemetry Box -->
+<div class="lg:col-span-6 flex flex-col items-center justify-between bg-surface-container-low p-space-lg rounded-xl">
+<div class="w-full flex items-center justify-between mb-space-sm">
+<span class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">sensors</span> Instant Scan
+            </span>
+<span class="font-telecom-mono text-telecom-mono text-on-surface-variant">EID: 89049032...</span>
+</div>
+<!-- The QR Code Card with Scanner Corner Reticles -->
+<div class="relative p-5 bg-surface-container-lowest rounded-xl shadow-md flex items-center justify-center my-space-xs group">
+<!-- Corner Brackets for Telecom Scanner Look -->
+<div class="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-primary rounded-tl-sm pointer-events-none"></div>
+<div class="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-primary rounded-tr-sm pointer-events-none"></div>
+<div class="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-primary rounded-bl-sm pointer-events-none"></div>
+<div class="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-primary rounded-br-sm pointer-events-none"></div>
+<!-- Stylized Crisp High-Contrast Vector QR -->
+<svg class="w-48 h-48 text-on-surface" fill="currentColor" viewbox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+<!-- Top-Left Target -->
+<rect height="35" rx="3" width="35" x="12" y="12"></rect>
+<rect fill="#ffffff" height="23" rx="2" width="23" x="18" y="18"></rect>
+<rect height="13" rx="1.5" width="13" x="23" y="23"></rect>
+<!-- Top-Right Target -->
+<rect height="35" rx="3" width="35" x="113" y="12"></rect>
+<rect fill="#ffffff" height="23" rx="2" width="23" x="119" y="18"></rect>
+<rect height="13" rx="1.5" width="13" x="124" y="23"></rect>
+<!-- Bottom-Left Target -->
+<rect height="35" rx="3" width="35" x="12" y="113"></rect>
+<rect fill="#ffffff" height="23" rx="2" width="23" x="18" y="119"></rect>
+<rect height="13" rx="1.5" width="13" x="23" y="124"></rect>
+<!-- Timing Patterns & Matrix Code Clusters -->
+<rect height="5" width="5" x="55" y="14"></rect>
+<rect height="5" width="5" x="65" y="14"></rect>
+<rect height="5" width="5" x="80" y="14"></rect>
+<rect height="5" width="5" x="95" y="14"></rect>
+<rect height="5" width="5" x="55" y="24"></rect>
+<rect height="5" width="5" x="75" y="24"></rect>
+<rect height="5" width="5" x="85" y="24"></rect>
+<rect height="5" width="5" x="100" y="24"></rect>
+<rect height="5" width="5" x="55" y="34"></rect>
+<rect height="5" width="5" x="65" y="34"></rect>
+<rect height="5" width="5" x="70" y="34"></rect>
+<rect height="5" width="5" x="90" y="34"></rect>
+<!-- Mid Sync Tracks -->
+<rect height="5" width="5" x="14" y="55"></rect>
+<rect height="5" width="5" x="24" y="55"></rect>
+<rect height="5" width="5" x="34" y="55"></rect>
+<rect height="5" width="5" x="44" y="55"></rect>
+<rect height="5" width="5" x="54" y="55"></rect>
+<rect height="5" width="5" x="64" y="55"></rect>
+<rect height="5" width="5" x="74" y="55"></rect>
+<rect height="5" width="5" x="84" y="55"></rect>
+<rect height="5" width="5" x="94" y="55"></rect>
+<rect height="5" width="5" x="104" y="55"></rect>
+<rect height="5" width="5" x="114" y="55"></rect>
+<rect height="5" width="5" x="124" y="55"></rect>
+<rect height="5" width="5" x="134" y="55"></rect>
+<rect height="5" width="5" x="144" y="55"></rect>
+<!-- Dense Center Modules -->
+<rect height="7" width="7" x="62" y="65"></rect>
+<rect height="7" width="7" x="76" y="65"></rect>
+<rect height="7" width="7" x="90" y="65"></rect>
+<rect height="7" width="7" x="104" y="65"></rect>
+<rect height="7" width="7" x="62" y="79"></rect>
+<rect height="7" width="7" x="76" y="79"></rect>
+<rect height="7" width="7" x="90" y="79"></rect>
+<rect height="7" width="7" x="118" y="79"></rect>
+<rect height="7" width="7" x="132" y="79"></rect>
+<rect height="7" width="7" x="16" y="76"></rect>
+<rect height="7" width="7" x="30" y="76"></rect>
+<rect height="7" width="7" x="44" y="76"></rect>
+<rect height="7" width="7" x="16" y="90"></rect>
+<rect height="7" width="7" x="30" y="90"></rect>
+<rect height="7" width="7" x="44" y="90"></rect>
+<rect height="7" width="7" x="62" y="93"></rect>
+<rect height="7" width="7" x="76" y="93"></rect>
+<rect height="7" width="7" x="104" y="93"></rect>
+<rect height="7" width="7" x="132" y="93"></rect>
+<!-- Bottom Right Quadrant Telemetry -->
+<rect height="6" width="6" x="55" y="115"></rect>
+<rect height="6" width="6" x="67" y="115"></rect>
+<rect height="6" width="6" x="79" y="115"></rect>
+<rect height="6" width="6" x="97" y="115"></rect>
+<rect height="6" width="6" x="115" y="115"></rect>
+<rect height="6" width="6" x="133" y="115"></rect>
+<rect height="6" width="6" x="67" y="127"></rect>
+<rect height="6" width="6" x="85" y="127"></rect>
+<rect height="6" width="6" x="103" y="127"></rect>
+<rect height="6" width="6" x="121" y="127"></rect>
+<rect height="6" width="6" x="139" y="127"></rect>
+<rect height="6" width="6" x="55" y="139"></rect>
+<rect height="6" width="6" x="73" y="139"></rect>
+<rect height="6" width="6" x="91" y="139"></rect>
+<rect height="6" width="6" x="109" y="139"></rect>
+<rect height="6" width="6" x="127" y="139"></rect>
+<rect height="6" width="6" x="145" y="139"></rect>
+<!-- Center Branding Node -->
+<circle cx="80" cy="80" fill="#0046cc" r="11"></circle>
+<path d="M76 80L79 83L85 77" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="text-center mt-space-sm px-space-xs">
+<p class="font-body-sm text-body-sm text-on-surface font-medium leading-relaxed">
+              Scan this QR code with your device camera or in <span class="text-primary font-semibold">Settings &gt; Cellular &gt; Add eSIM</span>.
+            </p>
+<div class="mt-space-xs flex items-center justify-center gap-1.5 text-on-surface-variant font-telecom-mono text-telecom-mono">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+              Single-use cryptographic profile token
+            </div>
+</div>
+</div>
+<!-- Right Column: Manual Activation & Setup Guide -->
+<div class="lg:col-span-6 flex flex-col justify-between gap-space-md">
+<!-- Guided Step-by-Step Sequence -->
+<div class="flex flex-col gap-space-sm">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Activation Steps</span>
+<div class="flex flex-col gap-space-xs">
+<!-- Step 1 -->
+<div class="p-space-sm bg-surface-container-low rounded-lg flex items-start gap-space-sm">
+<div class="w-6 h-6 rounded-full bg-primary text-on-primary font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">
+                  1
+                </div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-body-md text-on-surface font-semibold">Scan QR Code in Device Settings</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Navigate to Settings &gt; Cellular (iOS) or SIM Manager (Android) and add plan.</span>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="p-space-sm bg-surface-container-low rounded-lg flex items-start gap-space-sm">
+<div class="w-6 h-6 rounded-full bg-primary text-on-primary font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">
+                  2
+                </div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-body-md text-on-surface font-semibold">Enable "Data Roaming" upon Landing</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Turn on roaming toggles specifically for this profile once in Japan.</span>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="p-space-sm bg-surface-container-low rounded-lg flex items-start gap-space-sm">
+<div class="w-6 h-6 rounded-full bg-primary text-on-primary font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">
+                  3
+                </div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-body-md text-on-surface font-semibold">Set Profile as Cellular Data Carrier</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Keep your primary home SIM for SMS 2FA while using this eSIM for all data.</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Manual Fallback Activation Details -->
+<div class="p-space-md bg-surface-container-lowest rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-secondary">tune</span>
+                Manual Activation Parameters
+              </span>
+<span class="font-telecom-mono text-telecom-mono text-tertiary-container bg-surface-container-low px-2 py-0.5 rounded">RSP Protocol v2.2</span>
+</div>
+<!-- SM-DP+ Address Field -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant">SM-DP+ Address</label>
+<div class="flex items-center justify-between bg-surface-container-low px-3 py-1.5 rounded-lg group">
+<code class="font-telecom-mono text-telecom-mono text-on-surface select-all" id="smdp-text">rsp.global-esim.net</code>
+<button aria-label="Copy SM-DP Address" class="p-1 rounded text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors" onclick="navigator.clipboard.writeText('rsp.global-esim.net')" title="Copy to clipboard">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Activation Code Field -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Activation Code (LPA String)</label>
+<div class="flex items-center justify-between bg-surface-container-low px-3 py-1.5 rounded-lg group">
+<code class="font-telecom-mono text-telecom-mono text-on-surface truncate pr-2 select-all" id="activation-code">LPA:1$rsp.global-esim.net$JAP-89182390</code>
+<button aria-label="Copy Activation Code" class="p-1 rounded text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors" onclick="navigator.clipboard.writeText('LPA:1$rsp.global-esim.net$JAP-89182390')" title="Copy to clipboard">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Dedicated Primary Copy Action Button -->
+<button class="w-full mt-1 py-2 px-space-md bg-surface-container text-primary hover:bg-surface-container-high font-label-md text-label-md rounded-lg flex items-center justify-center gap-2 transition-all" onclick="navigator.clipboard.writeText('LPA:1$rsp.global-esim.net$JAP-89182390')">
+<span class="material-symbols-outlined text-[18px]">copy_all</span>
+              Copy Full Activation String
+            </button>
+</div>
+<!-- Compatibility Notice Bar -->
+<div class="p-space-sm bg-surface-container-low rounded-lg flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant shrink-0">phone_iphone</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-snug">
+<strong class="text-on-surface font-semibold">Compatibility:</strong> Unlocked iPhone XS or newer, Pixel 3 or later, Galaxy S20+ and compatible dual-SIM devices.
+            </p>
+</div>
+</div>
+</div>
+<!-- Footer CTA Zone -->
+<div class="px-space-xl py-space-md bg-surface-container-low flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm text-on-surface-variant font-telecom-mono text-telecom-mono">
+<span class="material-symbols-outlined text-[18px] text-tertiary">lock_reset</span>
+          ICCID: 8981 0422 9182 3901 440F
+        </div>
+<div class="flex items-center gap-space-sm w-full sm:w-auto">
+<!-- Secondary: Email QR -->
+<button class="flex-1 sm:flex-none px-space-md py-2.5 bg-surface-container-lowest text-on-surface hover:bg-surface-container font-label-md text-label-md rounded-lg shadow-sm flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined text-[18px] text-secondary">mail</span>
+            Send QR to Email
+          </button>
+<!-- Primary: Done/Scanned -->
+<button class="flex-1 sm:flex-none px-space-xl py-2.5 bg-primary text-on-primary hover:bg-primary-container font-label-md text-label-md rounded-lg shadow-md flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+            I've Scanned the QR Code
+          </button>
+</div>
+</div>
+</div>
+</div>
+</div></main><footer class="w-full bg-surface-container-lowest shadow-[0_-1px_6px_rgba(0,0,0,0.02)] py-space-md"><div class="max-w-7xl mx-auto px-margin flex flex-col sm:flex-row items-center justify-between gap-space-sm text-on-surface-variant"><div class="flex items-center gap-space-sm"><span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span><span class="font-telecom-mono text-telecom-mono text-on-surface-variant">Core Signal: 5G Ultra-Low Latency Mesh</span></div><div class="font-body-sm text-body-sm">© 2024 eSIM Data Manager. Precision Connectivity Platform.</div></div></footer></body></html>

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "outline-variant": "#c3c6d7", "on-secondary-fixed-variant": "#004e5c", "inverse-primary": "#b4c5ff", "surface": "#f8f9ff", "on-tertiary-fixed-variant": "#005236", "on-tertiary-fixed": "#002113", "surface-container-low": "#eff4ff", "background": "#f8f9ff", "secondary-fixed": "#acedff", "primary-fixed": "#dbe1ff", "surface-container-highest": "#d3e4fe", "on-surface": "#0b1c30", "tertiary": "#006242", "inverse-surface": "#213145", "on-primary": "#ffffff", "error": "#ba1a1a", "on-tertiary": "#ffffff", "surface-dim": "#cbdbf5", "secondary-container": "#57dffe", "inverse-on-surface": "#eaf1ff", "primary-fixed-dim": "#b4c5ff", "surface-bright": "#f8f9ff", "tertiary-fixed": "#6ffbbe", "surface-container-high": "#dce9ff", "on-primary-fixed-variant": "#003ea8", "on-error-container": "#93000a", "outline": "#737686", "surface-container": "#e5eeff", "on-surface-variant": "#434655", "primary": "#004ac6", "surface-variant": "#d3e4fe", "surface-container-lowest": "#ffffff", "secondary": "#00687a", "on-secondary": "#ffffff", "primary-container": "#2563eb", "surface-tint": "#0053db", "tertiary-fixed-dim": "#4edea3", "on-error": "#ffffff", "error-container": "#ffdad6", "on-secondary-fixed": "#001f26", "secondary-fixed-dim": "#4cd7f6", "on-primary-container": "#eeefff", "on-secondary-container": "#006172", "on-background": "#0b1c30", "on-primary-fixed": "#00174b", "on-tertiary-container": "#bdffdb", "tertiary-container": "#007d55" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "gutter-md": "1.5rem", "space-sm": "0.5rem", "space-xl": "2rem", "space-lg": "1.5rem", "space-xs": "0.25rem", "gutter-lg": "2rem", "margin-md": "2rem", "space-md": "1rem", "margin": "1rem", "gutter": "1rem", "margin-lg": "3rem" }, fontFamily: { "code-data": ["JetBrains Mono"], "display-lg": ["Plus Jakarta Sans"], "display-lg-mobile": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "title-md": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"] }, fontSize: { "code-data": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "500" }], "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.015em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "title-md": ["16px", { "lineHeight": "22px", "fontWeight": "600" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }], "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md text-body-md min-h-screen flex flex-col antialiased selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><img alt="eSIM Data Manager Logo" class="h-8 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XwK27FTHVWnu_-NkNkXqZj-EcSPYcVULEr4Ji0F5Szna10KONhCvPRgl9iujknGiTAMFyXYGmhSzwCXGMYRwuTskaIllt5hpR3rmBosI53V8qAM8t4wftEjaI2HWMwhoYsKCGRBcClrKXSqr2QxLQbU_3ZP_67Ke-qsqHZlIFDxRN1n1ennZ-5hhaLWrZ2TvysT1jxDseB6qWw2VEc0b3bROI5XbFPCVjLuuTn0rs"/><div class="flex flex-col min-w-0"><span class="font-headline-sm text-headline-sm text-on-surface font-semibold tracking-tight truncate leading-tight">eSIM Data Manager</span><span class="font-label-sm text-label-sm text-primary font-medium tracking-wide truncate">Dashboard</span></div></div><div class="flex items-center gap-space-xs shrink-0"><button aria-label="Search eSIMs or destinations" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">search</span></button><button aria-label="Toggle light and dark theme" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors" onclick="document.documentElement.classList.toggle('dark')" type="button"><span class="material-symbols-outlined text-[20px]">light_mode</span></button><button aria-label="Notifications" class="w-11 h-11 relative flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface"></span></button><div class="pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20 hover:ring-primary transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDcQP4Kejp-eVlNgmMVoFeAZjMm-3XjmK_4LQE9jpLJk4IT1ik8oSt9vh8JL0x-qUpYkpN94Y_0RnXY1CVuEZ8QOIhnm1z8K4LfMnpCC3vwEtZ5unEL5k-9sq8Nh4NcY9yMxynVuUkv5I3ip5_NsABrAvlFf6ehczry-jyuOjqcpQmbvI_DvDunkVNdMqg2XxfjgwOWFwca6Hr27zOwOCBrqyBNzZMGIyDBOzSKjk"/></div></div></div></header><main class="flex-1 w-full pt-16 pb-24 bg-surface flex flex-col"><div class="flex flex-col w-full px-margin pb-gutter space-y-space-md">
+<!-- Active Profile Switcher & Quick Alert Pill -->
+<div class="flex items-center justify-between gap-space-xs pt-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+        Primary Line
+      </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-low text-primary font-code-data text-label-sm">
+        eSIM #1 of 3
+      </span>
+</div>
+<button class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-lowest text-on-surface-variant hover:text-primary shadow-sm transition-transform active:scale-95" id="openNotificationBanner" type="button">
+<span class="material-symbols-outlined text-[16px] text-tertiary">bolt</span>
+<span class="font-label-sm text-label-sm font-semibold">Roaming Boost Active</span>
+</button>
+</div>
+<!-- 1. Active eSIM Hero Card -->
+<div class="relative w-full rounded-2xl bg-surface-container-lowest shadow-[0_4px_20px_-4px_rgba(15,23,42,0.06)] p-space-md overflow-hidden">
+<div class="absolute -right-8 -top-8 w-36 h-36 rounded-full bg-primary/5 blur-2xl pointer-events-none"></div>
+<div class="absolute -left-6 -bottom-6 w-28 h-28 rounded-full bg-secondary-container/20 blur-xl pointer-events-none"></div>
+<div class="relative flex flex-col space-y-space-sm">
+<!-- Card Header: Profile, Country & Signal -->
+<div class="flex items-start justify-between gap-space-xs">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="relative w-11 h-11 rounded-xl bg-surface-container-low flex items-center justify-center text-xl shrink-0 shadow-sm">
+            🇯🇵
+            <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center text-[10px] text-on-primary">
+<span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">sim_card</span>
+</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<h2 class="font-title-md text-title-md text-on-surface truncate">Japan Unlimited 5G</h2>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container/15 text-tertiary font-label-sm text-label-sm font-semibold inline-flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-ping"></span>
+                Connected
+              </span>
+</div>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="font-label-md text-label-md text-on-surface-variant">SoftBank Telecom</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-code-data text-label-sm text-primary font-bold">5G Ultra</span>
+</div>
+</div>
+</div>
+<!-- Telemetry: 5-bar signal RSSI visualizer -->
+<div class="flex flex-col items-end shrink-0">
+<div class="flex items-end gap-0.5 h-5 px-1 py-0.5" title="Signal Strength: 5/5 Bars">
+<span class="w-1 h-1.5 rounded-full bg-tertiary"></span>
+<span class="w-1 h-2 rounded-full bg-tertiary"></span>
+<span class="w-1 h-3 rounded-full bg-tertiary"></span>
+<span class="w-1 h-4 rounded-full bg-tertiary"></span>
+<span class="w-1 h-5 rounded-full bg-tertiary"></span>
+</div>
+<span class="font-code-data text-[10px] text-on-surface-variant font-medium mt-0.5">-68 dBm</span>
+</div>
+</div>
+<!-- Quick Badges Row -->
+<div class="flex items-center gap-2 pt-1 flex-wrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-medium">
+<span class="material-symbols-outlined text-[13px]">public</span>
+          Data Roaming On
+        </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[13px]">speed</span>
+          Ultra-Low Latency
+        </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[13px]">wifi_tethering</span>
+          Personal Hotspot
+        </span>
+</div>
+</div>
+</div>
+<!-- 2. Data Balance Widget (Syncfusion SfCircularGauge Representation) -->
+<div class="w-full rounded-2xl bg-surface-container-lowest shadow-[0_4px_20px_-4px_rgba(15,23,42,0.06)] p-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface font-semibold">Active Allowance</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Live telemetry from SoftBank edge gateway</p>
+</div>
+<button aria-label="Refresh Gauge" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-primary transition-transform active:rotate-180" onclick="location.reload()" type="button">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+</button>
+</div>
+<!-- SfCircularGauge Representation -->
+<div class="flex flex-col items-center justify-center pt-space-xs pb-space-xs relative">
+<div class="relative w-52 h-52 flex items-center justify-center">
+<!-- SVG Radial Gauge -->
+<svg aria-label="Gauge showing 64% used data" class="w-full h-full transform -rotate-90" viewbox="0 0 160 160">
+<circle class="text-surface-container-highest" cx="80" cy="80" fill="transparent" r="66" stroke="currentColor" stroke-width="12"></circle>
+<!-- 64% stroke-dashoffset: Circumference = 2 * PI * 66 ≈ 414.69. 64% = 265.4 consumed. Offset = 414.69 * (1 - 0.64) = 149.28 -->
+<circle class="transition-all duration-1000 ease-out" cx="80" cy="80" fill="transparent" r="66" stroke="url(#electricBlueGaugeGrad)" stroke-dasharray="414.69" stroke-dashoffset="149.28" stroke-linecap="round" stroke-width="12"></circle>
+<defs>
+<lineargradient id="electricBlueGaugeGrad" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#2563EB"></stop>
+<stop offset="60%" stop-color="#0053db"></stop>
+<stop offset="100%" stop-color="#06B6D4"></stop>
+</lineargradient>
+</defs>
+</svg>
+<!-- Center Readout -->
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center select-none">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Remaining</span>
+<div class="flex items-baseline gap-0.5 my-0.5">
+<span class="font-display-lg-mobile text-display-lg-mobile text-on-surface font-bold tracking-tight">3.6</span>
+<span class="font-title-md text-title-md text-primary font-semibold">GB</span>
+</div>
+<span class="font-code-data text-label-sm px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold">64% Consumed</span>
+</div>
+</div>
+<!-- Quick Metrics Strip -->
+<div class="grid grid-cols-3 w-full gap-2 mt-space-sm pt-space-xs">
+<div class="flex flex-col items-center p-2 rounded-xl bg-surface-container-low text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Total Cap</span>
+<span class="font-code-data text-title-md text-on-surface font-semibold mt-0.5">10.0 <span class="text-xs font-normal">GB</span></span>
+</div>
+<div class="flex flex-col items-center p-2 rounded-xl bg-surface-container-low text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Consumed</span>
+<span class="font-code-data text-title-md text-on-surface font-semibold mt-0.5">6.4 <span class="text-xs font-normal">GB</span></span>
+</div>
+<div class="flex flex-col items-center p-2 rounded-xl bg-surface-container-low text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Daily Pace</span>
+<span class="font-code-data text-title-md text-tertiary font-semibold mt-0.5">1.06 <span class="text-xs font-normal">G/d</span></span>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. Validity Status & Roaming Savings Cards (2-Column Grid) -->
+<div class="grid grid-cols-2 gap-space-sm w-full">
+<!-- Validity Card -->
+<div class="flex flex-col justify-between rounded-2xl bg-surface-container-lowest shadow-[0_2px_12px_rgba(15,23,42,0.04)] p-space-md">
+<div class="flex items-center justify-between">
+<div class="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">calendar_clock</span>
+</div>
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm font-semibold text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-full">
+          Active
+        </span>
+</div>
+<div class="mt-3">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight">6 Days</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Expires Nov 28, 2024</p>
+</div>
+<div class="w-full bg-surface-container-high rounded-full h-1.5 mt-3 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 70%;"></div>
+</div>
+<span class="font-code-data text-[10px] text-on-surface-variant mt-1.5">Countdown: 144 hrs</span>
+</div>
+<!-- Roaming Savings Card -->
+<div class="flex flex-col justify-between rounded-2xl bg-surface-container-lowest shadow-[0_2px_12px_rgba(15,23,42,0.04)] p-space-md">
+<div class="flex items-center justify-between">
+<div class="w-8 h-8 rounded-xl bg-tertiary/15 text-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">savings</span>
+</div>
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+          Tier 1
+        </span>
+</div>
+<div class="mt-3">
+<span class="font-headline-sm text-headline-sm font-bold text-tertiary tracking-tight">$34.00</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Saved vs. Carrier Roaming</p>
+</div>
+<div class="flex items-center gap-1 mt-3">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">travel_explore</span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">12 Countries</span>
+</div>
+<span class="font-label-sm text-[10px] text-on-surface-variant truncate mt-1.5">Global Partner Network</span>
+</div>
+</div>
+<!-- 4. Quick Action Buttons (Primary, Secondary, Tertiary) -->
+<div class="grid grid-cols-3 gap-space-xs w-full pt-space-xs">
+<!-- Buy eSIM -->
+<button class="flex flex-col items-center justify-center p-3 rounded-2xl bg-primary text-on-primary shadow-md hover:bg-on-primary-fixed-variant active:scale-95 transition-all" onclick="alert('Navigating to eSIM Marketplace...')" type="button">
+<div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center mb-1.5">
+<span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+</div>
+<span class="font-label-md text-label-md font-semibold tracking-tight">Buy eSIM</span>
+<span class="font-label-sm text-[10px] opacity-80">Store</span>
+</button>
+<!-- Top Up Data (Opens interactive drawer) -->
+<button class="flex flex-col items-center justify-center p-3 rounded-2xl bg-surface-container-lowest text-on-surface shadow-sm hover:bg-surface-container-low active:scale-95 transition-all" id="openTopUpModalBtn" type="button">
+<div class="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-1.5">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+</div>
+<span class="font-label-md text-label-md font-semibold tracking-tight text-on-surface">Top Up</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant">Instant Add</span>
+</button>
+<!-- Manage eSIMs -->
+<button class="flex flex-col items-center justify-center p-3 rounded-2xl bg-surface-container-lowest text-on-surface shadow-sm hover:bg-surface-container-low active:scale-95 transition-all" onclick="alert('Opening eSIM Profile Manager...')" type="button">
+<div class="w-9 h-9 rounded-xl bg-surface-container-high text-on-surface-variant flex items-center justify-center mb-1.5">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</div>
+<span class="font-label-md text-label-md font-semibold tracking-tight text-on-surface">Manage</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant">3 Installed</span>
+</button>
+</div>
+<!-- 5. Usage Trend Chart (Syncfusion SfCartesianChart Representation) -->
+<div class="w-full rounded-2xl bg-surface-container-lowest shadow-[0_4px_20px_-4px_rgba(15,23,42,0.06)] p-space-md">
+<div class="flex items-center justify-between mb-2">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface font-semibold">Weekly Telemetry Trend</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Daily GB consumption for current profile</p>
+</div>
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-code-data text-label-sm">
+        Peak: 1.2 GB
+      </div>
+</div>
+<!-- Chart Visualizer -->
+<div class="w-full pt-space-xs">
+<svg aria-label="Line chart showing 7 days of eSIM consumption" class="w-full h-36 overflow-visible" preserveaspectratio="none" viewbox="0 0 320 120">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#2563EB" stop-opacity="0.32"></stop>
+<stop offset="100%" stop-color="#2563EB" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Horizontal Reference Gridlines -->
+<line class="text-surface-container-highest" stroke="currentColor" stroke-dasharray="3,3" x1="0" x2="320" y1="20" y2="20"></line>
+<line class="text-surface-container-highest" stroke="currentColor" stroke-dasharray="3,3" x1="0" x2="320" y1="60" y2="60"></line>
+<line class="text-surface-container-highest" stroke="currentColor" x1="0" x2="320" y1="100" y2="100"></line>
+<!-- Area Fill under curve -->
+<!-- Coordinates mapping: 
+             Sun: x=20, val=0.8 (y=60)
+             Mon: x=65, val=0.6 (y=75)
+             Tue: x=110, val=1.0 (y=45)
+             Wed: x=155, val=0.9 (y=52)
+             Thu: x=200, val=0.7 (y=67)
+             Fri: x=245, val=1.2 (y=30) [PEAK]
+             Sat: x=290, val=1.1 (y=37)
+        -->
+<path d="M 20,60 
+                 C 42,67 43,75 65,75 
+                 C 87,75 88,45 110,45 
+                 C 132,45 133,52 155,52 
+                 C 177,52 178,67 200,67 
+                 C 222,67 223,30 245,30 
+                 C 267,30 268,37 290,37 
+                 L 290,100 L 20,100 Z" fill="url(#chartGradient)"></path>
+<!-- Smooth Spline Path -->
+<path d="M 20,60 
+                 C 42,67 43,75 65,75 
+                 C 87,75 88,45 110,45 
+                 C 132,45 133,52 155,52 
+                 C 177,52 178,67 200,67 
+                 C 222,67 223,30 245,30 
+                 C 267,30 268,37 290,37" fill="none" stroke="#2563EB" stroke-linecap="round" stroke-width="2.5"></path>
+<!-- Data Points & Active Markers -->
+<circle class="text-white" cx="20" cy="60" fill="#2563EB" r="3.5"></circle>
+<circle cx="65" cy="75" fill="#2563EB" r="3.5"></circle>
+<circle cx="110" cy="45" fill="#2563EB" r="3.5"></circle>
+<circle cx="155" cy="52" fill="#2563EB" r="3.5"></circle>
+<circle cx="200" cy="67" fill="#2563EB" r="3.5"></circle>
+<!-- Peak Marker (Fri, 1.2 GB) -->
+<circle cx="245" cy="30" fill="#0053db" r="5"></circle>
+<circle cx="245" cy="30" fill="#ffffff" r="2.5"></circle>
+<text class="font-code-data text-[10px] font-bold fill-primary" text-anchor="middle" x="245" y="18">1.2 GB</text>
+<circle cx="290" cy="37" fill="#2563EB" r="3.5"></circle>
+</svg>
+<!-- Day Labels -->
+<div class="flex items-center justify-between text-center px-1 pt-2 font-code-data text-[11px] text-on-surface-variant font-medium">
+<span class="w-8">Sun</span>
+<span class="w-8">Mon</span>
+<span class="w-8">Tue</span>
+<span class="w-8">Wed</span>
+<span class="w-8">Thu</span>
+<span class="w-8 text-primary font-bold">Fri</span>
+<span class="w-8">Sat</span>
+</div>
+</div>
+</div>
+<!-- 6. Recent Activity Timeline (Syncfusion Timeline View) -->
+<div class="w-full rounded-2xl bg-surface-container-lowest shadow-[0_4px_20px_-4px_rgba(15,23,42,0.06)] p-space-md">
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">history_edu</span>
+<h3 class="font-title-md text-title-md text-on-surface font-semibold">Activity Ledger</h3>
+</div>
+<button class="font-label-sm text-label-sm text-primary font-medium hover:underline" type="button">
+        Export CSV
+      </button>
+</div>
+<!-- Timeline list -->
+<div class="relative pl-6 space-y-4">
+<!-- Continuous vertical timeline line -->
+<div class="absolute left-2.5 top-2 bottom-3 w-0.5 bg-surface-container-high rounded-full"></div>
+<!-- Item 1: Top-Up Purchased -->
+<div class="relative flex items-start justify-between gap-space-sm">
+<div class="absolute -left-6 top-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-white text-[12px]">add</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md text-on-surface font-semibold">3 GB Top-Up Purchased</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Instant Apple Pay payment ($8.50)</span>
+</div>
+<div class="text-right shrink-0">
+<span class="font-code-data text-label-sm text-primary font-bold">Today</span>
+<span class="block font-label-sm text-[10px] text-on-surface-variant">10:15 AM</span>
+</div>
+</div>
+<!-- Item 2: Report Generated -->
+<div class="relative flex items-start justify-between gap-space-sm">
+<div class="absolute -left-6 top-1 w-5 h-5 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[12px]">analytics</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md text-on-surface font-semibold">Usage Report Generated</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Auto-delivered to registered email</span>
+</div>
+<div class="text-right shrink-0">
+<span class="font-code-data text-label-sm text-on-surface-variant">Yesterday</span>
+<span class="block font-label-sm text-[10px] text-on-surface-variant">18:00</span>
+</div>
+</div>
+<!-- Item 3: Plan Renewed -->
+<div class="relative flex items-start justify-between gap-space-sm">
+<div class="absolute -left-6 top-1 w-5 h-5 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-[12px]">autorenew</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md text-on-surface font-semibold">Plan Auto-Extended</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Valid until Nov 28 with bonus 500MB</span>
+</div>
+<div class="text-right shrink-0">
+<span class="font-code-data text-label-sm text-on-surface-variant">Nov 20</span>
+</div>
+</div>
+<!-- Item 4: Profile Installed -->
+<div class="relative flex items-start justify-between gap-space-sm">
+<div class="absolute -left-6 top-1 w-5 h-5 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-[12px]">install_mobile</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md text-on-surface font-semibold">Profile Installed</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">SM-DP+ Address: lpa.airtel.global</span>
+</div>
+<div class="text-right shrink-0">
+<span class="font-code-data text-label-sm text-on-surface-variant">Nov 15</span>
+</div>
+</div>
+<!-- Item 5: Activation Completed -->
+<div class="relative flex items-start justify-between gap-space-sm">
+<div class="absolute -left-6 top-1 w-5 h-5 rounded-full bg-tertiary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-[12px]">check</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md text-on-surface font-semibold">Activation Completed</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Connected at Haneda Airport Tokyo (HND)</span>
+</div>
+<div class="text-right shrink-0">
+<span class="font-code-data text-label-sm text-on-surface-variant">Nov 15</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 7. Interactive Quick Top-Up Drawer / Modal (Hidden by default, triggered via Top Up button) -->
+<div class="fixed inset-0 z-50 bg-inverse-surface/40 backdrop-blur-sm hidden items-end justify-center p-0 transition-opacity" id="topUpModal">
+<div class="w-full max-w-lg bg-surface-container-lowest rounded-t-3xl p-space-md shadow-2xl flex flex-col space-y-space-sm animate-in slide-in-from-bottom duration-200">
+<div class="w-12 h-1.5 bg-surface-container-highest rounded-full mx-auto mb-1"></div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[24px]">add_circle</span>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Top Up Active eSIM</h3>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface" id="closeTopUpModalBtn" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Data is applied instantly to "Japan Unlimited 5G" without restarting device.</p>
+<!-- Package Selectors -->
+<div class="grid grid-cols-3 gap-2 pt-space-xs">
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="topup-pkg" type="radio"/>
+<div class="p-3 rounded-xl bg-surface-container-low peer-checked:bg-primary-container peer-checked:text-on-primary-container peer-checked:ring-2 peer-checked:ring-primary flex flex-col items-center text-center transition-all">
+<span class="font-code-data text-title-md font-bold">1 GB</span>
+<span class="font-label-sm text-label-sm opacity-90 mt-1">7 Days</span>
+<span class="font-code-data text-body-md font-bold mt-2">$3.50</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="topup-pkg" type="radio"/>
+<div class="p-3 rounded-xl bg-surface-container-low peer-checked:bg-primary-container peer-checked:text-on-primary-container peer-checked:ring-2 peer-checked:ring-primary flex flex-col items-center text-center transition-all">
+<span class="font-code-data text-title-md font-bold">3 GB</span>
+<span class="font-label-sm text-label-sm opacity-90 mt-1">15 Days</span>
+<span class="font-code-data text-body-md font-bold mt-2">$8.00</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="topup-pkg" type="radio"/>
+<div class="p-3 rounded-xl bg-surface-container-low peer-checked:bg-primary-container peer-checked:text-on-primary-container peer-checked:ring-2 peer-checked:ring-primary flex flex-col items-center text-center transition-all">
+<span class="font-code-data text-title-md font-bold">5 GB</span>
+<span class="font-label-sm text-label-sm opacity-90 mt-1">30 Days</span>
+<span class="font-code-data text-body-md font-bold mt-2">$12.50</span>
+</div>
+</label>
+</div>
+<div class="pt-space-xs">
+<button class="w-full py-3.5 px-4 rounded-xl bg-primary text-on-primary font-title-md text-title-md font-semibold shadow-lg hover:bg-on-primary-fixed-variant active:scale-98 transition-all flex items-center justify-center gap-2" onclick="alert('Top-Up Order submitted successfully!'); document.getElementById('topUpModal').classList.add('hidden');" type="button">
+<span>Continue with Apple Pay</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Notification Banner Drawer Preview (Interactive) -->
+<div class="p-space-md rounded-2xl bg-surface-container-high text-on-surface shadow-sm flex items-start gap-space-sm hidden transition-all" id="notificationBanner">
+<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</div>
+<div class="flex-1 min-w-0">
+<span class="font-title-md text-title-md font-semibold">SoftBank Edge Handover Optimal</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Cell tower handover completed with -68 dBm signal stability. Unlimited high-speed throughput active.</p>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface" onclick="document.getElementById('notificationBanner').classList.add('hidden')" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<!-- Client-side Micro-interactions -->
+<script>
+  (function() {
+    const topUpModal = document.getElementById('topUpModal');
+    const openTopUpBtn = document.getElementById('openTopUpModalBtn');
+    const closeTopUpBtn = document.getElementById('closeTopUpModalBtn');
+    const banner = document.getElementById('notificationBanner');
+    const openBannerBtn = document.getElementById('openNotificationBanner');
+
+    if (openTopUpBtn && topUpModal && closeTopUpBtn) {
+      openTopUpBtn.addEventListener('click', () => {
+        topUpModal.classList.remove('hidden');
+        topUpModal.classList.add('flex');
+      });
+
+      closeTopUpBtn.addEventListener('click', () => {
+        topUpModal.classList.add('hidden');
+        topUpModal.classList.remove('flex');
+      });
+
+      topUpModal.addEventListener('click', (e) => {
+        if (e.target === topUpModal) {
+          topUpModal.classList.add('hidden');
+          topUpModal.classList.remove('flex');
+        }
+      });
+    }
+
+    if (openBannerBtn && banner) {
+      openBannerBtn.addEventListener('click', () => {
+        banner.classList.toggle('hidden');
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/85 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)]" data-active-classes="text-primary font-semibold"><div class="flex items-center justify-around h-16 px-gutter"><a aria-current="page" class="flex flex-col items-center justify-center min-w-[72px] min-h-[44px] py-1 transition-colors group text-primary font-semibold" data-path="dashboard" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[22px] group-hover:scale-110 transition-transform">speed</span></div><span class="font-label-md text-label-md mt-1 tracking-tight">Dashboard</span></a><a class="flex flex-col items-center justify-center min-w-[72px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-colors group" data-path="my-esims" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[22px] group-hover:scale-110 transition-transform">sim_card</span><span class="absolute -top-1 -right-2 px-1.5 py-0.5 rounded-full bg-primary text-on-primary font-code-data text-[10px] leading-none font-bold">3</span></div><span class="font-label-md text-label-md mt-1 tracking-tight">My eSIMs</span></a><a class="flex flex-col items-center justify-center min-w-[72px] min-h-[44px] py-1 text-on-surface-variant hover:text-primary transition-colors group" data-path="explore-plans" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[22px] group-hover:scale-110 transition-transform">travel_explore</span></div><span class="font-label-md text-label-md mt-1 tracking-tight">Explore Plans</span></a></div></nav></body></html>

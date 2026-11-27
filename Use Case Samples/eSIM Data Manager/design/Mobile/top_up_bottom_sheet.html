@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_blank" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.gstatic.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-secondary-fixed-variant": "#004e5c", "tertiary-fixed": "#6ffbbe", "tertiary": "#006141", "surface-container-high": "#dce9ff", "on-error-container": "#93000a", "surface-dim": "#cbdbf5", "on-tertiary": "#ffffff", "surface-variant": "#d3e4fe", "secondary": "#00687a", "on-secondary": "#ffffff", "primary-container": "#0d5cff", "on-tertiary-fixed": "#002113", "background": "#f8f9ff", "surface-tint": "#004fe4", "outline-variant": "#c3c5d9", "secondary-fixed": "#acedff", "surface-container-lowest": "#ffffff", "on-error": "#ffffff", "inverse-primary": "#b6c4ff", "surface-container-low": "#eff4ff", "secondary-container": "#57dffe", "on-primary-fixed-variant": "#003baf", "on-surface-variant": "#434656", "tertiary-fixed-dim": "#4edea3", "on-tertiary-fixed-variant": "#005236", "on-secondary-fixed": "#001f26", "tertiary-container": "#007c55", "outline": "#737688", "primary": "#0046cc", "surface-bright": "#f8f9ff", "on-secondary-container": "#006172", "on-background": "#0b1c30", "surface-container-highest": "#d3e4fe", "on-tertiary-container": "#b4ffd7", "primary-fixed": "#dce1ff", "inverse-surface": "#213145", "secondary-fixed-dim": "#4cd7f6", "primary-fixed-dim": "#b6c4ff", "on-primary-fixed": "#00164e", "on-surface": "#0b1c30", "error-container": "#ffdad6", "on-primary": "#ffffff", "error": "#ba1a1a", "inverse-on-surface": "#eaf1ff", "surface": "#f8f9ff", "surface-container": "#e5eeff", "on-primary-container": "#ecedff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-sm": "0.5rem", "space-xs": "0.25rem", "space-md": "1rem", "margin": "2rem", "gutter-mobile": "0.75rem", "gutter": "1.5rem", "space-lg": "1.5rem", "space-xl": "2.5rem", "margin-mobile": "1rem" }, fontFamily: { "display": ["Plus Jakarta Sans"], "label-sm": ["Inter"], "body-sm": ["Inter"], "headline-lg-mobile": ["Plus Jakarta Sans"], "body-md": ["Inter"], "display-mobile": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "label-md": ["Inter"], "data-metric": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "telecom-mono": ["JetBrains Mono"], "body-lg": ["Inter"] }, fontSize: { "display": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.03em", "fontWeight": "700" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.03em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }], "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.005em", "fontWeight": "400" }], "display-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "700" }], "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-md": ["13px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500" }], "data-metric": ["28px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "telecom-mono": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }], "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "400" }] } } } };</script><style>@layer base{html,body{width:100%;margin:0;padding:0;min-height:100%;}body{overscroll-behavior-y:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased pt-safe pb-safe min-h-screen flex flex-col"><main class="flex-1 flex flex-col relative w-full bg-surface"><div class="flex flex-col w-full relative">
+<!-- Dimmed Background Mobile Dashboard Context -->
+<div class="w-full px-margin-mobile pt-space-md pb-space-xl opacity-40 blur-[1px] pointer-events-none select-none flex flex-col gap-space-md">
+<!-- Active eSIM Card in Background -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-space-xs">
+<span class="text-headline-sm font-headline-sm">🇯🇵</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Japan 5G Explorer</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+          Active
+        </span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[18%] rounded-full"></div>
+</div>
+<div class="flex justify-between font-label-md text-label-md text-on-surface-variant">
+<span>1.8 GB left of 10 GB</span>
+<span>Expires in 2 days</span>
+</div>
+</div>
+<!-- Quick Stats in Background -->
+<div class="grid grid-cols-2 gap-gutter-mobile">
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<span class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider block">Carrier</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">SoftBank 5G</span>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<span class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider block">Roaming IP</span>
+<span class="font-telecom-mono text-telecom-mono text-on-surface">172.56.21.90</span>
+</div>
+</div>
+</div>
+<!-- Bottom Sheet Backdrop Scrim -->
+<div class="fixed inset-0 bg-inverse-surface/40 backdrop-blur-sm z-30 transition-opacity"></div>
+<!-- Top-Up Bottom Sheet Modal Container -->
+<div class="fixed inset-x-0 bottom-0 z-40 max-w-lg mx-auto w-full flex flex-col bg-surface-container-lowest rounded-t-[28px] shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-300">
+<!-- Drag Handle Bar -->
+<div class="w-full flex justify-center pt-3 pb-1 cursor-grab active:cursor-grabbing">
+<div class="w-10 h-1 rounded-full bg-outline-variant/60"></div>
+</div>
+<!-- Modal Header -->
+<div class="px-margin-mobile pt-1 pb-3 flex items-start justify-between">
+<div class="flex flex-col">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface flex items-center gap-1.5">
+          Add More Data
+          <span class="material-symbols-outlined text-primary-container text-body-lg" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</h2>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<p class="font-label-md text-label-md text-on-surface-variant">
+            Japan 5G Explorer (SoftBank) • <span class="font-telecom-mono text-telecom-mono font-semibold text-primary">1.8 GB remaining</span>
+</p>
+</div>
+</div>
+<button aria-label="Close bottom sheet" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors focus:outline-none" type="button">
+<span class="material-symbols-outlined text-body-lg">close</span>
+</button>
+</div>
+<!-- Scrollable Body Content -->
+<div class="px-margin-mobile flex flex-col gap-space-md overflow-y-auto max-h-[618px] pb-space-sm">
+<!-- Selectable Packages Stack -->
+<div aria-label="Select Top-Up Data Tier" class="flex flex-col gap-2.5" id="topup-tiers" role="radiogroup">
+<!-- Tier 1: 1 GB -->
+<div class="tier-card cursor-pointer rounded-xl p-3.5 bg-surface-container-low hover:bg-surface-container transition-all relative flex items-center justify-between shadow-sm" data-gb="1 GB" data-price="3.00" data-tier="1">
+<div class="flex items-center gap-3">
+<div class="radio-indicator w-5 h-5 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary-container shadow-xs">
+<span class="material-symbols-outlined text-body-sm opacity-0 check-icon">check</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface">1 GB</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant font-medium">+7 Days</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Ideal for instant messaging &amp; navigation</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-headline-sm text-headline-sm text-on-surface">$3.00</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-telecom-mono">$3.00/GB</span>
+</div>
+</div>
+<!-- Tier 2: 3 GB (PRE-SELECTED) -->
+<div class="tier-card cursor-pointer rounded-xl p-3.5 bg-primary-fixed/30 hover:bg-primary-fixed/40 transition-all relative flex items-center justify-between shadow-md" data-gb="3 GB" data-price="7.00" data-tier="2">
+<div class="absolute -top-2.5 right-4 bg-primary text-on-primary font-label-sm text-label-sm px-2.5 py-0.5 rounded-full shadow-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-label-sm" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+            Most Popular
+          </div>
+<div class="flex items-center gap-3">
+<div class="radio-indicator w-5 h-5 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-xs">
+<span class="material-symbols-outlined text-body-sm check-icon">check</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">3 GB</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-medium">+15 Days</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Best balance for remote work &amp; city sharing</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-headline-sm text-headline-sm text-primary font-bold">$7.00</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-telecom-mono">$2.33/GB</span>
+</div>
+</div>
+<!-- Tier 3: 5 GB -->
+<div class="tier-card cursor-pointer rounded-xl p-3.5 bg-surface-container-low hover:bg-surface-container transition-all relative flex items-center justify-between shadow-sm" data-gb="5 GB" data-price="10.00" data-tier="3">
+<div class="absolute -top-2.5 right-4 bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm px-2.5 py-0.5 rounded-full shadow-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-label-sm" style="font-variation-settings: 'FILL' 1;">savings</span>
+            Best Value
+          </div>
+<div class="flex items-center gap-3">
+<div class="radio-indicator w-5 h-5 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary-container shadow-xs">
+<span class="material-symbols-outlined text-body-sm opacity-0 check-icon">check</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface">5 GB</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant font-medium">+30 Days</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">High-speed streaming and continuous hotspots</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-headline-sm text-headline-sm text-on-surface">$10.00</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-telecom-mono">$2.00/GB</span>
+</div>
+</div>
+</div>
+<!-- Compact Telemetry Summary Box -->
+<div class="bg-surface-container-low rounded-xl p-3.5 flex flex-col gap-2.5">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-body-md text-primary">sync</span>
+<span class="font-label-md text-label-md">Data Extension</span>
+</div>
+<span class="font-label-md text-label-md font-semibold text-on-surface" id="summary-data-desc">3 GB added instantly to eSIM</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-body-md text-secondary">credit_card</span>
+<span class="font-label-md text-label-md">Payment Method</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="font-telecom-mono text-telecom-mono text-on-surface bg-surface-container-lowest px-2 py-0.5 rounded-lg shadow-xs">Visa •••• 4242</span>
+<button class="font-label-sm text-label-sm text-primary hover:text-primary-container transition-colors font-medium" type="button">Change</button>
+</div>
+</div>
+<div class="pt-2 mt-0.5 flex justify-between items-baseline bg-surface-container-high/40 -mx-3.5 -mb-3.5 px-3.5 py-2.5 rounded-b-xl">
+<span class="font-label-md text-label-md text-on-surface font-medium">Total Due</span>
+<div class="flex items-baseline gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">USD</span>
+<span class="font-data-metric text-data-metric text-on-surface font-bold tracking-tight" id="summary-price">$7.00</span>
+</div>
+</div>
+</div>
+<!-- Trust Assurance Mini Banner -->
+<div class="flex items-center justify-center gap-2 text-on-surface-variant py-0.5">
+<span class="material-symbols-outlined text-label-sm text-tertiary" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="font-label-sm text-label-sm">No re-installation needed. Roaming continues automatically.</span>
+</div>
+</div>
+<!-- Modal Action Buttons Footer -->
+<div class="px-margin-mobile pt-2 pb-6 flex flex-col gap-2 bg-surface-container-lowest">
+<button class="w-full h-12 rounded-xl bg-primary-container text-on-primary font-headline-sm text-headline-sm flex items-center justify-center gap-2 shadow-md hover:bg-primary transition-all active:scale-[0.99] focus:outline-none" id="primary-submit-btn" type="button">
+<span class="material-symbols-outlined text-body-lg">flash_on</span>
+<span id="btn-label">Purchase Top-Up • $7.00</span>
+</button>
+<button class="w-full h-10 rounded-xl bg-transparent hover:bg-surface-container-low text-on-surface-variant font-label-md text-label-md flex items-center justify-center transition-colors" type="button">
+        Cancel
+      </button>
+</div>
+</div>
+<script>
+    (function initTopUpSelection() {
+      const cards = document.querySelectorAll('.tier-card');
+      const summaryPrice = document.getElementById('summary-price');
+      const summaryDesc = document.getElementById('summary-data-desc');
+      const btnLabel = document.getElementById('btn-label');
+
+      cards.forEach(card => {
+        card.addEventListener('click', () => {
+          // Reset all cards to unselected state
+          cards.forEach(c => {
+            c.classList.remove('bg-primary-fixed/30', 'shadow-md');
+            c.classList.add('bg-surface-container-low', 'shadow-sm');
+            const icon = c.querySelector('.check-icon');
+            const indicator = c.querySelector('.radio-indicator');
+            if (icon) icon.classList.add('opacity-0');
+            if (indicator) {
+              indicator.classList.remove('bg-primary-container', 'text-on-primary');
+              indicator.classList.add('bg-surface-container-lowest', 'text-primary-container');
+            }
+          });
+
+          // Activate clicked card
+          card.classList.remove('bg-surface-container-low', 'shadow-sm');
+          card.classList.add('bg-primary-fixed/30', 'shadow-md');
+          const currentIcon = card.querySelector('.check-icon');
+          const currentIndicator = card.querySelector('.radio-indicator');
+          if (currentIcon) currentIcon.classList.remove('opacity-0');
+          if (currentIndicator) {
+            currentIndicator.classList.add('bg-primary-container', 'text-on-primary');
+            currentIndicator.classList.remove('bg-surface-container-lowest', 'text-primary-container');
+          }
+
+          // Update dynamic text metrics
+          const price = card.getAttribute('data-price');
+          const gb = card.getAttribute('data-gb');
+          if (summaryPrice) summaryPrice.textContent = '$' + price;
+          if (summaryDesc) summaryDesc.textContent = gb + ' added instantly to eSIM';
+          if (btnLabel) btnLabel.textContent = 'Purchase Top-Up • $' + price;
+        });
+      });
+    })();
+  </script>
+</div></main></body></html>
