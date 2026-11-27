@@ -79,6 +79,10 @@ handles the request.
 * Response is displayed with an "Accept" suggestion.
 * Accepting applies the content back to the RichTextEditor.
 
+## Windows deployment
+
+The Windows sample uses Syncfusion RichTextEditor, which hosts WebView2. The app configures WebView2 to store its profile under the current user's Local AppData so initialization does not depend on write access to the deployed app directory. Install the Microsoft Edge WebView2 Evergreen Runtime on the target Windows device before launching the sample.
+
 ## Troubleshooting
 
 ### No AI Response

@@ -14,7 +14,7 @@ namespace AIPoweredWritingAssistant
         /// <summary>
         /// Field to store the endpoint value
         /// </summary>
-        private const string endpoint = "END_POINT";
+        private const string endpoint = "ENDPOINT";
 
         /// <summary>
         /// Field to store the deployment name
@@ -199,6 +199,11 @@ namespace AIPoweredWritingAssistant
             }
 
             return string.Empty;
+        }
+
+        Task<string> IAzureAIService.GetResultsFromAI(string userAIPrompt)
+        {
+            return GetResultsFromAI(userAIPrompt);
         }
 
         #endregion
