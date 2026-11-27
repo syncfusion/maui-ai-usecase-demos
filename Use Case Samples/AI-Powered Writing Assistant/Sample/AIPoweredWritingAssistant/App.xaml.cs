@@ -6,6 +6,7 @@ namespace AIPoweredWritingAssistant
     {
         public App()
         {
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("SYNCFUSION_LICENSE_KEY");
             InitializeComponent();
         }
 

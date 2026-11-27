@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
+using System.IO;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -16,6 +17,12 @@ namespace AIPoweredWritingAssistant.WinUI
         /// </summary>
         public App()
         {
+            var webViewDataFolder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "AIPoweredWritingAssistant",
+                "WebView2");
+            Environment.SetEnvironmentVariable("WEBVIEW2_USER_DATA_FOLDER", webViewDataFolder);
+
             this.InitializeComponent();
         }
 

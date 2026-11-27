@@ -86,7 +86,7 @@ namespace SmartArticleGenerator
             this._resourcesService = new ResourcesService();
             this.AssistViewRequestCommand = new Command(async (o) => await ExecuteRequestCommand(o));
             this.RegenerateCommand = new Command(ExecuteRegenerateCommand);
-            this.ResourceSelectedCommand = new Command<Models.ResourceItem>(ExecuteResourceSelected);
+            this.ResourceSelectedCommand = new Command<ResourceItem>(ExecuteResourceSelected);
             this.DeleteResourceCommand = new Command(async (o) => await ExecuteDeleteResource(o));
             this.AddResourceCommand = new Command(async (o) => await ExecuteAddResource(o));
             this.OpenUrlCommand = new Command(async (o) => await ExecuteOpenUrl(o));
@@ -384,7 +384,7 @@ namespace SmartArticleGenerator
         /// <param name="obj">The resource object to remove.</param>
         private async Task ExecuteDeleteResource(object obj)
         {
-            var resource = obj as Models.ResourceItem;
+            var resource = obj as ResourceItem;
             if (resource != null)
             {
                 Resources.Remove(resource);
@@ -396,7 +396,6 @@ namespace SmartArticleGenerator
         /// <summary>
         /// Opens the specified URL using the system browser.
         /// </summary>
-        /// <param name="url">The URL to open.</param>
         private async Task ExecuteOpenUrl(object obj)
         {
             var url = obj as string;
