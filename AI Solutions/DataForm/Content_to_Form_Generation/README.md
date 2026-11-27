@@ -91,8 +91,6 @@ Phone    :
 
 Users can continue editing the generated fields directly from the DataForm.
 
-![AI-Powered Dynamic Form Generation in .NET MAUI DataForm](AI-Powered-Smart-Form-Generation-DataForm.gif)
-
 ## Prerequisites
 
 Before running the sample, ensure that you have:
@@ -114,10 +112,12 @@ If you encounter a **"Path Too Long"** exception while building the project:
 3. Delete the `bin`, `obj`, and `.vs` folders.
 4. Rebuild the project.
 
+### General Troubleshooting
+
+1. Verify that all required SDKs and tools are up to date.
+2. Check the Azure OpenAI setup to ensure that all values are correctly configured before running the demo.
+3. If any error occurs during runtime, restart the application and give it another try to refresh everything.
+
 ## License
 
-Syncfusion has no liability for any damage or consequence that may arise from using or viewing the samples. The samples are for demonstrative purposes. If you choose to use or access the samples, you agree to not hold Syncfusion liable, in any form, for any damage related to use, for accessing, or viewing the samples.
-
-By accessing, viewing, or using the samples, you acknowledge and agree that Syncfusion's samples will not allow you to seek injunctive relief in any form for any claim related to the sample.
-
-If you do not agree to this, do not view, access, utilize, or otherwise interact with Syncfusion's samples.
+Syncfusion has no liability for any damage or consequence that may arise from using or viewing the samples. The samples are for demonstrative purposes. If you choose to use or access the samples, you agree to not hold Syncfusion liable, in any form, for any damage related to use, for accessing, or viewing the samples. By accessing, viewing, or using the samples, you acknowledge and agree Syncfusion's samples will not allow you to seek injunctive relief in any form for any claim related to the sample. If you do not agree to this, do not view, access, utilize, or otherwise interact with Syncfusion's samples.

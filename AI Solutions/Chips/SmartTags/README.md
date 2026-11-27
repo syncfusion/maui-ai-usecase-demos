@@ -48,15 +48,9 @@ The AI-generated tags are displayed as chips with a polished loading state and a
 
 The system prompt constrains the model to `TagVocabulary`. The view model then validates each returned line against that vocabulary, canonicalizes names, removes duplicates, and limits the displayed results to 12 tags.
 
-## Azure OpenAI setup
-
-The endpoint, deployment name, and API key are configured in `SmartAITags/SmartAITags/AIService/AzureOpenAITagService.cs`. Rotate any key that has been committed, and never commit credentials. This sample calls Azure OpenAI directly from the MAUI client, so a packaged app can expose a bundled key. Use a secured backend service to protect credentials in production.
-
-The project targets .NET 10 and uses the Azure.AI.OpenAI 2.1.0 NuGet package.
-
 ## Output
 
-![Smart Tags demo](SmartAITag.gif)
+The AI-generated response is converted into tag items and rendered dynamically.
 
 ## Requirements to run the demo
 
@@ -66,10 +60,10 @@ To run the demo, refer to https://help.syncfusion.com/maui/system-requirements
 
 Before running the sample, ensure that you have:
 
-- Visual Studio with the .NET 10 SDK and .NET MAUI workload installed
-- .NET 10 SDK with the .NET MAUI workload
+- Visual Studio 2022 with .NET MAUI workload installed
+- .NET 9 or later
 - Azure OpenAI resource and deployment
-- Syncfusion .NET MAUI Core package
+- Syncfusion .NET MAUI Chips package
 - Valid Syncfusion license key
 
 ## Troubleshooting
@@ -78,6 +72,12 @@ Before running the sample, ensure that you have:
 
 If you encounter a "Path Too Long" exception while building the project, close Visual Studio, rename the repository folder to a shorter name, and rebuild the project.
 
+### General Troubleshooting
+
+1. Make sure all necessary SDKs and tools are up to date.
+2. Double-check the Azure OpenAI setup to ensure that all values are correctly configured.
+3. In case of any errors during execution, review the error messages displayed in the application for guidance.
+
 ## License
 
-Syncfusion has no liability for any damage or consequence that may arise from using or viewing the samples. The samples are for demonstrative purposes. If you choose to use or access the samples, you agree to not hold Syncfusion liable, in any form, for any damage related to use, for accessing, or viewing the samples. By accessing, viewing, or seeing the samples, you acknowledge and agree Syncfusion's samples will not allow you seek injunctive relief in any form for any claim related to the sample. If you do not agree to this, do not view, access, utilize, or otherwise do anything with Syncfusion's samples.
+Syncfusion has no liability for any damage or consequence that may arise from using or viewing the samples. The samples are for demonstrative purposes. If you choose to use or access the samples, you agree to not hold Syncfusion liable, in any form, for any damage related to use, for accessing, or viewing the samples. By accessing, viewing, or using the samples, you acknowledge and agree Syncfusion's samples will not allow you to seek injunctive relief in any form for any claim related to the sample. If you do not agree to this, do not view, access, utilize, or otherwise interact with Syncfusion's samples.
