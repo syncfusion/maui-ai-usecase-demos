@@ -12,25 +12,24 @@ namespace DataFormAISolution;
 /// </summary>
 public class AzureOpenAIOptions
 {
-	/// <summary>
-	/// Gets the default Azure OpenAI endpoint.
-	/// </summary>
-	public const string Endpoint = "AZURE_OPENAI_ENDPOINT";
-
-	/// <summary>
-	/// Gets the default Azure OpenAI deployment name.
-	/// </summary>
-	public const string DeploymentName = "AZURE_OPENAI_DEPLOYMENT";
+    /// <summary>
+    /// Gets the default Azure OpenAI endpoint.
+    /// </summary>
+    private static readonly string Endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? string.Empty;
 
 	/// <summary>
 	/// Gets the default Azure OpenAI API key.
 	/// </summary>
-	public const string Key = "AZURE_OPENAI_KEY";
-
+    private static readonly string Key = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY") ?? string.Empty;
 	/// <summary>
-	/// Gets the resolved Azure OpenAI endpoint.
+	/// Gets the default Azure OpenAI deployment name.
 	/// </summary>
-	public string EndpointValue { get; }
+    internal static readonly string DeploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") ?? string.Empty;
+
+    /// <summary>
+    /// Gets the resolved Azure OpenAI endpoint.
+    /// </summary>
+    public string EndpointValue { get; }
 
 	/// <summary>
 	/// Gets the resolved Azure OpenAI deployment name.

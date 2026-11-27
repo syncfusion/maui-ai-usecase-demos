@@ -13,9 +13,9 @@ namespace DataGrid_Duplicate_Sample;
 /// </summary>
 public sealed class AzureOpenAIDuplicateAnalyzer : IDuplicateAnalyzer
 {
-    private const string Endpoint   = "Your Endpoint";     
-    private const string ApiKey     = "API key";      
-    private const string Deployment = "Your deployment name";             
+    public string Endpoint { get; set; } = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? string.Empty;
+    public string ApiKey { get; set; } = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY") ?? string.Empty;
+    public string DeploymentName { get; set; } = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") ?? string.Empty;
 
     private static readonly JsonSerializerOptions JsonOpts = new()
     {
@@ -200,7 +200,7 @@ public sealed class AzureOpenAIDuplicateAnalyzer : IDuplicateAnalyzer
             return new List<DuplicateResult>();
 
         var client = new AzureOpenAIClient(new Uri(Endpoint), new AzureKeyCredential(ApiKey));
-        var chat = client.GetChatClient(Deployment);
+        var chat = client.GetChatClient(DeploymentName);
 
         var userPayload = JsonSerializer.Serialize(candidatePairs, new JsonSerializerOptions
         {
@@ -236,7 +236,7 @@ public sealed class AzureOpenAIDuplicateAnalyzer : IDuplicateAnalyzer
         catch (ClientResultException ex) when (ex.Status == 404)
         {
             throw new InvalidOperationException(
-                $"Azure OpenAI returned 404 ({ex.Data}). The deployment name '{Deployment}' " +
+                $"Azure OpenAI returned 404 ({ex.Data}). The deployment name '{DeploymentName}' " +
                 "probably doesn't exist on this resource. Check Azure portal → your resource → " +
                 "Model deployments and use the deployment NAME (not the model name).", ex);
         }

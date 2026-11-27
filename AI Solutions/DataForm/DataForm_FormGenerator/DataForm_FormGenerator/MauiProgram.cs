@@ -52,9 +52,9 @@ namespace DataForm_FormGenerator
             var section = configuration.GetSection("AzureOpenAI");
 
             var options = new AzureOpenAiOptions();
-            options.Endpoint = section["Endpoint"] ?? options.Endpoint;
-            options.DeploymentName = section["DeploymentName"] ?? options.DeploymentName;
-            options.ApiKey = section["ApiKey"] ?? options.ApiKey;
+            options.Endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT")?.Trim() ?? string.Empty;
+            options.ApiKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY")?.Trim() ?? string.Empty;
+            options.DeploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME")?.Trim() ?? string.Empty;
             return options;
         }
     }

@@ -4,11 +4,12 @@ namespace DataForm_FormGenerator.Configuration;
 /// Strongly-typed configuration bound from <c>AzureOpenAI</c> section of appsettings.json
 /// (or overloads such as environment variables / MAUI asset files).
 /// </summary>
-public sealed class AzureOpenAiOptions
+public class AzureOpenAiOptions
 {
-    public string Endpoint { get; set; } = "END-POINT";
-    public string DeploymentName { get; set; } = "DEPLOYMENT_NAME";
-    public string ApiKey { get; set; } = "API_KEY";
+    public string Endpoint { get; set; } = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? string.Empty;
+
+    public string ApiKey { get; set; } = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY") ?? string.Empty;
+    public string DeploymentName { get; set; } = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") ?? string.Empty;
 
     /// <summary>
     /// Generates the error message shown when any field is missing or invalid. Empty when valid.

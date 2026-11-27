@@ -55,9 +55,7 @@ public sealed class AzureOpenAiSchemaService : IAiSchemaService
 
         var chatOptions = new ChatCompletionOptions
         {
-            Temperature = 0f,
-            ResponseFormat = ChatResponseFormat.CreateJsonObjectFormat(),
-            MaxOutputTokenCount = 4096
+            ResponseFormat = ChatResponseFormat.CreateJsonObjectFormat()
         };
 
         ClientResult<ChatCompletion> result;
@@ -67,11 +65,13 @@ public sealed class AzureOpenAiSchemaService : IAiSchemaService
         }
         catch (RequestFailedException ex)
         {
-            throw new InvalidOperationException($"Invalid API key details ({ex.Status}: {ex.ErrorCode}). {ex.Message}",ex);
+            var prefix = ex.Status is 401 or 403 ? "Invalid API key details. " : string.Empty;
+            throw new AiCredentialException($"{prefix}Azure OpenAI returned HTTP {ex.Status} ({ex.ErrorCode}). {ex.Message}", ex);
         }
         catch (ClientResultException ex)
         {
-            throw new InvalidOperationException($"Invalid API key details ({ex.Status}). {ex.Message}",ex);
+            var prefix = ex.Status is 401 or 403 ? "Invalid API key details. " : string.Empty;
+            throw new AiCredentialException($"{prefix}Azure OpenAI returned HTTP {ex.Status}. {ex.Message}", ex);
         }
 
         var rawJson = string.Concat(
@@ -135,11 +135,7 @@ public sealed class AzureOpenAiSchemaService : IAiSchemaService
 
         try
         {
-            var probe = new ChatCompletionOptions
-            {
-                Temperature = 0f,
-                MaxOutputTokenCount = 1,
-            };
+            var probe = new ChatCompletionOptions();
             await this.chat.CompleteChatAsync(new List<ChatMessage> { new UserChatMessage("ping") },probe,cancellationToken).ConfigureAwait(false);
 
         }

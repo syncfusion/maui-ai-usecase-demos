@@ -9,25 +9,25 @@ namespace SchedulerAISample
 	/// </summary>
 	public class AzureOpenAIOptions
 	{
-		/// <summary>
-		/// Gets the default Azure OpenAI endpoint environment variable name.
-		/// </summary>
-		public const string Endpoint = "AZURE_OPENAI_ENDPOINT";
-
-		/// <summary>
-		/// Gets the default Azure OpenAI deployment name environment variable name.
-		/// </summary>
-		public const string DeploymentName = "AZURE_OPENAI_DEPLOYMENT";
-
+        /// <summary>
+        /// Gets the default Azure OpenAI endpoint environment variable name.
+        /// </summary>
+        public static readonly string Endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? string.Empty;
+        
 		/// <summary>
 		/// Gets the default Azure OpenAI API key environment variable name.
 		/// </summary>
-		public const string Key = "AZURE_OPENAI_KEY";
-
+		public static readonly string Key = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY") ?? string.Empty;
+        
 		/// <summary>
-		/// Gets the Azure OpenAI endpoint value.
+		/// Gets the default Azure OpenAI deployment name environment variable name.
 		/// </summary>
-		public string EndpointValue { get; }
+		public static readonly string DeploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") ?? string.Empty;
+
+        /// <summary>
+        /// Gets the Azure OpenAI endpoint value.
+        /// </summary>
+        public string EndpointValue { get; }
 
 		/// <summary>
 		/// Gets the Azure OpenAI deployment name value.
