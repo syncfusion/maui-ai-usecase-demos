@@ -8,10 +8,9 @@ namespace SmartRTEFormatter;
 /// </summary>
 public sealed class AzureOpenAIFormattingService : IAIFormattingService
 {
-    private const string BaseEndpoint = "ENDPOINT";
-    private const string DeploymentName = "gpt-5-mini";
-    private const string ApiKey = "API_KEY";
-
+    public static readonly string BaseEndpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? string.Empty;
+    public static readonly string ApiKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY") ?? string.Empty;
+    public static readonly string DeploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") ?? string.Empty;
     private readonly HttpClient httpClient = new();
 
     private const string SystemPrompt =

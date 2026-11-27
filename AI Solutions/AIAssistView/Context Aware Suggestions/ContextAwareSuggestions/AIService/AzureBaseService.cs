@@ -14,11 +14,11 @@ namespace ContextAwareSuggestions;
 /// </remarks>
 public abstract class AzureBaseService
 {
-    protected virtual string Endpoint => "YOUR_ENDPOINT_HERE";
+    protected virtual string Endpoint => Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? string.Empty;
 
-    protected virtual string ApiKey => "YOUR_API_KEY_HERE";
+    protected virtual string ApiKey => Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY") ?? string.Empty;
 
-    protected virtual string DeploymentName => "YOUR_DEPLOYMENT_NAME_HERE";
+    protected virtual string DeploymentName => Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") ?? string.Empty;
 
     protected AzureOpenAIClient CreateClient()
     {

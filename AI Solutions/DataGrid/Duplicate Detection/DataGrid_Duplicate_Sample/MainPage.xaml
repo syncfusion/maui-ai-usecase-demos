@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:syncfusion="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
              xmlns:local="clr-namespace:DataGrid_Duplicate_Sample"
-             xmlns:models="clr-namespace:DataGrid_Duplicate_Sample.Models"
              x:Class="DataGrid_Duplicate_Sample.MainPage"
              x:DataType="local:ViewModel"
+             x:Name="RootPage"
              Title="Customer Duplicate Detection"
              BackgroundColor="White">
 
@@ -132,7 +132,7 @@
                                                        Visible="{Binding ShowAnalysisColumns}"
                                                        ColumnWidthMode="Fill">
                         <syncfusion:DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate x:DataType="models:Customer">
+                            <DataTemplate x:DataType="local:Customer">
                                 <Border BackgroundColor="{Binding Status, Converter={StaticResource StatusPillColor}}"
                                         StrokeThickness="0"
                                         StrokeShape="RoundRectangle 6"
@@ -152,11 +152,11 @@
                                                        Visible="{Binding ShowAnalysisColumns}"
                                                        AllowEditing="False">
                         <syncfusion:DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate x:DataType="models:Customer">
+                            <DataTemplate x:DataType="local:Customer">
                                 <Button Text="&#xE70F;"
                                         FontFamily="MaterialAssets"
                                         IsVisible="{Binding IsDuplicate}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:ViewModel}}, Path=DeleteRowCommand}"
+                                        Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteRowCommand}"
                                         CommandParameter="{Binding .}"
                                         BackgroundColor="Transparent"
                                         TextColor="#94A3B8"

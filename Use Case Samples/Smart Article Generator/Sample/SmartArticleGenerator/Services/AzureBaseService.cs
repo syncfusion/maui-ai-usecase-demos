@@ -14,17 +14,17 @@ namespace SmartArticleGenerator
         /// <summary>
         /// The EndPoint
         /// </summary>
-        private const string endpoint = "END_POINT";
+        public static readonly string endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? string.Empty;
 
         /// <summary>
         /// The Deployment name
         /// </summary>
-        internal const string deploymentName = "DEPLOYMENT_NAME";
+        public static readonly string deploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") ?? string.Empty;
 
         /// <summary>
         /// The Image Deployment name
         /// </summary>
-        internal const string imageDeploymentName = "IMAGE_MODEL_NAME";
+        public static readonly string key = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY") ?? string.Empty;
 
         /// <summary>
         /// The API key

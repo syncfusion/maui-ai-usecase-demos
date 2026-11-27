@@ -5,10 +5,10 @@ namespace AIProcessDiagramDrafting.Services;
 
 public abstract class AzureBaseService
 {
-	protected static readonly string Endpoint = "AZURE_OPENAI_ENDPOINT";
-	protected static readonly string DeploymentName = "AZURE_OPENAI_DEPLOYMENT";
-	protected static readonly string ApiKey = "AZURE_OPENAI_KEY";
-	protected static readonly string ApiVersion = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_VERSION") ?? "2024-08-01-preview";
+    public static readonly string Endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? string.Empty;
+    public static readonly string ApiKey = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY") ?? string.Empty;
+    public static readonly string DeploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") ?? string.Empty;
+    protected static readonly string ApiVersion = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_VERSION") ?? "2024-08-01-preview";
 
     protected static bool IsConfigured =>
         !string.IsNullOrWhiteSpace(Endpoint) &&

@@ -103,9 +103,7 @@ public abstract class AzureBaseService
     /// </summary>
     public static AzureOpenAIOptions CreateOptions() => new()
     {
-        Endpoint = Endpoint,
-        DeploymentName = DeploymentName,
-        ApiKey = Key,
+        
         Temperature = 0f,
         MaxTokens = 4096,
     };

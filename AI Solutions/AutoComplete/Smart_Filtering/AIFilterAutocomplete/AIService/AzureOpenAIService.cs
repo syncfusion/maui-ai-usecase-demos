@@ -10,20 +10,9 @@ namespace AIFilterAutocomplete
 {
     public class AzureOpenAIService
     {
-         /// <summary>
-        /// The EndPoint
-        /// </summary>
-        private const string endpoint = "AZURE_OPENAI_ENDPOINT";
-
-        /// <summary>
-        /// The Deployment name
-        /// </summary>
-        private const string deploymentName = "AZURE_OPENAI_DEPLOYMENT";
-
-        /// <summary>
-        /// The API key
-        /// </summary>
-        private const string key = "AZURE_OPENAI_KEY";
+        public static readonly string endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? string.Empty;
+        public static readonly string key = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY") ?? string.Empty;
+        public static readonly string deploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") ?? string.Empty;
 
         /// <summary>
         /// The chat completion service

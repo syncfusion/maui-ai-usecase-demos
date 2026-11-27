@@ -6,10 +6,9 @@ namespace AITaskPrioritization
 {
     internal class AzureOpenAIBaseService
     {
-        private const string endpoint = "<MENTION-YOUR-URL>";
-        private const string deploymentName = "<MENTION-YOUR-DEPLOYMENT-NAME>";
-        private const string key = "<MENTION-YOUR-KEY>";
-
+        public static readonly string endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? string.Empty;
+        public static readonly string key = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY") ?? string.Empty;
+        public static readonly string deploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") ?? string.Empty;
         private IChatClient? client;
 
         public bool IsCredentialValid { get; private set; } = false;
