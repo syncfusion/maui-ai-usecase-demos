@@ -1,20 +1,16 @@
+using eSIMDataManager.ViewModels;
+
 namespace eSIMDataManager;
 
 public partial class App : Application
 {
-    private readonly AppShell appShell;
-
-    public App(AppShell appShell)
+    public App(MainViewModel viewModel)
     {
         InitializeComponent();
-        this.appShell = appShell;
-    }
-
-    protected override Window CreateWindow(IActivationState? activationState)
-    {
-        var window = new Window(appShell);
-        window.MinimumWidth = 360;
-        window.MinimumHeight = 600;
-        return window;
+#if ANDROID || IOS
+        MainPage = new MobileHostPage(viewModel);
+#else
+        MainPage = new AppShell(viewModel);
+#endif
     }
 }

@@ -21,7 +21,7 @@
     <ContentPage.Content>
         <Grid RowDefinitions="Auto,*,Auto" BackgroundColor="#F6F8FF">
             <!-- Top App Header -->
-            <Border Grid.Row="0" BackgroundColor="#80FFFFFF" StrokeThickness="0" Padding="{OnIdiom Phone=16, Tablet=24, Desktop='36,0'}">
+            <Border Grid.Row="0" BackgroundColor="#80FFFFFF" StrokeThickness="0" Padding="{OnIdiom Phone=16, Tablet=24, Desktop='36,18'}">
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="18" VerticalOptions="Center" MinimumHeightRequest="48">
                     <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
                         <Border WidthRequest="34" HeightRequest="34" BackgroundColor="#1E5BFF" StrokeThickness="0" StrokeShape="RoundRectangle 11">
