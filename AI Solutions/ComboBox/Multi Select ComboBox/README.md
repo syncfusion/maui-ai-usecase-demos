@@ -6,8 +6,6 @@ This sample demonstrates AI-driven selection with the Syncfusion .NET MAUI Combo
 
 Multi-select experiences often require users to identify multiple items from a long list. This sample makes that process smarter by allowing the user to describe their intent in plain language, while the AI maps the request to the available fruit list and updates the ComboBox selection automatically.
 
-The solution is useful for scenarios such as guided filtering, product selection, preference matching, and intelligent item pickers inside MAUI applications.
-
 ## Key Features
 
 - Syncfusion .NET MAUI ComboBox integration
@@ -45,40 +43,37 @@ The solution is useful for scenarios such as guided filtering, product selection
 </editors:SfComboBox>
 ```
 
-## AI integration
-
-`FruitSelectionAzureAIService` uses Azure.AI.OpenAI 2.1.0 and the same typed SDK flow as the SmartTags sample: `AzureOpenAIClient`, `GetChatClient`, and `CompleteChatAsync`. The view model sends the fruit names and their descriptive tags with the user's request. It parses the response, ignores non-matches, removes duplicates, limits results to 10, and applies the matching names to the existing fruit models.
-
-## Azure OpenAI setup
-
-Configure the endpoint and deployment in `SmartAIComboBox/SmartAIComboBox/AIService/FruitSelectionAzureAIService.cs`. Replace the `ApiKey` placeholder there with a newly rotated key before running; the service reports an actionable error while the placeholder remains. Do not commit credentials. This sample calls Azure OpenAI directly from the MAUI client, so a packaged app can expose a bundled key. Use a secured backend service to protect credentials in production.
-
-The project targets .NET 10 and uses the Azure.AI.OpenAI 2.1.0 NuGet package.
-
 ## Output
 
-![AI MultiSelect ComboBox demo](smartcombobox_fruits.gif)
-
-## Requirements to run the demo
-
-To run the demo, refer to https://help.syncfusion.com/maui/system-requirements
+The AI-powered intent-based selection analyzes the user's input and suggests items that best match the intended meaning.
 
 ## Prerequisites
 
 Before running the sample, ensure that you have:
 
-- Visual Studio with the .NET 10 SDK and .NET MAUI workload installed
-- .NET 10 SDK with the .NET MAUI workload
+- Visual Studio 2022 with .NET MAUI workload installed
+- .NET 9 or later
 - Azure OpenAI resource and deployment
-- Syncfusion .NET MAUI Core and Inputs packages
+- Syncfusion .NET MAUI ComboBox package
 - Valid Syncfusion license key
 
 ## Troubleshooting
 
-### Path too long exception
+### Path Too Long Exception
 
-If you encounter a "Path Too Long" exception while building the project, close Visual Studio, rename the repository folder to a shorter name, and rebuild the project.
+If you encounter a "Path Too Long" exception while building the project:
+
+1. Close Visual Studio.
+2. Rename the repository folder to a shorter name.
+3. Delete the `bin`, `obj`, and `.vs` folders.
+4. Rebuild the project.
+
+### General Troubleshooting
+
+1. Verify that all components are correctly installed.
+2. Check the Azure OpenAI configuration if issues arise during setup or runtime.
+3. Monitor error messages carefully, following any suggestions provided by the application.
 
 ## License
 
-Syncfusion has no liability for any damage or consequence that may arise from using or viewing the samples. The samples are for demonstrative purposes. If you choose to use or access the samples, you agree to not hold Syncfusion liable, in any form, for any damage related to use, for accessing, or viewing the samples. By accessing, viewing, or seeing the samples, you acknowledge and agree Syncfusion's samples will not allow you seek injunctive relief in any form for any claim related to the sample. If you do not agree to this, do not view, access, utilize, or otherwise do anything with Syncfusion's samples.
+Syncfusion has no liability for any damage or consequence that may arise from using or viewing the samples. The samples are for demonstrative purposes. If you choose to use or access the samples, you agree to not hold Syncfusion liable, in any form, for any damage related to use, for accessing, or viewing the samples. By accessing, viewing, or using the samples, you acknowledge and agree Syncfusion's samples will not allow you to seek injunctive relief in any form for any claim related to the sample. If you do not agree to this, do not view, access, utilize, or otherwise interact with Syncfusion's samples.

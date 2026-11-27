@@ -1,14 +1,14 @@
 # AI-Powered Smart Filter in .NET MAUI ComboBox
 
-This sample demonstrates AI-powered smart filtering with the Syncfusion® .NET MAUI ComboBox. The application integrates Azure OpenAI to understand natural language search queries and intelligently suggest matching items.
+This sample demonstrates AI-powered smart filtering with the Syncfusion .NET MAUI ComboBox. The application integrates Azure OpenAI to understand natural language search queries and intelligently suggest matching items.
 
 ## Overview
 
-Traditional filtering relies on exact text matching, which can make it difficult to discover relevant items when users use natural language descriptions, incomplete keywords, or spelling variations.
+Traditional filtering relies on exact text matching, which can limit the ability to discover relevant items when users enter descriptive phrases, incomplete keywords, or misspelled text.
 
-This sample uses Azure OpenAI to intelligently analyze user input and identify the most relevant matches from a collection of items.
+This sample uses Azure OpenAI to intelligently analyze user input and provide matching suggestions based on the semantics of the search query.
 
-The AI-powered filtering engine considers:
+The AI-powered filtering engine takes into account:
 
 - Natural language search terms
 - Spelling variations and corrections
@@ -31,11 +31,11 @@ burger with cheese
 
 Azure OpenAI interprets the meaning behind the search query and returns the most relevant items.
 
-The filtered results are displayed directly in the Syncfusion® .NET MAUI ComboBox, providing a more intelligent and user-friendly search experience.
+The filtered results are displayed directly in the Syncfusion .NET MAUI ComboBox, providing a more intelligent and user-friendly search experience.
 
 ## Key Features
 
-- Syncfusion® .NET MAUI ComboBox integration
+- Syncfusion .NET MAUI ComboBox integration
 - Azure OpenAI-powered smart filtering
 - Natural language search support
 - Intelligent item recommendations
@@ -49,53 +49,20 @@ The filtered results are displayed directly in the Syncfusion® .NET MAUI ComboB
 ## Sample
 
 ```xml
-<inputs:SfComboBox
-    x:Name="comboBox"
-    IsEditable="True"
-    DisplayMemberPath="FoodName">
+<editors:SfComboBox x:Name="comboBox"
+                    IsEditable="True"
+                    DisplayMemberPath="FoodName">
 
-    <inputs:SfComboBox.FilterBehavior>
+    <editors:SfComboBox.FilterBehavior>
         <local:SmartComboBoxFilterBehavior />
-    </inputs:SfComboBox.FilterBehavior>
+    </editors:SfComboBox.FilterBehavior>
 
-</inputs:SfComboBox>
+</editors:SfComboBox>
 ```
 
 ## Output
 
 The AI-powered filter analyzes the user's text and suggests relevant results.
-
-Example searches:
-
-```text
-healthy breakfast
-```
-
-Suggested items:
-
-```text
-Oatmeal
-Fruit Salad
-Greek Yogurt
-```
-
-Example searches:
-
-```text
-spicy food
-```
-
-Suggested items:
-
-```text
-Spicy Chicken Wrap
-Mexican Taco
-Hot Wings
-```
-
-The results are dynamically updated as the user types.
-
-![.NET MAUI ComboBox with AI Smart Filter](ai_smart_filter.gif)
 
 ## Prerequisites
 
@@ -104,8 +71,8 @@ Before running the sample, ensure that you have:
 - Visual Studio 2022 with .NET MAUI workload installed
 - .NET 9 or later
 - Azure OpenAI resource and deployment
-- Syncfusion® .NET MAUI ComboBox package
-- Valid Syncfusion® license key
+- Syncfusion .NET MAUI ComboBox package
+- Valid Syncfusion license key
 
 ## Troubleshooting
 
@@ -118,10 +85,12 @@ If you encounter a **"Path Too Long"** exception while building the project:
 3. Delete the `bin`, `obj`, and `.vs` folders.
 4. Rebuild the project.
 
+### General Troubleshooting
+
+1. Verify that all components are correctly installed.
+2. Check the Azure OpenAI configuration if issues arise during setup or runtime.
+3. Monitor error messages carefully, following any suggestions provided by the application.
+
 ## License
 
-Syncfusion has no liability for any damage or consequence that may arise from using or viewing the samples. The samples are for demonstrative purposes. If you choose to use or access the samples, you agree to not hold Syncfusion liable, in any form, for any damage related to use, for accessing, or viewing the samples.
-
-By accessing, viewing, or using the samples, you acknowledge and agree that Syncfusion's samples will not allow you to seek injunctive relief in any form for any claim related to the sample.
-
-If you do not agree to this, do not view, access, utilize, or otherwise interact with Syncfusion's samples.
+Syncfusion has no liability for any damage or consequence that may arise from using or viewing the samples. The samples are for demonstrative purposes. If you choose to use or access the samples, you agree to not hold Syncfusion liable, in any form, for any damage related to use, for accessing, or viewing the samples. By accessing, viewing, or using the samples, you acknowledge and agree Syncfusion's samples will not allow you to seek injunctive relief in any form for any claim related to the sample. If you do not agree to this, do not view, access, utilize, or otherwise interact with Syncfusion's samples.

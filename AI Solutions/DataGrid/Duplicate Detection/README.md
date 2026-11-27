@@ -1,6 +1,6 @@
-# AI-Driven Duplicate Detection in .NET MAUI DataGrid
+# AI-Powered Duplicate Detection in .NET MAUI DataGrid
 
-This sample demonstrates AI-driven duplicate detection with the Syncfusion .NET MAUI DataGrid. The application integrates Azure OpenAI to analyze customer records, identify exact and near-duplicate entries, and highlight potential duplicates directly within the DataGrid.
+This sample demonstrates AI-powered duplicate detection with the Syncfusion .NET MAUI DataGrid. The application integrates Azure OpenAI to analyze customer records, identify exact and near-duplicate entries, and highlight potential duplicates directly within the DataGrid.
 
 ## Overview
 
@@ -8,26 +8,26 @@ Duplicate records can impact data quality and lead to inconsistent business info
 
 The AI-powered duplicate detection engine considers:
 
-   - Customer names
-   - Email addresses
-   - Phone numbers
-   - Address similarities
-   - Overall record similarity
-   - Confidence scores for duplicate matches
+- Customer names
+- Email addresses
+- Phone numbers
+- Address similarities
+- Overall record similarity
+- Confidence scores for duplicate matches
 
 The detected duplicates are displayed in the Syncfusion .NET MAUI DataGrid with visual indicators and status information, making it easier to review and manage duplicate records.
 
 ## Key Features
 
-   - Syncfusion .NET MAUI DataGrid integration
-   - Azure OpenAI-powered duplicate detection
-   - Exact and near-duplicate record identification
-   - Confidence-based duplicate classification
-   - Real-time duplicate detection during editing
-   - Visual row highlighting for duplicate records
-   - Duplicate review and management workflow
-   - Automatic duplicate status updates after record deletion
-   - Cross-platform .NET MAUI application
+- Syncfusion .NET MAUI DataGrid integration
+- Azure OpenAI-powered duplicate detection
+- Exact and near-duplicate record identification
+- Confidence-based duplicate classification
+- Real-time duplicate detection during editing
+- Visual row highlighting for duplicate records
+- Duplicate review and management workflow
+- Automatic duplicate status updates after record deletion
+- Cross-platform .NET MAUI application
 
 ## Sample
 
@@ -111,7 +111,6 @@ The detected duplicates are displayed in the Syncfusion .NET MAUI DataGrid with 
 ## Output
 ![Duplicate Detection](duplicate-detection-datagrid.gif)
 
-
 ## Requirements to run the demo
 
 To run the demo, refer to https://help.syncfusion.com/maui/system-requirements
@@ -131,6 +130,12 @@ Before running the sample, ensure that you have:
 ### Path too long exception
 
 If you encounter a "Path Too Long" exception while building the project, close Visual Studio, rename the repository folder to a shorter name, and rebuild the project.
+
+### General Troubleshooting
+
+1. If the application misbehaves, ensure that all configurations (especially concerning Azure OpenAI) are set correctly.
+2. Validate the installation of all prerequisite components.
+3. Follow any error messages that appear during runtime as they often provide guidance for resolution.
 
 ## License
 
