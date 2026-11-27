@@ -13,9 +13,9 @@ namespace SmartDailyDecisionCompanion
     {
         // TODO: Add your Azure OpenAI endpoint, deployment name, and API key before running the sample.
         // The endpoint must include the trailing slash, e.g. "https://<your-resource>.openai.azure.com/".
-        private static readonly string endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT") ?? string.Empty;
-        private static readonly string deploymentName = Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") ?? string.Empty;
-        private static readonly string key = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY") ?? string.Empty;
+        private const string endpoint = "Enter your Azure OpenAI endpoint here";
+        private const string deploymentName = "Enter your Azure OpenAI deployment name here";
+        private const string key = "Enter your Azure OpenAI API key here";
         private const string apiVersion = "2024-02-15-preview";
 
         private static readonly Lazy<HttpClient> _httpClient = CreateHttpClient();

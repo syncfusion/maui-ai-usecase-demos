@@ -201,11 +201,6 @@ namespace AIPoweredWritingAssistant
             return string.Empty;
         }
 
-        Task<string> IAzureAIService.GetResultsFromAI(string userAIPrompt)
-        {
-            return GetResultsFromAI(userAIPrompt);
-        }
-
         #endregion
     }
 }
